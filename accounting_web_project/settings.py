@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get(
     "dev-insecure-key-for-local-only"
 )
 
-DEBUG = False
+DEBUG = True
 
 # Render
 ALLOWED_HOSTS = ["*"]
