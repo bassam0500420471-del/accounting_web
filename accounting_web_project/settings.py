@@ -15,11 +15,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ============================================================
 # SECURITY
 # ============================================================
-SECRET_KEY = 'django-insecure-o4=iqm2rkt0b2#@)7!z1h3s6d@267ldq(mcu6$&um5g(o!kiea'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "dev-insecure-key-for-local-only"
+)
 
-DEBUG = True
+DEBUG = False
 
-# ✅ مهم للسيرفر
+# ✅ مهم للسيرفر (Render)
 ALLOWED_HOSTS = ["*"]
 
 # ============================================================
@@ -65,7 +68,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 
-    # ✅ مهم جدًا للـ static على السيرفر
+    # ✅ ضروري للـ static على Render
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -148,7 +151,7 @@ LOCALE_PATHS = [
 ]
 
 # ============================================================
-# STATIC FILES
+# STATIC FILES (Render / Production)
 # ============================================================
 STATIC_URL = '/static/'
 
@@ -156,14 +159,19 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# ✅ مهم للسيرفر
+# ✅ مكان تجميع الملفات
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# ✅ WhiteNoise storage
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# ============================================================
+# DEFAULT FIELD
+# ============================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ============================================================
 # PDF
 # ============================================================
-PDFKIT_CONFIG = {
-    "wkhtmltopdf": r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-}
+# ❌ لا نضع مسار Windows على السيرفر
+PDFKIT_CONFIG = {}
