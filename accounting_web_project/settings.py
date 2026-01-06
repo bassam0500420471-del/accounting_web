@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get(
     "dev-insecure-key-for-local-only"
 )
 
-DEBUG = False   # ❗ لا ترفعها في الإنتاج
+DEBUG = True   # ❗ لا ترفعها في الإنتاج
 
 ALLOWED_HOSTS = [
     ".onrender.com",
@@ -70,6 +70,10 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    # ✅ إنشاء شجرة الحسابات تلقائيًا عند أول تشغيل
+    'accounting.middleware.chart_init_middleware.EnsureChartExistsMiddleware',
+
     'django.middleware.locale.LocaleMiddleware',
     'accounting.language_middleware.SettingsLanguageMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -147,16 +151,12 @@ LOCALE_PATHS = [
 ]
 
 # ============================================================
-# STATIC FILES  (الحل الجذري)
+# STATIC FILES
 # ============================================================
 STATIC_URL = '/static/'
 
-# ❌ لا STATICFILES_DIRS في الإنتاج
-# STATICFILES_DIRS = []
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ✅ WhiteNoise بدون Manifest
 STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
 
 # ============================================================

@@ -74,8 +74,15 @@ def supplier_add(request):
             tax_number=request.POST.get("tax_number"),
         )
 
-        # 2️⃣ الحساب الأب (الموردون)
-        parent_account = Account.objects.get(code="20000101")
+        # 2️⃣ جلب أو إنشاء الحساب الأب (الموردين)
+        parent_account, created = Account.objects.get_or_create(
+            code="20000101",
+            defaults={
+                "name": "الموردين",
+                "is_active": True,
+                "parent": None
+            }
+        )
 
         # 3️⃣ آخر حساب فرعي
         last_child = (

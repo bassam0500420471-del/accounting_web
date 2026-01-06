@@ -87,9 +87,14 @@ def customer_create(request):
             address=request.POST.get("street1") or "",
         )
 
-        # 2️⃣ جلب الحساب الأب (العملاء)
-        parent_account = Account.objects.get(
-            code="10000103"   # حساب العملاء من شجرة الحسابات
+        # 2️⃣ جلب أو إنشاء حساب العملاء الأب (حتى لو الشجرة فاضية)
+        parent_account, created = Account.objects.get_or_create(
+            code="10000103",
+            defaults={
+                "name": "العملاء",
+                "is_active": True,
+                "parent": None
+            }
         )
 
         # 3️⃣ تحديد الكود الجديد للحساب الفرعي
