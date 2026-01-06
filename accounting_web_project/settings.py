@@ -1,6 +1,6 @@
 """
-Django settings for accounting project.
-Production-safe settings for Render
+Django settings for accounting project
+Production settings for Render
 """
 
 from pathlib import Path
@@ -20,12 +20,9 @@ SECRET_KEY = os.environ.get(
     "dev-insecure-key-for-local-only"
 )
 
-# ⚠️ نخليها True مؤقتًا عشان نكسر 500
-DEBUG = True
+DEBUG = False   # ❗ لا ترفعها في الإنتاج
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
     ".onrender.com",
 ]
 
@@ -45,11 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
-    # apps الأساسية
+    # apps
     'cost_centers.apps.CostCentersConfig',
     'accounting',
-
-    # باقي النظام
     'products',
     'customers',
     'sales',
@@ -71,13 +66,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 
-    # static files
+    # WhiteNoise
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'accounting.language_middleware.SettingsLanguageMiddleware',
-
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -99,11 +93,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / "templates",
-            BASE_DIR / "templates/layout",
         ],
         'APP_DIRS': True,
         'OPTIONS': {
-            'debug': True,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -148,7 +140,6 @@ LANGUAGES = [
 TIME_ZONE = 'Asia/Riyadh'
 
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 LOCALE_PATHS = [
@@ -156,25 +147,19 @@ LOCALE_PATHS = [
 ]
 
 # ============================================================
-# STATIC FILES  (الأهم لحل 500)
+# STATIC FILES  (الحل الجذري)
 # ============================================================
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+# ❌ لا STATICFILES_DIRS في الإنتاج
+# STATICFILES_DIRS = []
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ❗❗❗ نلغي Manifest مؤقتًا (سبب 500)
+# ✅ WhiteNoise بدون Manifest
 STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
 
 # ============================================================
 # DEFAULT FIELD
 # ============================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ============================================================
-# PDF
-# ============================================================
-# نستخدم xhtml2pdf فقط
