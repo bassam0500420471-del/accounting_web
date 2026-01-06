@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-import pdfkit
+
+from xhtml2pdf import pisa
+import io
 
 from .models import Quotation, QuotationItem
 from customers.models import Customer
 from products.models import Product
-from sales.models import SalesInvoice, SalesItem  # ← تم إصلاح السطر
+from sales.models import SalesInvoice, SalesItem
 
 
 # ================================
@@ -55,8 +57,8 @@ def quotation_add(request):
         for i in range(1, rows + 1):
 
             prefix = f"row_{i}_"
-
             product_id = request.POST.get(prefix + "product_id")
+
             if not product_id:
                 continue
 
@@ -126,7 +128,7 @@ def quotation_print(request, pk):
 
 
 # ================================
-#   PDF
+#   PDF (xhtml2pdf فقط)
 # ================================
 def quotation_pdf(request, pk):
     quotation = get_object_or_404(Quotation, pk=pk)
@@ -137,13 +139,21 @@ def quotation_pdf(request, pk):
         "items": items
     })
 
-    path_wk = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-    config = pdfkit.configuration(wkhtmltopdf=path_wk)
+    result = io.BytesIO()
+    pdf = pisa.CreatePDF(
+        src=html,
+        dest=result,
+        encoding="UTF-8"
+    )
 
-    pdf = pdfkit.from_string(html, False, configuration=config)
+    if pdf.err:
+        return HttpResponse("Error generating PDF", status=500)
 
-    response = HttpResponse(pdf, content_type="application/pdf")
-    response['Content-Disposition'] = f'attachment; filename=\"quotation_{quotation.pk}.pdf\"'
+    response = HttpResponse(
+        result.getvalue(),
+        content_type="application/pdf"
+    )
+    response["Content-Disposition"] = f'attachment; filename="quotation_{quotation.pk}.pdf"'
     return response
 
 
@@ -155,11 +165,9 @@ def quotation_to_invoice(request, pk):
     quotation = get_object_or_404(Quotation, pk=pk)
     items = QuotationItem.objects.filter(quotation=quotation)
 
-    # رقم الفاتورة التالي
     last_invoice = SalesInvoice.objects.order_by("-invoice_no").first()
     next_number = int(last_invoice.invoice_no) + 1 if last_invoice else 1
 
-    # إنشاء الفاتورة
     invoice = SalesInvoice.objects.create(
         invoice_no=next_number,
         customer=quotation.customer,
@@ -174,7 +182,6 @@ def quotation_to_invoice(request, pk):
         created_at=timezone.now()
     )
 
-    # إنشاء البنود
     for item in items:
         SalesItem.objects.create(
             invoice=invoice,
@@ -187,5 +194,4 @@ def quotation_to_invoice(request, pk):
             total=item.total
         )
 
-    # إعادة التوجيه لعرض الفاتورة
     return redirect("invoice_view", pk=invoice.id)
