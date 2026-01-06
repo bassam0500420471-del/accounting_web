@@ -1,0 +1,26 @@
+<li>
+
+    <div class="tree-item">
+
+        {% if node.children.exists %}
+            <span class="toggle" onclick="toggleNode(this)">▶</span>
+        {% else %}
+            <span class="toggle-empty"></span>
+        {% endif %}
+
+        <span class="node-name">
+            {{ node.name }}
+            <small class="text-muted">({{ node.get_type_display }})</small>
+        </span>
+
+    </div>
+
+    {% if node.children.exists %}
+        <ul class="tree-children d-none">
+            {% for child in node.children.all %}
+                {% include "cost_centers/tree_node.html" with node=child %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</li>

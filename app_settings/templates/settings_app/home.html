@@ -1,0 +1,90 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+.settings-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    margin: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* بطاقات الإعدادات */
+.setting-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    transition: 0.2s;
+    cursor: pointer;
+}
+.setting-card:hover {
+    background: #ececec;
+    transform: translateY(-3px);
+}
+
+/* عنوان البطاقة */
+.setting-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* الأزرار بنفس لون الفاتورة */
+.btn-main {
+    background: #6c757d;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.btn-main:hover {
+    background: #5c636a;
+}
+</style>
+
+
+<div class="settings-container">
+
+    <h2 class="fw-bold mb-4 text-center">صفحة الإعدادات</h2>
+
+    <div class="row">
+
+        <!-- إعدادات الشركة -->
+        <div class="col-md-4 mb-3">
+            <a href="/settings/company/" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <div class="setting-title">إعدادات الشركة</div>
+                    <p>إسم الشركة – الشعار – العنوان – الرقم الضريبي.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- إعدادات المستخدم -->
+        <div class="col-md-4 mb-3">
+            <a href="/settings/user/" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <div class="setting-title">إعدادات المستخدم</div>
+                    <p>كلمة المرور – بيانات الحساب – التفضيلات.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- إعدادات النظام -->
+        <div class="col-md-4 mb-3">
+            <a href="/settings/system/" style="text-decoration:none; color:inherit;">
+                <div class="setting-card">
+                    <div class="setting-title">إعدادات النظام</div>
+                    <p>اللغة – التاريخ – النسخ الاحتياطي – الطباعة.</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

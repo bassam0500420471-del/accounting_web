@@ -1,0 +1,107 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+.btn-main {
+    background:#6c757d !important;
+    color:white !important;
+    border-radius:6px;
+    font-size:18px;
+    padding:10px 25px;
+}
+.btn-main:hover {
+    background:#5c636a !important;
+}
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-center mb-4">
+        إنشاء إشعار دائن (مرتجع مبيعات)
+    </h2>
+
+    <!-- ================= العميل ================= -->
+    <label class="fw-bold">اختر العميل:</label>
+    <select id="customerSelect" class="form-select mb-3">
+        <option value="">-- اختر العميل --</option>
+        {% for c in customers %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- ================= الفاتورة ================= -->
+    <label class="fw-bold">اختر فاتورة المبيعات:</label>
+    <select id="invoiceSelect" class="form-select mb-4" disabled>
+        <option value="">-- اختر العميل أولاً --</option>
+    </select>
+
+    <!-- ================= متابعة ================= -->
+    <div class="text-center mt-4">
+        <a id="continueBtn"
+           class="btn-main btn-lg disabled"
+           role="button">
+            متابعة إنشاء المرتجع
+        </a>
+    </div>
+
+</div>
+
+<script>
+// =================================================
+// اختيار العميل → تحميل فواتير المبيعات
+// =================================================
+document.getElementById("customerSelect").addEventListener("change", function () {
+
+    const customerId    = this.value;
+    const invoiceSelect = document.getElementById("invoiceSelect");
+
+    invoiceSelect.disabled = true;
+    invoiceSelect.innerHTML = "<option>جاري التحميل...</option>";
+
+    if (!customerId) {
+        invoiceSelect.innerHTML = "<option>-- اختر العميل أولاً --</option>";
+        return;
+    }
+
+    fetch(`/sales/api/customer-invoices/?customer_id=${customerId}`)
+        .then(res => res.json())
+        .then(data => {
+
+            invoiceSelect.innerHTML = "<option value=''>-- اختر الفاتورة --</option>";
+            invoiceSelect.disabled = false;
+
+            data.invoices.forEach(inv => {
+                invoiceSelect.innerHTML += `
+                    <option value="${inv.id}">
+                        فاتورة رقم ${inv.invoice_no}
+                        | ${inv.total} ريال
+                        | ${inv.date}
+                    </option>
+                `;
+            });
+        });
+});
+
+
+// =================================================
+// اختيار الفاتورة → تفعيل زر المتابعة
+// =================================================
+document.getElementById("invoiceSelect").addEventListener("change", function () {
+
+    const invoiceId = this.value;
+    const btn       = document.getElementById("continueBtn");
+
+    if (!invoiceId) {
+        btn.classList.add("disabled");
+        btn.removeAttribute("href");
+        return;
+    }
+
+    btn.classList.remove("disabled");
+
+    // 🔁 مطابق لمنطق المشتريات
+    btn.href = `/sales/return/${invoiceId}/`;
+});
+</script>
+
+{% endblock %}

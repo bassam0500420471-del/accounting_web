@@ -1,0 +1,123 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+.settings-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+}
+
+.nav-tabs .nav-link {
+    font-weight: bold;
+    color: #444;
+    border-radius: 6px 6px 0 0;
+}
+
+.nav-tabs .nav-link.active {
+    background: #2D3033;
+    color: #fff !important;
+    border-color: #2D3033;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* زر رمادي مثل زر الخيارات */
+.btn-grey {
+    background: #6c757d !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 8px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4 fw-bold">إعدادات المستخدم</h2>
+
+    <div class="settings-card">
+
+        <!-- التبويبات -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile" type="button">الملف الشخصي</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#password" type="button">كلمة المرور</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+
+            <!-- الملف الشخصي -->
+            <div class="tab-pane fade show active" id="profile">
+
+                <div class="section-title">الملف الشخصي</div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">الاسم الكامل</label>
+                            <input type="text" class="form-control" placeholder="مثال: محمد علي">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" placeholder="example@mail.com">
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-grey">حفظ التغييرات</button>
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- كلمة المرور -->
+            <div class="tab-pane fade" id="password">
+
+                <div class="section-title">تغيير كلمة المرور</div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور الحالية</label>
+                        <input type="password" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور الجديدة</label>
+                        <input type="password" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">تأكيد كلمة المرور</label>
+                        <input type="password" class="form-control">
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-grey">تغيير كلمة المرور</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

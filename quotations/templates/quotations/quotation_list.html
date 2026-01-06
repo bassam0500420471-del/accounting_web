@@ -1,0 +1,137 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">إدارة عروض الأسعار</h3>
+
+        <!-- زر إنشاء عرض سعر - اللون الجديد -->
+        <a href="/quotations/add" class="btn"
+           style="background:#6c757d; color:white; border-radius:6px; padding:8px 18px;">
+            + إنشاء عرض سعر
+        </a>
+    </div>
+
+    {% if quotations %}
+    <table class="table table-hover text-center align-middle">
+
+        <thead>
+
+            <!-- صف الفلاتر داخل الجدول فقط -->
+            <tr>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث رقم عرض السعر"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث العميل"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث التاريخ"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الإجمالي"></th>
+                <th></th>
+            </tr>
+
+            <!-- العناوين -->
+            <tr class="table-dark">
+                <th>#</th>
+                <th>رقم عرض السعر</th>
+                <th>العميل</th>
+                <th>التاريخ</th>
+                <th>الإجمالي</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for q in quotations %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+
+            <td>{{ q.quotation_no }}</td>
+
+            <td>{{ q.customer.name }}</td>
+
+            <td>{{ q.date_quotation }}</td>
+
+            <td>{{ q.total_after_tax|floatformat:2 }}</td>
+
+            <!-- تعديل لون الحالة -->
+            <td>
+                {% if q.status == "approved" %}
+                    <span class="badge bg-success">معتمد</span>
+                {% else %}
+                    <span class="badge bg-secondary">مسودة</span>
+                {% endif %}
+            </td>
+
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle">خيارات</button>
+
+                    <ul class="dropdown-menu text-end">
+                        <li><a class="dropdown-item" href="/quotations/view/{{ q.id }}">عرض</a></li>
+                        <li><a class="dropdown-item" href="/quotations/print/{{ q.id }}">طباعة</a></li>
+                        <li><a class="dropdown-item" href="/quotations/download/{{ q.id }}">تحميل</a></li>
+                        <li><a class="dropdown-item" href="/quotations/edit/{{ q.id }}">تعديل</a></li>
+                        <li><a class="dropdown-item text-danger" href="/quotations/delete/{{ q.id }}">حذف</a></li>
+                    </ul>
+                </div>
+            </td>
+
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% else %}
+    <div class="alert alert-info text-center">
+        لا توجد عروض أسعار حتى الآن.
+    </div>
+    {% endif %}
+
+</div>
+
+
+<!-- تنسيق الفلاتر -->
+<style>
+.filter-input {
+    text-align: center;
+    border: 1px solid #6c757d !important;
+    border-radius: 6px;
+}
+.filter-input::placeholder {
+    text-align: center;
+    color: #6c757d;
+}
+</style>
+
+
+<!-- سكربت الفلترة -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const filterInputs = document.querySelectorAll(".filter-input");
+    const rows = document.querySelectorAll("tbody tr");
+
+    filterInputs.forEach((input, colIndex) => {
+
+        input.addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+
+            rows.forEach(row => {
+                const cell = row.querySelectorAll("td")[colIndex];
+                if (cell) {
+                    const text = cell.textContent.toLowerCase();
+                    row.style.display = text.includes(value) ? "" : "none";
+                }
+            });
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "quotations/quotation_view.html" %}
+
+{% block content %}
+{{ block.super }}
+
+<!-- تشغيل نافذة الطباعة تلقائياً -->
+<script>
+    window.onload = function () {
+        window.print();
+    };
+</script>
+
+<style>
+/* إخفاء الهيدر والسايدبار وكل عناصر الموقع أثناء الطباعة */
+@media print {
+    nav, header, .sidebar, .menu-toggle, .navbar, .btn, .dropdown, .d-print-none {
+        display: none !important;
+    }
+
+    /* جعل الصفحة A4 بدون هوامش إضافية */
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+</style>
+
+{% endblock %}

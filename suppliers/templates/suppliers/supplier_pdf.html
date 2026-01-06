@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>فاتورة مشتريات PDF</title>
+
+    <style>
+        body {
+            font-family: "Tahoma";
+            font-size: 14px;
+        }
+
+        .container {
+            width: 700px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
+        .mt-2 { margin-top: 10px; }
+        .mt-3 { margin-top: 15px; }
+        .mb-2 { margin-bottom: 10px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            border: 1px solid #333;
+            padding: 6px;
+            text-align: center;
+        }
+
+        table th {
+            background: #eee;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #bbb;
+            margin: 20px 0;
+        }
+
+        .qr-box {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2 class="text-center fw-bold">فاتورة مشتريات</h2>
+
+    <div class="mt-3">
+        <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
+        <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
+        <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
+    </div>
+
+    <hr>
+
+    <h4 class="fw-bold">بيانات المورد</h4>
+    <p><strong>الاسم التجاري:</strong> {{ invoice.supplier.commercial_name }}</p>
+    <p><strong>الرقم الضريبي:</strong> {{ invoice.supplier.tax_number }}</p>
+    <p><strong>السجل التجاري:</strong> {{ invoice.supplier.cr_number }}</p>
+
+    <hr>
+
+    <h4 class="fw-bold">الوصف:</h4>
+    <p>{{ invoice.description }}</p>
+
+    <hr>
+
+    <h4 class="fw-bold">الأصناف:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>الصنف</th>
+                <th>الوصف</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الخصم</th>
+                <th>الضريبة%</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.qty }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.discount }}</td>
+                <td>{{ item.tax }}</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h4 class="fw-bold">المجاميع</h4>
+
+    <p><strong>الإجمالي قبل الخصم:</strong> {{ invoice.total_before_tax }}</p>
+    <p><strong>إجمالي الخصم:</strong> {{ invoice.total_discount }}</p>
+    <p><strong>بعد الخصم:</strong> {{ invoice.total_after_discount }}</p>
+    <p><strong>قيمة الضريبة:</strong> {{ invoice.tax_value }}</p>
+
+    <h3 class="fw-bold mt-3">
+        الإجمالي النهائي: {{ invoice.total_after_tax }}
+    </h3>
+
+    <hr>
+
+    <div class="qr-box">
+        <img src="data:image/png;base64,{{ qr_code }}" width="180">
+        <p>رمز QR للتحقق من الفاتورة</p>
+    </div>
+
+</div>
+
+</body>
+</html>

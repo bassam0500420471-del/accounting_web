@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- الأزرار العلوية -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">عرض فاتورة مشتريات</h3>
+
+        <div>
+            <a href="/purchases/invoices/" class="btn btn-light">⬅️ رجوع</a>
+
+            <a href="/purchases/invoices/{{ invoice.id }}/edit/" class="btn btn-warning">
+                ✏️ تعديل
+            </a>
+
+            <a href="/purchases/invoices/{{ invoice.id }}/delete/"
+               class="btn btn-danger"
+               onclick="return confirm('هل تريد حذف الفاتورة نهائيًا؟');">
+                🗑️ حذف
+            </a>
+
+            <a href="/purchases/invoices/{{ invoice.id }}/print/"
+               class="btn btn-primary" target="_blank">
+               🖨️ طباعة
+            </a>
+
+            <a href="/purchases/invoices/{{ invoice.id }}/pdf/"
+               class="btn btn-dark">
+               📄 PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="card p-4">
+
+        <!-- رقم الفاتورة + التاريخ -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="fw-bold">رقم الفاتورة:</label>
+                <p>{{ invoice.invoice_no }}</p>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold">تاريخ الفاتورة:</label>
+                <p>{{ invoice.date_invoice }}</p>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold">تاريخ الإصدار:</label>
+                <p>{{ invoice.date_issue }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- بيانات المورد -->
+        <h5 class="fw-bold mt-3">بيانات المورد</h5>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="fw-bold">الاسم التجاري:</label>
+                <p>{{ invoice.supplier.commercial_name }}</p>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold">الرقم الضريبي:</label>
+                <p>{{ invoice.supplier.tax_number }}</p>
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold">رقم السجل التجاري:</label>
+                <p>{{ invoice.supplier.cr_number }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- الوصف -->
+        <label class="fw-bold">الوصف:</label>
+        <p>{{ invoice.description }}</p>
+
+        <hr>
+
+        <!-- جدول الأصناف -->
+        <h5 class="fw-bold mt-3">الأصناف</h5>
+
+        <table class="table table-bordered mt-2">
+            <thead class="table-light">
+                <tr>
+                    <th>الصنف</th>
+                    <th>الوصف</th>
+                    <th>الكمية</th>
+                    <th>السعر</th>
+                    <th>الخصم</th>
+                    <th>الضريبة%</th>
+                    <th>الإجمالي</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.discount }}</td>
+                    <td>{{ item.tax }}</td>
+                    <td>{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <hr>
+
+        <!-- المجاميع -->
+        <div class="row mt-3">
+
+            <div class="col-md-3">
+                <label class="fw-bold">الإجمالي قبل الخصم:</label>
+                <p>{{ invoice.total_before_tax }}</p>
+            </div>
+
+            <div class="col-md-3">
+                <label class="fw-bold">إجمالي الخصم:</label>
+                <p>{{ invoice.total_discount }}</p>
+            </div>
+
+            <div class="col-md-3">
+                <label class="fw-bold">بعد الخصم:</label>
+                <p>{{ invoice.total_after_discount }}</p>
+            </div>
+
+            <div class="col-md-3">
+                <label class="fw-bold">الضريبة:</label>
+                <p>{{ invoice.tax_value }}</p>
+            </div>
+
+            <div class="col-md-3 mt-3">
+                <label class="fw-bold">الإجمالي بعد الضريبة:</label>
+                <p class="fw-bold text-success">{{ invoice.total_after_tax }}</p>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <!-- QR Code -->
+        <div class="text-center mt-4">
+            <h6 class="fw-bold">رمز QR</h6>
+            <img src="data:image/png;base64,{{ qr_code }}" width="180">
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

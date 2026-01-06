@@ -1,0 +1,103 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "النظام المحاسبي ERP"
+msgstr "Accounting ERP"
+
+msgid "النظام المحاسبي"
+msgstr "Accounting System"
+
+msgid "لوحة التحكم"
+msgstr "Dashboard"
+
+msgid "المبيعات"
+msgstr "Sales"
+
+msgid "العملاء"
+msgstr "Customers"
+
+msgid "فواتير المبيعات"
+msgstr "Sales Invoices"
+
+msgid "مرتجع الفواتير"
+msgstr "Sales Returns"
+
+msgid "عروض الأسعار"
+msgstr "Quotations"
+
+msgid "المشتريات"
+msgstr "Purchases"
+
+msgid "الموردين"
+msgstr "Suppliers"
+
+msgid "أوامر الشراء"
+msgstr "Purchase Orders"
+
+msgid "فواتير المشتريات"
+msgstr "Purchase Invoices"
+
+msgid "الموارد البشرية"
+msgstr "Human Resources"
+
+msgid "الموظفين"
+msgstr "Employees"
+
+msgid "المنتجات والمخزون"
+msgstr "Products & Inventory"
+
+msgid "إدارة المنتجات"
+msgstr "Product Management"
+
+msgid "المحاسبة"
+msgstr "Accounting"
+
+msgid "القيود اليومية"
+msgstr "Journal Entries"
+
+msgid "التقارير"
+msgstr "Reports"
+
+msgid "تقارير المبيعات"
+msgstr "Sales Reports"
+
+msgid "تقارير المشتريات"
+msgstr "Purchase Reports"
+
+msgid "إعدادات الشركة"
+msgstr "Company Settings"
+
+msgid "إعدادات النظام"
+msgstr "System Settings"
+
+msgid "الإعدادات العامة"
+msgstr "General Settings"
+
+msgid "إعدادات الطباعة"
+msgstr "Print Settings"
+
+msgid "النسخ الاحتياطي"
+msgstr "Backup"
+
+msgid "إعدادات متقدمة"
+msgstr "Advanced Settings"
+
+msgid "اللغة الافتراضية للنظام"
+msgstr "Default System Language"
+
+msgid "تنسيق التاريخ"
+msgstr "Date Format"
+
+msgid "نمط الألوان"
+msgstr "Color Theme"
+
+msgid "الوضع الفاتح"
+msgstr "Light Mode"
+
+msgid "الوضع الداكن"
+msgstr "Dark Mode"
+
+msgid "حفظ الإعدادات"
+msgstr "Save Settings"

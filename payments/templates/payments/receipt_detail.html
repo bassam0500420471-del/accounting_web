@@ -1,0 +1,33 @@
+{% extends "layout/base.html" %}
+{% block title %}عرض سند قبض{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">📄 سند قبض رقم {{ receipt.voucher_no|default:receipt.id }}</h4>
+
+<table class="table table-bordered">
+  <tr>
+    <th>العميل</th>
+    <td>{{ receipt.customer }}</td>
+  </tr>
+  <tr>
+    <th>التاريخ</th>
+    <td>{{ receipt.date }}</td>
+  </tr>
+  <tr>
+    <th>المبلغ</th>
+    <td>{{ receipt.amount }}</td>
+  </tr>
+  <tr>
+    <th>الحالة</th>
+    <td>{{ receipt.get_status_display }}</td>
+  </tr>
+  <tr>
+    <th>أنشئ بواسطة</th>
+    <td>{{ receipt.created_by }}</td>
+  </tr>
+</table>
+
+<a href="{% url 'payments:receipt_list' %}" class="btn btn-secondary">
+  رجوع
+</a>
+{% endblock %}

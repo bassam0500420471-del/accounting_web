@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}تعديل منتج{% endblock %}
+
+{% block content %}
+
+<!-- ================= Select2 ================= -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<h3 class="mb-4 text-end">تعديل منتج</h3>
+
+<div class="card p-4">
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- النوع -->
+        <div class="mb-3 text-end">
+            <label class="form-label">نوع المنتج</label>
+            <select class="form-select" name="type" id="type">
+                <option value="normal" {% if product.type == 'normal' %}selected{% endif %}>منتج عادي</option>
+                <option value="bundle" {% if product.type == 'bundle' %}selected{% endif %}>منتج مركب</option>
+                <option value="service" {% if product.type == 'service' %}selected{% endif %}>خدمة</option>
+            </select>
+        </div>
+
+        <!-- الاسم + SKU -->
+        <div class="row mb-3">
+            <div class="col-md-6 text-end">
+                <label class="form-label">اسم المنتج</label>
+                <input type="text" name="name" class="form-control" required value="{{ product.name }}">
+            </div>
+
+            <div class="col-md-6 text-end">
+                <label class="form-label">الكود (SKU)</label>
+                <input type="text" name="sku" class="form-control" value="{{ product.sku }}">
+            </div>
+        </div>
+
+        <!-- الأسعار -->
+        <div class="row mb-3">
+            <div class="col-md-6 text-end">
+                <label class="form-label">سعر الشراء</label>
+                <input type="number" name="purchase_price" step="0.01"
+                       class="form-control" value="{{ product.purchase_price }}">
+            </div>
+
+            <div class="col-md-6 text-end">
+                <label class="form-label">سعر البيع</label>
+                <input type="number" name="sale_price" step="0.01"
+                       class="form-control" value="{{ product.sale_price }}">
+            </div>
+        </div>
+
+        <!-- المخزون -->
+        <div class="row mb-3">
+            <div class="col-md-6 text-end">
+                <label class="form-label">حد أدنى للمخزون</label>
+                <input type="number" name="min_stock"
+                       class="form-control" value="{{ product.min_stock }}">
+            </div>
+
+            <div class="col-md-6 text-end">
+                <label class="form-label">تنبيه عند النفاد</label>
+                <input type="number" name="alert_stock"
+                       class="form-control" value="{{ product.alert_stock }}">
+            </div>
+        </div>
+
+        <!-- ⭐ الحسابات المحاسبية (مع البحث) -->
+        <div class="row mb-4">
+
+            <div class="col-md-4 text-end">
+                <label class="form-label fw-bold">حساب المخزون</label>
+                <select name="inventory_account" class="form-select account-select">
+                    <option value="">-- اختر الحساب --</option>
+                    {% for acc in accounts %}
+                        <option value="{{ acc.id }}"
+                            {% if product.inventory_account_id == acc.id %}selected{% endif %}>
+                            {{ acc.code }} - {{ acc.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 text-end">
+                <label class="form-label fw-bold">حساب تكلفة المبيعات</label>
+                <select name="cost_account" class="form-select account-select">
+                    <option value="">-- اختر الحساب --</option>
+                    {% for acc in accounts %}
+                        <option value="{{ acc.id }}"
+                            {% if product.cost_account_id == acc.id %}selected{% endif %}>
+                            {{ acc.code }} - {{ acc.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 text-end">
+                <label class="form-label fw-bold">حساب الإيرادات</label>
+                <select name="revenue_account" class="form-select account-select">
+                    <option value="">-- اختر الحساب --</option>
+                    {% for acc in accounts %}
+                        <option value="{{ acc.id }}"
+                            {% if product.revenue_account_id == acc.id %}selected{% endif %}>
+                            {{ acc.code }} - {{ acc.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+        <!-- الوصف -->
+        <div class="mb-3 text-end">
+            <label class="form-label">الوصف</label>
+            <textarea name="description" class="form-control" rows="3">{{ product.description }}</textarea>
+        </div>
+
+        <!-- الصورة -->
+        <div class="mb-3 text-end">
+            <label class="form-label">صورة</label>
+            <input type="file" name="image" class="form-control">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" style="height:70px;margin-top:10px;">
+            {% endif %}
+        </div>
+
+        <!-- المكوّنات -->
+        <div id="bundle_area" style="{% if product.type != 'bundle' %}display:none{% endif %}">
+            <hr>
+            <h5 class="mb-3 text-end">مكونات المنتج</h5>
+
+            <div id="bundle_container">
+                {% for c in components %}
+                <div class="row mb-2">
+                    <div class="col-md-6 text-end">
+                        <select name="component_{{ forloop.counter }}" class="form-select">
+                            {% for p in products %}
+                                <option value="{{ p.id }}"
+                                    {% if p.id == c.component.id %}selected{% endif %}>
+                                    {{ p.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 text-end">
+                        <input type="number" name="qty_{{ forloop.counter }}"
+                               value="{{ c.quantity }}" class="form-control">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger w-100"
+                                onclick="this.parentNode.parentNode.remove()">حذف</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="btn btn-secondary mt-2" id="add_component">
+                + إضافة مكون
+            </button>
+
+            <input type="hidden" name="bundle_count" id="bundle_count"
+                   value="{{ components.count }}">
+        </div>
+
+        <div class="text-end mt-4">
+            <button class="btn btn-primary px-5" type="submit">حفظ المنتج</button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- تفعيل البحث -->
+<script>
+$(document).ready(function () {
+    $('.account-select').select2({
+        placeholder: "ابحث عن الحساب...",
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
+
+<script>
+document.getElementById("type").onchange = function() {
+    document.getElementById("bundle_area").style.display =
+        this.value === "bundle" ? "block" : "none";
+};
+
+let bundleCount = parseInt(
+    document.getElementById("bundle_count")?.value || 0
+);
+
+document.getElementById("add_component")?.addEventListener("click", function () {
+    bundleCount++;
+    const row = document.createElement("div");
+    row.className = "row mb-2";
+    row.innerHTML = `
+        <div class="col-md-6 text-end">
+            <select name="component_${bundleCount}" class="form-select">
+                {% for p in products %}
+                    <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 text-end">
+            <input type="number" name="qty_${bundleCount}"
+                   class="form-control" value="1">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-danger w-100"
+                    onclick="this.parentNode.parentNode.remove()">حذف</button>
+        </div>
+    `;
+    document.getElementById("bundle_container").appendChild(row);
+    document.getElementById("bundle_count").value = bundleCount;
+});
+</script>
+
+{% endblock %}

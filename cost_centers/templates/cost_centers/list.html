@@ -1,0 +1,84 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>إدارة مراكز التكلفة</h4>
+        <a href="{% url 'cost_center_add' %}" class="btn btn-primary">
+            إضافة مركز تكلفة
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+
+            <table class="table table-bordered table-hover mb-0 align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th class="text-end">اسم مركز التكلفة</th>
+                        <th>النوع</th>
+                        <th>المركز الأب</th>
+                        <th>الفرع</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                {% for c in centers %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+
+                        <!-- اسم مركز التكلفة -->
+                        <td class="text-end">
+                            {% if c.parent %}
+                                <span class="text-muted me-2">↳</span>
+                            {% endif %}
+                            {{ c.name }}
+                        </td>
+
+                        <!-- النوع -->
+                        <td>{{ c.get_type_display }}</td>
+
+                        <!-- المركز الأب -->
+                        <td>
+                            {{ c.parent.name|default:"—" }}
+                        </td>
+
+                        <!-- الفرع -->
+                        <td>
+                            {{ c.branch.name|default:"—" }}
+                        </td>
+
+                        <!-- الحالة -->
+                        <td>
+                            {% if c.status == "ACTIVE" %}
+                                <span class="badge bg-success">نشط</span>
+                            {% else %}
+                                <span class="badge bg-secondary">مغلق</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- الإجراءات -->
+                        <td>
+                            <a href="#" class="btn btn-sm btn-warning">تعديل</a>
+                            <a href="#" class="btn btn-sm btn-danger">إغلاق</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">لا توجد مراكز تكلفة</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

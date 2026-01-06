@@ -1,0 +1,43 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ar\n"
+
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+msgid "Users"
+msgstr "المستخدمون"
+
+msgid "Add"
+msgstr "إضافة"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Search"
+msgstr "بحث"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "Profile"
+msgstr "الملف الشخصي"

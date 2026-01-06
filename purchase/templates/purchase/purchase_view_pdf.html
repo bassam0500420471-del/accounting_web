@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- تحميل خط عربي يعمل مع WeasyPrint -->
+    <style>
+
+    @font-face {
+        font-family: 'Amiri';
+        src: url('https://fonts.cdnfonts.com/s/17854/Amiri-Regular.ttf') format('truetype');
+    }
+
+    body, table, td, th, input, p, span, div {
+        font-family: 'Amiri', serif !important;
+        font-size: 16px;
+    }
+
+    h2 {
+        text-align:center;
+        margin-bottom:20px;
+        font-size:22px;
+        font-weight:bold;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        border: 1px solid #444;
+        padding: 6px;
+        text-align: center;
+        font-size: 15px;
+    }
+
+    th {
+        background: #efefef;
+        font-weight: bold;
+    }
+
+    .top-info {
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:25px;
+    }
+
+    .totals-box {
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        margin-top:25px;
+    }
+
+    .totals-box div {
+        display:flex;
+        flex-direction:row;
+        margin-bottom:10px;
+        align-items:center;
+    }
+
+    .totals-box span {
+        font-weight:bold;
+        margin-left:12px;
+        white-space:nowrap;
+        font-size:16px;
+    }
+
+    .totals-box input {
+        width:230px;
+        padding:6px 10px;
+        background:#f8f9fa;
+        border:1px solid #bbb;
+        border-radius:6px;
+        direction:ltr;
+        text-align:left;
+        font-family:'Amiri';
+        font-size:16px;
+    }
+
+    .qr-box img {
+        border:1px solid #ccc;
+        padding:5px;
+    }
+
+    </style>
+</head>
+
+<body>
+
+{% if qr_code %}
+<div style="text-align:left; margin-bottom:15px;">
+    <img src="data:image/png;base64,{{ qr_code }}" width="140" height="140"
+         style="border:1px solid #ccc; padding:5px;">
+</div>
+{% endif %}
+
+<h2>فاتورة مشتريات</h2>
+
+<div class="top-info">
+
+    <div>
+        <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
+        <p><strong>المورد:</strong> {{ invoice.supplier.commercial_name }}</p>
+
+        {% if invoice.description %}
+        <p><strong>الوصف:</strong> {{ invoice.description }}</p>
+        {% endif %}
+    </div>
+
+    <div style="text-align:left;">
+        <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
+        <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
+    </div>
+
+</div>
+
+
+<table>
+    <thead>
+        <tr>
+            <th>الصنف</th>
+            <th>الكمية</th>
+            <th>السعر</th>
+            <th>الإجمالي</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.total }}</td>
+        </tr>
+        {% endfor %}
+
+        {% for i in "12345678901" %}
+            {% if forloop.counter > items|length %}
+            <tr>
+                <td style="height:22px;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+
+<div style="width:100%; display:flex; justify-content:space-between; margin-top:15px;">
+
+    <div class="qr-box">
+        {% if qr_code %}
+        <img src="data:image/png;base64,{{ qr_code }}" width="140" height="140">
+        {% endif %}
+    </div>
+
+    <div class="totals-box">
+
+        <div>
+            <span>الإجمالي قبل الضريبة:</span>
+            <input type="text" value="{{ invoice.total_before_tax }}" readonly>
+        </div>
+
+        <div>
+            <span>الإجمالي بعد الخصم:</span>
+            <input type="text"
+                   value="{% if invoice.total_after_discount %}{{ invoice.total_after_discount }}{% else %}{{ invoice.total_before_tax }}{% endif %}"
+                   readonly>
+        </div>
+
+        <div>
+            <span>إجمالي الضريبة:</span>
+            <input type="text" value="{{ invoice.tax_value }}" readonly>
+        </div>
+
+        <div>
+            <span style="font-size:18px;">الإجمالي بعد الضريبة:</span>
+            <input type="text" value="{{ invoice.total_after_tax }}" style="font-weight:bold; font-size:18px;" readonly>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

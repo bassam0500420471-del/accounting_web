@@ -1,0 +1,178 @@
+{% extends "layout/base.html" %}
+{% load humanize %}
+{% block title %}تقرير ضريبة القيمة المضافة{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+<h3 class="text-center fw-bold mb-4">تقرير ضريبة القيمة المضافة</h3>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label fw-bold">من تاريخ</label>
+        <input type="date" name="date_from" value="{{ date_from }}" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label fw-bold">إلى تاريخ</label>
+        <input type="date" name="date_to" value="{{ date_to }}" class="form-control" required>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-secondary w-100">عرض التقرير</button>
+    </div>
+</form>
+
+{% if date_from and date_to %}
+
+<!-- ================== (1) المبيعات ================== -->
+<div class="card mb-4">
+<div class="card-header bg-dark text-white fw-bold">(1) المبيعات</div>
+<table class="table table-bordered text-center mb-0">
+<thead class="table-light">
+<tr>
+    <th>البيان</th>
+    <th>قبل الضريبة</th>
+    <th>ضريبة القيمة المضافة</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+    <td>فواتير المبيعات</td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
+            {{ sales_before_tax|intcomma }}
+        </a>
+    </td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
+            {{ sales_vat|intcomma }}
+        </a>
+    </td>
+</tr>
+
+<tr>
+    <td>مرتجعات المبيعات</td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/sales/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
+            ({{ sales_return_before_tax|intcomma }})
+        </a>
+    </td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/sales/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
+            ({{ sales_return_vat|intcomma }})
+        </a>
+    </td>
+</tr>
+
+<tr>
+    <td>ضريبة من قيود يومية</td>
+    <td>—</td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/accounting/journals/?vat=output&date_from={{ date_from }}&date_to={{ date_to }}">
+            {{ sales_manual_vat|intcomma }}
+        </a>
+    </td>
+</tr>
+
+<tr class="table-secondary fw-bold">
+    <td>صافي ضريبة المبيعات</td>
+    <td>—</td>
+    <td>{{ net_sales_vat|intcomma }}</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- ================== (2) المشتريات ================== -->
+<div class="card mb-4">
+<div class="card-header bg-dark text-white fw-bold">(2) المشتريات</div>
+<table class="table table-bordered text-center mb-0">
+<thead class="table-light">
+<tr>
+    <th>البيان</th>
+    <th>قبل الضريبة</th>
+    <th>ضريبة القيمة المضافة</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+    <td>فواتير المشتريات</td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/purchase/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
+            {{ purchase_before_tax|intcomma }}
+        </a>
+    </td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/purchase/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
+            {{ purchase_vat|intcomma }}
+        </a>
+    </td>
+</tr>
+
+<tr>
+    <td>مرتجعات المشتريات</td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/purchase/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
+            ({{ purchase_return_before_tax|intcomma }})
+        </a>
+    </td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/purchase/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
+            ({{ purchase_return_vat|intcomma }})
+        </a>
+    </td>
+</tr>
+
+<tr>
+    <td>ضريبة من قيود يومية</td>
+    <td>—</td>
+    <td>
+        <a class="fw-bold text-decoration-none"
+           href="/accounting/journals/?vat=input&date_from={{ date_from }}&date_to={{ date_to }}">
+            {{ purchase_manual_vat|intcomma }}
+        </a>
+    </td>
+</tr>
+
+<tr class="table-secondary fw-bold">
+    <td>صافي ضريبة المشتريات</td>
+    <td>—</td>
+    <td>{{ net_purchase_vat|intcomma }}</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- ================== (3) ملخص الفترة ================== -->
+<div class="card mb-4">
+<div class="card-header bg-dark text-white fw-bold">(3) ملخص الفترة</div>
+<table class="table table-bordered text-center mb-0">
+<tbody>
+<tr class="fw-bold">
+    <td>صافي ضريبة الفترة الحالية</td>
+    <td>{{ vat_period|intcomma }}</td>
+</tr>
+<tr class="fw-bold">
+    <td>الرصيد المرحل من الفترات السابقة</td>
+    <td>{{ carried_vat|intcomma }}</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+{% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">مرتجعات المشتريات</h3>
+    </div>
+
+{% if returns %}
+<table class="table table-hover text-center align-middle">
+
+    <thead>
+
+        <!-- صف الفلاتر (متطابق 100% مع الأعمدة) -->
+        <tr>
+            <th></th>
+
+            <th>
+                <input data-col="1"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="بحث الفاتورة الأصلية">
+            </th>
+
+            <th>
+                <input data-col="2"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="بحث إشعار المدين">
+            </th>
+
+            <th>
+                <input data-col="3"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="بحث المورد">
+            </th>
+
+            <th>
+                <input data-col="4"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="بحث التاريخ">
+            </th>
+
+            <th>
+                <input data-col="5"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="بحث الإجمالي">
+            </th>
+
+            <th></th>
+        </tr>
+
+        <!-- صف العناوين -->
+        <tr class="table-dark">
+            <th>#</th>
+            <th>رقم الفاتورة الأصلية</th>
+            <th>رقم إشعار المدين</th>
+            <th>المورد</th>
+            <th>تاريخ المرتجع</th>
+            <th>الإجمالي</th>
+            <th>الإجراءات</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        {% for r in returns %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ r.invoice.invoice_no }}</td>
+            <td>{{ r.return_no }}</td>
+            <td>{{ r.supplier.commercial_name }}</td>
+            <td>{{ r.return_date|date:"Y-m-d" }}</td>
+            <td>{{ r.total_after_tax }}</td>
+
+            <td>
+                <div class="dropdown">
+                    <button class="btn-action dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                        خيارات
+                    </button>
+
+                    <ul class="dropdown-menu text-end">
+
+                        <!-- إنشاء / عرض مرتجع من الفاتورة -->
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'purchase_return_from_invoice' r.invoice.pk %}">
+                                فتح المرتجع
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                PDF (لاحقًا)
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                طباعة (لاحقًا)
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+{% else %}
+<div class="alert alert-info text-center">
+    لا توجد مرتجعات مشتريات حتى الآن.
+</div>
+{% endif %}
+
+</div>
+
+<style>
+.filter-input {
+    text-align: center;
+    border: 1px solid #6c757d !important;
+    border-radius: 6px;
+}
+.filter-input::placeholder {
+    text-align: center;
+    color: #6c757d;
+}
+
+.btn-action {
+    background: #6c757d;
+    color: white;
+    border-radius: 6px;
+    font-size: 15px;
+    padding: 4px 15px;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const filters = document.querySelectorAll(".filter-input");
+    const rows = document.querySelectorAll("tbody tr");
+
+    function applyFilters() {
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            let visible = true;
+
+            filters.forEach(input => {
+                const value = input.value.trim().toLowerCase();
+                if (!value) return;
+
+                const colIndex = parseInt(input.dataset.col, 10);
+                const cell = cells[colIndex];
+                if (!cell) return;
+
+                if (!cell.textContent.toLowerCase().includes(value)) {
+                    visible = false;
+                }
+            });
+
+            row.style.display = visible ? "" : "none";
+        });
+    }
+
+    filters.forEach(input => {
+        input.addEventListener("keyup", applyFilters);
+    });
+
+});
+</script>
+
+{% endblock %}

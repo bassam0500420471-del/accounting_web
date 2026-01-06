@@ -1,0 +1,223 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}إضافة منتج{% endblock %}
+
+{% block content %}
+
+<!-- ================= Select2 ================= -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    .btn-grey {
+        background: #6c757d !important;
+        color: #fff !important;
+        border: none !important;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d !important;
+        font-weight: bold;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: #6c757d !important;
+        color: #fff !important;
+        border-color: #6c757d !important;
+    }
+</style>
+
+<h3 class="mb-4 text-end">
+    {% if product %}تعديل منتج{% else %}إضافة منتج{% endif %}
+</h3>
+
+<div class="card p-4">
+
+    <!-- التبويبات -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab-normal">منتج عادي</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-bundle">منتج مركب</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-service">خدمة</a>
+        </li>
+    </ul>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="hidden" name="type" id="product_type"
+               value="{{ product.type|default:'normal' }}">
+
+        <!-- البيانات الأساسية -->
+        <div class="row mb-3">
+            <div class="col-md-6 text-end">
+                <label class="form-label">اسم المنتج</label>
+                <input required type="text" name="name"
+                       value="{{ product.name|default:'' }}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-6 text-end">
+                <label class="form-label">(SKU) الكود</label>
+                <input type="text" name="sku"
+                       value="{{ product.sku|default:'' }}"
+                       class="form-control">
+            </div>
+        </div>
+
+        <!-- الأسعار -->
+        <div class="row mb-3">
+            <div class="col-md-6 text-end">
+                <label class="form-label">سعر الشراء</label>
+                <input type="number" step="0.01" name="purchase_price"
+                       value="{{ product.purchase_price|default:0 }}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-6 text-end">
+                <label class="form-label">سعر البيع</label>
+                <input type="number" step="0.01" name="sale_price"
+                       value="{{ product.sale_price|default:0 }}"
+                       class="form-control">
+            </div>
+        </div>
+
+        <!-- المخزون -->
+        <div class="row mb-3">
+            <div class="col-md-6 text-end">
+                <label class="form-label">حد أدنى للمخزون</label>
+                <input type="number" name="min_stock"
+                       value="{{ product.min_stock|default:0 }}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-6 text-end">
+                <label class="form-label">تنبيه عند النفاد</label>
+                <input type="number" name="alert_stock"
+                       value="{{ product.alert_stock|default:0 }}"
+                       class="form-control">
+            </div>
+        </div>
+
+        <!-- ⭐ الحسابات المحاسبية (مع البحث) -->
+        <div class="row mb-4">
+
+            <div class="col-md-4 text-end">
+                <label class="form-label fw-bold">حساب المخزون</label>
+                <select name="inventory_account" class="form-select account-select">
+                    <option value="">-- اختر الحساب --</option>
+                    {% for acc in accounts %}
+                        <option value="{{ acc.id }}"
+                            {% if product.inventory_account_id == acc.id %}selected{% endif %}>
+                            {{ acc.code }} - {{ acc.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 text-end">
+                <label class="form-label fw-bold">حساب تكلفة المبيعات</label>
+                <select name="cost_account" class="form-select account-select">
+                    <option value="">-- اختر الحساب --</option>
+                    {% for acc in accounts %}
+                        <option value="{{ acc.id }}"
+                            {% if product.cost_account_id == acc.id %}selected{% endif %}>
+                            {{ acc.code }} - {{ acc.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4 text-end">
+                <label class="form-label fw-bold">حساب الإيرادات</label>
+                <select name="revenue_account" class="form-select account-select">
+                    <option value="">-- اختر الحساب --</option>
+                    {% for acc in accounts %}
+                        <option value="{{ acc.id }}"
+                            {% if product.revenue_account_id == acc.id %}selected{% endif %}>
+                            {{ acc.code }} - {{ acc.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </div>
+
+        <!-- الوصف -->
+        <div class="mb-3 text-end">
+            <label class="form-label">الوصف</label>
+            <textarea name="description" class="form-control"
+                      rows="3">{{ product.description|default:'' }}</textarea>
+        </div>
+
+        <!-- الصورة -->
+        <div class="mb-3 text-end">
+            <label class="form-label">صورة</label>
+            <input type="file" name="image" class="form-control">
+        </div>
+
+        <!-- المنتج المركب -->
+        <div id="bundle_area" style="display:none">
+            <hr>
+            <h5 class="mb-3 text-end">مكونات المنتج</h5>
+            <div id="bundle_container"></div>
+            <button type="button" class="btn btn-secondary mt-2 mb-3" id="add_component">
+                + إضافة مكوّن
+            </button>
+        </div>
+
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-grey px-5">حفظ المنتج</button>
+        </div>
+
+    </form>
+</div>
+
+<!-- تفعيل البحث -->
+<script>
+$(document).ready(function () {
+    $('.account-select').select2({
+        placeholder: "ابحث عن الحساب...",
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
+
+<script>
+    const typeInput = document.getElementById("product_type");
+    const bundleArea = document.getElementById("bundle_area");
+
+    function setActive(id) {
+        ["tab-normal","tab-bundle","tab-service"].forEach(t =>
+            document.getElementById(t).classList.remove("active")
+        );
+        document.getElementById(id).classList.add("active");
+    }
+
+    document.getElementById("tab-normal").onclick = () => {
+        typeInput.value = "normal";
+        setActive("tab-normal");
+        bundleArea.style.display = "none";
+    };
+
+    document.getElementById("tab-bundle").onclick = () => {
+        typeInput.value = "bundle";
+        setActive("tab-bundle");
+        bundleArea.style.display = "block";
+    };
+
+    document.getElementById("tab-service").onclick = () => {
+        typeInput.value = "service";
+        setActive("tab-service");
+        bundleArea.style.display = "none";
+    };
+</script>
+
+{% endblock %}

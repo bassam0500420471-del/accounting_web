@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-4">إعدادات الشركة</h3>
+
+    <form method="post" enctype="multipart/form-data" class="card p-4">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">اسم الشركة:</label>
+            <input type="text" class="form-control" name="name"
+                value="{{ company.name|default:'' }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">السجل التجاري:</label>
+            <input type="text" class="form-control" name="commercial_number"
+                value="{{ company.commercial_number|default:'' }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">الرقم الضريبي:</label>
+            <input type="text" class="form-control" name="tax_number"
+                value="{{ company.tax_number|default:'' }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">العنوان:</label>
+            <input type="text" class="form-control" name="address"
+                value="{{ company.address|default:'' }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">رقم الجوال:</label>
+            <input type="text" class="form-control" name="phone"
+                value="{{ company.phone|default:'' }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">شعار الشركة:</label>
+            <input type="file" class="form-control" name="logo">
+
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}" class="mt-3" width="120">
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-3">
+            حفظ
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

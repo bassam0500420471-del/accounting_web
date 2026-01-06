@@ -1,0 +1,46 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}تسجيل الدخول{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 420px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h4 class="text-center mb-4 fw-bold">تسجيل الدخول</h4>
+
+            {% if form.errors %}
+                <div class="alert alert-danger text-center">
+                    اسم المستخدم أو كلمة المرور غير صحيحة
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">اسم المستخدم</label>
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    دخول
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

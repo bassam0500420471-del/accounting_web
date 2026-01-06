@@ -1,0 +1,73 @@
+msgid ""
+msgstr ""
+"Language: fr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "النظام المحاسبي ERP"
+msgstr "ERP Comptable"
+
+msgid "النظام المحاسبي"
+msgstr "Système Comptable"
+
+msgid "لوحة التحكم"
+msgstr "Tableau de bord"
+
+msgid "المبيعات"
+msgstr "Ventes"
+
+msgid "العملاء"
+msgstr "Clients"
+
+msgid "فواتير المبيعات"
+msgstr "Factures de vente"
+
+msgid "مرتجع الفواتير"
+msgstr "Retours de factures"
+
+msgid "عروض الأسعار"
+msgstr "Devis"
+
+msgid "المشتريات"
+msgstr "Achats"
+
+msgid "الموردين"
+msgstr "Fournisseurs"
+
+msgid "أوامر الشراء"
+msgstr "Bons de commande"
+
+msgid "فواتير المشتريات"
+msgstr "Factures d'achat"
+
+msgid "الموارد البشرية"
+msgstr "Ressources humaines"
+
+msgid "الموظفين"
+msgstr "Employés"
+
+msgid "المنتجات والمخزون"
+msgstr "Produits & Stock"
+
+msgid "إدارة المنتجات"
+msgstr "Gestion des produits"
+
+msgid "المحاسبة"
+msgstr "Comptabilité"
+
+msgid "القيود اليومية"
+msgstr "Écritures comptables"
+
+msgid "التقارير"
+msgstr "Rapports"
+
+msgid "تقارير المبيعات"
+msgstr "Rapports des ventes"
+
+msgid "تقارير المشتريات"
+msgstr "Rapports des achats"
+
+msgid "إعدادات الشركة"
+msgstr "Paramètres de l’entreprise"
+
+msgid "إعدادات النظام"
+msgstr "Paramètres système"

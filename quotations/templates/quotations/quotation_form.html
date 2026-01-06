@@ -1,0 +1,157 @@
+{% extends 'sales/invoice_base_a4.html' %}
+{% block content %}
+
+<h3 class="mb-4 text-center">إنشاء عرض سعر</h3>
+
+<div class="container">
+
+<form method="post" id="quotation_form">
+    {% csrf_token %}
+    <input type="hidden" id="total_rows" name="total_rows" value="1">
+
+    <div class="card p-4">
+
+        <!-- رقم عرض السعر + التاريخ -->
+        <div class="row mb-3">
+
+            <div class="col-md-4">
+                <label>رقم عرض السعر:</label>
+                <input type="number" class="form-control"
+                       name="quotation_no" value="{{ next_number }}" readonly>
+            </div>
+
+            <div class="col-md-4">
+                <label>تاريخ عرض السعر:</label>
+                <input type="date" id="date_invoice" name="date_quotation"
+                       class="form-control">
+            </div>
+
+        </div>
+
+        <!-- العميل -->
+        <div class="row mb-3">
+            <div class="col-md-10">
+                <label>العميل:</label>
+                <select name="customer" class="form-control">
+                    <option value="">اختر العميل</option>
+                    {% for c in customers %}
+                    <option value="{{ c.id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- الوصف -->
+        <div class="mb-3">
+            <label>الوصف:</label>
+            <textarea name="description" class="form-control"></textarea>
+        </div>
+
+        <!-- جدول الأصناف -->
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>الصنف</th>
+                    <th>الوصف</th>
+                    <th>الكمية</th>
+                    <th>السعر</th>
+                    <th>الخصم</th>
+                    <th>%ضريبة</th>
+                    <th>الإجمالي</th>
+                    <th>حذف</th>
+                </tr>
+            </thead>
+
+            <tbody id="items_table">
+                <tr id="row_1">
+
+                    <td style="width:23%;">
+                        <select name="row_1_product_id" class="form-control">
+                            <option value="">اختر منتج</option>
+                            {% for p in products %}
+                            <option value="{{ p.id }}">{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <td><input type="text" name="row_1_desc" class="form-control"></td>
+
+                    <td><input type="number" name="row_1_qty"
+                               value="1" class="form-control row-qty"></td>
+
+                    <td><input type="number" name="row_1_price"
+                               value="0" class="form-control row-price"></td>
+
+                    <td><input type="number" name="row_1_discount"
+                               value="0" class="form-control row-discount"></td>
+
+                    <td><input type="number" name="row_1_tax"
+                               value="15" class="form-control row-tax"></td>
+
+                    <td><input type="number" name="row_1_total"
+                               class="form-control row-total" readonly></td>
+
+                    <td><button type="button" class="btn btn-danger"
+                                onclick="deleteRow(1)">X</button></td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
+        <button type="button" class="btn btn-primary" onclick="addRow()">+ إضافة صنف</button>
+
+    </div>
+
+    <!-- المجاميع -->
+    <div class="mt-4">
+
+        <div class="row mb-3">
+            <label class="col-md-3 text-end fw-bold">الإجمالي قبل الضريبة:</label>
+            <div class="col-md-4">
+                <input type="number" id="total_before"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-3 text-end fw-bold">الإجمالي بعد الخصم:</label>
+            <div class="col-md-4">
+                <input type="number" id="total_after_discount"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-md-3 text-end fw-bold">إجمالي الضريبة:</label>
+            <div class="col-md-4">
+                <input type="number" id="total_tax"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <label class="col-md-3 text-end fw-bold">الإجمالي بعد الضريبة:</label>
+            <div class="col-md-4">
+                <input type="number" id="final_total"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-end mt-3">
+        <button type="submit" class="btn btn-success btn-lg px-5">
+            حفظ عرض السعر
+        </button>
+    </div>
+
+</form>
+
+</div>
+
+<script>
+document.getElementById("date_invoice").value = new Date().toISOString().split('T')[0];
+</script>
+
+{% endblock %}

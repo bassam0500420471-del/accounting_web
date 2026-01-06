@@ -1,0 +1,118 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+.btn-main {
+    background:#6c757d !important;
+    color:white !important;
+    border-radius:6px;
+    font-size:18px;
+    padding:10px 25px;
+}
+.btn-main:hover {
+    background:#5c636a !important;
+}
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-center mb-4">
+        إنشاء إشعار مدين (مرتجع مشتريات)
+    </h2>
+
+    <!-- ================= المورد ================= -->
+    <label class="fw-bold">اختر المورد:</label>
+    <select id="supplierSelect" class="form-select mb-3">
+        <option value="">-- اختر المورد --</option>
+        {% for s in suppliers %}
+            <option value="{{ s.id }}">{{ s.commercial_name }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- ================= الفاتورة ================= -->
+    <label class="fw-bold">اختر فاتورة المشتريات:</label>
+    <select id="invoiceSelect" class="form-select mb-4" disabled>
+        <option value="">-- اختر المورد أولاً --</option>
+    </select>
+
+    <!-- ================= متابعة ================= -->
+    <div class="text-center mt-4">
+        <a id="continueBtn"
+           class="btn-main btn-lg disabled"
+           role="button">
+            متابعة إنشاء المرتجع
+        </a>
+    </div>
+
+</div>
+
+<script>
+// =================================================
+// اختيار المورد → تحميل فواتير الشراء
+// =================================================
+document.getElementById("supplierSelect").addEventListener("change", function () {
+
+    const supplierId    = this.value;
+    const invoiceSelect = document.getElementById("invoiceSelect");
+
+    invoiceSelect.disabled = true;
+    invoiceSelect.innerHTML = "<option>جاري التحميل...</option>";
+
+    if (!supplierId) {
+        invoiceSelect.innerHTML = "<option>-- اختر المورد أولاً --</option>";
+        return;
+    }
+
+    // ✅ استخدم URL من Django (حل نهائي)
+    fetch("{% url 'api_supplier_invoices' %}?supplier_id=" + supplierId)
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP Error");
+            return res.json();
+        })
+        .then(data => {
+
+            invoiceSelect.innerHTML = "<option value=''>-- اختر الفاتورة --</option>";
+            invoiceSelect.disabled = false;
+
+            if (!data.invoices || data.invoices.length === 0) {
+                invoiceSelect.innerHTML +=
+                    "<option value=''>لا توجد فواتير لهذا المورد</option>";
+                return;
+            }
+
+            data.invoices.forEach(inv => {
+                invoiceSelect.innerHTML += `
+                    <option value="${inv.id}">
+                        فاتورة رقم ${inv.invoice_no}
+                        | ${inv.total} ريال
+                    </option>
+                `;
+            });
+        })
+        .catch(() => {
+            invoiceSelect.innerHTML =
+                "<option value=''>حدث خطأ أثناء تحميل الفواتير</option>";
+        });
+});
+
+
+// =================================================
+// اختيار الفاتورة → تفعيل زر المتابعة
+// =================================================
+document.getElementById("invoiceSelect").addEventListener("change", function () {
+
+    const invoiceId = this.value;
+    const btn       = document.getElementById("continueBtn");
+
+    if (!invoiceId) {
+        btn.classList.add("disabled");
+        btn.removeAttribute("href");
+        return;
+    }
+
+    btn.classList.remove("disabled");
+    btn.href = `/purchase/returns/from-invoice/${invoiceId}/`;
+});
+</script>
+
+{% endblock %}

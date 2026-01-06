@@ -1,0 +1,140 @@
+<style>
+    .submenu-link {
+        display: flex;
+        justify-content: space-between;   /* النص على اليمين + على اليسار */
+        align-items: center;
+        background: #3A3D40;
+        padding: 10px 14px;
+        margin-bottom: 6px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #fff;
+        font-size: 15px;
+    }
+    .submenu-link:hover {
+        background: #4a4d50;
+    }
+    .submenu-link .add {
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+    }
+</style>
+
+<!-- ================= لوحة التحكم ================= -->
+<a href="/dashboard/" class="menu-btn" style="background:#3A3D40; color:#fff;">
+    <span>لوحة التحكم</span>
+    <span class="menu-arrow">▶</span>
+</a>
+
+
+<!-- ================= المبيعات ================= -->
+<div class="menu-toggle 
+    {% if request.path|slice:':7' == '/sales' or request.path|slice:':11' == '/quotations' %}
+        open
+    {% endif %}
+">
+    المبيعات
+    <i class="bi bi-chevron-down"></i>
+</div>
+
+<div class="sub-menu"
+     style="
+        {% if request.path|slice:':7' == '/sales' or request.path|slice:':11' == '/quotations' %}
+            display:block;
+        {% else %}
+            display:none;
+        {% endif %}
+     ">
+    
+    <a href="/sales/customers" class="submenu-link">
+        <span class="text">العملاء</span>
+        <span class="add">+</span>
+    </a>
+
+    <a href="/sales/invoices" class="submenu-link">
+        <span class="text">فواتير المبيعات</span>
+        <span class="add">+</span>
+    </a>
+
+    <a href="/quotations/" class="submenu-link">
+        <span class="text">عروض الأسعار</span>
+        <span class="add">+</span>
+    </a>
+
+</div>
+
+
+<!-- ================= المشتريات ================= -->
+<div class="menu-toggle {% if request.path|slice:':10' == '/purchases' %}open{% endif %}">
+    المشتريات
+    <i class="bi bi-chevron-down"></i>
+</div>
+
+<div class="sub-menu"
+     style="{% if request.path|slice:':10' == '/purchases' %}display:block{% else %}display:none{% endif %}">
+
+    <a href="/purchases/suppliers" class="submenu-link">
+        <span class="text">الموردين</span>
+        <span class="add">+</span>
+    </a>
+
+    <a href="/purchases/orders" class="submenu-link">
+        <span class="text">أوامر الشراء</span>
+        <span class="add">+</span>
+    </a>
+
+    <a href="/purchases/invoices" class="submenu-link">
+        <span class="text">فواتير المشتريات</span>
+        <span class="add">+</span>
+    </a>
+</div>
+
+
+<!-- ================= المنتجات والمخزون ================= -->
+<div class="menu-toggle {% if request.path|slice:':10' == '/inventory' %}open{% endif %}">
+    المنتجات والمخزون
+    <i class="bi bi-chevron-down"></i>
+</div>
+
+<div class="sub-menu"
+     style="{% if request.path|slice:':10' == '/inventory' %}display:block{% else %}display:none{% endif %}">
+    
+    <a href="/inventory/items" class="submenu-link">
+        <span class="text">الأصناف</span>
+        <span class="add">+</span>
+    </a>
+
+</div>
+
+
+<!-- ================= المحاسبة ================= -->
+<div class="menu-toggle {% if request.path|slice:':9' == '/accounts' %}open{% endif %}">
+    المحاسبة
+    <i class="bi bi-chevron-down"></i>
+</div>
+
+<div class="sub-menu"
+     style="{% if request.path|slice:':9' == '/accounts' %}display:block{% else %}display:none{% endif %}">
+    
+    <a href="/accounts" class="submenu-link">
+        <span class="text">الحسابات</span>
+        <span class="add">+</span>
+    </a>
+</div>
+
+
+<!-- ================= الإعدادات ================= -->
+<div class="menu-toggle {% if request.path|slice:':8' == '/company' %}open{% endif %}">
+    الإعدادات
+    <i class="bi bi-chevron-down"></i>
+</div>
+
+<div class="sub-menu"
+     style="{% if request.path|slice:':8' == '/company' %}display:block{% else %}display:none{% endif %}">
+    
+    <a href="/company/settings/" class="submenu-link">
+        <span class="text">بيانات الشركة</span>
+        <span class="add">+</span>
+    </a>
+</div>

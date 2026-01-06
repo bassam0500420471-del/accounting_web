@@ -1,0 +1,268 @@
+{% extends "sales/invoice_base_a4.html" %}
+{% block content %}
+
+<style>
+.top-action-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 20px 0 10px 0;
+}
+
+.top-action-btn {
+    background: #000;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 15px;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.top-action-btn:hover {
+    background: #222;
+    transform: translateY(-2px);
+}
+
+@media print {
+    .top-action-bar {
+        display: none !important;
+        visibility: hidden !important;
+    }
+}
+
+.invoice-status {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.status-paid {
+    color: #198754;
+}
+
+.status-partial {
+    color: #fd7e14;
+}
+
+.status-open {
+    color: #dc3545;
+}
+
+.payments-box {
+    margin-top: 25px;
+    border: 1px dashed #999;
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+.payments-title {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.payments-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.payments-table th,
+.payments-table td {
+    border-bottom: 1px solid #ddd;
+    padding: 6px;
+    text-align: center;
+    font-size: 14px;
+}
+</style>
+
+<!-- 🔥 شريط الأزرار -->
+<div class="top-action-bar">
+
+    <a href="/sales/invoices/{{ invoice.id }}/print/" 
+       class="top-action-btn" target="_blank">
+        🖨 طباعة
+    </a>
+
+    <a href="/sales/invoices/{{ invoice.id }}/pdf/" 
+       class="top-action-btn">
+        ⬇ تحميل PDF
+    </a>
+
+    <a href="/sales/return/{{ invoice.id }}/" class="top-action-btn">
+        ↩ مرتجع فاتورة
+    </a>
+
+    {% if invoice_balance > 0 %}
+    <a href="#" class="top-action-btn" onclick="openPaymentModal(); return false;">
+        💳 سداد
+    </a>
+    {% endif %}
+
+</div>
+
+<!-- ===== حالة الفاتورة (المصدر الحقيقي) ===== -->
+<div class="invoice-status">
+    {% if receipt_allocations|length == 0 and invoice.total_after_tax > 0 %}
+        <span class="status-open">🔴 غير مسددة</span>
+    {% elif receipt_allocations|length > 0 and invoice_balance > 0 %}
+        <span class="status-partial">🟡 مسددة جزئيًا</span>
+    {% elif receipt_allocations|length > 0 and invoice_balance <= 0 %}
+        <span class="status-paid">🟢 مسددة بالكامل</span>
+    {% endif %}
+</div>
+<div class="top-section">
+
+    <h2 class="text-center" style="margin-bottom:20px;">فاتورة مبيعات</h2>
+
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:16px;">
+        <div>
+            <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
+            <p><strong>العميل:</strong> {{ invoice.customer.name }}</p>
+
+            {% if invoice.description %}
+            <p><strong>الوصف:</strong> {{ invoice.description }}</p>
+            {% endif %}
+        </div>
+
+        <div style="text-align:left;">
+            <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
+            <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
+        </div>
+    </div>
+
+    <table class="table" style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th>الصنف</th>
+                <th>الوصف</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الخصم</th>
+                <th>%الضريبة</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.qty }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.discount }}</td>
+                <td>{{ item.tax }}%</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<div style="width:100%; display:flex; justify-content:space-between; margin-top:10px;">
+
+    <div>
+        <img src="data:image/png;base64,{{ qr_code }}"
+             style="width:140px; height:140px; border:1px solid #ccc; padding:5px;">
+    </div>
+
+    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+
+        <div><strong>الإجمالي قبل الضريبة:</strong> {{ invoice.total_before_tax }}</div>
+        <div><strong>الإجمالي بعد الخصم:</strong> {{ invoice.total_after_discount }}</div>
+        <div><strong>إجمالي الضريبة:</strong> {{ invoice.tax_value }}</div>
+        <div style="font-size:18px; font-weight:bold;">
+            الإجمالي بعد الضريبة: {{ invoice.total_after_tax }}
+        </div>
+        <div style="margin-top:5px; color:#dc3545;">
+            الرصيد المتبقي: {{ invoice_balance }}
+        </div>
+
+    </div>
+</div>
+
+<div class="payments-box">
+    <div class="payments-title" onclick="this.nextElementSibling.style.display =
+        this.nextElementSibling.style.display === 'none' ? 'block' : 'none';">
+        ▼ السندات / المدفوعات
+    </div>
+
+    <div style="display:none;">
+        {% if receipt_allocations %}
+        <table class="payments-table">
+            <thead>
+                <tr>
+                    <th>رقم السند</th>
+                    <th>التاريخ</th>
+                    <th>المبلغ</th>
+                    <th>المستخدم</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alloc in receipt_allocations %}
+                <tr>
+                    <td>{{ alloc.receipt_voucher.voucher_no }}</td>
+                    <td>{{ alloc.receipt_voucher.date }}</td>
+                    <td>{{ alloc.amount }}</td>
+                    <td>{{ alloc.receipt_voucher.created_by }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="text-align:center; margin-top:10px;">
+            لا توجد مدفوعات مرتبطة بهذه الفاتورة
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- نافذة السداد -->
+<div id="paymentModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999;">
+    <div style="background:#fff; width:420px; margin:80px auto; padding:20px; border-radius:10px;">
+        <h4 class="mb-3">سداد فاتورة رقم {{ invoice.invoice_no }}</h4>
+
+        <form method="post" action="{% url 'payments:receipt_from_invoice' invoice.id %}">
+            {% csrf_token %}
+
+            <label class="fw-bold">المبلغ</label>
+            <input type="number" step="0.01" name="amount"
+                   value="{{ invoice_balance }}" class="form-control mb-3" required>
+
+            <label class="fw-bold">الحساب (صندوق / بنك)</label>
+            <select name="cash_account" class="form-select mb-3" required>
+                {% for a in cash_accounts %}
+                    <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label class="fw-bold">البيان</label>
+            <input type="text" name="description" class="form-control mb-3"
+                   value="سداد فاتورة {{ invoice.invoice_no }}">
+
+            <div style="display:flex; justify-content:space-between;">
+                <button type="submit" class="btn btn-success">✔ حفظ السداد</button>
+                <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openPaymentModal() {
+    document.getElementById("paymentModal").style.display = "block";
+}
+function closePaymentModal() {
+    document.getElementById("paymentModal").style.display = "none";
+}
+</script>
+
+{% endblock %}

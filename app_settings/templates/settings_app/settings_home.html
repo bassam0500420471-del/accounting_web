@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "إعدادات النظام" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">{% trans "إعدادات النظام" %}</h2>
+
+    <ul class="nav nav-tabs mb-3" id="settingsTabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="#general" data-bs-toggle="tab">{% trans "الإعدادات العامة" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#print" data-bs-toggle="tab">{% trans "إعدادات الطباعة" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#backup" data-bs-toggle="tab">{% trans "النسخ الاحتياطي" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#advanced" data-bs-toggle="tab">{% trans "إعدادات متقدمة" %}</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="general">
+            <div class="mb-3">
+                <label class="form-label">{% trans "اللغة الافتراضية للنظام" %}</label>
+                <input type="text" class="form-control" value="English">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">{% trans "تنسيق التاريخ" %}</label>
+                <input type="text" class="form-control" value="YYYY-MM-DD">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">{% trans "نمط الألوان" %}</label>
+                <input type="text" class="form-control" value="{% trans 'الوضع الفاتح' %}">
+            </div>
+            <button class="btn btn-dark">{% trans "حفظ الإعدادات" %}</button>
+        </div>
+
+        <div class="tab-pane fade" id="print">
+            <p>{% trans "هنا يمكنك ضبط إعدادات الطباعة." %}</p>
+        </div>
+
+        <div class="tab-pane fade" id="backup">
+            <p>{% trans "هنا يمكنك إعداد النسخ الاحتياطي التلقائي." %}</p>
+        </div>
+
+        <div class="tab-pane fade" id="advanced">
+            <p>{% trans "خيارات متقدمة لإعداد النظام." %}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

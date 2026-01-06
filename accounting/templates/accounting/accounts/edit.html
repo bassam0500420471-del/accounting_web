@@ -1,0 +1,23 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<h3 class="fw-bold mb-3">تعديل الحساب</h3>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">اسم الحساب</label>
+        <input type="text" name="name" class="form-control" value="{{ account.name }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">الرمز</label>
+        <input type="text" name="code" class="form-control" value="{{ account.code }}">
+    </div>
+
+    <button class="btn btn-primary">حفظ</button>
+    <a href="{% url 'accounting:chart_tree' %}" class="btn btn-secondary">إلغاء</a>
+</form>
+
+{% endblock %}

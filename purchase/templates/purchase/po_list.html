@@ -1,0 +1,112 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- زر إنشاء أمر شراء بلون الرمادي مثل زر خيارات -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">إدارة أوامر الشراء</h3>
+        <a href="/purchase/po/add" class="btn btn-secondary">+ إنشاء أمر شراء</a>
+    </div>
+
+    <!-- ✖ تمت إزالة الفلاتر العلوية بالكامل كما طلبت -->
+
+    <table class="table table-hover text-center align-middle">
+
+        <thead>
+
+            <!-- ⭐ صف الفلاتر داخل الجدول (أبقيته لأنه بنفس شكل صفحة الفواتير) ⭐ -->
+            <tr>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="#"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="رقم أمر الشراء"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="المورد"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="التاريخ"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="الإجمالي"></th>
+                <th></th>
+            </tr>
+
+            <!-- ⭐ عناوين الجدول ⭐ -->
+            <tr class="table-dark">
+                <th>#</th>
+                <th>رقم أمر الشراء</th>
+                <th>المورد</th>
+                <th>التاريخ</th>
+                <th>الإجمالي</th>
+                <th>الإجراءات</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for p in pos %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ p.invoice_no }}</td>
+                <td>{{ p.supplier.commercial_name }}</td>
+                <td>{{ p.date_issue }}</td>
+                <td>{{ p.total_after_tax|floatformat:2 }}</td>
+
+                <td>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                            خيارات
+                        </button>
+
+                        <ul class="dropdown-menu text-end">
+                            <li><a class="dropdown-item" href="/purchase/po/view/{{ p.id }}">عرض</a></li>
+                            <li><a class="dropdown-item" href="/purchase/po/print/{{ p.id }}">طباعة</a></li>
+                            <li><a class="dropdown-item text-danger" href="/purchase/delete/{{ p.id }}">حذف</a></li>
+                        </ul>
+                    </div>
+                </td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<style>
+.filter-input {
+    text-align: center;
+    border: 1px solid #6c757d !important;
+    border-radius: 6px;
+}
+.filter-input::placeholder {
+    text-align: center;
+    color: #6c757d;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const filterInputs = document.querySelectorAll(".filter-input");
+    const rows = document.querySelectorAll("tbody tr");
+
+    filterInputs.forEach((input, colIndex) => {
+
+        input.addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+
+            rows.forEach(row => {
+                const cell = row.querySelectorAll("td")[colIndex];
+                if (cell) {
+                    const text = cell.textContent.toLowerCase();
+                    row.style.display = text.includes(value) ? "" : "none";
+                }
+            });
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

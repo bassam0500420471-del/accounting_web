@@ -1,0 +1,59 @@
+{% extends "layout/base.html" %}
+{% block title %}إضافة فرع حساب{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <!-- العنوان -->
+            <h4 class="fw-bold mb-4 text-end">
+                إضافة فرع تحت الحساب: {{ parent.name }}
+            </h4>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- اسم الحساب (نفس شكل وطول الرمز) -->
+                <div class="mb-3 text-end">
+                    <label class="form-label fw-bold">اسم الحساب</label>
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        value="{{ form.name.value|default_if_none:'' }}"
+                        required
+                    >
+                </div>
+
+                <!-- الرمز (تلقائي) -->
+                <div class="mb-4 text-end">
+                    <label class="form-label fw-bold">الرمز</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="{{ auto_code }}"
+                        readonly
+                    >
+                </div>
+
+                <!-- الأزرار -->
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="submit" class="btn btn-secondary">
+                        إضافة
+                    </button>
+
+                    <a href="{% url 'accounting:account_view' parent.pk %}"
+                       class="btn btn-secondary">
+                        إلغاء
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

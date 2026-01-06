@@ -1,0 +1,106 @@
+{% extends "purchase/purchase_base_a4.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="invoice-container">
+
+    <!-- رأس الفاتورة -->
+    <div class="header">
+        <h2 class="text-center fw-bold">فاتورة مشتريات</h2>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
+            <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
+            <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
+        </div>
+
+        <div class="col-md-6 text-end">
+            <p><strong>المورد:</strong> {{ invoice.supplier.commercial_name }}</p>
+            <p><strong>الرقم الضريبي:</strong> {{ invoice.supplier.tax_number }}</p>
+            <p><strong>السجل التجاري:</strong> {{ invoice.supplier.cr_number }}</p>
+        </div>
+    </div>
+
+    <hr>
+
+    <h5 class="fw-bold">الوصف:</h5>
+    <p>{{ invoice.description }}</p>
+
+    <hr>
+
+    <!-- جدول الأصناف -->
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>الصنف</th>
+                <th>الوصف</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الخصم</th>
+                <th>الضريبة%</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.qty }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.discount }}</td>
+                <td>{{ item.tax }}</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- المجاميع -->
+    <div class="row mt-3">
+        <div class="col-md-3">
+            <p><strong>الإجمالي قبل الخصم:</strong> {{ invoice.total_before_tax }}</p>
+        </div>
+
+        <div class="col-md-3">
+            <p><strong>إجمالي الخصم:</strong> {{ invoice.total_discount }}</p>
+        </div>
+
+        <div class="col-md-3">
+            <p><strong>بعد الخصم:</strong> {{ invoice.total_after_discount }}</p>
+        </div>
+
+        <div class="col-md-3">
+            <p><strong>قيمة الضريبة:</strong> {{ invoice.tax_value }}</p>
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <p class="fw-bold fs-4 text-success">
+                الإجمالي النهائي: {{ invoice.total_after_tax }}
+            </p>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- QR Code -->
+    <div class="text-center mt-4">
+        <img src="data:image/png;base64,{{ qr_code }}" width="180">
+        <p class="mt-2">مسح رمز QR للتحقق من الفاتورة</p>
+    </div>
+
+</div>
+
+<script>
+    window.onload = function () {
+        window.print();
+    }
+</script>
+
+{% endblock %}

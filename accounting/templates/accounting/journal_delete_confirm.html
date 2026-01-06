@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card border-danger">
+        <div class="card-body text-center">
+            <h4 class="text-danger mb-3">تأكيد حذف القيد</h4>
+
+            <p>
+                هل أنت متأكد من حذف القيد رقم
+                <strong>{{ entry.entry_no }}</strong>؟
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-danger px-4">
+                    نعم، احذف
+                </button>
+
+                <a href="{% url 'accounting:journals_list' %}"
+                   class="btn btn-secondary px-4">
+                    إلغاء
+                </a>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

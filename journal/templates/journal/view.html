@@ -1,0 +1,30 @@
+{% extends "layout/base.html" %}
+{% block title %}عرض القيد{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="fw-bold mb-3">عرض القيد</h3>
+
+    <p><strong>التاريخ:</strong> {{ entry.date }}</p>
+    <p><strong>البيان:</strong> {{ entry.description }}</p>
+
+    <table class="table table-bordered text-center mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>الحساب</th>
+                <th>مدين</th>
+                <th>دائن</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for line in entry.lines.all %}
+            <tr>
+                <td>{{ line.account }}</td>
+                <td>{{ line.debit }}</td>
+                <td>{{ line.credit }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">قائمة العملاء</h3>
+        <a href="/customers/add/" class="btn btn-primary">+ إضافة عميل</a>
+    </div>
+
+    <table class="table align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 60px;">#</th>
+                <th>العميل</th>
+                <th>عدد الفواتير</th>
+                <th>الرصيد</th>
+                <th>الحالة</th>
+                <th class="text-center" style="width: 80px;">إجراءات</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for c in customers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ c.name }}</td>
+
+                <td>{{ c.invoice_count }}</td>
+
+                <td>{{ c.balance_abs|floatformat:2 }}</td>
+
+                <td>
+                    {% if c.state == "مدين" %}
+                        <span class="badge bg-danger">مدين</span>
+                    {% elif c.state == "دائن" %}
+                        <span class="badge bg-success">دائن</span>
+                    {% else %}
+                        <span class="badge bg-secondary">متزن</span>
+                    {% endif %}
+                </td>
+
+                <td class="text-center">
+                    <div class="dropdown">
+                        <button class="btn btn-light border-0" data-bs-toggle="dropdown">
+                            <span style="font-size:22px;">⋮</span>
+                        </button>
+                        <ul class="dropdown-menu text-end">
+                            <li><a class="dropdown-item" href="/customers/view/{{ c.id }}">عرض</a></li>
+                            <li><a class="dropdown-item" href="/customers/edit/{{ c.id }}">تعديل</a></li>
+                            <li><a class="dropdown-item text-danger" href="/customers/delete/{{ c.id }}">حذف</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

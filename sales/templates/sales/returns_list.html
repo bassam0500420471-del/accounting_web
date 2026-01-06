@@ -1,0 +1,152 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">مرتجع الفواتير</h3>
+    </div>
+
+<!-- ░░ جدول البيانات ░░ -->
+{% if returns %}
+<table class="table table-hover text-center align-middle">
+
+    <thead>
+
+        <!-- ⭐ صف الفلاتر ⭐ -->
+        <tr>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الفاتورة الأصلية"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث المرتجع"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث العميل"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث التاريخ"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الإجمالي"></th>
+            <th></th> <!-- عمود الإجراءات بدون فلتر -->
+        </tr>
+
+        <!-- ⭐ صف العناوين ⭐ -->
+        <tr class="table-dark">
+            <th>#</th>
+            <th>رقم الفاتورة الأصلية</th>
+            <th>رقم فاتورة المرتجع</th>
+            <th>العميل</th>
+            <th>تاريخ المرتجع</th>
+            <th>الإجمالي</th>
+            <th>الإجراءات</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for r in returns %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ r.original_invoice.invoice_no }}</td>
+            <td>{{ r.return_no }}</td>
+            <td>{{ r.customer.name }}</td>
+            <td>{{ r.date_return }}</td>
+            <td>{{ r.total_after_tax }}</td>
+
+<td>
+    <div class="dropdown">
+        <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
+            خيارات
+        </button>
+
+<ul class="dropdown-menu text-end">
+
+    <!-- إنشاء مرتجع من الفاتورة الأصلية -->
+<li>
+<a class="dropdown-item"
+   href="{% url 'sales:create_return' r.original_invoice.id %}">
+    إنشاء مرتجع
+</a>
+</li>
+
+    <!-- عرض الفاتورة الأصلية -->
+    <li>
+        <a class="dropdown-item"
+           href="/sales/invoices/{{ r.original_invoice.id }}/">
+            عرض الفاتورة الأصلية
+        </a>
+    </li>
+
+    <!-- تحميل PDF الفاتورة الأصلية -->
+    <li>
+        <a class="dropdown-item"
+           href="/sales/invoices/{{ r.original_invoice.id }}/pdf/">
+            تحميل PDF
+        </a>
+    </li>
+
+</ul>
+    </div>
+</td>
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+<div class="alert alert-info text-center">
+    لا توجد مرتجعات حتى الآن.
+</div>
+{% endif %}
+
+</div>
+
+<!-- ░░ تصميم الفلاتر وزر الخيارات ░░ -->
+<style>
+.filter-input {
+    text-align: center;
+    border: 1px solid #6c757d !important;
+    border-radius: 6px;
+}
+.filter-input::placeholder {
+    text-align: center;
+    color: #6c757d;
+}
+
+.btn-action {
+    background: #6c757d;
+    color: white;
+    border-radius: 6px;
+    font-size: 15px;
+    padding: 4px 15px;
+}
+</style>
+
+<!-- ░░ سكربت تفعيل الفلاتر ░░ -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const filterInputs = document.querySelectorAll(".filter-input");
+    const rows = document.querySelectorAll("tbody tr");
+
+    filterInputs.forEach((input, colIndex) => {
+
+        input.addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+
+            rows.forEach(row => {
+
+                const cell = row.querySelectorAll("td")[colIndex];
+                if (cell) {
+                    const text = cell.textContent.toLowerCase();
+                    row.style.display = text.includes(value) ? "" : "none";
+                }
+
+            });
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

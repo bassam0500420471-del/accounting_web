@@ -1,0 +1,104 @@
+{% extends "layout/base.html" %}
+{% block title %}قيد يومي{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+<h3 class="fw-bold mb-4">
+{% if view_mode %}عرض{% elif edit_mode %}تعديل{% else %}إضافة{% endif %} قيد يومي
+</h3>
+
+<form method="post">{% csrf_token %}
+
+<div class="card mb-3">
+<div class="card-body row">
+
+<div class="col-md-3">
+<label>التاريخ</label>
+<input type="date" name="date" class="form-control"
+value="{{ today|date:'Y-m-d' }}"
+{% if view_mode %}readonly{% else %}required{% endif %}>
+</div>
+
+<div class="col-md-9">
+<label>البيان</label>
+<input type="text" name="description" class="form-control"
+value="{{ description }}"
+{% if view_mode %}readonly{% else %}required{% endif %}>
+</div>
+
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-header fw-bold">أسطر القيد</div>
+<div class="card-body p-0">
+
+<table class="table table-bordered text-center" dir="rtl">
+<thead>
+<tr>
+<th>الحساب</th><th>مدين</th><th>دائن</th><th>مركز التكلفة</th><th>حذف</th>
+</tr>
+</thead>
+<tbody>
+
+{% if view_mode %}
+{% for line in lines %}
+<tr>
+<td><input class="form-control" value="{{ line.account }}" readonly></td>
+<td><input class="form-control" value="{{ line.debit }}" readonly></td>
+<td><input class="form-control" value="{{ line.credit }}" readonly></td>
+<td><input class="form-control" value="{{ line.cost_center|default:'—' }}" readonly></td>
+<td></td>
+</tr>
+{% endfor %}
+{% else %}
+{% for i in "12" %}
+<tr>
+<td>
+<select name="account[]" class="form-select">
+<option value="0">اختر الحساب</option>
+{% for acc in accounts %}<option value="{{ acc.id }}">{{ acc }}</option>{% endfor %}
+</select>
+</td>
+<td><input name="debit[]" class="form-control"></td>
+<td><input name="credit[]" class="form-control"></td>
+<td>
+<select name="cost_center[]" class="form-select line-cc">
+<option value="">—</option>
+{% for cc in cost_centers %}<option value="{{ cc.id }}">{{ cc.name }}</option>{% endfor %}
+</select>
+</td>
+<td><button type="button" class="btn btn-secondary btn-sm">×</button></td>
+</tr>
+{% endfor %}
+{% endif %}
+
+</tbody>
+</table>
+</div>
+
+<div class="card-footer d-flex justify-content-between">
+{% if view_mode %}
+<a href="{% url 'journal_list' %}" class="btn btn-secondary">رجوع</a>
+{% else %}
+<button type="button" class="btn btn-secondary">+ إضافة سطر</button>
+<button type="submit" class="btn btn-secondary">حفظ</button>
+{% endif %}
+</div>
+</div>
+
+</form>
+</div>
+
+<script>
+const header = document.getElementById("header_cost_center");
+const lines = document.querySelectorAll(".line-cc");
+function toggleCC(){
+const dis = header.value !== "";
+lines.forEach(l=>{l.disabled=dis;if(dis)l.value=""});
+}
+if(header){header.addEventListener("change",toggleCC);toggleCC();}
+</script>
+
+{% endblock %}

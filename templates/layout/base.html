@@ -1,0 +1,348 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% trans "النظام المحاسبي ERP" %}{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f0f0f0;
+            font-family: Tahoma, sans-serif;
+            margin: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 260px;
+            background: #2D3033;
+            color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sidebar h5 {
+            text-align: center;
+            color: #cfcfcf;
+            margin-bottom: 25px;
+        }
+
+        .menu-btn {
+            width: 100%;
+            background: #3A3D40;
+            color: #e5e5e5;
+            border: 1px solid #4a4a4a;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .menu-btn:hover {
+            background: #45484b;
+        }
+
+        .menu-arrow {
+            font-size: 14px;
+        }
+
+        .submenu {
+            display: none;
+            padding-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .submenu .menu-btn {
+            justify-content: flex-start;
+            gap: 8px;
+        }
+
+        .submenu a {
+            color: #fff;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .add-icon-btn {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4da3ff;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ===== Content ===== */
+        .content-wrapper {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .page-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            overflow: visible;
+        }
+
+        .dropdown-menu {
+            z-index: 9999;
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<div class="sidebar">
+    <h4>{% trans "النظام المحاسبي" %}</h4>
+    <h5>ERP</h5>
+
+    <a href="/dashboard/" class="menu-btn">
+        <span>{% trans "لوحة التحكم" %}</span>
+        <span class="menu-arrow">▶</span>
+    </a>
+
+    <!-- ================= المبيعات ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "المبيعات" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/customers/">{% trans "العملاء" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/customers/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/sales/invoices/">{% trans "فواتير المبيعات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/sales/invoices/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/sales/returns/">{% trans "مرتجعات المبيعات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/sales/return/new/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/quotations/">{% trans "عروض الأسعار" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/quotations/add/')">+</button>
+        </div>
+    </div>
+
+    <!-- ================= المشتريات ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "المشتريات" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/suppliers/">{% trans "الموردين" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/suppliers/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/purchase/invoices/">{% trans "فواتير المشتريات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/purchase/invoices/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/purchase/returns/">{% trans "مرتجعات المشتريات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/purchase/returns/new/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/purchase/orders/">{% trans "أوامر الشراء" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/purchase/orders/add/')">+</button>
+        </div>
+    </div>
+
+    <!-- ================= المنتجات ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "المنتجات" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/products/">{% trans "قائمة المنتجات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/products/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/product-categories/">{% trans "تصنيفات المنتجات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/product-categories/add/')">+</button>
+        </div>
+    </div>
+
+    <!-- ================= المحاسبة ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "المحاسبة" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/accounting/journals/">{% trans "القيود اليومية" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/accounting/journals/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/accounting/chart/">{% trans "شجرة الحسابات" %}</a>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/cost-centers/">{% trans "مراكز التكلفة" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/cost-centers/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/cost-centers/tree">🌳 شجرة مراكز التكلفة</a>
+        </div>
+    </div>
+
+    <!-- ================= المدفوعات ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "المدفوعات" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/payments/receipts/">{% trans "سندات القبض" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/payments/receipt/new/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/payments/payments/">{% trans "سندات الصرف" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/payments/payment/new/')">+</button>
+        </div>
+    </div>
+
+<!-- ================= التقارير ================= -->
+<button class="menu-btn menu-toggle">
+    <span>التقارير</span>
+    <span class="menu-arrow">▼</span>
+</button>
+
+<div class="submenu">
+
+    <div class="menu-btn">
+        <a href="/reports/income-statement/">قائمة الدخل</a>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/reports/balance-sheet/">الميزانية العمومية</a>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/reports/trial-balance/">ميزان المراجعة</a>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/reports/account-ledger/">كشف الحساب</a>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/reports/cash-flow/">قائمة التدفقات النقدية</a>
+    </div>
+
+    <hr style="border-color:#555;">
+
+<!-- 🧾 تقارير الضريبة -->
+<div class="menu-btn">
+    <a href="/reports/vat-report/">تقرير ضريبة القيمة المضافة</a>
+</div>
+
+<div class="menu-btn">
+    <a href="/reports/vat-rate-report/">
+        تقرير تفصيل ضريبة القيمة المضافة حسب النسبة
+    </a>
+</div>
+
+<div class="menu-btn">
+    <a href="/reports/sales-vat-report/">تقرير المبيعات الضريبية</a>
+</div>
+
+<div class="menu-btn">
+    <a href="/reports/purchase-vat-report/">تقرير المشتريات الضريبية</a>
+</div>
+
+</div>
+    <a href="/settings/" class="menu-btn">
+        <span>{% trans "إعدادات الشركة" %}</span>
+        <span class="menu-arrow">▶</span>
+    </a>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="content-wrapper">
+    <div class="page-box">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+</div>
+
+<script>
+    function goAdd(url) {
+        window.location.href = url;
+    }
+
+    // =============================
+    // Sidebar toggle (كما هو)
+    // =============================
+    document.querySelectorAll(".menu-toggle").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const menu = this.nextElementSibling;
+            const arrow = this.querySelector(".menu-arrow");
+            const open = menu.style.display === "block";
+            menu.style.display = open ? "none" : "block";
+            arrow.textContent = open ? "▶" : "▼";
+        });
+    });
+
+    // =============================
+    // ✅ السماح بإرسال الفورمات المصرّح لها
+    // =============================
+    document.addEventListener("submit", function (e) {
+
+        // لو الفورم معلّم بالسماح → نتركه يرسل طبيعي
+        if (e.target.matches("form[data-allow-submit]")) {
+            return true;
+        }
+
+        // غير ذلك لا نفعل شيئًا (نترك السلوك الافتراضي)
+    }, true);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+{% extends "layout/base.html" %}
+
+{% block title %}لوحة التقارير{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-center mb-4">
+        📊 لوحة التقارير
+    </h2>
+
+    <!-- ================= فلترة التاريخ ================= -->
+    <form method="get" class="row g-3 mb-4 justify-content-center">
+
+        <div class="col-md-3">
+            <label class="form-label fw-bold">من تاريخ</label>
+            <input type="date"
+                   name="date_from"
+                   value="{{ request.GET.date_from }}"
+                   class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-bold">إلى تاريخ</label>
+            <input type="date"
+                   name="date_to"
+                   value="{{ request.GET.date_to }}"
+                   class="form-control">
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100 fw-bold">
+                عرض
+            </button>
+        </div>
+
+        <!-- زر الانتقال لقائمة الدخل -->
+        <div class="col-md-2 d-flex align-items-end">
+            <a class="btn btn-outline-success w-100 fw-bold"
+               href="{% url 'reports:income_statement' %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
+                📈 قائمة الدخل
+            </a>
+        </div>
+
+    </form>
+
+    <!-- مؤشر تأكيد الفلترة -->
+    <div class="text-center mb-3">
+        <small class="text-muted">
+            عدد سطور القيود داخل الفترة: <strong>{{ lines_count }}</strong>
+        </small>
+    </div>
+
+    <!-- ================= الكروت ================= -->
+    <div class="row g-4">
+
+        <!-- الإيرادات -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-success">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">إجمالي الإيرادات</h6>
+                    <h3 class="text-success fw-bold mb-0">
+                        {{ total_credit|default:"0.00"|floatformat:2 }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- المصروفات -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">إجمالي المصروفات</h6>
+                    <h3 class="text-danger fw-bold mb-0">
+                        {{ total_debit|default:"0.00"|floatformat:2 }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- صافي النتيجة -->
+        <div class="col-md-4">
+            <div class="card shadow-sm
+                {% if net_result >= 0 %}
+                    border-success
+                {% else %}
+                    border-danger
+                {% endif %}
+            ">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">صافي النتيجة</h6>
+                    <h3 class="fw-bold mb-0
+                        {% if net_result >= 0 %}
+                            text-success
+                        {% else %}
+                            text-danger
+                        {% endif %}
+                    ">
+                        {{ net_result|default:"0.00"|floatformat:2 }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= الرسم البياني ================= -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3 text-center">📈 حركة الإيرادات والمصروفات (يوميًا)</h5>
+            <div style="height: 320px;">
+                <canvas id="revExpChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- تمرير بيانات الرسم -->
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_revenues|json_script:"chart-revenues" }}
+{{ chart_expenses|json_script:"chart-expenses" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const labels = JSON.parse(document.getElementById("chart-labels").textContent);
+    const revenues = JSON.parse(document.getElementById("chart-revenues").textContent);
+    const expenses = JSON.parse(document.getElementById("chart-expenses").textContent);
+
+    const ctx = document.getElementById("revExpChart");
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [
+                { label: "الإيرادات", data: revenues, tension: 0.25 },
+                { label: "المصروفات", data: expenses, tension: 0.25 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: { legend: { position: "top" } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+})();
+</script>
+{% endblock %}

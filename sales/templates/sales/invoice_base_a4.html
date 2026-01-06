@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+
+<style>
+    body {
+        margin:0;
+        padding:0;
+        background:#f0f2f5;
+        font-family:Tahoma;
+    }
+
+    /* صفحة A4 */
+.a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    height: auto;            /* المحتوى يتمدد بشكل طبيعي */
+    background: #ffffff;
+    margin: 20px auto;
+    padding: 20mm;
+    box-sizing: border-box;
+    display: block;          /* أهم خطوة – منع ضغط المحتوى */
+}
+
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table thead th {
+        border-bottom: 1px solid #ccc;
+        padding: 6px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    table tbody td {
+        border-bottom: 1px solid #eee;
+        padding: 6px;
+        text-align: center;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="a4-page">
+        {% block content %}
+        {% endblock %}
+</div>
+
+</body>
+</html>

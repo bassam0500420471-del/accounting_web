@@ -1,0 +1,74 @@
+from django.shortcuts import render
+from decimal import Decimal
+from purchase.models import PurchaseInvoice, PurchaseReturn
+
+
+def purchase_vat_report(request):
+
+    date_from = request.GET.get("date_from")
+    date_to   = request.GET.get("date_to")
+
+    rows = []
+
+    total_before_tax = Decimal("0.00")
+    total_tax        = Decimal("0.00")
+    total_after_tax  = Decimal("0.00")
+
+    invoices = PurchaseInvoice.objects.all()
+    returns  = PurchaseReturn.objects.all()
+
+    if date_from and date_to:
+        invoices = invoices.filter(date_invoice__range=(date_from, date_to))
+        returns  = returns.filter(return_date__range=(date_from, date_to))
+
+    invoices = invoices.order_by("date_invoice")
+    returns  = returns.order_by("return_date")
+
+    # ===============================
+    # فواتير المشتريات
+    # ===============================
+    for inv in invoices:
+        tax_value = inv.total_after_tax - inv.total_before_tax
+
+        rows.append({
+            "date": inv.date_invoice,
+            "type": "فاتورة مشتريات",
+            "number": inv.invoice_no,
+            "before_tax": inv.total_before_tax,
+            "tax": tax_value,
+            "after_tax": inv.total_after_tax,
+        })
+
+        total_before_tax += inv.total_before_tax
+        total_tax        += tax_value
+        total_after_tax  += inv.total_after_tax
+
+    # ===============================
+    # مرتجعات المشتريات
+    # ===============================
+    for ret in returns:
+        rows.append({
+            "date": ret.return_date,
+            "type": "مرتجع مشتريات",
+            "number": ret.return_no or "",
+            "before_tax": -ret.total_before_tax,
+            "tax": -ret.tax_value,
+            "after_tax": -ret.total_after_tax,
+        })
+
+        total_before_tax -= ret.total_before_tax
+        total_tax        -= ret.tax_value
+        total_after_tax  -= ret.total_after_tax
+
+    context = {
+        "rows": rows,
+        "date_from": date_from,
+        "date_to": date_to,
+        "totals": {
+            "before_tax": total_before_tax,
+            "tax": total_tax,
+            "after_tax": total_after_tax,
+        }
+    }
+
+    return render(request, "reports/purchase_vat_report.html", context)

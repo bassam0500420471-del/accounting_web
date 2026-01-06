@@ -1,0 +1,191 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import pdfkit
+
+from .models import Quotation, QuotationItem
+from customers.models import Customer
+from products.models import Product
+from sales.models import SalesInvoice, SalesItem  # ← تم إصلاح السطر
+
+
+# ================================
+#   قائمة عروض الأسعار
+# ================================
+def quotation_list(request):
+    quotations = Quotation.objects.all().order_by("-id")
+    return render(request, "quotations/quotation_list.html", {
+        "quotations": quotations
+    })
+
+
+# ================================
+#   إنشاء عرض سعر
+# ================================
+def quotation_add(request):
+
+    customers = Customer.objects.all()
+    products = Product.objects.all()
+
+    last_q = Quotation.objects.order_by("-quotation_no").first()
+    next_number = int(last_q.quotation_no) + 1 if last_q else 1
+
+    if request.method == "POST":
+
+        quotation = Quotation.objects.create(
+            quotation_no=request.POST.get("quotation_no"),
+            customer_id=request.POST.get("customer"),
+            date_quotation=request.POST.get("date_quotation"),
+            description=request.POST.get("description"),
+            total_before_tax=0,
+            total_discount=0,
+            total_after_discount=0,
+            tax_value=0,
+            total_after_tax=0,
+            created_at=timezone.now()
+        )
+
+        rows = int(request.POST.get("total_rows", 0))
+
+        total_before = 0
+        total_discount = 0
+        total_tax = 0
+
+        for i in range(1, rows + 1):
+
+            prefix = f"row_{i}_"
+
+            product_id = request.POST.get(prefix + "product_id")
+            if not product_id:
+                continue
+
+            item_desc = request.POST.get(prefix + "desc")
+            qty = float(request.POST.get(prefix + "qty") or 0)
+            price = float(request.POST.get(prefix + "price") or 0)
+            discount = float(request.POST.get(prefix + "discount") or 0)
+            tax = float(request.POST.get(prefix + "tax") or 0)
+
+            line_total = (qty * price) - discount
+            tax_amount = line_total * (tax / 100)
+            final_total = line_total + tax_amount
+
+            QuotationItem.objects.create(
+                quotation=quotation,
+                product_id=product_id,
+                description=item_desc,
+                qty=qty,
+                price=price,
+                discount=discount,
+                tax=tax,
+                total=final_total
+            )
+
+            total_before += qty * price
+            total_discount += discount
+            total_tax += tax_amount
+
+        quotation.total_before_tax = total_before
+        quotation.total_discount = total_discount
+        quotation.total_after_discount = total_before - total_discount
+        quotation.tax_value = total_tax
+        quotation.total_after_tax = quotation.total_after_discount + total_tax
+        quotation.save()
+
+        return redirect("quotations_list")
+
+    return render(request, "quotations/quotation_add.html", {
+        "customers": customers,
+        "products": products,
+        "next_number": next_number
+    })
+
+
+# ================================
+#   عرض عرض السعر
+# ================================
+def quotation_view(request, pk):
+    quotation = get_object_or_404(Quotation, pk=pk)
+    items = QuotationItem.objects.filter(quotation=quotation)
+    return render(request, "quotations/quotation_view.html", {
+        "quotation": quotation,
+        "items": items
+    })
+
+
+# ================================
+#   الطباعة
+# ================================
+def quotation_print(request, pk):
+    quotation = get_object_or_404(Quotation, pk=pk)
+    items = QuotationItem.objects.filter(quotation=quotation)
+    return render(request, "quotations/quotation_print.html", {
+        "quotation": quotation,
+        "items": items
+    })
+
+
+# ================================
+#   PDF
+# ================================
+def quotation_pdf(request, pk):
+    quotation = get_object_or_404(Quotation, pk=pk)
+    items = QuotationItem.objects.filter(quotation=quotation)
+
+    html = render_to_string("quotations/quotation_pdf.html", {
+        "quotation": quotation,
+        "items": items
+    })
+
+    path_wk = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    config = pdfkit.configuration(wkhtmltopdf=path_wk)
+
+    pdf = pdfkit.from_string(html, False, configuration=config)
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response['Content-Disposition'] = f'attachment; filename=\"quotation_{quotation.pk}.pdf\"'
+    return response
+
+
+# ================================
+#   تحويل عرض السعر إلى فاتورة
+# ================================
+def quotation_to_invoice(request, pk):
+
+    quotation = get_object_or_404(Quotation, pk=pk)
+    items = QuotationItem.objects.filter(quotation=quotation)
+
+    # رقم الفاتورة التالي
+    last_invoice = SalesInvoice.objects.order_by("-invoice_no").first()
+    next_number = int(last_invoice.invoice_no) + 1 if last_invoice else 1
+
+    # إنشاء الفاتورة
+    invoice = SalesInvoice.objects.create(
+        invoice_no=next_number,
+        customer=quotation.customer,
+        date_invoice=timezone.now().date(),
+        date_issue=timezone.now(),
+        description=quotation.description,
+        total_before_tax=quotation.total_before_tax,
+        total_discount=quotation.total_discount,
+        total_after_discount=quotation.total_after_discount,
+        tax_value=quotation.tax_value,
+        total_after_tax=quotation.total_after_tax,
+        created_at=timezone.now()
+    )
+
+    # إنشاء البنود
+    for item in items:
+        SalesItem.objects.create(
+            invoice=invoice,
+            product=item.product,
+            description=item.description,
+            qty=item.qty,
+            price=item.price,
+            discount=item.discount,
+            tax=item.tax,
+            total=item.total
+        )
+
+    # إعادة التوجيه لعرض الفاتورة
+    return redirect("invoice_view", pk=invoice.id)

@@ -1,0 +1,39 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<h3 class="mb-4">🌳 شجرة الحسابات</h3>
+
+<div id="chartTree" class="border rounded p-3 bg-white"></div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- jsTree -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/jstree@3.3.15/dist/themes/default/style.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jstree@3.3.15/dist/jstree.min.js"></script>
+
+<script>
+$(function () {
+    $('#chartTree').jstree({
+        'core': {
+            'data': {
+                'url': '{% url "accounting:chart_tree_api" %}',
+                'dataType': 'json'
+            },
+            'themes': {
+                'icons': true
+            }
+        },
+        'plugins': ['wholerow']
+    });
+
+    // عند الضغط على حساب
+    $('#chartTree').on("select_node.jstree", function (e, data) {
+        const accountId = data.node.id;
+        window.location.href = `/accounting/accounts/${accountId}/view/`;
+    });
+});
+</script>
+
+{% endblock %}

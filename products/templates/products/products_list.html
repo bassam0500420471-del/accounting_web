@@ -1,0 +1,105 @@
+{% extends "layout/base.html" %}
+
+{% block title %}إدارة المنتجات{% endblock %}
+
+{% block head %}
+<style>
+    body {
+        background: #f0f2f5;
+        font-family: Tahoma;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0px 2px 7px rgba(0,0,0,0.08);
+    }
+
+    .product-type {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        color: white;
+    }
+
+    .normal { background: #0d6efd; }
+    .service { background: #6610f2; }
+    .bundle { background: #198754; }
+
+    .action-btn {
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-2">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h3 class="fw-bold">إدارة المنتجات</h3>
+        <a href="{% url 'product_add' %}" class="btn btn-primary">+ إضافة منتج</a>
+    </div>
+
+    <!-- بحث -->
+    <form method="get" class="mb-3">
+        <input type="text" name="q" class="form-control" placeholder="ابحث عن منتج...">
+    </form>
+
+    <!-- كارد المنتج -->
+    <div class="card p-3">
+        <table class="table table-hover text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>المنتج</th>
+                    <th>النوع</th>
+                    <th>السعر</th>
+                    <th>الحالة</th>
+                    <th>إدارة</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>{{ p.name }}</td>
+
+                    <td>
+                        {% if p.type == 'normal' %}
+                            <span class="product-type normal">منتج عادي</span>
+                        {% elif p.type == 'service' %}
+                            <span class="product-type service">خدمة</span>
+                        {% else %}
+                            <span class="product-type bundle">منتج مركب</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ p.price }} ر.س</td>
+
+                    <td>
+                        {% if p.active %}
+                            <span class="text-success fw-bold">نشط</span>
+                        {% else %}
+                            <span class="text-danger fw-bold">متوقف</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'product_edit' p.id %}" class="btn btn-primary btn-sm action-btn">تعديل</a>
+                        <a href="{% url 'product_delete' p.id %}" class="btn btn-danger btn-sm action-btn">حذف</a>
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-muted">لا توجد منتجات</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

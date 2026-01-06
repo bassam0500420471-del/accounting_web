@@ -1,0 +1,113 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+.btn-options {
+    width: 90px;
+    height: 34px;
+    padding: 0;
+    line-height: 34px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+</style>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">إدارة القيود اليومية</h3>
+        <a href="{% url 'accounting:journal_add' %}" class="btn btn-secondary">
+            + إضافة قيد
+        </a>
+    </div>
+
+    {% if entries %}
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover mb-0 text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>رقم القيد</th>
+                        <th>التاريخ</th>
+                        <th>البيان</th>
+                        <th>مدين</th>
+                        <th>دائن</th>
+                        <th>الحالة</th>
+                        <th>الخيارات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for e in entries %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ e.entry_no }}</td>
+                        <td>{{ e.date }}</td>
+                        <td class="text-end">{{ e.description }}</td>
+                        <td>{{ e.total_debit }}</td>
+                        <td>{{ e.total_credit }}</td>
+                        <td>
+                            {% if e.posted %}
+                                <span class="badge bg-success">مرحّل</span>
+                            {% else %}
+                                <span class="badge bg-secondary">مسودة</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-nowrap text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle btn-options"
+                                        type="button"
+                                        data-bs-toggle="dropdown">
+                                    خيارات
+                                </button>
+
+                                <ul class="dropdown-menu text-end">
+
+                                    <!-- 👁️ عرض -->
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'accounting:journal_view' e.id %}">
+                                            👁️ عرض
+                                        </a>
+                                    </li>
+
+                                    {% if not e.posted %}
+                                        <li><hr class="dropdown-divider"></li>
+
+                                        <!-- 🚀 ترحيل -->
+                                        <li>
+                                            <a class="dropdown-item text-success"
+                                               href="{% url 'accounting:journal_post' e.id %}"
+                                               onclick="return confirm('هل أنت متأكد من ترحيل القيد؟')">
+                                                🚀 ترحيل
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if e.source_type %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <span class="dropdown-item text-muted">
+                                                🔒 قيد آلي (فاتورة)
+                                            </span>
+                                        </li>
+                                    {% endif %}
+
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+        <div class="alert alert-info text-center p-4">
+            لا توجد قيود يومية حتى الآن
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

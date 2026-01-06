@@ -1,0 +1,100 @@
+{% extends "layout/base.html" %}
+{% block title %}سندات الصرف{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">📤 سندات الصرف</h3>
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>رقم السند</th>
+            <th>الطرف</th>
+            <th>التاريخ</th>
+            <th>المبلغ</th>
+            <th>أنشئ بواسطة</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in payments %}
+        <tr class="{% if v.status == 'cancelled' %}table-secondary{% endif %}">
+            <td>{{ v.voucher_no|default:v.id }}</td>
+
+            <!-- الطرف -->
+            <td>
+                {% if v.supplier %}
+                    {{ v.supplier }}
+                {% elif v.customer %}
+                    {{ v.customer }}
+                {% elif v.cost_center %}
+                    {{ v.cost_center }}
+                {% elif v.other_account %}
+                    {{ v.other_account }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>{{ v.date }}</td>
+
+            <!-- المبلغ -->
+            <td class="{% if v.status == 'cancelled' %}
+                           text-danger text-decoration-line-through
+                       {% else %}
+                           text-danger fw-bold
+                       {% endif %}">
+                {{ v.amount }}
+            </td>
+
+            <td>{{ v.created_by }}</td>
+
+            <!-- الحالة -->
+            <td>
+                {% if v.status == "posted" %}
+                    <span class="badge bg-success">مرحل</span>
+                {% elif v.status == "cancelled" %}
+                    <span class="badge bg-danger">ملغى</span>
+                {% else %}
+                    <span class="badge bg-secondary">غير مرحل</span>
+                {% endif %}
+            </td>
+
+            <!-- الإجراءات -->
+            <td style="position: relative;">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown">
+                        خيارات
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'payments:payment_detail' v.id %}">
+                                👁 عرض السند
+                            </a>
+                        </li>
+
+                        {% if v.status == "posted" %}
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               href="{% url 'payments:payment_cancel' v.id %}"
+                               onclick="return confirm('هل أنت متأكد من إلغاء سند الصرف؟')">
+                                ❌ إلغاء
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">لا توجد سندات صرف</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

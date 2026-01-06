@@ -1,0 +1,101 @@
+{% extends "layout/base.html" %}
+{% block title %}سندات القبض{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">📥 سندات القبض</h3>
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>رقم السند</th>
+            <th>الطرف</th>
+            <th>التاريخ</th>
+            <th>المبلغ</th>
+            <th>أنشئ بواسطة</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in receipts %}
+        <tr class="{% if r.status == 'cancelled' %}table-secondary{% endif %}">
+            <td>{{ r.voucher_no|default:r.id }}</td>
+
+            <!-- الطرف -->
+            <td>
+                {% if r.customer %}
+                    {{ r.customer }}
+                {% elif r.supplier %}
+                    {{ r.supplier }}
+                {% elif r.cost_center %}
+                    {{ r.cost_center }}
+                {% elif r.other_account %}
+                    {{ r.other_account }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+
+            <td>{{ r.date }}</td>
+
+            <!-- المبلغ -->
+            <td class="{% if r.status == 'cancelled' %}
+                           text-success text-decoration-line-through
+                       {% else %}
+                           text-success fw-bold
+                       {% endif %}">
+                {{ r.amount }}
+            </td>
+
+            <td>{{ r.created_by }}</td>
+
+            <!-- الحالة -->
+            <td>
+                {% if r.status == "posted" %}
+                    <span class="badge bg-success">مرحل</span>
+                {% elif r.status == "cancelled" %}
+                    <span class="badge bg-danger">ملغى</span>
+                {% else %}
+                    <span class="badge bg-secondary">غير مرحل</span>
+                {% endif %}
+            </td>
+
+            <!-- الإجراءات -->
+            <td>
+                <div class="dropdown position-static">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            data-bs-display="static">
+                        خيارات
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'payments:receipt_detail' r.id %}">
+                                👁 عرض السند
+                            </a>
+                        </li>
+
+                        {% if r.status == "posted" %}
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               href="{% url 'payments:receipt_cancel' r.id %}"
+                               onclick="return confirm('هل أنت متأكد من إلغاء سند القبض؟')">
+                                ❌ إلغاء
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">لا توجد سندات قبض</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

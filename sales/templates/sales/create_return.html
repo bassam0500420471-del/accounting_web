@@ -1,0 +1,201 @@
+{% extends "layout/base.html" %}
+{% load l10n %}
+{% block content %}
+
+<style>
+.page-box {
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    width:90%;
+    margin:auto;
+}
+.input-box {
+    width:100%;
+    background:#f8f9fa;
+    border:1px solid #ccc;
+    padding:7px 12px;
+    border-radius:6px;
+}
+.table th, .table td {
+    text-align:center;
+    vertical-align:middle;
+}
+.totals-box {
+    width:45%;
+    margin-left:auto;
+}
+.btn-main {
+    background:#6c757d !important;
+    color:white !important;
+    border-radius:6px;
+    font-size:16px;
+    padding:10px 25px;
+}
+.section-title {
+    margin-top:25px;
+    font-weight:bold;
+    border-right:5px solid #6c757d;
+    padding-right:10px;
+}
+.alert-box {
+    display:none;
+    background:#fff3cd;
+    color:#664d03;
+    border:1px solid #ffecb5;
+    padding:10px 15px;
+    border-radius:6px;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+</style>
+
+<form method="POST" action="{% url 'sales:save_return' invoice.id %}">
+{% csrf_token %}
+
+<div class="page-box">
+
+    <h2 class="text-center fw-bold mb-4">إشعار دائن (مرتجع مبيعات)</h2>
+
+    <!-- بيانات الفاتورة -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label>اسم العميل</label>
+            <input class="input-box" value="{{ invoice.customer.name }}" readonly>
+        </div>
+        <div class="col-md-4">
+            <label>تاريخ الفاتورة</label>
+            <input class="input-box" value="{{ invoice.date_invoice }}" readonly>
+        </div>
+        <div class="col-md-4">
+            <label>رقم الفاتورة</label>
+            <input class="input-box" value="{{ invoice.invoice_no }}" readonly>
+        </div>
+    </div>
+
+    <!-- سبب الإرجاع -->
+    <div class="mb-3">
+        <label class="fw-bold">سبب الإرجاع <span class="text-danger">*</span></label>
+        <textarea name="reason" class="input-box" required></textarea>
+    </div>
+
+    <div id="qtyAlert" class="alert-box">
+        ⚠ لا يمكن إرجاع كمية أكبر من الكمية المتاحة
+    </div>
+
+    <!-- الأصناف -->
+    <h4 class="section-title">الأصناف</h4>
+
+    <table class="table table-bordered items-table mt-2">
+        <thead>
+            <tr>
+                <th>الصنف</th>
+                <th>الكمية المتاحة</th>
+                <th>السعر</th>
+                <th>الخصم</th>
+                <th>الضريبة %</th>
+                <th>الإجمالي بعد الضريبة</th>
+                <th style="width:140px;">كمية الإرجاع</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.remaining_qty|unlocalize }}</td>
+            <td>{{ item.price|unlocalize }}</td>
+            <td>{{ item.discount|unlocalize }}</td>
+            <td>{{ item.tax|unlocalize }}</td>
+            <td class="row-unit-total fw-bold">0.00</td>
+            <td>
+                <input type="number"
+                       name="qty_{{ item.id }}"
+                       class="form-control text-center return-input"
+                       min="0"
+                       step="0.01"
+                       value="0"
+                       data-max="{{ item.remaining_qty|unlocalize }}"
+                       data-price="{{ item.price|unlocalize }}"
+                       data-discount="{{ item.discount|unlocalize }}"
+                       data-tax="{{ item.tax|unlocalize }}">
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="section-title">المجاميع</h4>
+
+    <table class="table table-bordered totals-box mt-2">
+        <tr><td>الإجمالي قبل الضريبة:</td><td id="total_before">0.00</td></tr>
+        <tr><td>إجمالي بعد الخصم:</td><td id="total_after_discount">0.00</td></tr>
+        <tr><td>قيمة الضريبة:</td><td id="total_tax">0.00</td></tr>
+        <tr style="background:#e7f1ff;">
+            <td class="fw-bold">الإجمالي بعد الضريبة:</td>
+            <td id="total_after_tax" class="fw-bold">0.00</td>
+        </tr>
+    </table>
+
+    <div class="text-end mt-4">
+        <button type="submit" class="btn-main">💾 حفظ المرتجع</button>
+    </div>
+
+</div>
+</form>
+
+<script>
+function toNum(v){
+    const n = parseFloat(v);
+    return isNaN(n) ? 0 : n;
+}
+
+function calcTotals(){
+    let total_before = 0;
+    let total_after_discount = 0;
+    let total_tax = 0;
+
+    const alertBox = document.getElementById("qtyAlert");
+    alertBox.style.display = "none";
+
+    document.querySelectorAll(".return-input").forEach(input => {
+        const maxQty = toNum(input.dataset.max);
+        let qty = toNum(input.value);
+
+        if (qty > maxQty + 0.000001){
+            qty = maxQty;
+            input.value = maxQty;
+            alertBox.style.display = "block";
+        }
+
+        const price = toNum(input.dataset.price);
+        const discount = toNum(input.dataset.discount);
+        const tax = toNum(input.dataset.tax);
+
+        const afterDiscount = price - discount;
+        const taxValue = afterDiscount * tax / 100;
+        const unitTotal = afterDiscount + taxValue;
+
+        input.closest("tr").querySelector(".row-unit-total").innerText =
+            unitTotal.toFixed(2);
+
+        total_before += qty * price;
+        total_after_discount += qty * afterDiscount;
+        total_tax += qty * taxValue;
+    });
+
+    document.getElementById("total_before").innerText = total_before.toFixed(2);
+    document.getElementById("total_after_discount").innerText = total_after_discount.toFixed(2);
+    document.getElementById("total_tax").innerText = total_tax.toFixed(2);
+    document.getElementById("total_after_tax").innerText =
+        (total_after_discount + total_tax).toFixed(2);
+}
+
+document.querySelectorAll(".return-input").forEach(el => {
+    el.addEventListener("input", calcTotals);
+});
+
+calcTotals();
+</script>
+
+{% endblock %}

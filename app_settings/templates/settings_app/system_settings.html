@@ -1,0 +1,228 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+{% block content %}
+
+<style>
+
+.settings-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+}
+
+.nav-tabs .nav-link {
+    font-weight: bold;
+    color: #444;
+    border-radius: 6px 6px 0 0;
+}
+
+.nav-tabs .nav-link.active {
+    background: #2D3033;
+    color: #fff !important;
+    border-color: #2D3033;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* زر احترافي مثل زر الخيارات */
+.btn-grey {
+    background: #6c757d !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 8px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.form-select {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4 fw-bold">{% trans "إعدادات النظام" %}</h2>
+
+    <div class="settings-card">
+
+        <!-- التبويبات -->
+        <ul class="nav nav-tabs mb-4">
+
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general" type="button">
+                    {% trans "الإعدادات العامة" %}
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#printing" type="button">
+                    {% trans "إعدادات الطباعة" %}
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#backup" type="button">
+                    {% trans "النسخ الاحتياطي" %}
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#advanced" type="button">
+                    {% trans "إعدادات متقدمة" %}
+                </button>
+            </li>
+
+        </ul>
+
+        <!-- المحتوى -->
+        <div class="tab-content">
+
+            <!-- ⭐ الإعدادات العامة -->
+            <div class="tab-pane fade show active" id="general">
+
+                <div class="section-title">{% trans "الإعدادات العامة" %}</div>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- 🔥 قائمة بكل لغات العالم من Django -->
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "اللغة الافتراضية للنظام" %}</label>
+                        <select class="form-select" name="language">
+                            {% for code, name in languages %}
+                                <option value="{{ code }}" {% if settings.language == code %}selected{% endif %}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "تنسيق التاريخ" %}</label>
+                        <select name="date_format" class="form-select">
+                            <option value="YYYY-MM-DD" {% if settings.date_format == "YYYY-MM-DD" %}selected{% endif %}>
+                                {% trans "YYYY-MM-DD" %}
+                            </option>
+
+                            <option value="DD/MM/YYYY" {% if settings.date_format == "DD/MM/YYYY" %}selected{% endif %}>
+                                {% trans "DD/MM/YYYY" %}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "نمط الألوان" %}</label>
+                        <select name="color_theme" class="form-select">
+                            <option value="light" {% if settings.color_theme == "light" %}selected{% endif %}>
+                                {% trans "الوضع الفاتح" %}
+                            </option>
+
+                            <option value="dark" {% if settings.color_theme == "dark" %}selected{% endif %}>
+                                {% trans "الوضع الداكن" %}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-grey">
+                            {% trans "حفظ الإعدادات" %}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- ⭐ إعدادات الطباعة -->
+            <div class="tab-pane fade" id="printing">
+
+                <div class="section-title">{% trans "إعدادات الطباعة" %}</div>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "مقاس الصفحة" %}</label>
+                        <select name="page_size" class="form-select">
+                            <option value="A4" {% if settings.page_size == "A4" %}selected{% endif %}>A4</option>
+                            <option value="A5" {% if settings.page_size == "A5" %}selected{% endif %}>A5</option>
+                            <option value="80mm" {% if settings.page_size == "80mm" %}selected{% endif %}>
+                                {% trans "حراري 80mm" %}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "اتجاه الصفحة" %}</label>
+                        <select name="page_orientation" class="form-select">
+                            <option value="portrait" {% if settings.page_orientation == "portrait" %}selected{% endif %}>
+                                {% trans "عمودي" %}
+                            </option>
+
+                            <option value="landscape" {% if settings.page_orientation == "landscape" %}selected{% endif %}>
+                                {% trans "أفقي" %}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-grey">
+                            {% trans "حفظ الإعدادات" %}
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- ⭐ النسخ الاحتياطي -->
+            <div class="tab-pane fade" id="backup">
+
+                <div class="section-title">{% trans "النسخ الاحتياطي" %}</div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <button name="create_backup" class="btn btn-grey mb-3">
+                        {% trans "إنشاء نسخة احتياطية" %}
+                    </button>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "استعادة نسخة احتياطية" %}</label>
+                        <input type="file" class="form-control">
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-grey">
+                            {% trans "استعادة البيانات" %}
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- ⭐ إعدادات متقدمة -->
+            <div class="tab-pane fade" id="advanced">
+
+                <div class="section-title">{% trans "إعدادات متقدمة" %}</div>
+
+                <p>{% trans "رقم الإصدار: 1.0.0" %}</p>
+                <p>{% trans "خيارات متقدمة سيتم إضافتها لاحقاً." %}</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

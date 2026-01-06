@@ -1,0 +1,164 @@
+{% extends "layout/base.html" %}
+{% block title %}كشف حساب{% endblock %}
+
+{% block content %}
+
+<!-- ================= Select2 ================= -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-center mb-4">📘 كشف حساب</h2>
+
+    <!-- ================= الفلاتر ================= -->
+    <form method="get" class="row g-3 mb-4 align-items-end justify-content-center">
+
+        <!-- الحساب -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">الحساب</label>
+            <select name="account" class="form-select select2" required>
+                <option value="">— اختر الحساب —</option>
+                {% for acc in accounts %}
+                    <option value="{{ acc.id }}"
+                        {% if selected_account and acc.id == selected_account.id %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ acc.code }} - {{ acc.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- من تاريخ -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">من تاريخ</label>
+            <input type="date"
+                   name="date_from"
+                   value="{{ date_from|date:'Y-m-d' }}"
+                   class="form-control">
+        </div>
+
+        <!-- إلى تاريخ -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">إلى تاريخ</label>
+            <input type="date"
+                   name="date_to"
+                   value="{{ date_to|date:'Y-m-d' }}"
+                   class="form-control">
+        </div>
+
+        <!-- زر البحث -->
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100 fw-bold">
+                بحث
+            </button>
+        </div>
+
+    </form>
+
+    {% if selected_account %}
+
+    <h5 class="mb-3">
+        الحساب:
+        <strong>{{ selected_account.code }} - {{ selected_account.name }}</strong>
+    </h5>
+
+    <!-- ================= الجدول ================= -->
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>التاريخ</th>
+                <th>رقم القيد</th>
+                <th>البيان</th>
+                <th class="text-end">مدين</th>
+                <th class="text-end">دائن</th>
+                <th class="text-end">الرصيد</th> <!-- ✅ جديد -->
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <!-- ================= رصيد افتتاحي ================= -->
+            <tr class="fw-bold table-secondary">
+                <td>—</td>
+                <td>—</td>
+                <td>رصيد افتتاحي</td>
+                <td class="text-end">—</td>
+                <td class="text-end">—</td>
+                <td class="text-end
+                    {% if opening_balance >= 0 %}
+                        text-success
+                    {% else %}
+                        text-danger
+                    {% endif %}
+                ">
+                    {{ opening_balance|floatformat:2 }}
+                    {% if opening_balance >= 0 %}مدين{% else %}دائن{% endif %}
+                </td>
+            </tr>
+
+            <!-- ================= الحركات ================= -->
+            {% for r in rows %}
+            <tr>
+                <td>{{ r.date }}</td>
+                <td>{{ r.entry_no }}</td>
+                <td>{{ r.description }}</td>
+                <td class="text-end">{{ r.debit|floatformat:2 }}</td>
+                <td class="text-end">{{ r.credit|floatformat:2 }}</td>
+                <td class="text-end
+                    {% if r.balance >= 0 %}
+                        text-success
+                    {% else %}
+                        text-danger
+                    {% endif %}
+                ">
+                    {{ r.balance|floatformat:2 }}
+                    {% if r.balance >= 0 %}مدين{% else %}دائن{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    لا توجد حركات
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+        <tfoot class="fw-bold">
+            <tr>
+                <td colspan="3">إجمالي الفترة</td>
+                <td class="text-end">{{ total_debit|floatformat:2 }}</td>
+                <td class="text-end">{{ total_credit|floatformat:2 }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">الرصيد الختامي</td>
+                <td colspan="3"
+                    class="text-end {% if closing_balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {{ closing_balance|floatformat:2 }}
+                    {% if closing_balance >= 0 %}مدين{% else %}دائن{% endif %}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    {% endif %}
+
+</div>
+
+<!-- ================= تفعيل Select2 ================= -->
+<script>
+$(document).ready(function () {
+    $('.select2').select2({
+        width: '100%',
+        dir: 'rtl'
+    });
+});
+</script>
+
+{% endblock %}

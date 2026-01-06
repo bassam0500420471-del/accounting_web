@@ -1,0 +1,119 @@
+{% extends "sales/invoice_base_a4.html" %}
+{% block content %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    th, td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+    }
+    .label {
+        font-weight: bold;
+        display: inline-block;
+        min-width: 140px;
+    }
+    .total-box {
+        border: 1px solid #000;
+        padding: 6px 10px;
+        width: 180px;
+        text-align: left;
+    }
+</style>
+
+<h2 style="text-align:center; margin-bottom:15px;">فاتورة مبيعات</h2>
+
+<!-- بيانات الفاتورة -->
+<div style="margin-bottom:20px; font-size:15px;">
+
+    <p><span class="label">رقم الفاتورة:</span> {{ invoice.invoice_no }}</p>
+    <p><span class="label">العميل:</span> {{ invoice.customer.name }}</p>
+
+    {% if invoice.description %}
+    <p><span class="label">الوصف:</span> {{ invoice.description }}</p>
+    {% endif %}
+
+    <p><span class="label">تاريخ الفاتورة:</span> {{ invoice.date_invoice }}</p>
+    <p><span class="label">تاريخ الإصدار:</span> {{ invoice.date_issue }}</p>
+</div>
+
+<!-- جدول الأصناف -->
+<table>
+    <thead>
+        <tr>
+            <th>الصنف</th>
+            <th>الوصف</th>
+            <th>الكمية</th>
+            <th>السعر</th>
+            <th>الخصم</th>
+            <th>%الضريبة</th>
+            <th>الإجمالي</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.discount }}</td>
+            <td>{{ item.tax }}%</td>
+            <td>{{ item.total }}</td>
+        </tr>
+        {% endfor %}
+
+        <!-- صفوف فارغة (ثابتة – لن تسبب خطأ) -->
+        {% for i in ""|center:8 %}
+        <tr>
+            <td style="height:18px;"></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br/>
+
+<!-- المجاميع + QR -->
+<table style="margin-top:10px; width:100%; border:none;">
+    <tr>
+        <td style="border:none; width:50%; vertical-align:top;">
+            <img src="data:image/png;base64,{{ qr_code }}" style="width:140px; height:140px;">
+        </td>
+
+        <td style="border:none; width:50%; vertical-align:top;">
+
+            <p><span class="label">الإجمالي قبل الضريبة:</span>
+                <span class="total-box">{{ invoice.total_before_tax }}</span>
+            </p>
+
+            <p><span class="label">الإجمالي بعد الخصم:</span>
+                <span class="total-box">
+                    {% if invoice.total_after_discount %}
+                        {{ invoice.total_after_discount }}
+                    {% else %}
+                        {{ invoice.total_before_tax }}
+                    {% endif %}
+                </span>
+            </p>
+
+            <p><span class="label">إجمالي الضريبة:</span>
+                <span class="total-box">{{ invoice.tax_value }}</span>
+            </p>
+
+            <p><span class="label" style="font-size:17px;">الإجمالي بعد الضريبة:</span>
+                <span class="total-box" style="font-weight:bold; font-size:17px;">
+                    {{ invoice.total_after_tax }}
+                </span>
+            </p>
+
+        </td>
+    </tr>
+</table>
+
+{% endblock %}

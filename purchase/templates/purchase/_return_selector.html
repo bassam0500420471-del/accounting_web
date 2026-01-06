@@ -1,0 +1,142 @@
+
+<div class="container mt-4">
+
+    <h3 class="fw-bold text-center mb-4">
+        إنشاء إشعار مدين (مرتجع)
+    </h3>
+
+    <!-- =========================
+         اختيار المورد
+    ========================== -->
+    <div class="mb-3">
+        <label class="fw-bold">اختر المورد:</label>
+        <select id="supplierSelect" class="form-select">
+            <option value="">-- اختر المورد --</option>
+            {% for s in suppliers %}
+                <option value="{{ s.id }}">{{ s.commercial_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- =========================
+         اختيار الفاتورة
+    ========================== -->
+    <div class="mb-4">
+        <label class="fw-bold">اختر الفاتورة:</label>
+        <select id="invoiceSelect" class="form-select" disabled>
+            <option value="">-- اختر الفاتورة --</option>
+        </select>
+    </div>
+
+    <!-- =========================
+         عرض مبسط لبيانات الفاتورة
+    ========================== -->
+    <div id="invoiceData" style="display:none">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>رقم الفاتورة:</strong>
+                <span id="invNo"></span>
+            </div>
+            <div class="col-md-6">
+                <strong>تاريخ الفاتورة:</strong>
+                <span id="invDate"></span>
+            </div>
+        </div>
+
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>الصنف</th>
+                    <th>الكمية</th>
+                    <th>السعر</th>
+                    <th>% الضريبة</th>
+                    <th>الخصم</th>
+                    <th>الإجمالي</th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+        </table>
+
+        <button
+            id="continueBtn"
+            class="btn btn-secondary w-100"
+            type="button"
+            disabled>
+            متابعة إنشاء المرتجع
+        </button>
+    </div>
+
+</div>
+
+<script>
+let selectedInvoiceId = "";
+
+const supplierSelect = document.getElementById("supplierSelect");
+const invoiceSelect  = document.getElementById("invoiceSelect");
+const invoiceData    = document.getElementById("invoiceData");
+const itemsBody      = document.getElementById("itemsBody");
+const continueBtn    = document.getElementById("continueBtn");
+
+supplierSelect.addEventListener("change", function () {
+    const supplierId = this.value;
+
+    invoiceSelect.innerHTML = `<option value="">-- اختر الفاتورة --</option>`;
+    invoiceSelect.disabled = true;
+    invoiceData.style.display = "none";
+    continueBtn.disabled = true;
+
+    if (!supplierId) return;
+
+    fetch(`/purchase/api/invoices-by-supplier/?supplier_id=${supplierId}`)
+        .then(res => res.json())
+        .then(data => {
+            data.invoices.forEach(inv => {
+                invoiceSelect.insertAdjacentHTML("beforeend", `
+                    <option value="${inv.id}">
+                        فاتورة رقم ${inv.invoice_no} | ${inv.date} | ${inv.total}
+                    </option>
+                `);
+            });
+            invoiceSelect.disabled = false;
+        });
+});
+
+invoiceSelect.addEventListener("change", function () {
+    const invoiceId = this.value;
+    selectedInvoiceId = invoiceId;
+
+    if (!invoiceId) return;
+
+    fetch(`/purchase/api/invoice-data/?invoice_id=${invoiceId}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("invNo").innerText   = data.invoice.invoice_no;
+            document.getElementById("invDate").innerText = data.invoice.date;
+
+            itemsBody.innerHTML = "";
+
+            data.invoice.items.forEach(item => {
+                itemsBody.insertAdjacentHTML("beforeend", `
+                    <tr>
+                        <td>${item.product}</td>
+                        <td>${item.qty}</td>
+                        <td>${item.price}</td>
+                        <td>${item.tax}</td>
+                        <td>${item.discount}</td>
+                        <td>${item.total}</td>
+                    </tr>
+                `);
+            });
+
+            invoiceData.style.display = "block";
+            continueBtn.disabled = false;
+        });
+});
+
+continueBtn.addEventListener("click", function () {
+    if (!selectedInvoiceId) return;
+    window.location.href = `/purchase/returns/from-invoice/${selectedInvoiceId}/`;
+});
+</script>
+

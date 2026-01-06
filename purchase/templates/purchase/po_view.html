@@ -1,0 +1,92 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container mt-4" style="background:white; padding:40px;">
+
+    <h2 class="text-center mb-4 fw-bold">أمر شراء</h2>
+
+    <!-- بيانات عامة -->
+    <div class="row mb-4">
+
+        <div class="col-md-6">
+            <p><strong>رقم أمر الشراء:</strong> {{ invoice.invoice_no }}</p>
+            <p><strong>المورد:</strong> {{ invoice.supplier.commercial_name }}</p>
+        </div>
+
+        <div class="col-md-6 text-end">
+            <p><strong>تاريخ التسليم:</strong> {{ invoice.date_delivery|date:"j F Y" }}</p>
+        </div>
+
+    </div>
+
+    <!-- جدول الأصناف -->
+    <table class="table table-bordered text-center">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>الصنف</th>
+                <th>الوصف</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الخصم</th>
+                <th>الضريبة %</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.description|default:"-" }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.discount }}</td>
+                <td>{{ item.tax }}</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- المجاميع -->
+    <div class="row mt-4">
+
+        <div class="col-md-6"> </div>
+
+        <div class="col-md-6">
+
+            <div class="mb-2 d-flex justify-content-between">
+                <label><strong>الإجمالي قبل الضريبة:</strong></label>
+                <input type="text" class="form-control w-50 text-end" value="{{ invoice.total_before_tax }}" readonly>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+                <label><strong>الإجمالي بعد الخصم:</strong></label>
+                <input type="text" class="form-control w-50 text-end" value="{{ invoice.total_after_discount }}" readonly>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+                <label><strong>إجمالي الضريبة:</strong></label>
+                <input type="text" class="form-control w-50 text-end" value="{{ invoice.tax_value }}" readonly>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+                <label><strong>الإجمالي النهائي:</strong></label>
+                <input type="text" class="form-control w-50 text-end fw-bold" value="{{ invoice.total }}" readonly>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- أزرار -->
+    <div class="text-end mt-4">
+        <a href="{% url 'po_edit' invoice.id %}" class="btn btn-warning">تعديل</a>
+        <a href="{% url 'po_print' invoice.id %}" class="btn btn-secondary">طباعة</a>
+        <a href="{% url 'po_list' %}" class="btn btn-dark">عودة للقائمة</a>
+    </div>
+
+</div>
+
+{% endblock %}

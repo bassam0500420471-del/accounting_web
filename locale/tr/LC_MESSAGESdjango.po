@@ -1,0 +1,67 @@
+msgid ""
+msgstr ""
+"Language: tr\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "النظام المحاسبي ERP"
+msgstr "Muhasebe ERP"
+
+msgid "النظام المحاسبي"
+msgstr "Muhasebe Sistemi"
+
+msgid "لوحة التحكم"
+msgstr "Kontrol Paneli"
+
+msgid "المبيعات"
+msgstr "Satışlar"
+
+msgid "العملاء"
+msgstr "Müşteriler"
+
+msgid "فواتير المبيعات"
+msgstr "Satış Faturaları"
+
+msgid "مرتجع الفواتير"
+msgstr "Fatura İadeleri"
+
+msgid "عروض الأسعار"
+msgstr "Teklifler"
+
+msgid "المشتريات"
+msgstr "Satın Alma"
+
+msgid "الموردين"
+msgstr "Tedarikçiler"
+
+msgid "أوامر الشراء"
+msgstr "Satın Alma Siparişleri"
+
+msgid "فواتير المشتريات"
+msgstr "Satın Alma Faturaları"
+
+msgid "الموارد البشرية"
+msgstr "İnsan Kaynakları"
+
+msgid "الموظفين"
+msgstr "Çalışanlar"
+
+msgid "المنتجات والمخزون"
+msgstr "Ürünler ve Stok"
+
+msgid "إدارة المنتجات"
+msgstr "Ürün Yönetimi"
+
+msgid "المحاسبة"
+msgstr "Muhasebe"
+
+msgid "القيود اليومية"
+msgstr "Yevmiye Kayıtları"
+
+msgid "التقارير"
+msgstr "Raporlar"
+
+msgid "إعدادات الشركة"
+msgstr "Şirket Ayarları"
+
+msgid "إعدادات النظام"
+msgstr "Sistem Ayarları"

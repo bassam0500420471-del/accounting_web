@@ -1,0 +1,173 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+/* الصندوق الأبيض */
+.settings-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+    width: 90%;
+    margin: auto;
+}
+
+/* عنوان القسم */
+.section-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2D3033;
+    margin-bottom: 15px;
+}
+
+/* الحقول */
+.input-label {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f8f9fa;
+}
+
+/* أزرار الحفظ */
+.btn-save {
+    background: #6c757d;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.btn-save:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* بطاقات */
+.card-box {
+    background: #f7f7f7;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
+    border-right: 4px solid #6c757d;
+}
+
+.card-box h5 {
+    font-weight: bold;
+    color: #2D3033;
+}
+</style>
+
+<div class="settings-box">
+
+    <h2 class="fw-bold mb-4">إعدادات الشركة</h2>
+    <p class="text-muted mb-4">قم بتعديل بيانات الشركة الأساسية التي تظهر في الفواتير والتقارير.</p>
+
+    <!-- 🔥 form يبدأ هنا -->
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- ======================= بطاقة معلومات الشركة ======================= -->
+        <div class="card-box">
+            <h5>📌 المعلومات الأساسية</h5>
+
+            <div class="row mt-3">
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">اسم الشركة:</label>
+                    <input type="text" class="input-field" name="company_name"
+                           value="{{ settings.company_name }}"
+                           placeholder="أدخل الاسم التجاري للشركة">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">البريد الإلكتروني:</label>
+                    <input type="email" class="input-field" name="email"
+                           value="{{ settings.email }}"
+                           placeholder="example@company.com">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">رقم الهاتف:</label>
+                    <input type="text" class="input-field" name="phone"
+                           value="{{ settings.phone }}"
+                           placeholder="05xxxxxxxx">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">رقم السجل التجاري:</label>
+                    <input type="text" class="input-field" name="cr_number"
+                           value="{{ settings.cr_number }}"
+                           placeholder="xxxxxxxxxx">
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================= بطاقة العنوان ======================= -->
+        <div class="card-box">
+            <h5>📍 عنوان الشركة</h5>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">المدينة:</label>
+                    <input type="text" class="input-field" name="city"
+                           value="{{ settings.city }}"
+                           placeholder="مثال: جدة">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">الحي / المنطقة:</label>
+                    <input type="text" class="input-field" name="district"
+                           value="{{ settings.district }}"
+                           placeholder="اسم الحي">
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label class="input-label">العنوان الكامل:</label>
+                    <textarea class="input-field" rows="2" name="full_address"
+                              placeholder="العنوان التفصيلي للموقع...">{{ settings.full_address }}</textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ======================= بطاقة الضريبة ======================= -->
+        <div class="card-box">
+            <h5>💰 الضريبة والفوترة</h5>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">الرقم الضريبي (VAT):</label>
+                    <input type="text" class="input-field" name="vat_number"
+                           value="{{ settings.vat_number }}"
+                           placeholder="xxxxxxxxxx">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="input-label">نسبة الضريبة الافتراضية %:</label>
+                    <input type="number" class="input-field" name="vat_rate"
+                           value="{{ settings.vat_rate }}">
+                </div>
+
+            </div>
+        </div>
+
+        <!-- زر الحفظ -->
+        <div class="text-end mt-4">
+            <button type="submit" class="btn-save">💾 حفظ الإعدادات</button>
+        </div>
+
+    </form>
+    <!-- 🔥 form ينتهي هنا -->
+
+</div>
+
+{% endblock %}

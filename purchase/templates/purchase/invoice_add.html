@@ -1,0 +1,487 @@
+{% extends "layout/base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- ================= Select2 ================= -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    .btn-main{
+        background:#6c757d!important;
+        color:#fff!important;
+        border-radius:6px;
+    }
+    .btn-delete{
+        background:#dc3545!important;
+        color:#fff!important;
+        border-radius:6px;
+    }
+    .btn-action{
+        width:180px;
+        height:42px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:600;
+    }
+
+    /* ===== dropdown autocomplete ===== */
+    .dropdown-box{
+        position:relative;
+        overflow:visible !important;
+    }
+    .dropdown-list{
+        position:absolute;
+        top:100%;
+        right:0;
+        left:0;
+        background:#fff;
+        border:1px solid #ced4da;
+        max-height:220px;
+        overflow-y:auto;
+        z-index:999999 !important;
+        display:none;
+    }
+    .dropdown-item{
+        padding:8px 12px;
+        cursor:pointer;
+    }
+    .dropdown-item:hover{
+        background:#e7f1ff;
+    }
+
+    /* ===== Select2 size ===== */
+    .select2-container--default .select2-selection--single{
+        height:38px;
+        padding:4px 6px;
+        border:1px solid #ced4da;
+        border-radius:.375rem;
+    }
+    .select2-selection__rendered{
+        line-height:28px!important;
+        text-align:right;
+    }
+    .select2-selection__arrow{
+        height:36px!important;
+    }
+</style>
+
+<div class="container mt-4">
+<h3 class="mb-4 text-end">إنشاء فاتورة مشتريات</h3>
+
+<form method="post">
+{% csrf_token %}
+<input type="hidden" id="total_rows" name="total_rows" value="1">
+
+<div class="card p-4">
+
+<!-- ================= رأس الفاتورة ================= -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label>رقم الفاتورة</label>
+        <input type="number" class="form-control" name="invoice_no" value="{{ next_number }}">
+    </div>
+
+    <div class="col-md-3">
+        <label>تاريخ الفاتورة</label>
+        <input type="date" id="date_invoice" name="date_invoice" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label>تاريخ الإصدار</label>
+        <!-- ✅ هذا هو الحقل المفقود -->
+        <input type="date" name="date_issue" class="form-control" required>
+    </div>
+
+    <div class="col-md-3">
+        <label>تاريخ التسليم</label>
+        <input type="date" id="delivery_date" name="delivery_date" class="form-control">
+    </div>
+</div>
+
+<!-- ================= المورد ================= -->
+<div class="row mb-3">
+    <div class="col-md-10">
+        <label>المورد</label>
+        <div class="dropdown-box">
+            <input type="text" id="supplier_search" class="form-control"
+                   placeholder="بحث عن مورد..." autocomplete="off">
+
+            <input type="hidden" id="supplier_id" name="supplier">
+
+            <div id="supplier_list" class="dropdown-list"></div>
+        </div>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <a href="/suppliers/add/?return=invoice"
+           class="btn btn-main btn-action w-100">
+            + إضافة مورد
+        </a>
+    </div>
+</div>
+
+<!-- ================= الوصف ================= -->
+<div class="mb-3">
+    <label>الوصف</label>
+    <textarea name="description" class="form-control"></textarea>
+</div>
+
+<!-- ================= إضافة منتج ================= -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <a href="/products/add/?return=invoice"
+           class="btn btn-main btn-action">
+            + إضافة منتج
+        </a>
+    </div>
+</div>
+
+<!-- ================= جدول الأصناف ================= -->
+<table class="table table-bordered text-center align-middle" style="overflow:visible !important;">
+<thead class="table-light">
+<tr>
+    <th>الصنف</th>
+    <th>الوصف</th>
+    <th>الكمية</th>
+    <th>السعر</th>
+    <th>الخصم</th>
+    <th>%الضريبة</th>
+    <th>الإجمالي</th>
+    <th>مركز التكلفة</th>
+    <th>حذف</th>
+</tr>
+</thead>
+
+<tbody id="items_table">
+<tr id="row_1" class="item-row">
+    <td>
+        <div class="dropdown-box">
+            <input type="text" class="form-control product-input"
+                   placeholder="بحث عن منتج..." autocomplete="off">
+
+            <input type="hidden" name="row_1_product_id" class="product-id">
+
+            <div class="dropdown-list"></div>
+        </div>
+    </td>
+    <td><input type="text" name="row_1_desc" class="form-control"></td>
+    <td><input type="number" name="row_1_qty" value="1" class="form-control qty-input"></td>
+    <td><input type="number" name="row_1_price" value="0" class="form-control price-input"></td>
+
+    <!-- ✅ تعديل الخصم فقط: حقل واحد يقبل 10 أو 10% -->
+    <td>
+        <input type="text" name="row_1_discount" value="0"
+               class="form-control discount-input"
+               placeholder="مثال: 10 أو 10%">
+    </td>
+
+    <td><input type="number" name="row_1_tax" value="15" class="form-control tax-input"></td>
+    <td><input type="number" name="row_1_total" class="form-control row-total" readonly></td>
+    <td>
+        <select name="row_1_cost_center"
+                class="form-select cost-center-select">
+            <option value="">اختر مركز تكلفة</option>
+            {% for cc in cost_centers %}
+                <option value="{{ cc.id }}">{{ cc.name }}</option>
+            {% endfor %}
+        </select>
+    </td>
+    <td>
+        <button type="button" class="btn btn-delete btn-row-delete">X</button>
+    </td>
+</tr>
+</tbody>
+</table>
+
+<div class="text-end mt-2">
+    <button type="button" id="add_row_btn"
+            class="btn btn-main btn-action">
+        + إضافة صف
+    </button>
+</div>
+
+</div>
+
+<!-- ================= المجاميع ================= -->
+<div class="card p-4 mt-4">
+<div class="row mb-2">
+    <label class="col-md-4 fw-bold">الإجمالي قبل الضريبة</label>
+    <div class="col-md-4"><input type="number" id="sum_before_tax" class="form-control" readonly></div>
+</div>
+<div class="row mb-2">
+    <label class="col-md-4 fw-bold">إجمالي الخصم</label>
+    <div class="col-md-4"><input type="number" id="sum_discount" class="form-control" readonly></div>
+</div>
+<div class="row mb-2">
+    <label class="col-md-4 fw-bold">إجمالي الضريبة</label>
+    <div class="col-md-4"><input type="number" id="sum_tax" class="form-control" readonly></div>
+</div>
+<div class="row mb-2">
+    <label class="col-md-4 fw-bold">الإجمالي بعد الضريبة</label>
+    <div class="col-md-4"><input type="number" id="sum_after_tax" class="form-control" readonly></div>
+</div>
+</div>
+
+<div class="text-end mt-4">
+    <button type="submit" class="btn btn-main btn-action">
+        حفظ الفاتورة
+    </button>
+</div>
+
+</form>
+</div>
+
+<!-- ================= السكربتات ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* تاريخ اليوم */
+    const today = new Date().toISOString().split("T")[0];
+const dateInvoice = document.getElementById("date_invoice");
+const deliveryDate = document.getElementById("delivery_date");
+const dateIssue = document.querySelector('input[name="date_issue"]');
+
+if (dateInvoice && !dateInvoice.value) dateInvoice.value = today;
+if (deliveryDate && !deliveryDate.value) deliveryDate.value = today;
+if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا السطر المهم
+
+    /* Select2 (للصف الأول) */
+    $('.cost-center-select').select2({
+        dir:"rtl",
+        width:"100%",
+        placeholder:"اختر مركز تكلفة",
+        allowClear:true
+    });
+
+    /* ===================== حساب صف + المجاميع ===================== */
+    function toNum(v){
+        const n = parseFloat(v);
+        return isNaN(n) ? 0 : n;
+    }
+
+    // ✅ تعديل الخصم فقط: يقرأ "10%" كنسبة و"10" كقيمة
+    function parseDiscount(rawValue, baseAmount){
+        const s = (rawValue || "").toString().trim();
+
+        if (!s) return 0;
+
+        // لو كتب % => نسبة
+        if (s.includes("%")) {
+            const pct = toNum(s.replace("%",""));
+            return (baseAmount * pct) / 100.0;
+        }
+
+        // غير كده قيمة
+        return toNum(s);
+    }
+
+    function calcRow(row){
+        const qty = toNum(row.querySelector(".qty-input")?.value);
+        const price = toNum(row.querySelector(".price-input")?.value);
+        const taxRate = toNum(row.querySelector(".tax-input")?.value);
+
+        const base = qty * price;
+
+        const discountRaw = row.querySelector(".discount-input")?.value;
+        const discount = parseDiscount(discountRaw, base);
+
+        const beforeTax = base - discount;
+        const tax = (beforeTax * taxRate) / 100.0;
+        const afterTax = beforeTax + tax;
+
+        const totalInput = row.querySelector(".row-total");
+        if (totalInput) totalInput.value = afterTax.toFixed(2);
+
+        return {beforeTax, discount, tax, afterTax};
+    }
+
+    function calcAll(){
+        let sumBefore = 0, sumDisc = 0, sumTax = 0, sumAfter = 0;
+
+        document.querySelectorAll("#items_table .item-row").forEach(row => {
+            const r = calcRow(row);
+            sumBefore += r.beforeTax;
+            sumDisc += r.discount;
+            sumTax += r.tax;
+            sumAfter += r.afterTax;
+        });
+
+        document.getElementById("sum_before_tax").value = sumBefore.toFixed(2);
+        document.getElementById("sum_discount").value = sumDisc.toFixed(2);
+        document.getElementById("sum_tax").value = sumTax.toFixed(2);
+        document.getElementById("sum_after_tax").value = sumAfter.toFixed(2);
+    }
+
+    function bindCalcListeners(row){
+        ["input","change"].forEach(evt => {
+            row.querySelectorAll(".qty-input,.price-input,.discount-input,.tax-input").forEach(el => {
+                el.addEventListener(evt, calcAll);
+            });
+        });
+    }
+
+    /* ===================== Helper: Autocomplete Dropdown ===================== */
+    function bindAutocomplete(input, list, hidden, url, onPicked) {
+
+        function getLabel(obj){
+            return (obj.name || obj.commercial_name || obj.text || obj.title || "").toString();
+        }
+
+        function render(data){
+            list.innerHTML = "";
+            list.style.display = "block";
+
+            if (!data || !data.length) {
+                list.innerHTML = '<div class="dropdown-item text-muted">لا يوجد نتائج</div>';
+                return;
+            }
+
+            data.forEach(obj => {
+                const label = getLabel(obj);
+                const d = document.createElement("div");
+                d.className = "dropdown-item";
+                d.textContent = label || "—";
+                d.onclick = () => {
+                    input.value = label;
+                    hidden.value = obj.id;
+                    list.style.display = "none";
+                    if (typeof onPicked === "function") onPicked(obj);
+                };
+                list.appendChild(d);
+            });
+        }
+
+        function load(q){
+            fetch(url + "?q=" + encodeURIComponent(q || ""))
+                .then(r => r.json())
+                .then(render)
+                .catch(() => {
+                    list.innerHTML = '<div class="dropdown-item text-danger">تعذر تحميل البيانات</div>';
+                    list.style.display = "block";
+                });
+        }
+
+        input.addEventListener("focus", () => load(""));
+        input.addEventListener("keyup", () => load(input.value));
+
+        document.addEventListener("click", (e) => {
+            if (!input.closest(".dropdown-box").contains(e.target)) {
+                list.style.display = "none";
+            }
+        });
+    }
+
+    /* ================= المورد ================= */
+    const supplierInput = document.getElementById("supplier_search");
+    const supplierList  = document.getElementById("supplier_list");
+    const supplierId    = document.getElementById("supplier_id");
+
+    if (supplierInput && supplierList && supplierId) {
+        bindAutocomplete(supplierInput, supplierList, supplierId, "/suppliers/api/search/");
+    }
+
+    /* ================= المنتج (مع جلب السعر) ================= */
+    function bindProductRow(row){
+        const input  = row.querySelector(".product-input");
+        const list   = row.querySelector(".dropdown-list");
+        const hidden = row.querySelector(".product-id");
+        const priceInput = row.querySelector(".price-input");
+
+        if (!input || !list || !hidden || !priceInput) return;
+
+        bindAutocomplete(input, list, hidden, "/products/search/", function(obj){
+            fetch("/purchase/api/get-product-price/?product_id=" + obj.id)
+                .then(r => r.json())
+                .then(res => {
+                    priceInput.value = res.price;
+                    calcAll();
+                })
+                .catch(() => {});
+        });
+
+        bindCalcListeners(row);
+    }
+
+    document.querySelectorAll(".item-row").forEach(r => bindProductRow(r));
+
+    /* ================= زر إضافة صف ================= */
+    const addBtn = document.getElementById("add_row_btn");
+    const tbody  = document.getElementById("items_table");
+    const totalRowsInput = document.getElementById("total_rows");
+
+    addBtn.addEventListener("click", function () {
+
+        let current = parseInt(totalRowsInput.value || "1", 10);
+        let next = current + 1;
+
+        const tr = document.createElement("tr");
+        tr.id = "row_" + next;
+        tr.className = "item-row";
+
+        tr.innerHTML = `
+            <td>
+                <div class="dropdown-box">
+                    <input type="text" class="form-control product-input"
+                           placeholder="بحث عن منتج..." autocomplete="off">
+                    <input type="hidden" name="row_${next}_product_id" class="product-id">
+                    <div class="dropdown-list"></div>
+                </div>
+            </td>
+            <td><input type="text" name="row_${next}_desc" class="form-control"></td>
+            <td><input type="number" name="row_${next}_qty" value="1" class="form-control qty-input"></td>
+            <td><input type="number" name="row_${next}_price" value="0" class="form-control price-input"></td>
+
+            <!-- ✅ تعديل الخصم فقط: حقل واحد يقبل 10 أو 10% -->
+            <td><input type="text" name="row_${next}_discount" value="0" class="form-control discount-input" placeholder="مثال: 10 أو 10%"></td>
+
+            <td><input type="number" name="row_${next}_tax" value="15" class="form-control tax-input"></td>
+            <td><input type="number" name="row_${next}_total" class="form-control row-total" readonly></td>
+            <td>
+                <select name="row_${next}_cost_center" class="form-select cost-center-select">
+                    <option value="">اختر مركز تكلفة</option>
+                    {% for cc in cost_centers %}
+                        <option value="{{ cc.id }}">{{ cc.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <button type="button" class="btn btn-delete btn-row-delete">X</button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+        totalRowsInput.value = next;
+
+        $(tr).find('.cost-center-select').select2({
+            dir:"rtl",
+            width:"100%",
+            placeholder:"اختر مركز تكلفة",
+            allowClear:true
+        });
+
+        bindProductRow(tr);
+        calcAll();
+    });
+
+    /* ================= حذف صف ================= */
+    document.addEventListener("click", function(e){
+        if(!e.target.classList.contains("btn-row-delete")) return;
+
+        const row = e.target.closest("tr");
+        if(!row) return;
+
+        if(row.id === "row_1") return;
+
+        $(row).find('.cost-center-select').select2('destroy');
+        row.remove();
+        calcAll();
+    });
+
+    calcAll();
+
+});
+</script>
+
+{% endblock %}

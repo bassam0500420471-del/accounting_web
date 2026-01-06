@@ -1,0 +1,168 @@
+{% extends "layout/base.html" %}
+
+{% block title %}قائمة الدخل{% endblock %}
+
+{% block content %}
+
+<!-- ================= Select2 ================= -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-center mb-4">
+        📈 قائمة الدخل حسب مركز التكلفة
+    </h2>
+
+    <!-- ================= الفلاتر ================= -->
+    <form method="get" class="row g-3 mb-4 justify-content-center">
+
+        <div class="col-md-3">
+            <label class="form-label fw-bold">من تاريخ</label>
+            <input type="date"
+                   name="date_from"
+                   value="{{ request.GET.date_from }}"
+                   class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label fw-bold">إلى تاريخ</label>
+            <input type="date"
+                   name="date_to"
+                   value="{{ request.GET.date_to }}"
+                   class="form-control">
+        </div>
+
+        <!-- ✅ مراكز تكلفة متعددة -->
+        <div class="col-md-4">
+            <label class="form-label fw-bold">مراكز التكلفة</label>
+            <select name="cost_centers"
+                    class="form-select select2"
+                    multiple
+                    data-placeholder="اختر مراكز التكلفة">
+                {% for cc in cost_centers %}
+                    <option value="{{ cc.id }}"
+                        {% if cc.id|stringformat:"s" in selected_cost_centers %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ cc.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100 fw-bold">
+                عرض
+            </button>
+        </div>
+
+    </form>
+
+    <!-- ================= الإيرادات ================= -->
+    <h4 class="fw-bold text-success">الإيرادات</h4>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>الكود</th>
+                <th>الحساب</th>
+                <th class="text-end">القيمة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in revenues %}
+            <tr>
+                <td>{{ r.code }}</td>
+                <td>{{ r.name }}</td>
+                <td class="text-end text-success fw-bold">
+                    {{ r.amount|floatformat:2 }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">
+                    لا توجد إيرادات
+                </td>
+            </tr>
+            {% endfor %}
+            <tr class="fw-bold">
+                <td colspan="2">إجمالي الإيرادات</td>
+                <td class="text-end text-success">
+                    {{ total_revenues|floatformat:2 }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ================= المصروفات ================= -->
+    <h4 class="fw-bold text-danger mt-4">المصروفات</h4>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>الكود</th>
+                <th>الحساب</th>
+                <th class="text-end">القيمة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in expenses %}
+            <tr>
+                <td>{{ e.code }}</td>
+                <td>{{ e.name }}</td>
+                <td class="text-end text-danger fw-bold">
+                    {{ e.amount|floatformat:2 }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">
+                    لا توجد مصروفات
+                </td>
+            </tr>
+            {% endfor %}
+            <tr class="fw-bold">
+                <td colspan="2">إجمالي المصروفات</td>
+                <td class="text-end text-danger">
+                    {{ total_expenses|floatformat:2 }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ================= الصافي ================= -->
+    <div class="card mt-4 shadow-sm
+        {% if net_profit >= 0 %}
+            border-success
+        {% else %}
+            border-danger
+        {% endif %}
+    ">
+        <div class="card-body text-center">
+            <h4 class="fw-bold mb-2">صافي الربح / الخسارة</h4>
+            <h2 class="fw-bold
+                {% if net_profit >= 0 %}
+                    text-success
+                {% else %}
+                    text-danger
+                {% endif %}
+            ">
+                {{ net_profit|floatformat:2 }}
+            </h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= تفعيل Select2 ================= -->
+<script>
+$(document).ready(function () {
+    $('.select2').select2({
+        width: '100%',
+        dir: 'rtl'
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">إدارة المشتريات</h3>
+        <a href="/purchase/invoices/add/" class="btn btn-primary">+ إضافة فاتورة مشتريات</a>
+    </div>
+
+    <table class="table align-middle table-hover table-bordered">
+
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>المورد</th>
+                <th>عدد الفواتير</th>
+                <th>الرصيد</th>
+                <th>الحالة</th>
+                <th class="text-center">إجراءات</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for s in suppliers %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+
+                <td>{{ s.commercial_name }}</td>
+
+                <td>{{ s.invoices_count }}</td>
+
+                <td>{{ s.balance|floatformat:2 }}</td>
+
+                <td>
+                    <span class="badge bg-{{ s.status_color }}">
+                        {{ s.status }}
+                    </span>
+                </td>
+
+                <td class="text-center">
+                    <div class="dropdown">
+                        <button class="btn btn-light" data-bs-toggle="dropdown">⋮</button>
+                        <ul class="dropdown-menu text-end">
+                            <li>
+                                <a class="dropdown-item" href="/suppliers/{{ s.id }}/edit/">
+                                    ✏️ تعديل المورد
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/purchase/invoices/?supplier={{ s.id }}">
+                                    📄 عرض فواتير المورد
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

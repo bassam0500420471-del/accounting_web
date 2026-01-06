@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}النظام المحاسبي ERP{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f0f0f0;
+            font-family: Tahoma, sans-serif;
+            margin: 0;
+        }
+
+        .layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ============= Sidebar ============= */
+        .sidebar {
+            width: 260px;
+            background: #2D3033;
+            color: #ffffff;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h4 {
+            font-size: 22px;
+            color: #ffffff !important;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sidebar h5 {
+            font-size: 15px;
+            text-align: center;
+            color: #e5e5e5 !important;
+            margin-bottom: 25px;
+        }
+
+        .menu-btn {
+            width: 100%;
+            background: #3A3D40;
+            color: #e5e5e5;
+            border: 1px solid #4a4a4a;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .menu-btn:hover,
+        .menu-btn.active {
+            background: #45484b;
+        }
+
+        .menu-arrow {
+            color: #ffffff !important;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* زر + */
+        .menu-plus {
+            color: #7bdcff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .submenu {
+            padding-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .submenu a {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .page-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 100%;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #222 !important;
+            font-weight: bold;
+        }
+
+        i, svg, .bi {
+            color: #4da3ff !important;
+        }
+
+        a i, button i {
+            color: #4da3ff !important;
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- ===== Sidebar ===== -->
+    <div class="sidebar">
+        <h4>النظام المحاسبي</h4>
+        <h5>ERP</h5>
+
+        <!-- لوحة التحكم -->
+        <a href="/dashboard/" class="menu-btn {% if '/dashboard' in request.path %}active{% endif %}">
+            <span>لوحة التحكم</span>
+            <span class="menu-arrow">▶</span>
+        </a>
+
+        <!-- ========================== المبيعات ========================== -->
+<!-- ========================== المبيعات ========================== -->
+<button class="menu-btn menu-toggle">
+    <span>المبيعات</span>
+    <span class="menu-arrow">▶</span>
+</button>
+
+<div class="submenu" style="display:none;">
+
+    <!-- العملاء -->
+    <div class="menu-btn {% if '/customers' in request.path %}active{% endif %}">
+        <a href="/customers/" style="flex:1; text-decoration:none; color:#e5e5e5;">العملاء</a>
+        <a href="/customers/add/" class="menu-plus">+</a>
+    </div>
+
+    <!-- فواتير المبيعات -->
+    <div class="menu-btn {% if '/sales/invoices' in request.path %}active{% endif %}">
+        <a href="/sales/invoices/" style="flex:1; text-decoration:none; color:#e5e5e5;">فواتير المبيعات</a>
+        <a href="/sales/invoices/add/" class="menu-plus">+</a>
+    </div>
+
+    <!-- عروض الأسعار -->
+    <div class="menu-btn {% if '/quotations' in request.path %}active{% endif %}">
+        <a href="/quotations/" style="flex:1; text-decoration:none; color:#e5e5e5;">عروض الأسعار</a>
+        <a href="/quotations/add/" class="menu-plus">+</a>
+    </div>
+
+</div>
+        <!-- ========================== المشتريات ========================== -->
+<!-- ========================== المشتريات ========================== -->
+<button class="menu-btn menu-toggle">
+    <span>المشتريات</span>
+    <span class="menu-arrow">▶</span>
+</button>
+
+<div class="submenu" style="display:none;">
+
+    <!-- الموردين -->
+    <div class="menu-btn {% if '/suppliers' in request.path %}active{% endif %}">
+        <a href="/suppliers/" style="flex:1; text-decoration:none; color:#e5e5e5;">الموردين</a>
+        <a href="/suppliers/add/" class="menu-plus">+</a>
+    </div>
+
+    <!-- أوامر الشراء -->
+    <div class="menu-btn {% if '/purchases/orders' in request.path %}active{% endif %}">
+        <a href="/purchases/orders/" style="flex:1; text-decoration:none; color:#e5e5e5;">أوامر الشراء</a>
+        <a href="/purchases/orders/add/" class="menu-plus">+</a>
+    </div>
+
+    <!-- فواتير المشتريات -->
+    <div class="menu-btn {% if '/purchases/invoices' in request.path %}active{% endif %}">
+        <a href="/purchases/invoices/" style="flex:1; text-decoration:none; color:#e5e5e5;">فواتير المشتريات</a>
+        <a href="/purchases/invoices/add/" class="menu-plus">+</a>
+    </div>
+
+</div>
+
+        <!-- ========================== الموارد البشرية ========================== -->
+        <button class="menu-btn menu-toggle">
+            <span>الموارد البشرية</span>
+            <span class="menu-arrow">▶</span>
+        </button>
+
+        <div class="submenu" style="display:none;">
+            <a href="/hr/employees/"
+               class="menu-btn {% if '/hr/employees' in request.path %}active{% endif %}">
+                الموظفين
+                <span class="menu-plus">+</span>
+            </a>
+
+            <a href="/hr/salaries/"
+               class="menu-btn {% if '/hr/salaries' in request.path %}active{% endif %}">
+                الرواتب
+                <span class="menu-plus">+</span>
+            </a>
+        </div>
+
+        <!-- ========================== المخزون ========================== -->
+        <button class="menu-btn menu-toggle">
+            <span>المنتجات والمخزون</span>
+            <span class="menu-arrow">▶</span>
+        </button>
+
+        <div class="submenu" style="display:none;">
+            <a href="/products/"
+               class="menu-btn {% if '/products' in request.path %}active{% endif %}">
+                إدارة المنتجات
+                <span class="menu-plus">+</span>
+            </a>
+
+            <a href="/inventory/"
+               class="menu-btn {% if '/inventory' in request.path %}active{% endif %}">
+                إدارة المخزون
+                <span class="menu-plus">+</span>
+            </a>
+        </div>
+
+        <!-- ========================== المحاسبة ========================== -->
+        <button class="menu-btn menu-toggle">
+            <span>المحاسبة</span>
+            <span class="menu-arrow">▶</span>
+        </button>
+
+        <div class="submenu" style="display:none;">
+            <a href="/accounts/journal/"
+               class="menu-btn {% if '/accounts/journal' in request.path %}active{% endif %}">
+                القيود اليومية
+                <span class="menu-plus">+</span>
+            </a>
+
+            <a href="/accounts/chart/"
+               class="menu-btn {% if '/accounts/chart' in request.path %}active{% endif %}">
+                شجرة الحسابات
+                <span class="menu-plus">+</span>
+            </a>
+        </div>
+
+        <!-- ========================== التقارير ========================== -->
+        <button class="menu-btn menu-toggle">
+            <span>التقارير</span>
+            <span class="menu-arrow">▶</span>
+        </button>
+
+        <div class="submenu" style="display:none;">
+            <a href="/reports/sales/"
+               class="menu-btn {% if '/reports/sales' in request.path %}active{% endif %}">
+                تقارير المبيعات
+                <span class="menu-plus">+</span>
+            </a>
+
+            <a href="/reports/purchases/"
+               class="menu-btn {% if '/reports/purchases' in request.path %}active{% endif %}">
+                تقارير المشتريات
+                <span class="menu-plus">+</span>
+            </a>
+        </div>
+
+        <!-- إعدادات الشركة -->
+        <a href="/settings/" class="menu-btn {% if '/settings' in request.path %}active{% endif %}">
+            <span>إعدادات الشركة</span>
+            <span class="menu-arrow">▶</span>
+        </a>
+
+    </div> <!-- /sidebar -->
+
+
+    <!-- ===== Content ===== -->
+    <div class="content-wrapper">
+        <div class="page-box">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== Bootstrap Scripts ===== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggles = document.querySelectorAll(".menu-toggle");
+
+    toggles.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const submenu = this.nextElementSibling;
+            if (!submenu) return;
+
+            const isOpen = submenu.style.display === "block";
+            submenu.style.display = isOpen ? "none" : "block";
+
+            const arrow = this.querySelector(".menu-arrow");
+            arrow.textContent = isOpen ? "▶" : "▼";
+        });
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,444 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<style>
+    .dropdown-box {
+        position: relative;
+        width: 100%;
+    }
+    .dropdown-list {
+        position: absolute;
+        top: 40px;
+        right: 0;
+        width: 100%;
+        max-height: 220px;
+        overflow-y: auto;
+        background: #fff;
+        border: 2px solid #0d6efd;
+        border-top: none;
+        z-index: 9999;
+        border-radius: 0 0 8px 8px;
+        display: none;
+    }
+    .dropdown-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+    .dropdown-item:hover {
+        background: #e7f1ff;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <h3 class="mb-4">
+        {% if edit_mode %}
+            تعديل أمر شراء رقم {{ po.po_no }}
+        {% else %}
+            إنشاء أمر شراء
+        {% endif %}
+    </h3>
+
+<form method="post" id="po_form">
+    {% csrf_token %}
+
+    <input type="hidden" id="total_rows" name="total_rows" value="1">
+
+    <div class="card p-4">
+
+        <!-- التاريخ -->
+        <div class="row mb-3">
+
+            <div class="col-md-4">
+                <label>رقم أمر الشراء:</label>
+                <input type="number" class="form-control" name="po_no"
+                       value="{% if edit_mode %}{{ po.po_no }}{% else %}{{ next_number }}{% endif %}">
+            </div>
+
+            <div class="col-md-4">
+                <label>تاريخ الإصدار:</label>
+                <input type="date" id="date_issue" name="date_issue" class="form-control"
+                       value="{% if edit_mode %}{{ po.date_issue|date:'Y-m-d' }}{% endif %}">
+            </div>
+
+            <div class="col-md-4">
+                <label>تاريخ التسليم:</label>
+                <input type="date" id="date_delivery" name="date_delivery" class="form-control"
+                       value="{% if edit_mode %}{{ po.date_delivery|date:'Y-m-d' }}{% endif %}">
+            </div>
+
+        </div>
+
+        <!-- المورد -->
+        <div class="row mb-3">
+
+            <div class="col-md-10">
+                <label>المورد:</label>
+                <div class="dropdown-box">
+                    <input type="text" id="supplier_search" class="form-control"
+                           placeholder="بحث عن مورد..." autocomplete="off">
+
+                    <input type="hidden" id="supplier_id" name="supplier">
+
+                    <div id="supplier_list" class="dropdown-list"></div>
+                </div>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="button" class="btn btn-secondary w-100"
+                        onclick="window.location.href='{% url "supplier_add_from_purchase" %}'">
+                    + إضافة مورد
+                </button>
+            </div>
+
+        </div>
+
+        <!-- الوصف -->
+        <div class="mb-3">
+            <label>الوصف:</label>
+            <textarea name="description" class="form-control">{% if edit_mode %}{{ po.description }}{% endif %}</textarea>
+        </div>
+
+        <!-- زر إضافة منتج -->
+        <div class="text-end mt-2 mb-2">
+            <button type="button" class="btn btn-secondary"
+                    onclick="window.location.href='/products/add/?return=po'">
+                + إضافة منتج
+            </button>
+        </div>
+
+        <!-- جدول الأصناف -->
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>الصنف</th>
+                    <th>الوصف</th>
+                    <th>الكمية</th>
+                    <th>السعر</th>
+                    <th>الخصم</th>
+                    <th>الضريبة%</th>
+                    <th>الإجمالي</th>
+                    <th>حذف</th>
+                </tr>
+            </thead>
+
+            <tbody id="items_table">
+
+            <tr id="row_1" class="item-row">
+
+                <td style="width:23%;">
+                    <div class="dropdown-box">
+                        <input type="text" class="form-control product-input"
+                               placeholder="بحث عن منتج..." autocomplete="off">
+                        <input type="hidden" class="product-id" name="row_1_product_id">
+                        <div class="dropdown-list"></div>
+                    </div>
+                </td>
+
+                <td><input type="text" name="row_1_desc" class="form-control row-desc"></td>
+
+                <td><input type="number" name="row_1_qty" value="1"
+                           class="form-control row-qty"
+                           oninput="calculateRow(1)"></td>
+
+                <td><input type="number" name="row_1_price" value="0"
+                           class="form-control row-price"
+                           oninput="calculateRow(1)"></td>
+
+                <td><input type="number" name="row_1_discount" value="0"
+                           class="form-control row-discount"
+                           oninput="calculateRow(1)"></td>
+
+                <td><input type="number" name="row_1_tax" value="15"
+                           class="form-control row-tax"
+                           oninput="calculateRow(1)"></td>
+
+                <td><input type="number" name="row_1_total"
+                           class="form-control row-total" readonly></td>
+
+                <td><button type="button" class="btn btn-danger"
+                            onclick="deleteRow(1)">X</button></td>
+
+            </tr>
+
+            </tbody>
+        </table>
+
+        <!-- زر إضافة صف -->
+        <div class="text-end mt-2">
+            <button type="button" class="btn btn-secondary" onclick="addRow()">
+                + إضافة صف
+            </button>
+        </div>
+
+    </div>
+
+    <!-- المجاميع -->
+    <div class="mt-4">
+
+        <div class="mb-3 row">
+            <label class="col-md-3 text-end fw-bold">الإجمالي قبل الضريبة:</label>
+            <div class="col-md-4">
+                <input type="number" id="total_before" name="total_before_tax"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 text-end fw-bold">إجمالي الخصم:</label>
+            <div class="col-md-4">
+                <input type="number" id="total_discount" name="total_discount"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 text-end fw-bold">إجمالي الضريبة:</label>
+            <div class="col-md-4">
+                <input type="number" id="total_tax" name="tax_value"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label class="col-md-3 text-end fw-bold">الإجمالي النهائي:</label>
+            <div class="col-md-4">
+                <input type="number" id="final_total" name="total"
+                       class="form-control" readonly>
+            </div>
+        </div>
+
+    </div>
+
+<input type="hidden" id="total_after_discount" name="total_after_discount">
+<input type="hidden" id="total_after_tax_submit" name="total_after_tax">
+
+<div class="text-end mt-3 mb-5">
+    <button type="submit" class="btn btn-secondary btn-lg px-5">
+        حفظ أمر الشراء
+    </button>
+</div>
+
+<script>
+document.getElementById("po_form").addEventListener("submit", function() {
+    calculateTotals();
+
+    document.getElementById("total_after_discount").value =
+        document.getElementById("total_discount").value;
+
+    document.getElementById("total_after_tax_submit").value =
+        document.getElementById("final_total").value;
+});
+</script>
+
+</form>
+</div>
+
+<script>
+document.getElementById("supplier_search").addEventListener("keyup", function () {
+    loadSuppliers(this.value.trim());
+});
+
+document.getElementById("supplier_search").addEventListener("focus", function () {
+    loadSuppliers("");
+});
+
+function loadSuppliers(q) {
+    const list = document.getElementById("supplier_list");
+
+    fetch(`/suppliers/search/?q=${q}`)
+        .then(r => r.json())
+        .then(data => {
+            list.innerHTML = "";
+            list.style.display = "block";
+
+            data.forEach(s => {
+                const div = document.createElement("div");
+                div.className = "dropdown-item";
+                div.textContent = s.name;
+
+                div.onclick = () => {
+                    supplier_search.value = s.name;
+                    supplier_id.value = s.id;
+                    list.style.display = "none";
+                };
+
+                list.appendChild(div);
+            });
+        });
+}
+</script>
+
+<script>
+function attachProductSearch(row) {
+    const tr = document.getElementById(`row_${row}`);
+    const input = tr.querySelector(".product-input");
+
+    input.addEventListener("focus", () => loadProducts(row));
+
+    input.addEventListener("keyup", function () {
+        loadProducts(row, this.value.trim());
+    });
+}
+
+function loadProducts(row, q="") {
+    fetch(`/products/search/?q=${q}`)
+        .then(r => r.json())
+        .then(data => showProducts(row, data));
+}
+
+function showProducts(row, list) {
+    const tr = document.getElementById(`row_${row}`);
+    const box = tr.querySelector(".dropdown-box");
+    const input = tr.querySelector(".product-input");
+    const idField = tr.querySelector(".product-id");
+    const priceField = tr.querySelector(".row-price");
+    const dropdown = tr.querySelector(".dropdown-list");
+
+    dropdown.innerHTML = "";
+    dropdown.style.display = "block";
+
+    list.forEach(p => {
+        let div = document.createElement("div");
+        div.className = "dropdown-item";
+        div.textContent = `${p.name} — ${p.price} ريال`;
+
+        div.onclick = () => {
+            input.value = p.name;
+            idField.value = p.id;
+            priceField.value = p.price;
+            calculateRow(row);
+            dropdown.style.display = "none";
+        };
+
+        dropdown.appendChild(div);
+    });
+}
+
+attachProductSearch(1);
+</script>
+
+<script>
+let rowIndex = 1;
+
+function addRow() {
+    rowIndex++;
+
+    let tbody = document.getElementById("items_table");
+
+    let tr = document.createElement("tr");
+    tr.id = `row_${rowIndex}`;
+    tr.className = "item-row";
+
+    tr.innerHTML = `
+        <td>
+            <div class="dropdown-box">
+                <input type="text" class="form-control product-input" placeholder="بحث عن منتج..." autocomplete="off">
+                <input type="hidden" name="row_${rowIndex}_product_id" class="product-id">
+                <div class="dropdown-list"></div>
+            </div>
+        </td>
+
+        <td><input type="text" name="row_${rowIndex}_desc" class="form-control row-desc"></td>
+
+        <td><input type="number" name="row_${rowIndex}_qty" value="1"
+                   class="form-control row-qty" oninput="calculateRow(${rowIndex})"></td>
+
+        <td><input type="number" name="row_${rowIndex}_price" value="0"
+                   class="form-control row-price" oninput="calculateRow(${rowIndex})"></td>
+
+        <td><input type="number" name="row_${rowIndex}_discount" value="0"
+                   class="form-control row-discount" oninput="calculateRow(${rowIndex})"></td>
+
+        <td><input type="number" name="row_${rowIndex}_tax" value="15"
+                   class="form-control row-tax" oninput="calculateRow(${rowIndex})"></td>
+
+        <td><input type="number" name="row_${rowIndex}_total"
+                   class="form-control row-total" readonly></td>
+
+        <td><button type="button" class="btn btn-danger"
+                    onclick="deleteRow(${rowIndex})">X</button></td>
+    `;
+
+    tbody.appendChild(tr);
+
+    attachProductSearch(rowIndex);
+
+    document.getElementById("total_rows").value = rowIndex;
+}
+</script>
+
+<script>
+function calculateRow(row) {
+    const tr = document.getElementById(`row_${row}`);
+
+    const qty = parseFloat(tr.querySelector(".row-qty").value) || 0;
+    const price = parseFloat(tr.querySelector(".row-price").value) || 0;
+    const discount = parseFloat(tr.querySelector(".row-discount").value) || 0;
+    const tax = parseFloat(tr.querySelector(".row-tax").value) || 0;
+
+    const subtotal = qty * price;
+    const afterDiscount = subtotal - discount;
+    const taxValue = afterDiscount * (tax / 100);
+    const total = afterDiscount + taxValue;
+
+    tr.querySelector(".row-total").value = total.toFixed(2);
+
+    calculateTotals();
+}
+
+function calculateTotals() {
+    let rows = document.querySelectorAll(".item-row");
+
+    let totalBefore = 0;
+    let totalDiscount = 0;
+    let totalTax = 0;
+    let finalTotal = 0;
+
+    rows.forEach(tr => {
+        const qty = parseFloat(tr.querySelector(".row-qty").value) || 0;
+        const price = parseFloat(tr.querySelector(".row-price").value) || 0;
+        const discount = parseFloat(tr.querySelector(".row-discount").value) || 0;
+        const tax = parseFloat(tr.querySelector(".row-tax").value) || 0;
+
+        const subtotal = qty * price;
+        const afterDiscount = subtotal - discount;
+        const taxValue = afterDiscount * (tax / 100);
+        const total = afterDiscount + taxValue;
+
+        totalBefore += subtotal;
+        totalDiscount += discount;
+        totalTax += taxValue;
+        finalTotal += total;
+    });
+
+    document.getElementById("total_before").value = totalBefore.toFixed(2);
+    document.getElementById("total_discount").value = totalDiscount.toFixed(2);
+    document.getElementById("total_tax").value = totalTax.toFixed(2);
+    document.getElementById("final_total").value = finalTotal.toFixed(2);
+}
+</script>
+
+<script>
+document.addEventListener("click", function (e) {
+    document.querySelectorAll(".dropdown-list").forEach(list => {
+        const box = list.parentElement;
+        if (!box.contains(e.target)) {
+            list.style.display = "none";
+        }
+    });
+});
+</script>
+
+<script>
+{% if not edit_mode %}
+document.getElementById("date_issue").value =
+    new Date().toISOString().split('T')[0];
+
+document.getElementById("date_delivery").value =
+    new Date().toISOString().split('T')[0];
+{% endif %}
+</script>
+
+{% endblock %}

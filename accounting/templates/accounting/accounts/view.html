@@ -1,0 +1,55 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<h3 class="fw-bold mb-3">عرض الحساب</h3>
+
+<table class="table table-bordered">
+    <tr>
+        <th>الاسم</th>
+        <td>{{ account.name }}</td>
+    </tr>
+    <tr>
+        <th>الرمز</th>
+        <td>{{ account.code }}</td>
+    </tr>
+    <tr>
+        <th>النوع</th>
+        <td>{{ account.account_type }}</td>
+    </tr>
+    <tr>
+        <th>الطبيعة</th>
+        <td>{{ account.nature }}</td>
+    </tr>
+</table>
+
+<a href="{% url 'accounting:chart_tree' %}" class="btn btn-secondary">
+    رجوع للشجرة
+</a>
+<hr>
+
+<h5 class="fw-bold text-end mb-3">الحسابات الفرعية</h5>
+
+{% if children %}
+    {% for child in children %}
+        <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+
+            <div>
+                <strong>{{ child.code }}</strong> - {{ child.name }}
+            </div>
+
+            <div>
+                <a href="{% url 'accounting:account_view' child.pk %}"
+                   class="btn btn-sm btn-outline-primary">
+                    عرض
+                </a>
+            </div>
+
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-secondary text-center">
+        لا توجد حسابات فرعية
+    </div>
+{% endif %}
+
+{% endblock %}

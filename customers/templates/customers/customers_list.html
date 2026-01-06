@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid mt-4">
+<style>
+.filter-input {
+    text-align: center;
+    border: 1px solid #6c757d !important;
+    border-radius: 6px;
+}
+
+.filter-input::placeholder {
+    text-align: center;
+    color: #6c757d;
+}
+</style>
+
+
+<style>
+.filter-input::placeholder {
+    text-align: center;
+}
+.filter-input {
+    text-align: center;
+}
+</style>
+
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+<h3 class="fw-bold text-center mb-4">قائمة العملاء</h3>
+
+<div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
+    <a href="/customers/add" class="btn btn-secondary">+ إضافة عميل</a>
+</div>
+    </div>
+
+<table class="table text-center">
+    <thead>
+
+        <!-- صف الفلاتر -->
+        <tr>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث العميل"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث عدد الفواتير"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرصيد"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الحالة"></th>
+            <th></th> <!-- عمود الإجراءات بدون فلتر -->
+        </tr>
+
+        <!-- صف العناوين الأصلي -->
+        <tr class="table-dark">
+            <th>#</th>
+            <th>العميل</th>
+            <th>عدد الفواتير</th>
+            <th>الرصيد</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        {% for c in customers %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+
+            <!-- اسم العميل -->
+            <td>{{ c.name }}</td>
+
+            <!-- عدد الفواتير -->
+            <td>{{ c.invoice_count }}</td>
+
+            <!-- الرصيد -->
+            <td>{{ c.balance }}</td>
+
+            <!-- الحالة -->
+            <td>
+{% if c.balance > 0 %}
+    <span class="badge" style="background:#6c757d; color:white;">مدين</span>
+{% elif c.balance < 0 %}
+    <span class="badge" style="background:#6c757d; color:white;">دائن</span>
+{% else %}
+    <span class="badge" style="background:#6c757d; color:white;">متوازن</span>
+{% endif %}
+            </td>
+
+            <!-- زر الإجراءات – مثل أوامر الشراء بالضبط -->
+            <td>
+                <div class="dropdown">
+<button class="btn btn-secondary dropdown-toggle">
+    خيارات
+</button>
+
+                    <ul class="dropdown-menu text-end">
+                        <li><a class="dropdown-item" href="/customers/view/{{ c.id }}">عرض</a></li>
+                        <li><a class="dropdown-item" href="/customers/edit/{{ c.id }}">تعديل</a></li>
+                        <li><a class="dropdown-item text-danger" href="/customers/delete/{{ c.id }}">حذف</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const filterInputs = document.querySelectorAll(".filter-input");
+    const rows = document.querySelectorAll("tbody tr");
+
+    filterInputs.forEach((input, colIndex) => {
+        input.addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+
+            rows.forEach(row => {
+                const cell = row.querySelectorAll("td")[colIndex];
+                if (cell) {
+                    const text = cell.textContent.toLowerCase();
+                    row.style.display = text.includes(value) ? "" : "none";
+                }
+            });
+        });
+    });
+});
+</script>
+
+{% endblock %}

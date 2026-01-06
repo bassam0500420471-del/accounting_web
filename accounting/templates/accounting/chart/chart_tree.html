@@ -1,0 +1,148 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- jsTree -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/jstree@3.3.15/dist/themes/default/style.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jstree@3.3.15/dist/jstree.min.js"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+    #chartTree {
+        direction: rtl;
+        font-size: 18px;
+        line-height: 1.9;
+    }
+
+    /* صف العقدة */
+    .tree-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    /* الأزرار */
+    .tree-actions {
+        margin-left: auto;        /* ✅ مهم مع RTL */
+        display: none;
+        gap: 10px;
+    }
+
+    .tree-actions i {
+        cursor: pointer;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .tree-actions i:hover {
+        color: #0d6efd;
+    }
+
+    .tree-actions .delete {
+        color: #dc3545;
+    }
+
+    /* إظهار الأزرار عند المرور */
+    .jstree-anchor:hover .tree-actions {
+        display: inline-flex;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="fw-bold text-end mb-3">شجرة الحسابات</h4>
+            <div id="chartTree"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function () {
+
+    const tree = $("#chartTree").jstree({
+        core: {
+            data: {
+                url: "{% url 'accounting:chart_tree_api' %}",
+                data: function (node) {
+                    return { id: node.id };   // ⭐ أساسي
+                },
+                dataType: "json"
+            },
+            themes: {
+                dots: true,
+                icons: true
+            }
+        },
+        plugins: ["wholerow"],
+        rtl: true
+    });
+
+    // بعد تحميل الجذور
+    $("#chartTree").on("loaded.jstree", function () {
+        $("#chartTree li").each(function () {
+            injectActions($(this));
+        });
+    });
+
+    // عند فتح عقدة
+    $("#chartTree").on("open_node.jstree", function (e, data) {
+        data.node.children_d.forEach(function (id) {
+            injectActions($("#" + id));
+        });
+    });
+
+    function injectActions($li) {
+        if ($li.find(".tree-actions").length) return;
+
+        const node = tree.jstree(true).get_node($li.attr("id"));
+        if (!node) return;
+
+        const id = node.id;
+
+        let actions = `
+            <span class="tree-actions">
+                <i class="fa fa-eye"
+                   title="عرض"
+                   onclick="window.location.href='/accounting/accounts/${id}/view/'"></i>
+
+                <i class="fa fa-pen"
+                   title="تعديل"
+                   onclick="window.location.href='/accounting/accounts/${id}/edit/'"></i>
+
+                <i class="fa fa-plus"
+                   title="إضافة فرع"
+                   onclick="window.location.href='/accounting/accounts/${id}/add-child/'"></i>
+        `;
+
+        // حذف فقط إذا لا يوجد أبناء
+        if (!node.children_d || node.children_d.length === 0) {
+            actions += `
+                <i class="fa fa-trash delete"
+                   title="حذف"
+                   onclick="if(confirm('تأكيد الحذف؟')) {
+                       window.location.href='/accounting/accounts/${id}/delete/';
+                   }"></i>
+            `;
+        }
+
+        actions += `</span>`;
+
+        const textEl = $li.find("> .jstree-anchor");
+        if (!textEl.find(".tree-row").length) {
+            textEl.wrapInner('<span class="tree-row"></span>');
+            textEl.find(".tree-row").append(actions);
+        }
+    }
+
+});
+</script>
+
+{% endblock %}

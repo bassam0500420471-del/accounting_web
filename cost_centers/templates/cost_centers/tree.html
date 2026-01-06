@@ -1,0 +1,79 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>شجرة مراكز التكلفة</h4>
+        <a href="{% url 'cost_center_add' %}" class="btn btn-primary">
+            ➕ إضافة مركز تكلفة
+        </a>
+    </div>
+
+    {% if roots %}
+        <ul class="tree-root">
+            {% for cc in roots %}
+                {% include "cost_centers/tree_node.html" with node=cc %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">
+            لا توجد مراكز تكلفة بعد
+        </div>
+    {% endif %}
+
+</div>
+
+<!-- ================== JS فتح / إغلاق ================== -->
+<script>
+function toggleNode(el) {
+    const children = el.parentElement.nextElementSibling;
+    if (!children) return;
+
+    if (children.classList.contains("d-none")) {
+        children.classList.remove("d-none");
+        el.textContent = "▼";
+    } else {
+        children.classList.add("d-none");
+        el.textContent = "▶";
+    }
+}
+</script>
+
+<style>
+/* ================== شكل شجرة الحسابات ================== */
+.tree-root,
+.tree-root ul {
+    list-style: none;
+    padding-right: 20px;
+}
+
+.tree-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+}
+
+.toggle {
+    cursor: pointer;
+    color: #0d6efd;
+    width: 16px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.toggle-empty {
+    width: 16px;
+}
+
+.node-name {
+    font-weight: 500;
+}
+
+.tree-children {
+    margin-top: 4px;
+}
+</style>
+
+{% endblock %}

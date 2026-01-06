@@ -1,0 +1,53 @@
+{% extends "layout/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-center mb-4">تفاصيل إشعار مدين (مرتجع)</h2>
+
+    <!-- بيانات المرتجع -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label class="fw-bold">رقم المرتجع:</label>
+            <input type="text" class="form-control" value="{{ return.return_no }}" readonly>
+        </div>
+        <div class="col-md-6">
+            <label class="fw-bold">تاريخ المرتجع:</label>
+            <input type="text" class="form-control" value="{{ return.date_return }}" readonly>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label class="fw-bold">المورد:</label>
+        <input type="text" class="form-control" value="{{ return.supplier.name }}" readonly>
+    </div>
+
+    <!-- جدول الأصناف (مطابق للمبيعات) -->
+    <table class="table table-bordered text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>الصنف</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>الخصم</th>
+                <th>% الضريبة</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.original_item.product.name }}</td>
+                <td>{{ item.qty_return }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.discount }}</td>
+                <td>{{ item.tax }}%</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
