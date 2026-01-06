@@ -7,18 +7,21 @@ from pathlib import Path
 import os
 from django.utils.translation import gettext_lazy as _
 
+# ============================================================
+# BASE DIR
+# ============================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ============================================================
+# SECURITY
+# ============================================================
 SECRET_KEY = 'django-insecure-o4=iqm2rkt0b2#@)7!z1h3s6d@267ldq(mcu6$&um5g(o!kiea'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ✅ مهم للسيرفر
+ALLOWED_HOSTS = ["*"]
 
-
-# ============================================================
-# INSTALLED APPS
-# ============================================================
 # ============================================================
 # INSTALLED APPS
 # ============================================================
@@ -30,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django.contrib.humanize',  # ✅ أضف هذا السطر
+    'django.contrib.humanize',
 
     # apps الأساسية
     'cost_centers.apps.CostCentersConfig',
@@ -52,7 +55,7 @@ INSTALLED_APPS = [
     # 💰 السندات / المدفوعات
     'payments',
 
-    # 📊 التقارير (جديد)
+    # 📊 التقارير
     'reports',
 ]
 
@@ -61,6 +64,10 @@ INSTALLED_APPS = [
 # ============================================================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # ✅ مهم جدًا للـ static على السيرفر
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     'django.middleware.locale.LocaleMiddleware',
@@ -73,15 +80,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 # ============================================================
 # URLS / WSGI
 # ============================================================
-
 ROOT_URLCONF = 'accounting_web_project.urls'
-
 WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
-
 
 # ============================================================
 # TEMPLATES
@@ -106,7 +109,6 @@ TEMPLATES = [
     },
 ]
 
-
 # ============================================================
 # DATABASE
 # ============================================================
@@ -117,9 +119,8 @@ DATABASES = {
     }
 }
 
-
 # ============================================================
-# AUTH PASSWORD VALIDATION
+# PASSWORD VALIDATION
 # ============================================================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -127,7 +128,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
-
 
 # ============================================================
 # INTERNATIONALIZATION
@@ -147,7 +147,6 @@ LOCALE_PATHS = [
     BASE_DIR / "locale",
 ]
 
-
 # ============================================================
 # STATIC FILES
 # ============================================================
@@ -157,8 +156,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# ✅ مهم للسيرفر
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ============================================================
 # PDF
