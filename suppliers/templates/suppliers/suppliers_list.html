@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "layout/base.html" %}
 {% block content %}
 
 <div class="container-fluid mt-4">
@@ -17,7 +17,6 @@
     <table class="table table-hover text-center align-middle">
 
         <thead>
-
             <!-- صف الفلاتر -->
             <tr>
                 <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
@@ -37,11 +36,9 @@
                 <th>الحالة</th>
                 <th>الإجراءات</th>
             </tr>
-
         </thead>
 
         <tbody>
-
             {% for s in suppliers %}
             <tr>
                 <td>{{ forloop.counter }}</td>
@@ -55,11 +52,11 @@
                     {% elif s.balance < 0 %}
                         <span class="badge bg-secondary">دائن</span>
                     {% else %}
-                        <span class="badge bg-secondary">متوازن</span>
+                        <span class="badge bg-secondary">متزن</span>
                     {% endif %}
                 </td>
 
-                <!-- ✅ الإجراءات (تم الإصلاح هنا فقط) -->
+                <!-- الإجراءات -->
                 <td>
                     <div class="dropdown">
                         <button class="btn btn-secondary btn-sm dropdown-toggle"
@@ -71,16 +68,13 @@
 
                         <ul class="dropdown-menu text-end">
                             <li>
-                                <a class="dropdown-item"
-                                   href="/suppliers/{{ s.id }}/edit/">
-                                    تعديل
-                                </a>
+                                <a class="dropdown-item" href="/suppliers/{{ s.id }}/edit/">تعديل</a>
                             </li>
                             <li>
                                 <a class="dropdown-item text-danger"
                                    href="/suppliers/{{ s.id }}/delete/"
                                    onclick="return confirm('هل أنت متأكد من الحذف؟');">
-                                    حذف
+                                   حذف
                                 </a>
                             </li>
                         </ul>
@@ -88,7 +82,6 @@
                 </td>
             </tr>
             {% endfor %}
-
         </tbody>
 
     </table>

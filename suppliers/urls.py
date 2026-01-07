@@ -1,21 +1,16 @@
 from django.urls import path
 from . import views
-from . import api_views   # 👈 جديد
+from . import api_views  # جديد للفصل بين APIs العادية والجديدة
 
 urlpatterns = [
-
-    # الصفحات العادية (كما هي)
+    # الصفحات العادية
     path("", views.suppliers_list, name="suppliers_list"),
     path("add/", views.supplier_add, name="supplier_add"),
-    path(
-        "add/from-purchase/",
-        views.supplier_add_from_purchase,
-        name="supplier_add_from_purchase"
-    ),
+    path("add/from-purchase/", views.supplier_add_from_purchase, name="supplier_add_from_purchase"),
     path("edit/<int:supplier_id>/", views.supplier_edit, name="supplier_edit"),
     path("delete/<int:supplier_id>/", views.supplier_delete, name="supplier_delete"),
 
-    # APIs القديمة (كما هي)
+    # APIs القديمة
     path("api/all/", views.all_suppliers, name="all_suppliers"),
     path("api/search/", views.search_suppliers, name="search_suppliers"),
 

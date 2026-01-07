@@ -180,3 +180,13 @@ def all_customers(request):
         list(Customer.objects.all().values("id", "name")),
         safe=False
     )
+
+
+# ================================
+#   تجربة: تحميل base.html مباشرة
+# ================================
+def test_base(request):
+    """
+    View مؤقت لاختبار TemplateDoesNotExist
+    """
+    return render(request, "base.html")

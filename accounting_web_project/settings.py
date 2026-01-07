@@ -24,10 +24,8 @@ DEBUG = True   # ❗ لا ترفعها في الإنتاج
 
 ALLOWED_HOSTS = [
     ".onrender.com",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.onrender.com",
+    "127.0.0.1",
+    "localhost",
 ]
 
 # ============================================================
@@ -95,9 +93,7 @@ WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / "templates",
-        ],
+        'DIRS': [BASE_DIR / "templates"],  # دي مهمة
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

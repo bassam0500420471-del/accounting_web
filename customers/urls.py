@@ -13,4 +13,9 @@ urlpatterns = [
 
     # API الخاصة بمراكز التكلفة (جديدة)
     path('api/customers/', views.api_customers, name='api_customers'),
+
+    # ==============================
+    # تجربة: تحميل base.html مباشرة
+    # ==============================
+    path('test-base/', views.test_base, name='test_base'),
 ]
