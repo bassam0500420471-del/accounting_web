@@ -26,7 +26,6 @@ from accounting.services.journal_service import (
 
 from xhtml2pdf import pisa
 
-
 # =====================================================
 # Helpers
 # =====================================================
@@ -72,7 +71,7 @@ def invoices_list(request):
 
 
 # =====================================================
-# 👁️ عرض فاتورة مشتريات  ✅ (كان ناقص)
+# 👁️ عرض فاتورة مشتريات
 # =====================================================
 def invoice_view(request, pk):
     invoice = get_object_or_404(PurchaseInvoice, pk=pk)
@@ -113,7 +112,6 @@ def invoice_add(request):
     cost_centers = CostCenter.objects.all()
 
     if request.method == "POST":
-
         supplier_id = request.POST.get("supplier")
         if not supplier_id:
             messages.error(request, "❌ يجب اختيار المورد")
@@ -190,7 +188,6 @@ def purchase_return_from_invoice(request, pk):
     invoice = get_object_or_404(PurchaseInvoice, pk=pk)
 
     if request.method == "POST":
-
         reason = request.POST.get("reason", "").strip()
         if not reason:
             messages.error(request, "❌ يجب إدخال سبب الإرجاع")
@@ -281,3 +278,18 @@ def purchase_returns_list(request):
     return render(request, "purchase/returns_list.html", {
         "returns": returns
     })
+
+
+# =====================================================
+# 🟢 API لجلب سعر المنتج عند إضافته في الفاتورة
+# =====================================================
+@require_GET
+def get_product_price(request):
+    product_id = request.GET.get("product_id")
+    if not product_id:
+        return JsonResponse({"price": "0.00"})
+    try:
+        product = Product.objects.get(pk=product_id)
+        return JsonResponse({"price": str(product.purchase_price)})
+    except Product.DoesNotExist:
+        return JsonResponse({"price": "0.00"})

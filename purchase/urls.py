@@ -7,6 +7,7 @@ from .views import (
     invoice_pdf,
     purchase_return_from_invoice,
     purchase_returns_list,
+    get_product_price,  # ✅ استدعاء الفيو الجديد
 )
 
 urlpatterns = [
@@ -38,5 +39,12 @@ urlpatterns = [
         "returns/from-invoice/<int:pk>/",
         purchase_return_from_invoice,
         name="purchase_return_from_invoice"
+    ),
+
+    # ================== API ==================
+    path(
+        "api/get-product-price/",
+        get_product_price,
+        name="purchase_api_get_product_price"
     ),
 ]

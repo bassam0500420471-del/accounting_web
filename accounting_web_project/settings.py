@@ -20,13 +20,23 @@ SECRET_KEY = os.environ.get(
     "dev-insecure-key-for-local-only"
 )
 
-DEBUG = True   # ❗ لا ترفعها في الإنتاج
+DEBUG = True  # مؤقتًا فقط، لاحقًا false في الإنتاج
 
 ALLOWED_HOSTS = [
     ".onrender.com",
     "127.0.0.1",
     "localhost",
 ]
+
+# ============================================================
+# DATABASE - SQLite مؤقت للسيرفر
+# ============================================================
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # تأكد أن الملف موجود على السيرفر
+    }
+}
 
 # ============================================================
 # INSTALLED APPS
@@ -93,7 +103,7 @@ WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],  # دي مهمة
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,16 +116,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# ============================================================
-# DATABASE
-# ============================================================
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 # ============================================================
 # PASSWORD VALIDATION
@@ -150,9 +150,7 @@ LOCALE_PATHS = [
 # STATIC FILES
 # ============================================================
 STATIC_URL = '/static/'
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
 
 # ============================================================
