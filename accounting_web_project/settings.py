@@ -100,10 +100,16 @@ WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
 # ============================================================
 # TEMPLATES
 # ============================================================
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [
+            BASE_DIR / 'templates',  # <--- تأكد أن هذا السطر موجود
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,7 +117,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'accounting.context_processors.available_languages',
             ],
         },
     },

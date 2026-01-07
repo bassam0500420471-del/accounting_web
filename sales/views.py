@@ -20,12 +20,9 @@ from accounting.models import JournalEntry
 
 # 💰 السداد
 from payments.models import PaymentVoucher, VoucherAllocation
-from payments.services.allocation_service import (
-    get_sales_invoice_balance,
-)
+from payments.services.allocation_service import get_sales_invoice_balance
 
 from xhtml2pdf import pisa
-
 
 # ==================================================
 # Helpers
@@ -98,10 +95,7 @@ def invoice_add(request):
             qty = _to_decimal(request.POST.get(f"row_{r}_qty"))
             price = _to_decimal(request.POST.get(f"row_{r}_price"))
             base = qty * price
-            discount = parse_discount_value(
-                request.POST.get(f"row_{r}_discount"),
-                base
-            )
+            discount = parse_discount_value(request.POST.get(f"row_{r}_discount"), base)
 
             SalesItem.objects.create(
                 invoice=invoice,
@@ -119,10 +113,7 @@ def invoice_add(request):
         invoice.total_before_tax = sum(i.qty * i.price for i in items)
         invoice.total_discount = sum(i.discount for i in items)
         invoice.total_after_discount = invoice.total_before_tax - invoice.total_discount
-        invoice.tax_value = sum(
-            i.total - (i.qty * i.price - i.discount)
-            for i in items
-        )
+        invoice.tax_value = sum(i.total - (i.qty * i.price - i.discount) for i in items)
         invoice.total_after_tax = invoice.total_after_discount + invoice.tax_value
         invoice.save()
 
@@ -146,10 +137,7 @@ def invoice_view(request, pk):
         .order_by("receipt_voucher__date")
     )
 
-    payment_vouchers = PaymentVoucher.objects.filter(
-        reference_invoice=invoice
-    ).order_by("created_at")
-
+    payment_vouchers = PaymentVoucher.objects.filter(reference_invoice=invoice).order_by("created_at")
     invoice_balance = get_sales_invoice_balance(invoice)
 
     if invoice_balance <= Decimal("0.00"):
@@ -160,14 +148,14 @@ def invoice_view(request, pk):
         invoice_status = "OPEN"
 
     return render(request, "sales/invoice_view.html", {
-    "FORCE_TEST": "THIS IS OPEN",
         "invoice": invoice,
         "items": invoice.items.all(),
         "receipt_allocations": receipt_allocations,
         "payment_vouchers": payment_vouchers,
         "invoice_balance": invoice_balance,
-        "invoice_status": invoice_status,   # 🔥 هذا كان ناقص
+        "invoice_status": invoice_status,
     })
+
 
 def invoice_delete(request, pk):
     invoice = get_object_or_404(SalesInvoice, pk=pk)
@@ -188,12 +176,7 @@ def invoice_delete(request, pk):
 
 def invoice_pdf(request, pk):
     invoice = get_object_or_404(SalesInvoice, pk=pk)
-
-    html = render_to_string("sales/pdf_template.html", {
-        "invoice": invoice,
-        "items": invoice.items.all(),
-    })
-
+    html = render_to_string("sales/pdf_template.html", {"invoice": invoice, "items": invoice.items.all()})
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="invoice_{invoice.invoice_no}.pdf"'
     pisa.CreatePDF(html, dest=response)
@@ -201,7 +184,7 @@ def invoice_pdf(request, pk):
 
 
 # ==================================================
-# المرتجعات
+# المرتجعات من فاتورة
 # ==================================================
 def returns_list(request):
     returns = ReturnInvoice.objects.all().order_by("-id")
@@ -215,40 +198,29 @@ def create_return(request, pk):
         "items": invoice.items.all(),
     })
 
-
 @transaction.atomic
 def save_return(request, pk):
     invoice = get_object_or_404(SalesInvoice, pk=pk)
-
     total = Decimal("0.00")
     return_items_data = []
 
-    # 🔎 جمع البنود المرتجعة أولاً
     for item in invoice.items.all():
         qty = _to_decimal(request.POST.get(f"qty_{item.id}", "0"))
         if qty <= 0:
             continue
-
         base = qty * item.price
         discount = qty * item.discount
         after_discount = base - discount
         tax = after_discount * item.tax / Decimal("100")
         line_total = after_discount + tax
 
-        return_items_data.append({
-            "item": item,
-            "qty": qty,
-            "line_total": line_total,
-        })
-
+        return_items_data.append({"item": item, "qty": qty, "line_total": line_total})
         total += line_total
 
-    # ❌ لا يوجد أي مرتجع
     if total <= 0:
         messages.error(request, "❌ لم يتم إدخال أي كميات مرتجعة")
         return redirect(f"/sales/return/{invoice.id}/")
 
-    # ✅ الآن فقط ننشئ المرتجع
     return_invoice = ReturnInvoice.objects.create(
         original_invoice=invoice,
         customer=invoice.customer,
@@ -260,7 +232,6 @@ def save_return(request, pk):
     for row in return_items_data:
         item = row["item"]
         qty = row["qty"]
-
         ReturnItem.objects.create(
             return_invoice=return_invoice,
             original_item=item,
@@ -277,15 +248,70 @@ def save_return(request, pk):
 
 
 # ==================================================
+# مرتجع مستقل (بدون فاتورة)
+# ==================================================
+def return_add(request):
+    customers = Customer.objects.all()
+    products = Product.objects.all()
+    cost_centers = CostCenter.objects.filter(status="ACTIVE")
+
+    if request.method == "POST":
+        customer_id = request.POST.get("customer")
+        if not customer_id:
+            messages.error(request, "❌ يجب اختيار العميل")
+            return redirect("sales:sales_return_add")
+
+        customer = get_object_or_404(Customer, id=customer_id)
+        total_rows = int(request.POST.get("total_rows", 0))
+        total = Decimal("0.00")
+
+        return_invoice = ReturnInvoice.objects.create(
+            customer=customer,
+            return_no=get_next_return_number(),
+            description=request.POST.get("description", "")
+        )
+
+        for r in range(1, total_rows + 1):
+            product_id = request.POST.get(f"row_{r}_product_id")
+            if not product_id:
+                continue
+            product = get_object_or_404(Product, id=product_id)
+            qty = _to_decimal(request.POST.get(f"row_{r}_qty"))
+            price = _to_decimal(request.POST.get(f"row_{r}_price"))
+            tax = _to_decimal(request.POST.get(f"row_{r}_tax"))
+            line_total = qty * price + (qty * price * tax / Decimal("100"))
+
+            ReturnItem.objects.create(
+                return_invoice=return_invoice,
+                original_item=None,
+                product=product,
+                qty_return=qty,
+                price=price,
+                tax=tax,
+                total=line_total,
+            )
+            total += line_total
+
+        return_invoice.total_after_tax = total
+        return_invoice.save()
+        create_sales_return_journal(return_invoice)
+        messages.success(request, "✔️ تم حفظ المرتجع المستقل")
+        return redirect("/sales/returns/")
+
+    return render(request, "sales/return_add.html", {
+        "customers": customers,
+        "products": products,
+        "cost_centers": cost_centers,
+    })
+
+
+# ==================================================
 # API
 # ==================================================
 def search_customer(request):
     q = request.GET.get("q", "").strip()
     customers = Customer.objects.filter(name__icontains=q)[:20]
-    return JsonResponse(
-        [{"id": c.id, "name": c.name} for c in customers],
-        safe=False
-    )
+    return JsonResponse([{"id": c.id, "name": c.name} for c in customers], safe=False)
 
 
 def get_invoices_by_customer(request):
@@ -299,7 +325,6 @@ def get_invoices_by_customer(request):
                 "invoice_no": i.invoice_no,
                 "date": i.date_invoice.strftime("%Y-%m-%d") if i.date_invoice else "",
                 "total": float(i.total_after_tax or 0),
-            }
-            for i in invoices
+            } for i in invoices
         ]
     })

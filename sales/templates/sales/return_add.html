@@ -63,7 +63,7 @@ document.getElementById("customerSelect").addEventListener("change", function ()
         return;
     }
 
-    fetch(`/sales/api/customer-invoices/?customer_id=${customerId}`)
+    fetch(`/sales/api/invoices/by-customer/?customer_id=${customerId}`)
         .then(res => res.json())
         .then(data => {
 
@@ -100,7 +100,7 @@ document.getElementById("invoiceSelect").addEventListener("change", function () 
     btn.classList.remove("disabled");
 
     // 🔁 مطابق لمنطق المشتريات
-    btn.href = `/sales/return/${invoiceId}/`;
+    btn.href = "{% url 'sales:create_return' 0 %}".replace("/0/", `/${invoiceId}/`);
 });
 </script>
 
