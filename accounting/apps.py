@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.db.utils import OperationalError, ProgrammingError
 
 class AccountingConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -8,9 +9,13 @@ class AccountingConfig(AppConfig):
         from django.contrib.auth import get_user_model
         User = get_user_model()
 
-        if not User.objects.filter(is_superuser=True).exists():
-            User.objects.create_superuser(
-                username="bassam",
-                email="bassam0500420471@gmail.com",
-                password="12345678"
-            )
+        try:
+            if not User.objects.filter(is_superuser=True).exists():
+                User.objects.create_superuser(
+                    username="bassam",
+                    email="bassam0500420471@gmail.com",
+                    password="12345678"
+                )
+        except (OperationalError, ProgrammingError):
+            # قاعدة البيانات أو الجدول لم يتم إنشاؤه بعد
+            pass
