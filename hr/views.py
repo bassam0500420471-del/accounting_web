@@ -10,6 +10,13 @@ from django.contrib.auth.models import User
 import random
 import string
 
+# ==========================
+# عرض قائمة الموظفين
+# ==========================
+def employee_list(request):
+    employees = Employee.objects.all().order_by("employee_number")
+    return render(request, "hr/employee_list.html", {"employees": employees})
+
 def add_employee(request):
     if request.method == "POST":
         form = EmployeeForm(request.POST, request.FILES)
