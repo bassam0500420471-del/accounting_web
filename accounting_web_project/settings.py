@@ -37,7 +37,8 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': r'E:\accounting_web\db.sqlite3',  # ← المسار الصحيح لقاعدة البيانات
+        'NAME': BASE_DIR / 'db.sqlite3'
+  # ← المسار الصحيح لقاعدة البيانات
     }
 }
 

@@ -10,7 +10,7 @@ urlpatterns = [
     # ==========================
     path('employees/', views.employee_list, name='employee_list'),
     path('employees/add/', views.add_employee, name='add_employee'),
-    path('employees/edit/<int:emp_id>/', views.edit_employee, name='edit_employee'),
+    
     path('employees/delete/<int:emp_id>/', views.delete_employee, name='delete_employee'),
 
     # ==========================
@@ -25,23 +25,13 @@ urlpatterns = [
     # جدول الموظفين
     # ==========================
     # صفحة عرض الجدول
-    path(
-        'employee-schedule/',
-        views.employee_schedule,
-        name='employee_schedule'
-    ),
-    # رابط إنشاء / إضافة جدول
-    path(
-        'employee-schedule/new/',
-        views.employee_schedule,
-        name='add_employee_schedule'
-    ),
+    path('employee-schedule/', views.employee_schedule, name='employee_schedule'),
+
+    # صفحة إنشاء / إضافة جدول جديد
+    path('employee-schedule/new/', views.employee_schedule, name='add_employee_schedule'),
+
     # حفظ الجدول (AJAX POST)
-    path(
-        'employee-schedule/save/',
-        views.add_employee_schedule_ajax,
-        name='add_employee_schedule_ajax'
-    ),
+    path('employee-schedule/save/', views.add_employee_schedule_ajax, name='add_employee_schedule_ajax'),
 
     # ==========================
     # إدارة الإجازات
@@ -67,22 +57,9 @@ urlpatterns = [
     path('reports/', views.hr_reports, name='reports'),
 
     # ==========================
-# ==========================
-# الحضور والانصراف (AJAX جديد)
-# ==========================
-path(
-    'attendance/',
-    views.attendance_page,
-    name='attendance_page'
-),
-path(
-    'attendance/check-in/<int:employee_id>/',
-    views.attendance_check_in_ajax,
-    name='attendance_check_in_ajax'
-),
-path(
-    'attendance/check-out/<int:attendance_id>/',
-    views.attendance_check_out_ajax,
-    name='attendance_check_out_ajax'
-),
+    # الحضور والانصراف (AJAX جديد)
+    # ==========================
+    path('attendance/', views.attendance_page, name='attendance_page'),
+    path('attendance/check-in/<int:employee_id>/', views.attendance_check_in_ajax, name='attendance_check_in_ajax'),
+    path('attendance/check-out/<int:attendance_id>/', views.attendance_check_out_ajax, name='attendance_check_out_ajax'),
 ]

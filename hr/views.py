@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse
-from .models import Employee
+from .models import Employee, Shift, EmployeeSchedule, Attendance
 from .forms import EmployeeForm
 from .utils import generate_employee_number
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.contrib.auth.models import User
+from django.utils import timezone
 import random
 import string
+import json
+from datetime import date, datetime
+import calendar
 
 # ==========================
 # عرض قائمة الموظفين
@@ -27,29 +30,30 @@ def add_employee(request):
             employee.save()
 
             # ===== إنشاء حساب مستخدم للموظف =====
-            password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-            user, created = User.objects.get_or_create(
-                username=employee.email,
-                defaults={"email": employee.email}
-            )
-            if created:
-                user.set_password(password)
-                user.save()
-
-                # ===== إرسال البريد =====
-                login_url = request.build_absolute_uri(reverse("login"))
-                send_mail(
-                    subject="حسابك في النظام",
-                    message=f"مرحبًا {employee.first_name_ar}!\n\n"
-                            f"تم إنشاء حسابك في النظام.\n"
-                            f"اسم المستخدم: {employee.email}\n"
-                            f"كلمة المرور: {password}\n"
-                            f"رابط الدخول: {login_url}\n\n"
-                            "يرجى تغيير كلمة المرور عند أول تسجيل دخول.",
-                    from_email=None,
-                    recipient_list=[employee.email],
-                    fail_silently=False
+            if employee.email:
+                password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                user, created = User.objects.get_or_create(
+                    username=employee.email,
+                    defaults={"email": employee.email}
                 )
+                if created:
+                    user.set_password(password)
+                    user.save()
+
+                    # ===== إرسال البريد =====
+                    login_url = request.build_absolute_uri(reverse("login"))
+                    send_mail(
+                        subject="حسابك في النظام",
+                        message=f"مرحبًا {employee.first_name_ar}!\n\n"
+                                f"تم إنشاء حسابك في النظام.\n"
+                                f"اسم المستخدم: {employee.email}\n"
+                                f"كلمة المرور: {password}\n"
+                                f"رابط الدخول: {login_url}\n\n"
+                                "يرجى تغيير كلمة المرور عند أول تسجيل دخول.",
+                        from_email=None,
+                        recipient_list=[employee.email],
+                        fail_silently=False
+                    )
 
             return redirect("hr:employee_list")
     else:
@@ -64,7 +68,6 @@ def add_employee(request):
         "leave_fields": form.leave_fields,
         "docs_fields": form.docs_fields,
     })
-
 
 def delete_employee(request, emp_id):
     employee = get_object_or_404(Employee, id=emp_id)
@@ -81,7 +84,6 @@ def shifts_view(request):
     shifts = Shift.objects.all().order_by("shift_order")
     return render(request, "hr/shifts_list.html", {"shifts": shifts})
 
-
 def add_shift(request):
     if request.method == "POST":
         Shift.objects.create(
@@ -96,7 +98,6 @@ def add_shift(request):
         return redirect("hr:shifts")
     return render(request, "hr/add_shift.html")
 
-
 def edit_shift(request, shift_id):
     shift = get_object_or_404(Shift, id=shift_id)
     if request.method == "POST":
@@ -110,7 +111,6 @@ def edit_shift(request, shift_id):
         shift.save()
         return redirect("hr:shifts")
     return render(request, "hr/edit_shift.html", {"shift": shift})
-
 
 def delete_shift(request, shift_id):
     shift = get_object_or_404(Shift, id=shift_id)
@@ -216,26 +216,20 @@ def add_employee_schedule_ajax(request):
 def leaves_list(request):
     return render(request, "hr/leaves_list.html")
 
-
 def add_leave(request):
     return render(request, "hr/add_leave.html")
-
 
 def payroll_list(request):
     return render(request, "hr/payroll_list.html")
 
-
 def add_payroll(request):
     return render(request, "hr/add_payroll.html")
-
 
 def evaluation_list(request):
     return render(request, "hr/evaluation_list.html")
 
-
 def add_evaluation(request):
     return render(request, "hr/add_evaluation.html")
-
 
 def hr_reports(request):
     return render(request, "hr/hr_reports.html")
@@ -247,17 +241,12 @@ def hr_reports(request):
 def attendance_page(request):
     today = timezone.now().date()
 
-    # جلب جميع الموظفين (للفلتر فقط)
     all_employees = Employee.objects.filter(active=True).order_by("employee_number")
-
-    # فلتر الموظف
     selected_employee = request.GET.get("employee", "all")
 
-    # فلتر التاريخ
     start_date_str = request.GET.get("start_date", "")
     end_date_str = request.GET.get("end_date", "")
 
-    # تحديد الفترة
     try:
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else today.replace(day=1)
     except ValueError:
@@ -267,7 +256,6 @@ def attendance_page(request):
     except ValueError:
         end_date = today
 
-    # جدول البيانات حسب الفلتر
     employees = all_employees
     if selected_employee != "all":
         try:
@@ -275,12 +263,10 @@ def attendance_page(request):
         except ValueError:
             selected_employee = "all"
 
-    # جلب حضور الفترة
     attendances = Attendance.objects.filter(date__range=(start_date, end_date))
     if selected_employee != "all":
         attendances = attendances.filter(employee_id=selected_employee)
 
-    # بناء attendance_map
     attendance_map = {}
     for att in attendances:
         if att.employee_id not in attendance_map:
@@ -288,8 +274,8 @@ def attendance_page(request):
         attendance_map[att.employee_id][att.date] = att
 
     context = {
-        "all_employees": all_employees,  # لاستخدامه في فلتر الـ dropdown
-        "employees": employees,          # الموظفين للعرض في الجدول
+        "all_employees": all_employees,
+        "employees": employees,
         "attendance_map": attendance_map,
         "today": today,
         "start_date": start_date,
@@ -299,8 +285,10 @@ def attendance_page(request):
         "end_date_str": end_date.strftime("%Y-%m-%d"),
     }
     return render(request, "hr/attendance_page.html", context)
+
+
 # ==========================
-# تسجيل حضور بالـ AJAX (جديد)
+# تسجيل حضور بالـ AJAX
 # ==========================
 def attendance_check_in_ajax(request, employee_id):
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -315,7 +303,6 @@ def attendance_check_in_ajax(request, employee_id):
 
         if not attendance.check_in:
             attendance.check_in = now
-            # ربط المناوبة من جدول الموظفين
             schedule = EmployeeSchedule.objects.filter(
                 employee=employee,
                 date=today
@@ -349,4 +336,3 @@ def attendance_check_out_ajax(request, attendance_id):
             "check_out": attendance.check_out.strftime("%H:%M")
         })
     return JsonResponse({"success": False, "error": "طلب غير صالح"})
-
