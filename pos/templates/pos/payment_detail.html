@@ -1,0 +1,85 @@
+{% extends "layout/base.html" %}
+{% block title %}سداد فاتورة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:600px">
+    <h4 class="mb-3">سداد فاتورة رقم {{ invoice.invoice_no }}</h4>
+
+    <!-- الفورم الرئيسي لإرسال المبلغ وطريقة السداد -->
+    <form method="post" id="payment_form">
+        {% csrf_token %}
+
+        <table class="table table-bordered">
+            <tr>
+                <th>إجمالي الفاتورة</th>
+                <td>{{ invoice.total }}</td>
+            </tr>
+            <tr>
+                <th>الخصم</th>
+                <td>
+                    <div class="input-group">
+                        <input type="number" step="0.01" min="0" class="form-control"
+                               name="discount_value" id="discount_value" value="0">
+                        <select class="form-select" name="discount_type" id="discount_type">
+                            <option value="percentage">نسبة %</option>
+                            <option value="value">قيمة</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>المبلغ المدفوع</th>
+                <td>
+                    <input type="number" step="0.01" name="paid_amount"
+                           class="form-control" id="paid_amount" required>
+                </td>
+            </tr>
+            <tr>
+                <th>المتبقي</th>
+                <td id="remaining">{{ remaining }}</td>
+            </tr>
+            <tr>
+                <th>طريقة السداد</th>
+                <td>
+                    <select name="payment_method" class="form-select" id="payment_method">
+                        <option value="">-- اختر --</option>
+                        {% for method in payment_methods %}
+                            <option value="{{ method.id }}">{{ method.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit" class="btn btn-secondary w-100 mt-3">
+            💾 حفظ السداد
+        </button>
+    </form>
+</div>
+
+<script>
+// ==== حساب المتبقي أثناء الإدخال ====
+const totalInvoice = parseFloat({{ invoice.total }});
+const remainingTd = document.getElementById('remaining');
+const paidInput = document.getElementById('paid_amount');
+const discountInput = document.getElementById('discount_value');
+const discountType = document.getElementById('discount_type');
+
+function updateRemaining() {
+    let paid = parseFloat(paidInput.value) || 0;
+    let discountVal = parseFloat(discountInput.value) || 0;
+    let discountAmt = discountVal;
+
+    if(discountType.value === "percentage") {
+        discountAmt = totalInvoice * discountVal / 100;
+    }
+
+    let remaining = totalInvoice - discountAmt - paid;
+    remainingTd.innerText = remaining.toFixed(2);
+}
+
+paidInput.addEventListener('input', updateRemaining);
+discountInput.addEventListener('input', updateRemaining);
+discountType.addEventListener('change', updateRemaining);
+</script>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "layout/base.html" %}
+{% load static %}
 
 {% block title %}إدارة المنتجات{% endblock %}
 
@@ -14,21 +15,117 @@
         box-shadow: 0px 2px 7px rgba(0,0,0,0.08);
     }
 
+    /* نوع المنتج باللون الرمادي */
     .product-type {
         font-size: 12px;
         padding: 4px 8px;
         border-radius: 6px;
         color: white;
+        background-color: #6c757d; /* رمادي */
     }
 
-    .normal { background: #0d6efd; }
-    .service { background: #6610f2; }
-    .bundle { background: #198754; }
+    /* زر إضافة منتج بالرمادي */
+    .btn-add-product {
+        background-color: #6c757d !important;
+        color: white !important;
+    }
 
-    .action-btn {
+    /* محاذاة وسط للمنتج + الصورة */
+    .product-cell {
+        display: flex;
+        align-items: center; /* مركز عمودي */
+        justify-content: center;
+        gap: 10px;
+        height: 60px; /* ارتفاع ثابت للصف */
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 50px; /* ثابت */
+        height: 50px; /* ثابت */
+        flex-shrink: 0;
+    }
+
+    .product-thumb {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .product-hover-popup {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        border: 1px solid #ccc;
+        background: #fff;
+        padding: 5px;
+        border-radius: 6px;
+        box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .product-hover-popup img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    .price-cell, .qty-cell {
+        font-weight: bold;
+        color: #0d6efd;
+    }
+
+    /* قائمة الإجراءات */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
         padding: 5px 10px;
-        font-size: 13px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
     }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f8f9fa;
+        min-width: 140px;
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        border-radius: 4px;
+        z-index: 10;
+    }
+
+    .dropdown-content a {
+        color: #212529;
+        padding: 8px 12px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #e9ecef;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
 </style>
 {% endblock %}
 
@@ -38,43 +135,57 @@
 
     <div class="d-flex justify-content-between mb-3">
         <h3 class="fw-bold">إدارة المنتجات</h3>
-        <a href="{% url 'product_add' %}" class="btn btn-primary">+ إضافة منتج</a>
+        <a href="{% url 'product_add' %}" class="btn btn-add-product">+ إضافة منتج</a>
     </div>
 
-    <!-- بحث -->
     <form method="get" class="mb-3">
         <input type="text" name="q" class="form-control" placeholder="ابحث عن منتج...">
     </form>
 
-    <!-- كارد المنتج -->
     <div class="card p-3">
         <table class="table table-hover text-center align-middle">
             <thead class="table-light">
                 <tr>
                     <th>المنتج</th>
-                    <th>النوع</th>
                     <th>السعر</th>
+                    <th>الكمية المتاحة</th>
+                    <th>النوع</th>
                     <th>الحالة</th>
-                    <th>إدارة</th>
+                    <th>الإجراءات</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for p in products %}
                 <tr>
-                    <td>{{ p.name }}</td>
-
-                    <td>
-                        {% if p.type == 'normal' %}
-                            <span class="product-type normal">منتج عادي</span>
-                        {% elif p.type == 'service' %}
-                            <span class="product-type service">خدمة</span>
-                        {% else %}
-                            <span class="product-type bundle">منتج مركب</span>
+                    <td class="text-center product-cell">
+                        {% if p.image %}
+                        <div class="product-image-wrapper">
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}" class="product-thumb">
+                            <div class="product-hover-popup">
+                                <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                            </div>
+                        </div>
                         {% endif %}
+                        <span>{{ p.name }}</span>
                     </td>
 
-                    <td>{{ p.price }} ر.س</td>
+                    <td class="price-cell">{{ p.sale_price }} ر.س</td>
+                    <td class="qty-cell">{{ p.current_stock }}</td>
+
+<td>
+    <span class="product-type" style="background:#6c757d; color:white; padding:4px 8px; border-radius:6px;">
+        {% if p.type == 'normal' %}
+            منتج عادي
+        {% elif p.type == 'service' %}
+            خدمة
+        {% elif p.type == 'bundle' %}
+            منتج مركب
+        {% else %}
+            غير محدد
+        {% endif %}
+    </span>
+</td>
 
                     <td>
                         {% if p.active %}
@@ -85,14 +196,20 @@
                     </td>
 
                     <td>
-                        <a href="{% url 'product_edit' p.id %}" class="btn btn-primary btn-sm action-btn">تعديل</a>
-                        <a href="{% url 'product_delete' p.id %}" class="btn btn-danger btn-sm action-btn">حذف</a>
+                        <div class="dropdown">
+                            <button class="dropdown-btn">خيارات ▾</button>
+                            <div class="dropdown-content">
+                                <a href="{% url 'product_view' p.id %}">👁️ عرض</a>
+                                <a href="{% url 'product_edit' p.id %}">✏️ تعديل</a>
+                                <a href="{% url 'product_delete' p.id %}">🗑️ حذف</a>
+                            </div>
+                        </div>
                     </td>
                 </tr>
 
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-muted">لا توجد منتجات</td>
+                    <td colspan="6" class="text-muted">لا توجد منتجات</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -102,4 +219,20 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelectorAll('.product-image-wrapper').forEach(wrapper => {
+        const popup = wrapper.querySelector('.product-hover-popup');
+
+        wrapper.addEventListener('mouseenter', () => {
+            popup.style.display = 'block';
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+            popup.style.display = 'none';
+        });
+    });
+</script>
 {% endblock %}

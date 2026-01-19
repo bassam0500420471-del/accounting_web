@@ -1,6 +1,11 @@
 from django.urls import path
-from .views import home_dashboard
+from django.shortcuts import redirect
+from . import views
 
 urlpatterns = [
-    path("", home_dashboard, name="home"),
+    # لو عايز الصفحة الرئيسية توجّه مباشرة للوحة التحكم
+    path('', lambda request: redirect('dashboard/')),  
+
+    # رابط لوحة التحكم
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]

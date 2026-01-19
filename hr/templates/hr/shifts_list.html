@@ -1,0 +1,67 @@
+{% extends "layout/base.html" %}
+
+{% block title %}إدارة المناوبات{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h3 class="mb-3">إدارة المناوبات</h3>
+
+    <!-- زر إضافة شفت جديد -->
+    <div class="mb-3">
+        <a href="{% url 'hr:add_shift' %}" class="btn btn-secondary">+ إضافة شفت جديد</a>
+    </div>
+
+    <!-- جدول عرض المناوبات -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>رقم الشفت</th>
+                <th>اسم الشفت</th>
+                <th>وقت البداية</th>
+                <th>وقت النهاية</th>
+                <th>استراحة من</th>
+                <th>استراحة إلى</th>
+                <th>ملاحظات</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shift in shifts %}
+                <tr>
+                    <td>{{ shift.shift_order }}</td>
+                    <td>{{ shift.shift_name }}</td>
+                    <td>{{ shift.start_time }}</td>
+                    <td>{{ shift.end_time }}</td>
+                    <td>{{ shift.break_start|default:"-" }}</td>
+                    <td>{{ shift.break_end|default:"-" }}</td>
+                    <td>{{ shift.notes|default:"-" }}</td>
+                    <td>
+                        <!-- قائمة منسدلة للإجراءات -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ shift.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-gear"></i> إجراءات
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ shift.id }}">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'hr:edit_shift' shift.id %}">
+                                        <i class="bi bi-pencil-square"></i> تعديل
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'hr:delete_shift' shift.id %}" onclick="return confirm('هل أنت متأكد من حذف هذا الشفت؟');">
+                                        <i class="bi bi-trash"></i> حذف
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">لا توجد بيانات حالياً</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% extends "layout/base.html" %}
 {% load static %}
 
-{% block title %}إضافة منتج{% endblock %}
+{% block title %}{% if product %}تعديل منتج{% else %}إضافة منتج{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -38,7 +38,7 @@
     <!-- التبويبات -->
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-            <a class="nav-link active" id="tab-normal">منتج عادي</a>
+            <a class="nav-link" id="tab-normal">منتج عادي</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="tab-bundle">منتج مركب</a>
@@ -51,23 +51,37 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
+        <!-- النوع مخفي -->
         <input type="hidden" name="type" id="product_type"
                value="{{ product.type|default:'normal' }}">
 
         <!-- البيانات الأساسية -->
         <div class="row mb-3">
-            <div class="col-md-6 text-end">
+            <div class="col-md-4 text-end">
                 <label class="form-label">اسم المنتج</label>
                 <input required type="text" name="name"
                        value="{{ product.name|default:'' }}"
                        class="form-control">
             </div>
 
-            <div class="col-md-6 text-end">
+            <div class="col-md-4 text-end">
                 <label class="form-label">(SKU) الكود</label>
                 <input type="text" name="sku"
                        value="{{ product.sku|default:'' }}"
                        class="form-control">
+            </div>
+
+            <div class="col-md-4 text-end">
+                <label class="form-label">التصنيف</label>
+                <select name="category" class="form-select category-select">
+                    <option value="">-- اختر التصنيف --</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}"
+                            {% if product.category_id == cat.id %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
 
@@ -105,9 +119,8 @@
             </div>
         </div>
 
-        <!-- ⭐ الحسابات المحاسبية (مع البحث) -->
+        <!-- ⭐ الحسابات المحاسبية -->
         <div class="row mb-4">
-
             <div class="col-md-4 text-end">
                 <label class="form-label fw-bold">حساب المخزون</label>
                 <select name="inventory_account" class="form-select account-select">
@@ -146,7 +159,6 @@
                     {% endfor %}
                 </select>
             </div>
-
         </div>
 
         <!-- الوصف -->
@@ -160,16 +172,43 @@
         <div class="mb-3 text-end">
             <label class="form-label">صورة</label>
             <input type="file" name="image" class="form-control">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" style="height:70px;margin-top:10px;">
+            {% endif %}
         </div>
 
         <!-- المنتج المركب -->
         <div id="bundle_area" style="display:none">
             <hr>
             <h5 class="mb-3 text-end">مكونات المنتج</h5>
-            <div id="bundle_container"></div>
-            <button type="button" class="btn btn-secondary mt-2 mb-3" id="add_component">
+            <div id="bundle_container">
+                {% for c in components %}
+                <div class="row mb-2">
+                    <div class="col-md-6 text-end">
+                        <select name="component_{{ forloop.counter }}" class="form-select">
+                            {% for p in products %}
+                                <option value="{{ p.id }}"
+                                    {% if p.id == c.component.id %}selected{% endif %}>
+                                    {{ p.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <input type="number" name="qty_{{ forloop.counter }}" value="{{ c.quantity }}" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger w-100" onclick="this.parentNode.parentNode.remove()">حذف</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="btn btn-secondary mt-2" id="add_component">
                 + إضافة مكوّن
             </button>
+
+            <input type="hidden" id="bundle_count" value="{{ components|length|default:0 }}">
         </div>
 
         <div class="text-end mt-3">
@@ -182,8 +221,8 @@
 <!-- تفعيل البحث -->
 <script>
 $(document).ready(function () {
-    $('.account-select').select2({
-        placeholder: "ابحث عن الحساب...",
+    $('.account-select, .category-select').select2({
+        placeholder: "ابحث...",
         allowClear: true,
         width: '100%'
     });
@@ -191,33 +230,50 @@ $(document).ready(function () {
 </script>
 
 <script>
-    const typeInput = document.getElementById("product_type");
-    const bundleArea = document.getElementById("bundle_area");
+const typeInput = document.getElementById("product_type");
+const bundleArea = document.getElementById("bundle_area");
+const bundleContainer = document.getElementById("bundle_container");
+let bundleCount = parseInt(document.getElementById("bundle_count").value || 0);
 
-    function setActive(id) {
-        ["tab-normal","tab-bundle","tab-service"].forEach(t =>
-            document.getElementById(t).classList.remove("active")
-        );
-        document.getElementById(id).classList.add("active");
-    }
+// ضبط التبويبات عند التحميل
+function setActive(id){
+    ["tab-normal","tab-bundle","tab-service"].forEach(t =>
+        document.getElementById(t).classList.remove("active")
+    );
+    document.getElementById(id).classList.add("active");
+}
 
-    document.getElementById("tab-normal").onclick = () => {
-        typeInput.value = "normal";
-        setActive("tab-normal");
-        bundleArea.style.display = "none";
-    };
+if(typeInput.value === "normal") setActive("tab-normal");
+if(typeInput.value === "bundle") { setActive("tab-bundle"); bundleArea.style.display="block"; }
+if(typeInput.value === "service") setActive("tab-service");
 
-    document.getElementById("tab-bundle").onclick = () => {
-        typeInput.value = "bundle";
-        setActive("tab-bundle");
-        bundleArea.style.display = "block";
-    };
+// التغيير عند النقر
+document.getElementById("tab-normal").onclick = () => { typeInput.value="normal"; setActive("tab-normal"); bundleArea.style.display="none"; };
+document.getElementById("tab-bundle").onclick = () => { typeInput.value="bundle"; setActive("tab-bundle"); bundleArea.style.display="block"; };
+document.getElementById("tab-service").onclick = () => { typeInput.value="service"; setActive("tab-service"); bundleArea.style.display="none"; };
 
-    document.getElementById("tab-service").onclick = () => {
-        typeInput.value = "service";
-        setActive("tab-service");
-        bundleArea.style.display = "none";
-    };
+// إضافة مكون جديد
+document.getElementById("add_component").addEventListener("click", function(){
+    bundleCount++;
+    const row = document.createElement("div");
+    row.className = "row mb-2";
+    row.innerHTML = `
+        <div class="col-md-6 text-end">
+            <select name="component_${bundleCount}" class="form-select">
+                {% for p in products %}
+                    <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 text-end">
+            <input type="number" name="qty_${bundleCount}" value="1" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-danger w-100" onclick="this.parentNode.parentNode.remove()">حذف</button>
+        </div>
+    `;
+    bundleContainer.appendChild(row);
+});
 </script>
 
 {% endblock %}

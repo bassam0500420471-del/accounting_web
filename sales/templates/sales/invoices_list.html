@@ -124,21 +124,25 @@
     {% for invoice in invoices %}
         <tr>
             <td>{{ invoice.id }}</td>
-            <td>{{ invoice.invoice_no }}</td>
-            <td>{{ invoice.customer.name }}</td>
-            <td>{{ invoice.date_invoice }}</td>
-            <td>{{ invoice.total_after_tax }}</td>
-
+            <td>{{ invoice.number }}</td>
+            <td>
+                {% if invoice.object.customer %}
+                    {{ invoice.object.customer.name }}
+                {% else %}
+                    نقدي
+                {% endif %}
+            </td>
+            <td>{{ invoice.date|date:"Y-m-d H:i" }}</td>
+            <td>{{ invoice.total }}</td>
             <td>
                 <span class="badge" style="background:#6c757d; color:white;">
-                    {% if invoice.total_after_tax == 0 %}
+                    {% if invoice.total == 0 %}
                         غير مسددة
                     {% else %}
                         مسددة
                     {% endif %}
                 </span>
             </td>
-
             <td>
                 <div class="dropdown">
                     <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
@@ -147,26 +151,34 @@
 
                     <ul class="dropdown-menu custom-menu text-end">
 
-                        <li>
-                            <a class="dropdown-item"
-                               href="{% url 'sales:invoice_view' invoice.id %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
-                                <i class="fa-solid fa-eye icon"></i> عرض
-                            </a>
-                        </li>
+                        {% if invoice.type == "sales" %}
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'sales:invoice_view' invoice.object.id %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
+                                    <i class="fa-solid fa-eye icon"></i> عرض
+                                </a>
+                            </li>
 
-                        <li>
-                            <a class="dropdown-item"
-                               href="{% url 'sales:invoice_pdf' invoice.id %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
-                                <i class="fa-solid fa-file-pdf icon"></i> تحميل PDF
-                            </a>
-                        </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="{% url 'sales:invoice_pdf' invoice.object.id %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
+                                    <i class="fa-solid fa-file-pdf icon"></i> تحميل PDF
+                                </a>
+                            </li>
 
-                        <li>
-                            <a class="dropdown-item return-btn"
-                               href="{% url 'sales:create_return' invoice.id %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
-                                <i class="fa-solid fa-rotate-left return-icon"></i> مرتجع فاتورة
-                            </a>
-                        </li>
+                            <li>
+                                <a class="dropdown-item return-btn"
+                                   href="{% url 'sales:create_return' invoice.object.id %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
+                                    <i class="fa-solid fa-rotate-left return-icon"></i> مرتجع فاتورة
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <span class="dropdown-item text-muted">
+                                    عرض من POS فقط
+                                </span>
+                            </li>
+                        {% endif %}
 
                     </ul>
                 </div>

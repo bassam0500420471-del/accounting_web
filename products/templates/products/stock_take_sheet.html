@@ -1,0 +1,137 @@
+{% extends "layout/base.html" %}
+
+{% block title %}ورقة الجرد{% endblock %}
+
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* تنسيقات الجدول وأزرار الحفظ */
+table th, table td { text-align:center; vertical-align:middle; }
+input.physical-qty { width:80px; text-align:right; }
+input.comment-cell { width:180px; text-align:left; background:#f7f7f7; border:none; }
+.save-btn { background-color:#6c757d; color:white; border:none; padding:10px 20px; border-radius:5px; font-size:16px; cursor:pointer; }
+.save-btn:hover { background-color:#5a6268; }
+.alert-success { display:none; }
+.page-box { width:100%; background:#fff; padding:25px; border-radius:10px; overflow:visible; }
+.table-responsive { width:100%; overflow-x:auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">ورقة الجرد</h2>
+
+<form method="get" class="mb-3 row g-3">
+    <div class="col-md-4">
+        <label class="form-label">التصنيف</label>
+        <select name="category_id" class="form-select" onchange="this.form.submit()">
+            <option value="">كل التصنيفات</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if selected_category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</form>
+
+<div class="alert alert-success" id="saveAlert">تم حفظ الجرد بنجاح!</div>
+
+<form method="post" id="stockTakeForm">
+    {% csrf_token %}
+    <div class="page-box">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped w-100" style="min-width:700px;">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>المنتج</th>
+                        <th>التصنيف</th>
+                        <th>المخزون الحالي</th>
+                        <th>الجرد الفعلي</th>
+                        <th>الفارق / تعليق</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ row.product.name }}</td>
+                        <td>{{ row.category }}</td>
+                        <td class="current-stock" data-stock="{{ row.system_qty }}">{{ row.system_qty }}</td>
+                        <td>
+                            <input type="number" name="physical_{{ row.product.id }}" class="form-control physical-qty" placeholder="أدخل الكمية" {% if view_only %}readonly{% endif %}>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control comment-cell" value="{{ row.comment|default:'' }}" readonly>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6">لا توجد منتجات</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if not view_only %}
+    <div class="mt-3">
+        <button type="submit" class="save-btn">حفظ الجرد</button>
+    </div>
+    {% endif %}
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const rows = document.querySelectorAll("table tbody tr");
+
+    rows.forEach(row => {
+        const currentStock = parseInt(row.querySelector(".current-stock").dataset.stock) || 0;
+        const physicalInput = row.querySelector(".physical-qty");
+        const commentCell = row.querySelector(".comment-cell");
+
+        if(physicalInput){
+            physicalInput.addEventListener("input", function() {
+                const physical = parseInt(this.value) || 0;
+                const diff = physical - currentStock;
+
+                if (diff === 0) commentCell.value = "مطابق";
+                else if (diff > 0) commentCell.value = "زيادة بمقدار " + diff;
+                else commentCell.value = "نقص بمقدار " + Math.abs(diff);
+            });
+        }
+    });
+
+    // AJAX الحفظ
+    const stockForm = $("#stockTakeForm");
+    if(stockForm.length){
+        stockForm.submit(function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+
+            $.ajax({
+                url: "{% url 'stock_take_save' %}",
+                method: "POST",
+                data: formData,
+                success: function(response) {
+                    if(response.status === "ok" && response.redirect){
+                        $("#saveAlert").fadeIn().delay(1500).fadeOut(function() {
+                            window.location.href = response.redirect;
+                        });
+                    } else {
+                        alert("حدث خطأ أثناء الحفظ: " + (response.error || ""));
+                    }
+                },
+                error: function(xhr){
+                    let msg = "حدث خطأ أثناء الحفظ";
+                    if(xhr.responseJSON && xhr.responseJSON.error){
+                        msg += ": " + xhr.responseJSON.error;
+                    }
+                    alert(msg);
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

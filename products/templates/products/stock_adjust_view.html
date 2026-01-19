@@ -1,0 +1,34 @@
+{% extends "layout/base.html" %}
+
+{% block title %}عرض الجرد{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h4 class="mb-3">عرض ورقة الجرد</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>الصنف</th>
+                <th>الكمية النظامية</th>
+                <th>الكمية الفعلية</th>
+                <th>الفرق</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in items %}
+            <tr>
+                <td>{{ row.product.name }}</td>
+                <td>{{ row.system_qty }}</td>
+                <td>{{ row.physical_qty }}</td>
+                <td>{{ row.diff }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'stock_adjust_list' %}" class="btn btn-secondary">
+        رجوع
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends "layout/base.html" %}
+
+{% block title %}جدول الموظف الشهري{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">{% if create_mode %}إنشاء جدول جديد{% else %}جدول الموظفين{% endif %}</h3>
+
+    <form id="employee-schedule-form" method="post" action="{% url 'hr:add_employee_schedule_ajax' %}">
+        {% csrf_token %}
+
+        <!-- اختيار الشهر والسنة -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label class="form-label">الشهر</label>
+                <select name="month" class="form-select" required>
+                    {% for m in 1|make_list:"123456789101112" %}
+                        {% comment %} نستخدم range بدل فلتر غير موجود {% endcomment %}
+                        {% for month_num in "1,2,3,4,5,6,7,8,9,10,11,12"|split:"," %}
+                            <option value="{{ month_num }}" {% if month_num|int == month %}selected{% endif %}>
+                                {{ month_num }}
+                            </option>
+                        {% endfor %}
+                        {% break %} {# لإيقاف الحلقة الخارجية #}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">السنة</label>
+                <select name="year" class="form-select" required>
+                    {% for y in year|add:"0"|make_list:"0123456789" %}
+                        {% for y_num in year|add:"0"|int|range:year|add:5 %}
+                            <option value="{{ y_num }}" {% if y_num == year %}selected{% endif %}>
+                                {{ y_num }}
+                            </option>
+                        {% endfor %}
+                        {% break %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- حقل الموظف يظهر فقط لو ليس إنشاء جدول جديد -->
+            {% if not create_mode %}
+            <div class="col-md-4">
+                <label class="form-label">الموظف</label>
+                <select name="employee" class="form-select">
+                    <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>الكل</option>
+                    {% for emp in employees %}
+                    <option value="{{ emp.id }}" {% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
+                        {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- جدول الموظفين -->
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>اليوم</th>
+                    <th>التاريخ</th>
+                    {% for emp in employees %}
+                        <th>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in schedule_list %}
+                <tr>
+                    <td>{{ day.day_name }}</td>
+                    <td>{{ day.date }}</td>
+                    {% for shift in day.shifts %}
+                        <td>
+                            {% if create_mode %}
+                                <input type="hidden" name="shift_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" value="">
+                                <button type="button"
+                                        class="btn btn-light w-100 text-start shift-btn"
+                                        data-day="{{ day.date }}"
+                                        data-emp-id="{{ shift.emp_id }}">
+                                    {{ shift.shift_name if shift.shift_name != '--' else 'اختر شفت' }}
+                                </button>
+                            {% else %}
+                                {{ shift.shift_name }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if create_mode %}
+        <!-- أزرار الحفظ والإلغاء -->
+        <div class="mt-3">
+            <button type="submit" class="btn btn-secondary">حفظ</button>
+            <a href="{% url 'hr:employee_schedule' %}" class="btn btn-secondary ms-2">إلغاء</a>
+        </div>
+        {% endif %}
+    </form>
+
+    <div id="form-message" class="mt-3"></div>
+</div>
+
+<!-- Modal اختيار الشفت -->
+<div class="modal fade" id="shiftModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">اختيار الشفت</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-action" onclick="selectShift('', 'عطلة')">عطلة</li>
+                    {% for shift in shifts %}
+                    <li class="list-group-item list-group-item-action"
+                        onclick="selectShift('{{ shift.id }}', '{{ shift.shift_name }} ({{ shift.start_time }} - {{ shift.end_time }})')">
+                        {{ shift.shift_name }}
+                        <small class="text-muted">({{ shift.start_time }} - {{ shift.end_time }})</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentBtn = null;
+
+document.querySelectorAll(".shift-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        currentBtn = this;
+        let modal = new bootstrap.Modal(document.getElementById("shiftModal"));
+        modal.show();
+    });
+});
+
+function selectShift(id, text) {
+    if (currentBtn) {
+        let hiddenInput = currentBtn.previousElementSibling;
+        hiddenInput.value = id;
+        currentBtn.innerText = text;
+    }
+    let modal = bootstrap.Modal.getInstance(document.getElementById("shiftModal"));
+    modal.hide();
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.getElementById("employee-schedule-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    let form = e.target;
+    let data = new FormData(form);
+    fetch(form.action, {
+        method: "POST",
+        body: data,
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+        let msgDiv = document.getElementById("form-message");
+        if (result.success) {
+            msgDiv.innerHTML = `<div class="alert alert-success">تم الحفظ بنجاح</div>`;
+        } else {
+            msgDiv.innerHTML = `<div class="alert alert-danger">خطأ: ${result.error}</div>`;
+        }
+    })
+    .catch(() => {
+        document.getElementById("form-message").innerHTML =
+            `<div class="alert alert-danger">خطأ غير متوقع</div>`;
+    });
+});
+</script>
+{% endblock %}

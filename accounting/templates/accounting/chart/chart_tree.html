@@ -30,7 +30,7 @@
 
     /* الأزرار */
     .tree-actions {
-        margin-left: auto;        /* ✅ مهم مع RTL */
+        margin-left: auto; /* مهم مع RTL */
         display: none;
         gap: 10px;
     }
@@ -72,75 +72,60 @@ $(function () {
             data: {
                 url: "{% url 'accounting:chart_tree_api' %}",
                 data: function (node) {
-                    return { id: node.id };   // ⭐ أساسي
+                    return { id: node.id };
                 },
                 dataType: "json"
             },
-            themes: {
-                dots: true,
-                icons: true
-            }
+            themes: { dots: true, icons: true }
         },
         plugins: ["wholerow"],
         rtl: true
     });
 
-    // بعد تحميل الجذور
-    $("#chartTree").on("loaded.jstree", function () {
+    function addActions() {
         $("#chartTree li").each(function () {
-            injectActions($(this));
-        });
-    });
+            const $li = $(this);
+            if ($li.find(".tree-actions").length) return;
 
-    // عند فتح عقدة
-    $("#chartTree").on("open_node.jstree", function (e, data) {
-        data.node.children_d.forEach(function (id) {
-            injectActions($("#" + id));
-        });
-    });
+            const node = tree.jstree(true).get_node($li.attr("id"));
+            if (!node) return;
 
-    function injectActions($li) {
-        if ($li.find(".tree-actions").length) return;
+            // لا تظهر الأزرار للجذر
+            if (node.parent === "#") return;
 
-        const node = tree.jstree(true).get_node($li.attr("id"));
-        if (!node) return;
+            const id = node.id;
 
-        const id = node.id;
-
-        let actions = `
-            <span class="tree-actions">
-                <i class="fa fa-eye"
-                   title="عرض"
+            let actions = `<span class="tree-actions">
+                <i class="fa fa-eye" title="عرض"
                    onclick="window.location.href='/accounting/accounts/${id}/view/'"></i>
-
-                <i class="fa fa-pen"
-                   title="تعديل"
+                <i class="fa fa-pen" title="تعديل"
                    onclick="window.location.href='/accounting/accounts/${id}/edit/'"></i>
-
-                <i class="fa fa-plus"
-                   title="إضافة فرع"
+                <i class="fa fa-plus" title="إضافة فرع"
                    onclick="window.location.href='/accounting/accounts/${id}/add-child/'"></i>
-        `;
+            `;
 
-        // حذف فقط إذا لا يوجد أبناء
-        if (!node.children_d || node.children_d.length === 0) {
-            actions += `
-                <i class="fa fa-trash delete"
-                   title="حذف"
+            // زر الحذف يظهر فقط إذا لا يوجد أبناء
+            if (!node.children || node.children.length === 0) {
+                actions += `<i class="fa fa-trash delete" title="حذف"
                    onclick="if(confirm('تأكيد الحذف؟')) {
                        window.location.href='/accounting/accounts/${id}/delete/';
-                   }"></i>
-            `;
-        }
+                   }"></i>`;
+            }
 
-        actions += `</span>`;
+            actions += "</span>";
 
-        const textEl = $li.find("> .jstree-anchor");
-        if (!textEl.find(".tree-row").length) {
-            textEl.wrapInner('<span class="tree-row"></span>');
-            textEl.find(".tree-row").append(actions);
-        }
+            const textEl = $li.find("> .jstree-anchor");
+            if (!textEl.find(".tree-row").length) {
+                textEl.wrapInner('<span class="tree-row"></span>');
+                textEl.find(".tree-row").append(actions);
+            }
+        });
     }
+
+    // بعد تحميل الشجرة أو فتح أي عقدة
+    $("#chartTree").on("ready.jstree open_node.jstree", function () {
+        addActions();
+    });
 
 });
 </script>

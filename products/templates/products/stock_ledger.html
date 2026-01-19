@@ -1,0 +1,93 @@
+{% extends "layout/base.html" %}
+
+{% block title %}سجل عمليات المخزون{% endblock %}
+
+{% block content %}
+<h2>سجل عمليات المخزون</h2>
+
+<div class="mb-3 d-flex justify-content-between align-items-center">
+    <a href="{% url 'stock_adjust' %}" class="btn btn-secondary">تعديل المخزون</a>
+    <form method="get" class="mb-3 d-flex">
+        <input type="text" name="q" placeholder="بحث..." value="{{ q }}" class="form-control" style="width: 300px;">
+        <button type="submit" class="btn btn-secondary ms-2">بحث</button>
+    </form>
+</div>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>المنتج</th>
+      <th>النوع</th>
+      <th>التغير</th>
+      <th>الكمية بعد التعديل</th>
+      <th>التاريخ</th>
+      <th>ملاحظة</th>
+      <th>إجراءات</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for move in moves %}
+    <tr>
+      <td>{{ move.product.name }}</td>
+      <td>{{ move.reason.name }}</td>
+      <td class="text-center">
+        {% if move.qty_delta < 0 %}-{{ move.qty_abs }}{% else %}+{{ move.qty_abs }}{% endif %}
+      </td>
+      <td class="text-center">{{ move.stock_after }}</td>
+      <td>{{ move.created_at|date:"Y-m-d H:i" }}</td>
+      <td>{{ move.note }}</td>
+      <td>
+        {% if move.move_type == "ADJUST" %}
+        <div class="dropdown">
+          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
+                  id="actionMenu{{ forloop.counter }}" data-bs-toggle="dropdown"
+                  aria-expanded="false" data-bs-auto-close="true">
+            إجراءات
+          </button>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="actionMenu{{ forloop.counter }}">
+            <li><a class="dropdown-item" href="{% url 'stock_adjust_edit' move.id %}">تعديل</a></li>
+            <li><a class="dropdown-item" href="{% url 'stock_adjust_delete' move.id %}" onclick="return confirm('هل أنت متأكد من حذف هذه الحركة؟');">حذف</a></li>
+            <li><a class="dropdown-item" href="{% url 'stock_adjust_view' move.id %}">عرض</a></li>
+          </ul>
+        </div>
+        {% else %}
+        <a href="{% url 'stock_adjust_view' move.id %}" class="btn btn-sm btn-secondary">عرض فقط</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center">لا توجد بيانات</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<style>
+.table th, .table td { width: auto; }
+/* تعديل عمود التاريخ والملاحظات */
+.table th:nth-child(5), .table td:nth-child(5) { width: 15%; }
+.table th:nth-child(6), .table td:nth-child(6) { width: 25%; }
+/* توسيط أرقام عمود الكمية بعد التعديل */
+.table th:nth-child(4), .table td:nth-child(4) { text-align: center; vertical-align: middle; }
+/* تعديل عمود الإجراءات */
+.table th:nth-child(7), .table td:nth-child(7) { width: 12%; text-align: center; }
+
+/* تأكد من ظهور القائمة فوق كل العناصر */
+.dropdown-menu {
+    z-index: 2000 !important; /* أعلى من أي عنصر في الصفحة مثل sidebar */
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.dropdown-toggle').forEach(function(btn){
+        new bootstrap.Dropdown(btn);
+    });
+});
+</script>
+{% endblock %}

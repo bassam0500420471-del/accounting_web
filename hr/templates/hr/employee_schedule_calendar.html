@@ -1,0 +1,248 @@
+{% extends "layout/base.html" %}
+
+{% block title %}جدول الموظفين{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">{% if create_mode %}{% else %}جدول الموظفين{% endif %}</h3>
+
+    <div class="row mb-3 align-items-end">
+        <!-- الشهر -->
+        <div class="col-md-2">
+            <label class="form-label">الشهر</label>
+            <select name="month" id="monthSelect" class="form-select" required>
+                {% for m in months %}
+                    <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- السنة -->
+        <div class="col-md-2">
+            <label class="form-label">السنة</label>
+            <select name="year" id="yearSelect" class="form-select" required>
+                {% for y in years %}
+                    <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- الموظف -->
+        <div class="col-md-3">
+            <label class="form-label">الموظف</label>
+            <select name="employee" id="employeeSelect" class="form-select">
+                <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>الكل</option>
+                {% for emp in employees %}
+                    <option value="{{ emp.id }}" {% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
+                        {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- زر الحفظ -->
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="button" id="save_schedule_btn" class="btn btn-save w-100">حفظ</button>
+        </div>
+    </div>
+
+    <!-- الجدول -->
+    <table class="table table-bordered text-center">
+        <thead>
+            <tr>
+                <th>اليوم</th>
+                <th>التاريخ</th>
+                {% for emp in employees %}
+                    <th>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in schedule_list %}
+            <tr>
+                <td>{{ day.day_name }}</td>
+                <td>{{ day.date }}</td>
+                {% for shift in day.shifts %}
+                <td class="align-middle shift-cell position-relative" 
+                    data-emp-id="{{ shift.emp_id }}" 
+                    data-date="{{ day.date }}"
+                    data-shift-id="{{ shift.shift_id|default:'' }}">
+                    <span class="shift-text">{{ shift.shift_name|default:'' }}</span>
+                    {% if create_mode %}
+                    <i class="bi bi-pencil shift-edit-icon position-absolute"></i>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="form-message" class="mt-3"></div>
+</div>
+
+<!-- Modal اختيار الشفت -->
+<div class="modal fade" id="shiftModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">اختيار الشفت</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-action" onclick="selectShift('0', 'عطلة')">عطلة</li>
+                    {% for shift in shifts %}
+                    <li class="list-group-item list-group-item-action"
+                        onclick="selectShift('{{ shift.id }}', '{{ shift.shift_name }}')">
+                        {{ shift.shift_name }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+/* ================= تنسيق الجدول ================= */
+.shift-cell {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #212529; /* نص أسود واضح */
+}
+.shift-cell:hover {
+    background-color: #f0f8ff;
+}
+.shift-edit-icon {
+    top: 2px;
+    right: 2px;
+    font-size: 0.9rem;
+    color: #6c757d; /* رمادي متناسق */
+    display: none;
+}
+.shift-cell:hover .shift-edit-icon {
+    display: inline;
+}
+
+/* زر الحفظ رمادي */
+.btn-save {
+    border-radius: 12px;
+    padding: 10px 30px;
+    background-color: #6c757d; /* رمادي */
+    color: #fff;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.btn-save:hover {
+    background-color: #5a6268;
+}
+
+/* اللون الأسود لليوم والتاريخ واسماء الموظفين */
+table th, table td {
+    color: #000 !important;
+    vertical-align: middle;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentCell = null;
+const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
+// فتح Modal عند النقر على خلية الشفت مع منع تعديل الأيام الماضية
+document.querySelectorAll(".shift-cell").forEach(cell => {
+    cell.addEventListener("click", function() {
+        const cellDate = cell.dataset.date;
+        if (cellDate < today) {
+            alert("لا يمكن تعديل الأيام الماضية.");
+            return;
+        }
+        currentCell = this;
+        let modal = new bootstrap.Modal(document.getElementById("shiftModal"));
+        modal.show();
+    });
+});
+
+// اختيار شفت من Modal
+function selectShift(id, text) {
+    if (currentCell) {
+        let shiftText = currentCell.querySelector(".shift-text");
+        shiftText.innerText = text;
+        currentCell.dataset.shiftId = id; 
+    }
+    let modal = bootstrap.Modal.getInstance(document.getElementById("shiftModal"));
+    modal.hide();
+}
+
+// جلب CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// زر الحفظ عبر AJAX وإرسال JSON
+document.getElementById("save_schedule_btn").addEventListener("click", function() {
+    let scheduleData = [];
+
+    document.querySelectorAll(".shift-cell").forEach(cell => {
+        scheduleData.push({
+            employee_id: cell.dataset.empId,
+            date: cell.dataset.date,
+            shift_id: cell.dataset.shiftId || ""
+        });
+    });
+
+    fetch("{% url 'hr:add_employee_schedule_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie('csrftoken'),
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        body: JSON.stringify(scheduleData)
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result.success) {
+            const month = document.getElementById("monthSelect").value;
+            const year = document.getElementById("yearSelect").value;
+            const employee = document.getElementById("employeeSelect").value;
+            window.location.href = `{% url 'hr:employee_schedule' %}?month=${month}&year=${year}&employee=${employee}`;
+        } else {
+            document.getElementById("form-message").innerHTML =
+                `<div class="alert alert-danger">خطأ: ${result.error}</div>`;
+        }
+    })
+    .catch(() => {
+        document.getElementById("form-message").innerHTML =
+            `<div class="alert alert-danger">خطأ غير متوقع</div>`;
+    });
+});
+
+// إعادة تحميل الجدول عند تغيير الشهر أو السنة أو الموظف
+document.getElementById("monthSelect").addEventListener("change", reloadSchedule);
+document.getElementById("yearSelect").addEventListener("change", reloadSchedule);
+document.getElementById("employeeSelect").addEventListener("change", reloadSchedule);
+
+function reloadSchedule() {
+    const month = document.getElementById("monthSelect").value;
+    const year = document.getElementById("yearSelect").value;
+    const employee = document.getElementById("employeeSelect").value;
+    window.location.href = `{% url 'hr:employee_schedule' %}?month=${month}&year=${year}&employee=${employee}`;
+}
+</script>
+{% endblock %}

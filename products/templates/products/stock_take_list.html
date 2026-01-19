@@ -1,0 +1,42 @@
+{% extends "layout/base.html" %}
+
+{% block title %}إدارة الجرد{% endblock %}
+
+{% block content %}
+<h2>إدارة الجرد</h2>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>تاريخ الجرد</th>
+            <th>المستخدم</th>
+            <th>الحالة</th>
+            <th>عرض</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for take in takes %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ take.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ take.created_by.username }}</td>
+            <td>
+                <select class="form-select" disabled style="background-color:#e0e0e0;">
+                    <option value="MATCH" {% if take.status == "MATCH" %}selected{% endif %}>مطابق</option>
+                    <option value="PARTIAL" {% if take.status == "PARTIAL" %}selected{% endif %}>مطابق جزئي</option>
+                    <option value="MISMATCH" {% if take.status == "MISMATCH" %}selected{% endif %}>غير مطابق</option>
+                </select>
+            </td>
+            <td>
+                <a href="{% url 'stock_take_sheet' %}?view_id={{ take.id }}" class="btn btn-secondary btn-sm">عرض</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">لا توجد أوراق جرد</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

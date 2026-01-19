@@ -108,6 +108,18 @@
             overflow: visible;
         }
 
+        /* Banner TEST DASHBOARD */
+        .dashboard-banner {
+            background: red;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
         .dropdown-menu {
             z-index: 9999;
         }
@@ -130,6 +142,68 @@
         <span class="menu-arrow">▶</span>
     </a>
 
+<!-- ================= الموارد البشرية ================= -->
+<button class="menu-btn menu-toggle">
+    <span>الموارد البشرية </span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+<!-- إدارة الموظفين -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
+    <a href="{% url 'hr:employee_list' %}">إدارة الموظفين</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee' %}')">+</button>
+</div>
+
+<!-- إدارة المناوبات -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
+    <a href="{% url 'hr:shifts' %}">إدارة المناوبات</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_shift' %}')">+</button>
+</div>
+
+<!-- إدارة جدول الموظفين -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
+    <a href="{% url 'hr:employee_schedule' %}">إدارة جدول الموظفين</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee_schedule' %}')"
+>+</button>
+</div>
+
+    <!-- إدارة الإجازات -->
+    <div class="menu-btn d-flex align-items-center justify-content-between">
+        <a href="{% url 'hr:leaves' %}">إدارة الإجازات</a>
+        <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_leave' %}')">+</button>
+    </div>
+
+    <!-- مسيرات الرواتب -->
+    <div class="menu-btn d-flex align-items-center justify-content-between">
+        <a href="{% url 'hr:payrolls' %}">مسيرات الرواتب</a>
+        <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_payroll' %}')">+</button>
+    </div>
+
+    <!-- إدارة التقييم -->
+    <div class="menu-btn d-flex align-items-center justify-content-between">
+        <a href="{% url 'hr:evaluations' %}">إدارة التقييم</a>
+        <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_evaluation' %}')">+</button>
+    </div>
+
+    <!-- التقارير -->
+    <div class="menu-btn">
+        <a href="{% url 'hr:reports' %}">التقارير</a>
+        <!-- لا زر + -->
+    </div>
+</div>
+
+<!-- ================= نقاط البيع ================= -->
+<button class="menu-btn menu-toggle">
+    <span>{% trans "نقاط البيع " %}</span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+    <div class="menu-btn">
+        <a href="{% url 'pos:pos_home' %}">{% trans "نقاط البيع" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('{% url 'pos:pos_home' %}')">+</button>
+    </div>
+</div>
+
     <!-- ================= المبيعات ================= -->
     <button class="menu-btn menu-toggle">
         <span>{% trans "المبيعات" %}</span>
@@ -146,10 +220,10 @@
             <button class="add-icon-btn" onclick="goAdd('/sales/invoices/add/')">+</button>
         </div>
 
-<div class="menu-btn">
-    <a href="/sales/returns/">{% trans "مرتجعات المبيعات" %}</a>
-    <button class="add-icon-btn" onclick="goAdd('/sales/returns/new/')">+</button>
-</div>
+        <div class="menu-btn">
+            <a href="/sales/returns/">{% trans "مرتجعات المبيعات" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/sales/returns/new/')">+</button>
+        </div>
 
         <div class="menu-btn">
             <a href="/quotations/">{% trans "عروض الأسعار" %}</a>
@@ -184,22 +258,37 @@
         </div>
     </div>
 
-    <!-- ================= المنتجات ================= -->
-    <button class="menu-btn menu-toggle">
-        <span>{% trans "المنتجات" %}</span>
-        <span class="menu-arrow">▼</span>
-    </button>
-    <div class="submenu">
-        <div class="menu-btn">
-            <a href="/products/">{% trans "قائمة المنتجات" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/products/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/product-categories/">{% trans "تصنيفات المنتجات" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/product-categories/add/')">+</button>
-        </div>
+<!-- ================= المنتجات ================= -->
+<button class="menu-btn menu-toggle">
+    <span>{% trans "المنتجات" %}</span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+    <!-- قائمة المنتجات الحالية -->
+    <div class="menu-btn">
+        <a href="/products/">{% trans "قائمة المنتجات" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/products/add/')">+</button>
     </div>
+
+    <!-- تصنيفات المنتجات -->
+<div class="menu-btn">
+    <a href="/products/categories/">{% trans "تصنيفات المنتجات" %}</a>
+    <button class="add-icon-btn" onclick="goAdd('/products/categories/add/')">+</button>
+</div>
+
+<!-- ================= المخزون الجديد ================= -->
+<div class="menu-btn">
+    <a href="{% url 'stock_adjust' %}">تعديل المخزون يدويًا</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'stock_adjust' %}')">+</button>
+</div>
+<div class="menu-btn">
+    <a href="{% url 'stock_ledger' %}">سجل عمليات المخزون</a>
+</div>
+<div class="menu-btn">
+    <a href="{% url 'stock_take_sheet' %}">ورقة الجرد</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'stock_take_sheet' %}')">+</button>
+</div>
+</div>
 
     <!-- ================= المحاسبة ================= -->
     <button class="menu-btn menu-toggle">
@@ -243,56 +332,45 @@
         </div>
     </div>
 
-<!-- ================= التقارير ================= -->
-<button class="menu-btn menu-toggle">
-    <span>التقارير</span>
-    <span class="menu-arrow">▼</span>
-</button>
+    <!-- ================= التقارير ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>التقارير</span>
+        <span class="menu-arrow">▼</span>
+    </button>
 
-<div class="submenu">
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/reports/income-statement/">قائمة الدخل</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/balance-sheet/">الميزانية العمومية</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/trial-balance/">ميزان المراجعة</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/account-ledger/">كشف الحساب</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/cash-flow/">قائمة التدفقات النقدية</a>
+        </div>
 
-    <div class="menu-btn">
-        <a href="/reports/income-statement/">قائمة الدخل</a>
+        <hr style="border-color:#555;">
+
+        <div class="menu-btn">
+            <a href="/reports/vat-report/">تقرير ضريبة القيمة المضافة</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/vat-rate-report/">تقرير تفصيل ضريبة القيمة المضافة حسب النسبة</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/sales-vat-report/">تقرير المبيعات الضريبية</a>
+        </div>
+        <div class="menu-btn">
+            <a href="/reports/purchase-vat-report/">تقرير المشتريات الضريبية</a>
+        </div>
     </div>
 
-    <div class="menu-btn">
-        <a href="/reports/balance-sheet/">الميزانية العمومية</a>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/reports/trial-balance/">ميزان المراجعة</a>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/reports/account-ledger/">كشف الحساب</a>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/reports/cash-flow/">قائمة التدفقات النقدية</a>
-    </div>
-
-    <hr style="border-color:#555;">
-
-<!-- 🧾 تقارير الضريبة -->
-<div class="menu-btn">
-    <a href="/reports/vat-report/">تقرير ضريبة القيمة المضافة</a>
-</div>
-
-<div class="menu-btn">
-    <a href="/reports/vat-rate-report/">
-        تقرير تفصيل ضريبة القيمة المضافة حسب النسبة
-    </a>
-</div>
-
-<div class="menu-btn">
-    <a href="/reports/sales-vat-report/">تقرير المبيعات الضريبية</a>
-</div>
-
-<div class="menu-btn">
-    <a href="/reports/purchase-vat-report/">تقرير المشتريات الضريبية</a>
-</div>
-
-</div>
     <a href="/settings/" class="menu-btn">
         <span>{% trans "إعدادات الشركة" %}</span>
         <span class="menu-arrow">▶</span>
@@ -301,6 +379,9 @@
 
 <!-- ================= CONTENT ================= -->
 <div class="content-wrapper">
+
+
+    <!-- صفحة الـ content العادية -->
     <div class="page-box">
         {% block content %}{% endblock %}
     </div>
@@ -313,32 +394,26 @@
         window.location.href = url;
     }
 
-    // =============================
-    // Sidebar toggle (كما هو)
-    // =============================
-    document.querySelectorAll(".menu-toggle").forEach(btn => {
-        btn.addEventListener("click", function () {
-            const menu = this.nextElementSibling;
-            const arrow = this.querySelector(".menu-arrow");
-            const open = menu.style.display === "block";
-            menu.style.display = open ? "none" : "block";
-            arrow.textContent = open ? "▶" : "▼";
-        });
+    // Sidebar toggle
+document.querySelectorAll(".sidebar .menu-toggle").forEach(btn => {
+    btn.addEventListener("click", function () {
+        const menu = this.nextElementSibling;
+        const arrow = this.querySelector(".menu-arrow");
+        const open = menu.style.display === "block";
+        menu.style.display = open ? "none" : "block";
+        arrow.textContent = open ? "▶" : "▼";
     });
+});
 
-    // =============================
-    // ✅ السماح بإرسال الفورمات المصرّح لها
-    // =============================
+    // السماح بإرسال الفورمات المصرّح لها
     document.addEventListener("submit", function (e) {
-
-        // لو الفورم معلّم بالسماح → نتركه يرسل طبيعي
         if (e.target.matches("form[data-allow-submit]")) {
             return true;
         }
-
-        // غير ذلك لا نفعل شيئًا (نترك السلوك الافتراضي)
     }, true);
 </script>
+
+<!-- نهاية <body> قبل block scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 

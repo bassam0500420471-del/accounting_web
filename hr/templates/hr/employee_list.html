@@ -1,0 +1,156 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}الموظفين{% endblock %}
+
+{% block content %}
+<style>
+/* ======== تنسيق الصفحة والكروت ======== */
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* زر إضافة موظف */
+.add-employee-btn {
+    display: inline-block;
+    background: #6c757d; /* رمادي */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    margin-bottom: 25px; /* رفعه عن الكروت */
+}
+
+.add-employee-btn:hover {
+    background: #5a6268;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.employees-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.employee-card {
+    position: relative;
+    width: 220px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+}
+
+.employee-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* الصورة - حجم ثابت دائما */
+.employee-card .employee-photo-container {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px auto;
+    border-radius: 50%;
+    border: 3px solid #0d6efd;
+    overflow: hidden;
+}
+
+.employee-card .employee-photo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.employee-card .employee-photo-container img:hover {
+    transform: scale(1.5);
+    z-index: 10;
+}
+
+/* معلومات الموظف */
+.employee-card h5 {
+    margin: 10px 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.employee-card p {
+    margin: 3px 0;
+    font-size: 0.9rem;
+}
+
+/* الحالة */
+.status-active {
+    color: green;
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: bold;
+}
+
+/* زر التعديل - قلم فقط */
+.edit-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #0d6efd;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.edit-btn:hover {
+    color: #084298;
+}
+</style>
+
+<div class="container mt-3">
+    <h3 class="mb-3">الموظفين</h3>
+
+    <!-- زر إضافة موظف -->
+    <a href="{% url 'hr:add_employee' %}" class="add-employee-btn">➕ إضافة موظف</a>
+
+    <div class="employees-cards">
+        {% for emp in employees %}
+        <div class="employee-card">
+            <div class="employee-photo-container">
+                {% if emp.photo %}
+                    <img src="{{ emp.photo.url }}" alt="صورة الموظف">
+                {% else %}
+                    <img src="{% static 'images/default-user.png' %}" alt="صورة الموظف">
+                {% endif %}
+            </div>
+
+            <h5>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</h5>
+            <p>رقم الموظف: {{ emp.employee_number }}</p>
+            <p>القسم: {% if emp.department %}{{ emp.department.name }}{% else %}---{% endif %}</p>
+            <p>الفرع: {% if emp.branch %}{{ emp.branch.name }}{% else %}---{% endif %}</p>
+            <p>الراتب: {{ emp.base_salary }}</p>
+            <p>تاريخ التعيين: {{ emp.hire_date }}</p>
+            <p>الحالة: 
+                <span class="{% if emp.active %}status-active{% else %}status-inactive{% endif %}">
+                    {% if emp.active %}نشط{% else %}متوقف{% endif %}
+                </span>
+            </p>
+
+            <!-- زر التعديل - قلم فقط -->
+            <a href="{% url 'hr:edit_employee' emp.id %}" class="edit-btn">✏️</a>
+        </div>
+        {% empty %}
+        <p class="text-center">لا يوجد موظفين</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

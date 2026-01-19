@@ -1,0 +1,156 @@
+{% extends "layout/base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}سجل الحضور{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h3 class="mb-4">سجل الحضور</h3>
+
+    <!-- ===== فلتر الموظف و التاريخ ===== -->
+    <form method="get" class="mb-3 d-flex align-items-center gap-2">
+        <label>الموظف:</label>
+        <select name="employee" class="form-select" style="width:200px;">
+            <option value="all" {% if selected_employee == "all" %}selected{% endif %}>عرض الكل</option>
+            {% for emp in all_employees %}
+                <option value="{{ emp.id }}" {% if selected_employee|add:'' == emp.id|add:'' %}selected{% endif %}>
+                    {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>من:</label>
+        <input type="date" name="start_date" value="{{ start_date_str }}" class="form-control" style="width:150px;">
+
+        <label>إلى:</label>
+        <input type="date" name="end_date" value="{{ end_date_str }}" class="form-control" style="width:150px;">
+
+        <button type="submit" class="btn btn-secondary" style="background-color:#ccc; color:black;">بحث</button>
+
+        <a href="{% url 'hr:attendance_page' %}" class="btn btn-light" style="background-color:#eee; color:black;">
+            تفريغ
+        </a>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>الموظف</th>
+                    <th>التاريخ</th>
+                    <th>وقت الحضور</th>
+                    <th>متأخر (دقائق)</th>
+                    <th>وقت الانصراف</th>
+                    <th>الإجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in employees %}
+                    {% for day in start_date|until:end_date %}
+                        {% with att=attendance_map|dict_get:emp.id|dict_get:day %}
+                        <tr id="row-{{ emp.id }}-{{ day|date:'Ymd' }}">
+                            <td>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</td>
+                            <td>{{ day|date:"d-m-Y" }}</td>
+
+                            <td class="check-in">
+                                {% if att and att.check_in %}
+                                    {{ att.check_in|date:"H:i" }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+
+                            <td class="late-minutes">
+                                {% if att and att.late_minutes %}
+                                    {{ att.late_minutes }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+
+                            <td class="check-out">
+                                {% if att and att.check_out %}
+                                    {{ att.check_out|date:"H:i" }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+
+                            <td class="actions">
+                                {% if not att %}
+                                    <button class="btn btn-success btn-sm"
+                                            onclick="checkIn({{ emp.id }}, '{{ day }}')">
+                                        داومت
+                                    </button>
+
+                                {% elif att.check_in and not att.check_out %}
+                                    <button class="btn btn-danger btn-sm"
+                                            onclick="checkOut({{ att.id }}, {{ emp.id }})">
+                                        انصراف
+                                    </button>
+                                {% else %}
+                                    <span class="badge bg-secondary">مكتمل</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endwith %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function checkIn(empId, day) {
+    fetch("{% url 'hr:attendance_check_in_ajax' 0 %}".replace("0", empId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "date=" + day
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            let row = document.getElementById("row-" + empId + "-" + day.replace(/-/g,''));
+            if(row){
+                row.querySelector(".check-in").innerText = data.check_in;
+                row.querySelector(".late-minutes").innerText = data.late_minutes;
+                row.querySelector(".actions").innerHTML =
+                    `<button class="btn btn-danger btn-sm" onclick="checkOut(${data.attendance_id}, ${empId})">انصراف</button>`;
+            }
+        } else {
+            alert(data.error); // رسالة لمن يحاول تسجيل الحضور لتاريخ سابق
+        }
+    });
+}
+
+function checkOut(attId, empId) {
+    fetch("{% url 'hr:attendance_check_out_ajax' 0 %}".replace("0", attId), {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            document.querySelectorAll('[id^="row-' + empId + '-"]').forEach(row => {
+                row.querySelector(".check-out").innerText = data.check_out;
+                row.querySelector(".actions").innerHTML =
+                    `<span class="badge bg-secondary">مكتمل</span>`;
+            });
+        } else {
+            alert("خطأ: " + data.error);
+        }
+    });
+}
+</script>
+
+{% endblock %}

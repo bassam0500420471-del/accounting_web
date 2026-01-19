@@ -1,0 +1,219 @@
+{% extends "layout/base.html" %}
+{% block title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+<h1 class="text-center my-4">لوحة التحكم الرئيسية</h1>
+
+<!-- 👑 مؤشرات KPI -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-white shadow" style="background-color: #868e96;">
+            <div class="card-body">
+                <h5 class="card-title">إجمالي المبيعات</h5>
+                <p class="card-text fs-4">{{ total_sales|floatformat:2 }} ر.س</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white shadow" style="background-color: #868e96;">
+            <div class="card-body">
+                <h5 class="card-title">إجمالي المشتريات</h5>
+                <p class="card-text fs-4">{{ total_purchases|floatformat:2 }} ر.س</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white shadow" style="background-color: #868e96;">
+            <div class="card-body">
+                <h5 class="card-title">عدد المنتجات</h5>
+                <p class="card-text fs-4">{{ product_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white shadow" style="background-color: #868e96;">
+            <div class="card-body">
+                <h5 class="card-title">عدد العملاء</h5>
+                <p class="card-text fs-4">{{ customer_count }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📊 المخططات -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <canvas id="salesChart" height="200"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="purchasesChart" height="200"></canvas>
+    </div>
+</div>
+
+<!-- 📝 الجداول الأخيرة -->
+<div class="row g-3">
+    <!-- آخر 7 فواتير مبيعات -->
+    <div class="col-md-6">
+        <h5>آخر 7 فواتير مبيعات</h5>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>العميل</th>
+                    <th>التاريخ</th>
+                    <th>السعر قبل الضريبة</th>
+                    <th>الضريبة</th>
+                    <th>الإجمالي بعد الضريبة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in last_sales %}
+                <tr>
+                    <td>{{ inv.invoice_no }}</td>
+                    <td>
+                        {% if inv.customer %}
+                            {{ inv.customer.name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ inv.date_invoice }}</td>
+                    <td>{% if inv.total_before_tax %}{{ inv.total_before_tax|floatformat:2 }}{% else %}-{% endif %}</td>
+                    <td>{% if inv.tax_value %}{{ inv.tax_value|floatformat:2 }}{% else %}-{% endif %}</td>
+                    <td>{{ inv.total_after_tax|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- آخر 7 فواتير مشتريات -->
+    <div class="col-md-6">
+        <h5>آخر 7 فواتير مشتريات</h5>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>المورد</th>
+                    <th>التاريخ</th>
+                    <th>السعر قبل الضريبة</th>
+                    <th>الضريبة</th>
+                    <th>الإجمالي بعد الضريبة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in last_purchases %}
+                <tr>
+                    <td>{{ inv.invoice_no }}</td>
+                    <td>
+                        {% if inv.supplier %}
+                            {{ inv.supplier.name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ inv.date_invoice }}</td>
+                    <td>{% if inv.total_before_tax %}{{ inv.total_before_tax|floatformat:2 }}{% else %}-{% endif %}</td>
+                    <td>{% if inv.tax_value %}{{ inv.tax_value|floatformat:2 }}{% else %}-{% endif %}</td>
+                    <td>{{ inv.total_after_tax|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- آخر 7 عروض أسعار -->
+    <div class="col-md-6">
+        <h5>آخر 7 عروض أسعار</h5>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>العميل</th>
+                    <th>التاريخ</th>
+                    <th>السعر قبل الضريبة</th>
+                    <th>الضريبة</th>
+                    <th>الإجمالي بعد الضريبة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in last_quotes %}
+                <tr>
+                    <td>{{ q.quotation_no }}</td>
+                    <td>
+                        {% if q.customer %}
+                            {{ q.customer.name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ q.date_quotation }}</td>
+                    <td>{% if q.total_before_tax %}{{ q.total_before_tax|floatformat:2 }}{% else %}-{% endif %}</td>
+                    <td>{% if q.tax_value %}{{ q.tax_value|floatformat:2 }}{% else %}-{% endif %}</td>
+                    <td>{{ q.total_after_tax|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- آخر 7 منتجات منخفضة المخزون -->
+    <div class="col-md-6">
+        <h5>آخر 7 منتجات منخفضة المخزون</h5>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>المنتج</th>
+                    <th>المخزون</th>
+                    <th>الحد الأدنى</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in low_stock_products %}
+                <tr class="{% if p.current_stock <= p.min_stock %}table-danger{% endif %}">
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.current_stock|floatformat:2 }}</td>
+                    <td>{{ p.min_stock|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const salesChart = new Chart(document.getElementById('salesChart'), {
+        type: 'line',
+        data: {
+            labels: {{ sales_chart_labels|safe }},
+            datasets: [{
+                label: 'المبيعات',
+                data: {{ sales_chart_data|safe }},
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const purchasesChart = new Chart(document.getElementById('purchasesChart'), {
+        type: 'line',
+        data: {
+            labels: {{ purchases_chart_labels|safe }},
+            datasets: [{
+                label: 'المشتريات',
+                data: {{ purchases_chart_data|safe }},
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+</script>
+{% endblock %}

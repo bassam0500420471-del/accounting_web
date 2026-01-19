@@ -1,0 +1,18 @@
+{% for week in weeks %}
+<tr>
+    {% for day in week %}
+    <td>
+        {% if day %}
+            {{ day.day }}<br>
+            {% for emp in employees %}
+                {% if schedule_dict|get_item:(emp.id, day) %}
+                    {{ schedule_dict|get_item:(emp.id, day).shift_name }}
+                {% else %}
+                    عطلة
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </td>
+    {% endfor %}
+</tr>
+{% endfor %}

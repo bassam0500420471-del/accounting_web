@@ -6,7 +6,12 @@ from django.db import transaction
 from django.db.models import Sum
 from decimal import Decimal, InvalidOperation
 
+# 🧾 فواتير المبيعات
 from .models import SalesInvoice, SalesItem, ReturnInvoice, ReturnItem
+
+# 🧾 فواتير نقاط البيع (POS)
+from pos.models import Invoice as PosInvoice
+
 from customers.models import Customer
 from products.models import Product
 from cost_centers.models import CostCenter
@@ -51,8 +56,16 @@ def parse_discount_value(raw_value, base_amount):
 # أرقام تلقائية
 # ==================================================
 def get_next_invoice_number():
-    last = SalesInvoice.objects.order_by("-invoice_no").first()
-    return (last.invoice_no + 1) if last else 1
+    # آخر رقم من فواتير المبيعات
+    last_sales = SalesInvoice.objects.order_by("-invoice_no").first()
+    last_sales_no = last_sales.invoice_no if last_sales else 0
+
+    # آخر رقم من فواتير POS
+    last_pos = PosInvoice.objects.order_by("-invoice_no").first()  # تأكد أن PosInvoice عنده حقل invoice_no
+    last_pos_no = last_pos.invoice_no if last_pos else 0
+
+    # الرقم التالي هو الأكبر بين الاثنين + 1
+    return max(last_sales_no, last_pos_no) + 1
 
 
 def get_next_return_number():
@@ -63,9 +76,44 @@ def get_next_return_number():
 # ==================================================
 # الفواتير
 # ==================================================
+from datetime import datetime, time
+from django.utils import timezone
+
 def invoices_list(request):
-    invoices = SalesInvoice.objects.all().order_by("-id")
-    return render(request, "sales/invoices_list.html", {"invoices": invoices})
+    invoices = []
+
+    # فواتير المبيعات
+    for inv in SalesInvoice.objects.all():
+        # تحويل date إلى aware datetime
+        dt = datetime.combine(inv.date_invoice, time.min) if inv.date_invoice else None
+        dt = timezone.make_aware(dt) if dt else None
+
+        invoices.append({
+            "type": "sales",
+            "id": inv.id,
+            "number": inv.invoice_no,
+            "date": dt,
+            "total": inv.total_after_tax,
+            "object": inv,
+        })
+
+    # فواتير POS
+    for inv in PosInvoice.objects.all():
+        invoices.append({
+            "type": "pos",
+            "id": inv.id,
+            "number": f"POS-{inv.id}",
+            "date": inv.created_at,  # غالبًا aware datetime بالفعل
+            "total": inv.total,
+            "object": inv,
+        })
+
+    # ترتيب حسب التاريخ (استبدل None بـ datetime aware صغير)
+    invoices.sort(key=lambda x: x["date"] or timezone.make_aware(datetime.min), reverse=True)
+
+    return render(request, "sales/invoices_list.html", {
+        "invoices": invoices
+    })
 
 
 def invoice_add(request):

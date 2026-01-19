@@ -20,7 +20,7 @@ SECRET_KEY = os.environ.get(
     "dev-insecure-key-for-local-only"
 )
 
-DEBUG = True  # مؤقتًا فقط، لاحقًا false في الإنتاج
+DEBUG = True  # مؤقتًا فقط، لاحقًا False في الإنتاج
 
 ALLOWED_HOSTS = [
     ".onrender.com",
@@ -28,13 +28,16 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
+# بعد تسجيل الدخول، تحويل المستخدم مباشرة للوحة التحكم
+LOGIN_REDIRECT_URL = '/dashboard/'
+
 # ============================================================
 # DATABASE - SQLite مؤقت للسيرفر
 # ============================================================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # تأكد أن الملف موجود على السيرفر
+        'NAME': r'E:\accounting_web\db.sqlite3',  # ← المسار الصحيح لقاعدة البيانات
     }
 }
 
@@ -66,6 +69,12 @@ INSTALLED_APPS = [
     'lookup',
     'payments',
     'reports',
+
+    # ⭐ POS
+    'pos',
+
+    # 🟢 HR الجديد
+    'hr',   # هنا ضيفنا تطبيق الموارد البشرية
 ]
 
 # ============================================================
@@ -100,15 +109,12 @@ WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
 # ============================================================
 # TEMPLATES
 # ============================================================
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates',  # <--- تأكد أن هذا السطر موجود
+            BASE_DIR / 'templates',   # مجلد القوالب العام
+            BASE_DIR / 'layout',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -157,6 +163,17 @@ LOCALE_PATHS = [
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
+
+# ============================================================
+# EMAIL CONFIGURATION
+# ============================================================
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # يمكن تغييره حسب السيرفر
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "your_email@gmail.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "your_email_password")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # ============================================================
 # DEFAULT FIELD

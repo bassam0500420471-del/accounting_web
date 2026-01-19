@@ -1,0 +1,38 @@
+{% extends "layout/base.html" %}
+
+{% block title %}تعديل الجرد{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h4 class="mb-3">تعديل ورقة الجرد</h4>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>الصنف</th>
+                    <th>الكمية الفعلية</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in items %}
+                <tr>
+                    <td>{{ row.product.name }}</td>
+                    <td>
+                        <input type="number"
+                               name="qty_{{ row.id }}"
+                               value="{{ row.physical_qty }}"
+                               class="form-control">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success">حفظ التعديل</button>
+        <a href="{% url 'stock_adjust_list' %}" class="btn btn-secondary">إلغاء</a>
+    </form>
+</div>
+{% endblock %}
