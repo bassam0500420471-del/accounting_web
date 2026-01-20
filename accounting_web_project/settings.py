@@ -114,8 +114,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates',   # مجلد القوالب العام
-            BASE_DIR / 'layout',
+            BASE_DIR / 'layout',  # ← هذا يربط Django بمجلد layout حيث يوجد base.html
+            BASE_DIR / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {

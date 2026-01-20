@@ -69,6 +69,28 @@ def add_employee(request):
         "docs_fields": form.docs_fields,
     })
 
+
+def edit_employee(request, emp_id):
+    employee = get_object_or_404(Employee, id=emp_id)
+
+    if request.method == "POST":
+        form = EmployeeForm(request.POST, request.FILES, instance=employee)
+        if form.is_valid():
+            form.save()
+            return redirect("hr:employee_list")
+    else:
+        form = EmployeeForm(instance=employee)
+
+    return render(request, "hr/add_employee.html", {
+        "form": form,
+        "edit_mode": True,
+        "employee": employee,
+        "basic_fields": form.basic_fields,
+        "salary_fields": form.salary_fields,
+        "work_fields": form.work_fields,
+        "leave_fields": form.leave_fields,
+        "docs_fields": form.docs_fields,
+    })
 def delete_employee(request, emp_id):
     employee = get_object_or_404(Employee, id=emp_id)
     # حذف حساب المستخدم المرتبط إن وجد
