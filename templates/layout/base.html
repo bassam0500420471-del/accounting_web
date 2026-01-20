@@ -163,15 +163,20 @@
 <!-- إدارة جدول الموظفين -->
 <div class="menu-btn d-flex align-items-center justify-content-between">
     <a href="{% url 'hr:employee_schedule' %}">إدارة جدول الموظفين</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee_schedule' %}')"
->+</button>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee_schedule' %}')">+</button>
 </div>
 
-    <!-- إدارة الإجازات -->
-    <div class="menu-btn d-flex align-items-center justify-content-between">
-        <a href="{% url 'hr:leaves' %}">إدارة الإجازات</a>
-        <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_leave' %}')">+</button>
-    </div>
+<!-- سجل الحضور والانصراف -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
+    <a href="{% url 'hr:attendance_page' %}">سجل الحضور والانصراف</a>
+    <button class="add-icon-btn" onclick="window.location.href='{% url 'hr:attendance_check_page' %}'">+</button>
+</div>
+
+<!-- إدارة الإجازات -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
+    <a href="{% url 'hr:leaves' %}">إدارة الإجازات</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_leave' %}')">+</button>
+</div>
 
     <!-- مسيرات الرواتب -->
     <div class="menu-btn d-flex align-items-center justify-content-between">

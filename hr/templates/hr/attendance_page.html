@@ -41,9 +41,7 @@
                     <th>الموظف</th>
                     <th>التاريخ</th>
                     <th>وقت الحضور</th>
-                    <th>متأخر (دقائق)</th>
                     <th>وقت الانصراف</th>
-                    <th>الإجراء</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,36 +60,11 @@
                                 {% endif %}
                             </td>
 
-                            <td class="late-minutes">
-                                {% if att and att.late_minutes %}
-                                    {{ att.late_minutes }}
-                                {% else %}
-                                    ---
-                                {% endif %}
-                            </td>
-
                             <td class="check-out">
                                 {% if att and att.check_out %}
                                     {{ att.check_out|date:"H:i" }}
                                 {% else %}
                                     ---
-                                {% endif %}
-                            </td>
-
-                            <td class="actions">
-                                {% if not att %}
-                                    <button class="btn btn-success btn-sm"
-                                            onclick="checkIn({{ emp.id }}, '{{ day }}')">
-                                        داومت
-                                    </button>
-
-                                {% elif att.check_in and not att.check_out %}
-                                    <button class="btn btn-danger btn-sm"
-                                            onclick="checkOut({{ att.id }}, {{ emp.id }})">
-                                        انصراف
-                                    </button>
-                                {% else %}
-                                    <span class="badge bg-secondary">مكتمل</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -103,54 +76,21 @@
     </div>
 </div>
 
-<script>
-function checkIn(empId, day) {
-    fetch("{% url 'hr:attendance_check_in_ajax' 0 %}".replace("0", empId), {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "X-Requested-With": "XMLHttpRequest",
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "date=" + day
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            let row = document.getElementById("row-" + empId + "-" + day.replace(/-/g,''));
-            if(row){
-                row.querySelector(".check-in").innerText = data.check_in;
-                row.querySelector(".late-minutes").innerText = data.late_minutes;
-                row.querySelector(".actions").innerHTML =
-                    `<button class="btn btn-danger btn-sm" onclick="checkOut(${data.attendance_id}, ${empId})">انصراف</button>`;
-            }
-        } else {
-            alert(data.error); // رسالة لمن يحاول تسجيل الحضور لتاريخ سابق
-        }
-    });
-}
-
-function checkOut(attId, empId) {
-    fetch("{% url 'hr:attendance_check_out_ajax' 0 %}".replace("0", attId), {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "X-Requested-With": "XMLHttpRequest"
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success){
-            document.querySelectorAll('[id^="row-' + empId + '-"]').forEach(row => {
-                row.querySelector(".check-out").innerText = data.check_out;
-                row.querySelector(".actions").innerHTML =
-                    `<span class="badge bg-secondary">مكتمل</span>`;
-            });
-        } else {
-            alert("خطأ: " + data.error);
-        }
-    });
-}
-</script>
+<style>
+    body {
+        background: #f5f5f5; /* خلفية فاتحة */
+        color: #333;
+    }
+    h3 {
+        font-weight: bold;
+        color: #333;
+    }
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .form-select, .form-control {
+        height: calc(1.5em + .75rem + 2px);
+    }
+</style>
 
 {% endblock %}

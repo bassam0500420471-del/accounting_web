@@ -358,3 +358,75 @@ def attendance_check_out_ajax(request, attendance_id):
             "check_out": attendance.check_out.strftime("%H:%M")
         })
     return JsonResponse({"success": False, "error": "طلب غير صالح"})
+# ==========================
+# صفحة تسجيل الدخول والخروج السريع بالدائرة
+# ==========================
+# ==========================
+# صفحة تسجيل الدخول والخروج السريع بالدائرة (محدثة)
+# ==========================
+def attendance_check_page(request):
+    """
+    صفحة تسجيل الدخول والخروج السريع
+    الزر الدائري يظهر دائماً.
+    إذا لم يكن هناك موظف مرتبط بحساب المستخدم، تظهر رسالة تحذير فوق الزر.
+    """
+    today = timezone.now().date()
+    now = timezone.now()
+    message = ""
+    next_action = "تسجيل دخول"
+    last_attendance = None
+    employee = None
+
+    # محاولة جلب الموظف المرتبط بحساب المستخدم الحالي
+    if request.user.is_authenticated:
+        try:
+            employee = Employee.objects.get(email=request.user.email)
+        except Employee.DoesNotExist:
+            message = "الموظف غير مرتبط بحساب المستخدم."
+
+    if employee:
+        # الحصول على سجل اليوم أو إنشاؤه
+        attendance, created = Attendance.objects.get_or_create(
+            employee=employee,
+            date=today,
+            defaults={"check_in": None, "check_out": None}
+        )
+
+        last_attendance = attendance
+        can_toggle = True
+
+        # تحديد آخر حدث (دخول أو خروج)
+        last_time = attendance.check_out if attendance.check_out else attendance.check_in
+        if last_time:
+            elapsed = (now - last_time).total_seconds()
+            if elapsed < 60:
+                can_toggle = False
+                message = f"الرجاء الانتظار {int(60 - elapsed)} ثانية قبل تسجيل جديد."
+
+        # تحديد النص على الزر
+        if attendance.check_in and not attendance.check_out:
+            next_action = "تسجيل خروج"
+        else:
+            next_action = "تسجيل دخول"
+
+        # تنفيذ عملية تسجيل الدخول أو الخروج
+        if request.method == "POST" and can_toggle:
+            if not attendance.check_in or attendance.check_out:  # تسجيل دخول جديد
+                attendance.check_in = now
+                attendance.check_out = None
+                attendance.save()
+                message = "تم تسجيل الدخول بنجاح."
+            else:  # تسجيل خروج
+                attendance.check_out = now
+                attendance.save()
+                message = "تم تسجيل الخروج بنجاح."
+            next_action = "تسجيل خروج" if attendance.check_in and not attendance.check_out else "تسجيل دخول"
+            return redirect('hr:attendance_check_page')
+
+    return render(request, "hr/attendance_check.html", {
+        "employee": employee,
+        "attendance": last_attendance,
+        "message": message,
+        "next_action": next_action,
+        "last_attendance": last_attendance
+    })

@@ -1,0 +1,102 @@
+{% extends "layout/base.html" %}
+
+{% block title %}تسجيل الدخول والخروج{% endblock %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center" style="height: 70vh;">
+
+    <h3 class="mb-4">تسجيل الدخول والخروج السريع</h3>
+
+    <!-- رسالة تحذير أو عدم وجود موظف مرتبط -->
+    <div id="alert-container" class="mb-3">
+        {% if not employee %}
+            <div class="alert alert-danger">الموظف غير مرتبط بحساب المستخدم.</div>
+        {% elif message %}
+            <div class="alert alert-warning">{{ message }}</div>
+        {% endif %}
+    </div>
+
+    <!-- الزر الدائري دائمًا ظاهر -->
+    <form method="post" id="attendance-form">
+        {% csrf_token %}
+        <button type="submit"
+                id="attendance-btn"
+                class="btn rounded-circle d-flex align-items-center justify-content-center glow"
+                style="width: 160px; height: 160px; font-size: 20px;
+                       border: 5px solid #666666;
+                       background-color: #888888;
+                       color: #fff;
+                       transition: all 0.2s;">
+            {{ next_action|default:"تسجيل دخول" }}
+        </button>
+    </form>
+
+    <!-- آخر تسجيل -->
+    {% if last_attendance %}
+        <div class="mt-4 text-center" style="color: #333;">
+            <p>آخر تسجيل: 
+                {% if last_attendance.check_out %}
+                    تم الخروج الساعة {{ last_attendance.check_out|time:"H:i" }}
+                {% else %}
+                    تم الدخول الساعة {{ last_attendance.check_in|time:"H:i" }}
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+
+<style>
+    body {
+        background: #f5f5f5;
+        color: #333;
+    }
+    h3 {
+        font-weight: bold;
+        color: #333;
+    }
+    .alert {
+        width: 300px;
+        text-align: center;
+    }
+
+    /* تأثير الهالة / الظل للزر */
+    .glow {
+        box-shadow: 0 0 15px rgba(0,0,0,0.3), 
+                    0 0 20px rgba(255,255,255,0.2) inset, 
+                    0 0 25px rgba(255,255,255,0.1);
+    }
+
+    #attendance-btn:active {
+        transform: translateY(4px); /* إحساس بالضغط */
+        box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 15px rgba(255,255,255,0.1) inset;
+    }
+</style>
+
+<script>
+    // منع الضغط المتكرر قبل دقيقة
+    let lastClickTime = 0;
+    const waitTime = 60000; // دقيقة واحدة
+
+    const form = document.getElementById('attendance-form');
+    if(form){
+        form.addEventListener('submit', function(e){
+            const now = new Date().getTime();
+            const alertContainer = document.getElementById('alert-container');
+
+            if(now - lastClickTime < waitTime){
+                e.preventDefault();
+                alertContainer.innerHTML = '<div class="alert alert-warning">الرجاء الانتظار قبل تسجيل جديد!</div>';
+                return false;
+            }
+
+            lastClickTime = now;
+            // إزالة أي رسالة قديمة
+            if(employee) {
+                alertContainer.innerHTML = '';
+            }
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User  # تم الاستدعاء
 
 # ================= الأقسام والفروع =================
 class Department(models.Model):
@@ -70,6 +71,15 @@ class Employee(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL
+    )
+
+    # ================= ربط المستخدم =================
+    user = models.OneToOneField(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="employee"
     )
 
     # ================= الرواتب =================
@@ -191,7 +201,7 @@ class Evaluation(models.Model):
         return f"{self.employee} - {self.score} - {self.date}"
 
 
-# ================= سجل الحضور (جديد) =================
+# ================= سجل الحضور =================
 class Attendance(models.Model):
     employee = models.ForeignKey(
         Employee,

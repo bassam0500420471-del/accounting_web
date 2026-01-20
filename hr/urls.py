@@ -57,4 +57,9 @@ urlpatterns = [
     path('attendance/', views.attendance_page, name='attendance_page'),
     path('attendance/check-in/<int:employee_id>/', views.attendance_check_in_ajax, name='attendance_check_in_ajax'),
     path('attendance/check-out/<int:attendance_id>/', views.attendance_check_out_ajax, name='attendance_check_out_ajax'),
+
+    # ==========================
+    # صفحة تسجيل الدخول والخروج السريع
+    # ==========================
+    path('attendance/check/', views.attendance_check_page, name='attendance_check_page'),
 ]
