@@ -11,121 +11,145 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-    <style>
-        body {
-            background: #f0f0f0;
-            font-family: Tahoma, sans-serif;
-            margin: 0;
-        }
+<style>
+/* ===== Box sizing لكل العناصر ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
+body {
+    background: #f0f0f0;
+    font-family: Tahoma, sans-serif;
+    margin: 0;
+}
 
-        /* ===== Sidebar ===== */
-        .sidebar {
-            width: 260px;
-            background: #2D3033;
-            color: #fff;
-            padding: 20px;
-            overflow-y: auto;
-        }
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
 
-        .sidebar h4 {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 260px;
+    background: #2D3033;
+    color: #fff;
+    padding: 20px;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
 
-        .sidebar h5 {
-            text-align: center;
-            color: #cfcfcf;
-            margin-bottom: 25px;
-        }
+.sidebar h4 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
 
-        .menu-btn {
-            width: 100%;
-            background: #3A3D40;
-            color: #e5e5e5;
-            border: 1px solid #4a4a4a;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            text-decoration: none;
-            cursor: pointer;
-        }
+.sidebar h5 {
+    text-align: center;
+    color: #cfcfcf;
+    margin-bottom: 25px;
+}
 
-        .menu-btn:hover {
-            background: #45484b;
-        }
+.menu-btn {
+    width: 100%;
+    background: #3A3D40;
+    color: #e5e5e5;
+    border: 1px solid #4a4a4a;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    cursor: pointer;
+}
 
-        .menu-arrow {
-            font-size: 14px;
-        }
+.menu-btn:hover {
+    background: #45484b;
+}
 
-        .submenu {
-            display: none;
-            padding-right: 10px;
-            margin-bottom: 10px;
-        }
+.menu-arrow {
+    font-size: 14px;
+}
 
-        .submenu .menu-btn {
-            justify-content: flex-start;
-            gap: 8px;
-        }
+.submenu {
+    display: none;
+    padding-right: 10px;
+    margin-bottom: 10px;
+}
 
-        .submenu a {
-            color: #fff;
-            text-decoration: none;
-            flex: 1;
-        }
+.submenu .menu-btn {
+    justify-content: flex-start;
+    gap: 8px;
+}
 
-        .add-icon-btn {
-            font-size: 20px;
-            font-weight: bold;
-            color: #4da3ff;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
+.submenu a {
+    color: #fff;
+    text-decoration: none;
+    flex: 1;
+}
 
-        /* ===== Content ===== */
-        .content-wrapper {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-        }
+.add-icon-btn {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4da3ff;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
 
-        .page-box {
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            overflow: visible;
-        }
+/* ===== Content ===== */
+.content-wrapper {
+    flex: 1 1 auto;
+    padding: 25px;
+    overflow-x: auto;
+    overflow-y: auto;
+    min-width: 0;
+}
 
-        /* Banner TEST DASHBOARD */
-        .dashboard-banner {
-            background: red;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
+.page-box {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 100%;
+}
 
-        .dropdown-menu {
-            z-index: 9999;
-        }
-    </style>
+/* ===== Tables داخل page-box ===== */
+.table-responsive {
+    overflow-x: auto;
+}
 
-    {% block head %}{% endblock %}
+.page-box table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+.page-box table th,
+.page-box table td {
+    white-space: nowrap;
+}
+
+/* Banner TEST DASHBOARD */
+.dashboard-banner {
+    background: red;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.dropdown-menu {
+    z-index: 9999;
+}
+</style>
+
+{% block head %}{% endblock %}
 </head>
 
 <body>
@@ -193,7 +217,6 @@
     <!-- التقارير -->
     <div class="menu-btn">
         <a href="{% url 'hr:reports' %}">التقارير</a>
-        <!-- لا زر + -->
     </div>
 </div>
 
@@ -209,59 +232,59 @@
     </div>
 </div>
 
-    <!-- ================= المبيعات ================= -->
-    <button class="menu-btn menu-toggle">
-        <span>{% trans "المبيعات" %}</span>
-        <span class="menu-arrow">▼</span>
-    </button>
-    <div class="submenu">
-        <div class="menu-btn">
-            <a href="/customers/">{% trans "العملاء" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/customers/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/sales/invoices/">{% trans "فواتير المبيعات" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/sales/invoices/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/sales/returns/">{% trans "مرتجعات المبيعات" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/sales/returns/new/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/quotations/">{% trans "عروض الأسعار" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/quotations/add/')">+</button>
-        </div>
+<!-- ================= المبيعات ================= -->
+<button class="menu-btn menu-toggle">
+    <span>{% trans "المبيعات" %}</span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+    <div class="menu-btn">
+        <a href="/customers/">{% trans "العملاء" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/customers/add/')">+</button>
     </div>
 
-    <!-- ================= المشتريات ================= -->
-    <button class="menu-btn menu-toggle">
-        <span>{% trans "المشتريات" %}</span>
-        <span class="menu-arrow">▼</span>
-    </button>
-    <div class="submenu">
-        <div class="menu-btn">
-            <a href="/suppliers/">{% trans "الموردين" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/suppliers/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/purchase/invoices/">{% trans "فواتير المشتريات" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/purchase/invoices/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/purchase/returns/">{% trans "مرتجعات المشتريات" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/purchase/returns/new/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/purchase/orders/">{% trans "أوامر الشراء" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/purchase/orders/add/')">+</button>
-        </div>
+    <div class="menu-btn">
+        <a href="/sales/invoices/">{% trans "فواتير المبيعات" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/sales/invoices/add/')">+</button>
     </div>
+
+    <div class="menu-btn">
+        <a href="/sales/returns/">{% trans "مرتجعات المبيعات" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/sales/returns/new/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/quotations/">{% trans "عروض الأسعار" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/quotations/add/')">+</button>
+    </div>
+</div>
+
+<!-- ================= المشتريات ================= -->
+<button class="menu-btn menu-toggle">
+    <span>{% trans "المشتريات" %}</span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+    <div class="menu-btn">
+        <a href="/suppliers/">{% trans "الموردين" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/suppliers/add/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/purchase/invoices/">{% trans "فواتير المشتريات" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/purchase/invoices/add/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/purchase/returns/">{% trans "مرتجعات المشتريات" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/purchase/returns/new/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/purchase/orders/">{% trans "أوامر الشراء" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/purchase/orders/add/')">+</button>
+    </div>
+</div>
 
 <!-- ================= المنتجات ================= -->
 <button class="menu-btn menu-toggle">
@@ -269,91 +292,91 @@
     <span class="menu-arrow">▼</span>
 </button>
 <div class="submenu">
-    <!-- قائمة المنتجات الحالية -->
     <div class="menu-btn">
         <a href="/products/">{% trans "قائمة المنتجات" %}</a>
         <button class="add-icon-btn" onclick="goAdd('/products/add/')">+</button>
     </div>
 
-    <!-- تصنيفات المنتجات -->
-<div class="menu-btn">
-    <a href="/products/categories/">{% trans "تصنيفات المنتجات" %}</a>
-    <button class="add-icon-btn" onclick="goAdd('/products/categories/add/')">+</button>
-</div>
-
-<!-- ================= المخزون الجديد ================= -->
-<div class="menu-btn">
-    <a href="{% url 'stock_adjust' %}">تعديل المخزون يدويًا</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'stock_adjust' %}')">+</button>
-</div>
-<div class="menu-btn">
-    <a href="{% url 'stock_ledger' %}">سجل عمليات المخزون</a>
-</div>
-<div class="menu-btn">
-    <a href="{% url 'stock_take_sheet' %}">ورقة الجرد</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'stock_take_sheet' %}')">+</button>
-</div>
-</div>
-
-    <!-- ================= المحاسبة ================= -->
-    <button class="menu-btn menu-toggle">
-        <span>{% trans "المحاسبة" %}</span>
-        <span class="menu-arrow">▼</span>
-    </button>
-    <div class="submenu">
-        <div class="menu-btn">
-            <a href="/accounting/journals/">{% trans "القيود اليومية" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/accounting/journals/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/accounting/chart/">{% trans "شجرة الحسابات" %}</a>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/cost-centers/">{% trans "مراكز التكلفة" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/cost-centers/add/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/cost-centers/tree">🌳 شجرة مراكز التكلفة</a>
-        </div>
+    <div class="menu-btn">
+        <a href="/products/categories/">{% trans "تصنيفات المنتجات" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/products/categories/add/')">+</button>
     </div>
 
-    <!-- ================= المدفوعات ================= -->
-    <button class="menu-btn menu-toggle">
-        <span>{% trans "المدفوعات" %}</span>
-        <span class="menu-arrow">▼</span>
-    </button>
-    <div class="submenu">
-        <div class="menu-btn">
-            <a href="/payments/receipts/">{% trans "سندات القبض" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/payments/receipt/new/')">+</button>
-        </div>
-
-        <div class="menu-btn">
-            <a href="/payments/payments/">{% trans "سندات الصرف" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('/payments/payment/new/')">+</button>
-        </div>
+    <div class="menu-btn">
+        <a href="{% url 'products:stock_adjust' %}">تعديل المخزون يدويًا</a>
+        <button class="add-icon-btn" onclick="goAdd('{% url 'products:stock_adjust' %}')">+</button>
     </div>
+
+    <div class="menu-btn">
+        <a href="{% url 'products:stock_ledger' %}">سجل عمليات المخزون</a>
+    </div>
+
+<div class="menu-btn">
+    <a href="{% url 'products:stock_take_sheet_new' %}">ورقة الجرد</a>
+    <button class="add-icon-btn" onclick="goAdd('{% url 'products:stock_take_sheet_new' %}')">+</button>
+</div>
+
+    <div class="menu-btn">
+        <a href="{% url 'products:stock_take_list' %}">إدارة الجرد</a>
+    </div>
+</div>
+
+<!-- ================= المحاسبة ================= -->
+<button class="menu-btn menu-toggle">
+    <span>{% trans "المحاسبة" %}</span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+    <div class="menu-btn">
+        <a href="/accounting/journals/">{% trans "القيود اليومية" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/accounting/journals/add/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/accounting/chart/">{% trans "شجرة الحسابات" %}</a>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/cost-centers/">{% trans "مراكز التكلفة" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/cost-centers/add/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/cost-centers/tree">🌳 شجرة مراكز التكلفة</a>
+    </div>
+</div>
+
+<!-- ================= المدفوعات ================= -->
+<button class="menu-btn menu-toggle">
+    <span>{% trans "المدفوعات" %}</span>
+    <span class="menu-arrow">▼</span>
+</button>
+<div class="submenu">
+    <div class="menu-btn">
+        <a href="/payments/receipts/">{% trans "سندات القبض" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/payments/receipt/new/')">+</button>
+    </div>
+
+    <div class="menu-btn">
+        <a href="/payments/payments/">{% trans "سندات الصرف" %}</a>
+        <button class="add-icon-btn" onclick="goAdd('/payments/payment/new/')">+</button>
+    </div>
+</div>
 
 <!-- ================= التقارير ================= -->
-<a href="{% url 'reports:dashboard' %}" class="menu-btn d-flex align-items-center justify-content-between">
-    <span>التقارير</span>
+<div class="menu-btn d-flex align-items-center justify-content-between" style="background:#3A3D40; border:1px solid #4a4a4a;">
+    <a href="{% url 'reports:dashboard' %}" style="flex:1; color:#fff; text-decoration:none;">التقارير</a>
+    <span class="menu-arrow">▶</span>
+</div>
+
+<a href="/settings/" class="menu-btn">
+    <span>{% trans "إعدادات الشركة" %}</span>
     <span class="menu-arrow">▶</span>
 </a>
-
-    <a href="/settings/" class="menu-btn">
-        <span>{% trans "إعدادات الشركة" %}</span>
-        <span class="menu-arrow">▶</span>
-    </a>
 </div>
 
 <!-- ================= CONTENT ================= -->
 <div class="content-wrapper">
-
-
-    <!-- صفحة الـ content العادية -->
     <div class="page-box">
         {% block content %}{% endblock %}
     </div>
@@ -362,30 +385,38 @@
 </div>
 
 <script>
-    function goAdd(url) {
-        window.location.href = url;
-    }
+function goAdd(url) {
+    window.location.href = url;
+}
 
-    // Sidebar toggle
-document.querySelectorAll(".sidebar .menu-toggle").forEach(btn => {
-    btn.addEventListener("click", function () {
-        const menu = this.nextElementSibling;
-        const arrow = this.querySelector(".menu-arrow");
-        const open = menu.style.display === "block";
-        menu.style.display = open ? "none" : "block";
-        arrow.textContent = open ? "▶" : "▼";
+// Sidebar toggle مع ضبط arrow عند التحميل
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".sidebar .menu-toggle").forEach(btn => {
+        const menu = btn.nextElementSibling;
+        const arrow = btn.querySelector(".menu-arrow");
+
+        // إخفاء القوائم الفرعية عند التحميل
+        if (!menu.style.display || menu.style.display !== "block") {
+            menu.style.display = "none";
+            arrow.textContent = "▶";
+        }
+
+        btn.addEventListener("click", function () {
+            const open = menu.style.display === "block";
+            menu.style.display = open ? "none" : "block";
+            arrow.textContent = open ? "▶" : "▼";
+        });
     });
 });
 
-    // السماح بإرسال الفورمات المصرّح لها
-    document.addEventListener("submit", function (e) {
-        if (e.target.matches("form[data-allow-submit]")) {
-            return true;
-        }
-    }, true);
+// السماح بإرسال الفورمات المصرّح لها
+document.addEventListener("submit", function (e) {
+    if (e.target.matches("form[data-allow-submit]")) {
+        return true;
+    }
+}, true);
 </script>
 
-<!-- نهاية <body> قبل block scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 

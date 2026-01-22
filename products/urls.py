@@ -15,6 +15,8 @@ from .views_category import (
     category_list,   # ✅ قائمة التصنيفات
 )
 
+app_name = "products"  # إضافة namespace لتجنب التعارض
+
 urlpatterns = [
 
     # =========================
@@ -42,9 +44,10 @@ urlpatterns = [
     # =========================
     # الجرد
     # =========================
-    path("stock/take-sheet/", stock_take_sheet, name="stock_take_sheet"),     # ➕ فتح ورقة الجرد
-    path("stock/take-sheet/save/", stock_take_save, name="stock_take_save"),  # 💾 حفظ الجرد عبر AJAX
-    path("stock/takes/", stock_take_list, name="stock_take_list"),            # 📋 إدارة الجرد
+    path("stock/take-sheet/new/", stock_take_sheet, name="stock_take_sheet_new"),  # ➕ فتح ورقة جرد جديدة
+    path("stock/take-sheet/<int:take_id>/", stock_take_sheet, name="stock_take_sheet"),  # ➕ عرض ورقة جرد موجودة
+    path("stock/take-sheet/save/", stock_take_save, name="stock_take_save"),       # 💾 حفظ الجرد عبر AJAX
+    path("stock/takes/", stock_take_list, name="stock_take_list"),                 # 📋 إدارة الجرد
 
     # =========================
     # عمليات المخزون اليدوية

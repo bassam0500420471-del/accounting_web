@@ -29,7 +29,8 @@
                 </select>
             </td>
             <td>
-                <a href="{% url 'stock_take_sheet' %}?view_id={{ take.id }}" class="btn btn-secondary btn-sm">عرض</a>
+                <!-- تعديل الرابط ليشمل namespace ويتمرر take.id -->
+                <a href="{% url 'products:stock_take_sheet' take.id %}" class="btn btn-secondary btn-sm">عرض</a>
             </td>
         </tr>
         {% empty %}

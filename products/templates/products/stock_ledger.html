@@ -6,7 +6,7 @@
 <h2>سجل عمليات المخزون</h2>
 
 <div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{% url 'stock_adjust' %}" class="btn btn-secondary">تعديل المخزون</a>
+    <a href="{% url 'products:stock_adjust' %}" class="btn btn-secondary">تعديل المخزون</a>
     <form method="get" class="mb-3 d-flex">
         <input type="text" name="q" placeholder="بحث..." value="{{ q }}" class="form-control" style="width: 300px;">
         <button type="submit" class="btn btn-secondary ms-2">بحث</button>
@@ -45,13 +45,13 @@
             إجراءات
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="actionMenu{{ forloop.counter }}">
-            <li><a class="dropdown-item" href="{% url 'stock_adjust_edit' move.id %}">تعديل</a></li>
-            <li><a class="dropdown-item" href="{% url 'stock_adjust_delete' move.id %}" onclick="return confirm('هل أنت متأكد من حذف هذه الحركة؟');">حذف</a></li>
-            <li><a class="dropdown-item" href="{% url 'stock_adjust_view' move.id %}">عرض</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_edit' move.id %}">تعديل</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_delete' move.id %}" onclick="return confirm('هل أنت متأكد من حذف هذه الحركة؟');">حذف</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_view' move.id %}">عرض</a></li>
           </ul>
         </div>
         {% else %}
-        <a href="{% url 'stock_adjust_view' move.id %}" class="btn btn-sm btn-secondary">عرض فقط</a>
+        <a href="{% url 'products:stock_adjust_view' move.id %}" class="btn btn-sm btn-secondary">عرض فقط</a>
         {% endif %}
       </td>
     </tr>

@@ -135,7 +135,7 @@
 
     <div class="d-flex justify-content-between mb-3">
         <h3 class="fw-bold">إدارة المنتجات</h3>
-        <a href="{% url 'product_add' %}" class="btn btn-add-product">+ إضافة منتج</a>
+        <a href="{% url 'products:product_add' %}" class="btn btn-add-product">+ إضافة منتج</a>
     </div>
 
     <form method="get" class="mb-3">
@@ -199,9 +199,9 @@
                         <div class="dropdown">
                             <button class="dropdown-btn">خيارات ▾</button>
                             <div class="dropdown-content">
-                                <a href="{% url 'product_view' p.id %}">👁️ عرض</a>
-                                <a href="{% url 'product_edit' p.id %}">✏️ تعديل</a>
-                                <a href="{% url 'product_delete' p.id %}">🗑️ حذف</a>
+                                <a href="{% url 'products:product_view' p.id %}">👁️ عرض</a>
+                                <a href="{% url 'products:product_edit' p.id %}">✏️ تعديل</a>
+                                <a href="{% url 'products:product_delete' p.id %}">🗑️ حذف</a>
                             </div>
                         </div>
                     </td>
