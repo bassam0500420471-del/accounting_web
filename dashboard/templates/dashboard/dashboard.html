@@ -43,10 +43,10 @@
 <!-- 📊 المخططات الخطية -->
 <div class="row mb-4">
     <div class="col-12 col-md-6 mb-3 mb-md-0">
-        <canvas id="salesChart" style="max-width:100%; height:300px;"></canvas>
+        <canvas id="salesChart" style="width:100%; height:300px;"></canvas>
     </div>
     <div class="col-12 col-md-6">
-        <canvas id="purchasesChart" style="max-width:100%; height:300px;"></canvas>
+        <canvas id="purchasesChart" style="width:100%; height:300px;"></canvas>
     </div>
 </div>
 
@@ -56,7 +56,7 @@
     <div class="col-12 col-md-6">
         <h5>آخر 7 فواتير مبيعات</h5>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-dark">
                     <tr>
                         <th>#</th>
@@ -87,7 +87,7 @@
     <div class="col-12 col-md-6">
         <h5>آخر 7 فواتير مشتريات</h5>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-dark">
                     <tr>
                         <th>#</th>
@@ -118,7 +118,7 @@
     <div class="col-12 col-md-6">
         <h5>آخر 7 عروض أسعار</h5>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-dark">
                     <tr>
                         <th>#</th>
@@ -149,7 +149,7 @@
     <div class="col-12 col-md-6">
         <h5>آخر 7 منتجات منخفضة المخزون</h5>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-striped table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-dark">
                     <tr>
                         <th>المنتج</th>
@@ -170,9 +170,18 @@
         </div>
     </div>
 </div>
+
+<style>
+/* لضمان تكسر النصوص الطويلة داخل الجدول */
+td {
+    word-wrap: break-word;
+    word-break: break-word;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     const salesChart = new Chart(document.getElementById('salesChart'), {
         type: 'line',
