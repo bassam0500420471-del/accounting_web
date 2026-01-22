@@ -1,0 +1,81 @@
+{% extends "layout/base.html" %}
+
+{% block title %}إضافة إجازة{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">إضافة إجازة</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- اختيار الموظف -->
+        <div class="mb-3">
+            <label class="form-label">{{ form.employee.label }}</label>
+
+            {% if employee %}
+                <!-- الموظف مرتبط بحسابك، اجعل الحقل مخفي -->
+                {{ form.employee.as_hidden }}
+                <input type="text" class="form-control" value="{{ employee }}" disabled>
+            {% else %}
+                <!-- الموظف غير مرتبط، يمكن اختياره -->
+                {{ form.employee }}
+                {% if form.employee.errors %}
+                    <div class="text-danger small">{{ form.employee.errors|striptags }}</div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- نوع الإجازة -->
+        <div class="mb-3">
+            <label class="form-label">{{ form.leave_type.label }}</label>
+            {{ form.leave_type }}
+            {% if form.leave_type.errors %}
+                <div class="text-danger small">{{ form.leave_type.errors|striptags }}</div>
+            {% endif %}
+        </div>
+
+        <!-- التواريخ -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.start_date.label }}</label>
+                {{ form.start_date }}
+                {% if form.start_date.errors %}
+                    <div class="text-danger small">{{ form.start_date.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">{{ form.end_date.label }}</label>
+                {{ form.end_date }}
+                {% if form.end_date.errors %}
+                    <div class="text-danger small">{{ form.end_date.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- السبب -->
+        <div class="mb-3">
+            <label class="form-label">{{ form.reason.label }}</label>
+            {{ form.reason }}
+            {% if form.reason.errors %}
+                <div class="text-danger small">{{ form.reason.errors|striptags }}</div>
+            {% endif %}
+        </div>
+
+        <!-- الحالة -->
+        <div class="mb-3">
+            <label class="form-label">{{ form.status.label }}</label>
+            {{ form.status }}
+            {% if form.status.errors %}
+                <div class="text-danger small">{{ form.status.errors|striptags }}</div>
+            {% endif %}
+        </div>
+
+        <!-- الأزرار -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-secondary">حفظ</button>
+            <a href="{% url 'hr:leaves' %}" class="btn btn-secondary">إلغاء</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

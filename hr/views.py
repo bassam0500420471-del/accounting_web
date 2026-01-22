@@ -12,6 +12,8 @@ import string
 import json
 from datetime import date, datetime
 import calendar
+from .forms import LeaveForm
+
 
 # ==========================
 # عرض قائمة الموظفين
@@ -20,56 +22,32 @@ def employee_list(request):
     employees = Employee.objects.all().order_by("employee_number")
     return render(request, "hr/employee_list.html", {"employees": employees})
 
+# ==========================
+# إضافة موظف
+# ==========================
 def add_employee(request):
     if request.method == "POST":
         form = EmployeeForm(request.POST, request.FILES)
         if form.is_valid():
-            employee = form.save(commit=False)
-            if not employee.employee_number:
-                employee.employee_number = generate_employee_number()
-            employee.save()
-
-            # ===== إنشاء حساب مستخدم للموظف =====
-            if employee.email:
-                password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                user, created = User.objects.get_or_create(
-                    username=employee.email,
-                    defaults={"email": employee.email}
-                )
-                if created:
-                    user.set_password(password)
-                    user.save()
-
-                    # ===== إرسال البريد =====
-                    login_url = request.build_absolute_uri(reverse("login"))
-                    send_mail(
-                        subject="حسابك في النظام",
-                        message=f"مرحبًا {employee.first_name_ar}!\n\n"
-                                f"تم إنشاء حسابك في النظام.\n"
-                                f"اسم المستخدم: {employee.email}\n"
-                                f"كلمة المرور: {password}\n"
-                                f"رابط الدخول: {login_url}\n\n"
-                                "يرجى تغيير كلمة المرور عند أول تسجيل دخول.",
-                        from_email=None,
-                        recipient_list=[employee.email],
-                        fail_silently=False
-                    )
-
-            return redirect("hr:employee_list")
+            form.save()
+            return redirect('hr:employee_list')
     else:
-        form = EmployeeForm(initial={"employee_number": generate_employee_number()})
+        form = EmployeeForm()
 
-    return render(request, "hr/add_employee.html", {
-        "form": form,
-        "edit_mode": False,
-        "basic_fields": form.basic_fields,
-        "salary_fields": form.salary_fields,
-        "work_fields": form.work_fields,
-        "leave_fields": form.leave_fields,
-        "docs_fields": form.docs_fields,
-    })
+    context = {
+        'form': form,
+        'edit_mode': False,
+        'salary_fields': form.salary_fields,
+        'work_fields': form.work_fields,
+        'leave_fields': form.leave_fields,
+        'docs_fields': form.docs_fields,
+    }
+    return render(request, "hr/add_employee.html", context)  # <-- الاسم الصحيح
 
 
+# ==========================
+# تعديل موظف
+# ==========================
 def edit_employee(request, emp_id):
     employee = get_object_or_404(Employee, id=emp_id)
 
@@ -81,16 +59,16 @@ def edit_employee(request, emp_id):
     else:
         form = EmployeeForm(instance=employee)
 
-    return render(request, "hr/add_employee.html", {
+    context = {
         "form": form,
         "edit_mode": True,
         "employee": employee,
-        "basic_fields": form.basic_fields,
         "salary_fields": form.salary_fields,
         "work_fields": form.work_fields,
         "leave_fields": form.leave_fields,
         "docs_fields": form.docs_fields,
-    })
+    }
+    return render(request, "hr/add_employee.html", context)  # <-- الاسم الصحيح
 def delete_employee(request, emp_id):
     employee = get_object_or_404(Employee, id=emp_id)
     # حذف حساب المستخدم المرتبط إن وجد
@@ -179,7 +157,7 @@ def employee_schedule(request):
             row["shifts"].append({
                 "emp_id": emp.id,
                 "shift_id": s.shift.id if s and s.shift else "",
-                "shift_name": s.shift.shift_name if s and s.shift else ""
+                "shift_name": s.shift.shift_name if s and s.shift else "عطلة"
             })
         schedule_list.append(row)
 
@@ -235,26 +213,92 @@ def add_employee_schedule_ajax(request):
 # ==========================
 # صفحات مؤقتة
 # ==========================
+from .models import Leave
+
+# ==========================
+# إدارة الإجازات
+# ==========================
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Leave, Employee
+from .forms import LeaveForm
+
 def leaves_list(request):
-    return render(request, "hr/leaves_list.html")
+    """
+    عرض قائمة الإجازات لجميع الموظفين، مرتبة حسب تاريخ الإنشاء تنازليًا،
+    مع جلب بيانات الموظف المرتبط بكل إجازة لتسهيل العرض في القالب.
+    """
+    leaves = Leave.objects.select_related("employee").order_by("-created_at")
+    return render(request, "hr/leaves_list.html", {
+        "leaves": leaves
+    })
 
+
+# ==========================
+# إضافة إجازة جديدة
+# ==========================
 def add_leave(request):
-    return render(request, "hr/add_leave.html")
+    message = None
+    employee = None
 
-def payroll_list(request):
-    return render(request, "hr/payroll_list.html")
+    # محاولة جلب الموظف المرتبط بحساب المستخدم الحالي
+    if request.user.is_authenticated:
+        try:
+            employee = request.user.employee
+        except Employee.DoesNotExist:
+            message = "الموظف غير مرتبط بحساب المستخدم."
 
-def add_payroll(request):
-    return render(request, "hr/add_payroll.html")
+    if request.method == "POST":
+        form = LeaveForm(request.POST)
+        if form.is_valid():
+            leave = form.save(commit=False)
 
-def evaluation_list(request):
-    return render(request, "hr/evaluation_list.html")
+            # تحديد الموظف تلقائيًا إذا مرتبط باليوزر
+            if employee:
+                leave.employee = employee
 
-def add_evaluation(request):
-    return render(request, "hr/add_evaluation.html")
+            leave.save()
+            return redirect("hr:leaves")
+        else:
+            # طباعة الأخطاء أثناء التطوير
+            print("أخطاء الفورم:", form.errors)
+    else:
+        # تعيين القيمة الأولية للموظف إذا مرتبط
+        initial_data = {}
+        if employee:
+            initial_data["employee"] = employee.id
 
-def hr_reports(request):
-    return render(request, "hr/hr_reports.html")
+        form = LeaveForm(initial=initial_data)
+
+    return render(request, "hr/add_leave.html", {
+        "form": form,
+        "message": message,
+    })
+
+
+# ==========================
+# اعتماد الإجازة
+# ==========================
+def approve_leave(request, leave_id):
+    """
+    اعتماد الإجازة وتغيير حالتها إلى 'approved'.
+    """
+    leave = get_object_or_404(Leave, id=leave_id)
+    leave.status = "approved"
+    leave.save()
+    return redirect("hr:leaves")
+
+
+# ==========================
+# رفض الإجازة
+# ==========================
+def reject_leave(request, leave_id):
+    """
+    رفض الإجازة وتغيير حالتها إلى 'rejected'.
+    """
+    leave = get_object_or_404(Leave, id=leave_id)
+    leave.status = "rejected"
+    leave.save()
+    return redirect("hr:leaves")
 
 
 # ==========================
@@ -380,7 +424,7 @@ def attendance_check_page(request):
     # محاولة جلب الموظف المرتبط بحساب المستخدم الحالي
     if request.user.is_authenticated:
         try:
-            employee = Employee.objects.get(email=request.user.email)
+            employee = request.user.employee
         except Employee.DoesNotExist:
             message = "الموظف غير مرتبط بحساب المستخدم."
 
@@ -430,3 +474,46 @@ def attendance_check_page(request):
         "next_action": next_action,
         "last_attendance": last_attendance
     })
+# ==========================
+# إدارة الرواتب
+# ==========================
+def payroll_list(request):
+    """
+    عرض قائمة الرواتب.
+    """
+    return render(request, "hr/payroll_list.html")
+
+
+def add_payroll(request):
+    """
+    إضافة راتب جديد.
+    """
+    return render(request, "hr/add_payroll.html")
+
+
+# ==========================
+# إدارة التقييمات
+# ==========================
+def evaluation_list(request):
+    """
+    عرض قائمة تقييمات الموظفين.
+    """
+    return render(request, "hr/evaluation_list.html")
+
+
+def add_evaluation(request):
+    """
+    إضافة تقييم جديد.
+    """
+    return render(request, "hr/add_evaluation.html")
+
+
+# ==========================
+# تقارير الموارد البشرية
+# ==========================
+def hr_reports(request):
+    """
+    عرض صفحة تقارير الموارد البشرية.
+    """
+    return render(request, "hr/hr_reports.html")
+

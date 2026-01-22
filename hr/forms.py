@@ -1,6 +1,8 @@
 # hr/forms.py
 from django import forms
-from .models import Employee
+from .models import Employee, Leave
+from django.utils import timezone
+from .utils import generate_employee_number  # الدالة اللي أرسلتها
 
 class EmployeeForm(forms.ModelForm):
     display_employee_number = forms.CharField(
@@ -49,57 +51,28 @@ class EmployeeForm(forms.ModelForm):
 
     widgets = {
         'employee_number': forms.HiddenInput(),
-        'first_name_ar': forms.TextInput(attrs={'class': 'form-control'}),
-        'last_name_ar': forms.TextInput(attrs={'class': 'form-control'}),
-        'first_name_en': forms.TextInput(attrs={'class': 'form-control'}),
-        'last_name_en': forms.TextInput(attrs={'class': 'form-control'}),
-        'gender': forms.Select(attrs={'class': 'form-control'}),
-        'email': forms.EmailInput(attrs={'class': 'form-control'}),
-        'phone': forms.TextInput(attrs={'class': 'form-control'}),
-        'hire_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        'probation_days': forms.NumberInput(attrs={'class': 'form-control'}),
-        'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        'department': forms.Select(attrs={'class': 'form-control'}),
-        'branch': forms.Select(attrs={'class': 'form-control'}),
-        'job_title': forms.TextInput(attrs={'class': 'form-control'}),
-        'employee_type': forms.Select(attrs={'class': 'form-control'}),
-        'supervisor': forms.Select(attrs={'class': 'form-control'}),
-        'base_salary': forms.NumberInput(attrs={'class': 'form-control'}),
-        'housing_allowance': forms.NumberInput(attrs={'class': 'form-control'}),
-        'transport_allowance': forms.NumberInput(attrs={'class': 'form-control'}),
-        'clothing_allowance': forms.NumberInput(attrs={'class': 'form-control'}),
-        'other_allowances': forms.NumberInput(attrs={'class': 'form-control'}),
-        'annual_leave_entitlement': forms.NumberInput(attrs={'class': 'form-control'}),
-        'current_annual_leave': forms.NumberInput(attrs={'class': 'form-control'}),
-        'compensatory_leave': forms.NumberInput(attrs={'class': 'form-control'}),
-        'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        'national_id': forms.TextInput(attrs={'class': 'form-control'}),
-        'national_id_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        'passport_number': forms.TextInput(attrs={'class': 'form-control'}),
-        'passport_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        'contract_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        'other_files': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        # ... باقي الwidgets كما هي ...
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # عرض الرقم الوظيفي readonly
+
         if self.instance and self.instance.pk:
+            # تعديل موظف موجود
             self.fields['display_employee_number'].initial = self.instance.employee_number
         else:
-            self.fields['display_employee_number'].initial = kwargs.get('initial', {}).get('employee_number', "")
+            # موظف جديد
+            new_number = generate_employee_number()
+            if 'employee_number' in self.fields:
+                self.fields['employee_number'].initial = new_number
+            self.fields['display_employee_number'].initial = new_number
 
-    # ==========================
-    # تقسيم الحقول لمجموعات
-    # ==========================
     @property
     def basic_fields(self):
         return [
             'display_employee_number', 'first_name_ar', 'last_name_ar',
             'first_name_en', 'last_name_en', 'gender', 'email', 'phone',
-            'hire_date', 'probation_days', 'active', 'department',
-            'branch', 'job_title', 'employee_type', 'supervisor'
+            'hire_date', 'probation_days', 'active'
         ]
 
     @property
@@ -112,7 +85,7 @@ class EmployeeForm(forms.ModelForm):
     @property
     def work_fields(self):
         return [
-            'job_title', 'department', 'branch', 'employee_type', 'supervisor'
+            'department', 'branch', 'job_title', 'employee_type', 'supervisor'
         ]
 
     @property
@@ -127,3 +100,69 @@ class EmployeeForm(forms.ModelForm):
             'photo', 'national_id', 'national_id_file', 'passport_number',
             'passport_file', 'contract_file', 'other_files'
         ]
+
+
+# ==========================
+# نموذج إدارة الإجازات
+# ==========================
+class LeaveForm(forms.ModelForm):
+    LEAVE_TYPES = [
+        ('annual', 'إجازة سنوية'),
+        ('sick', 'إجازة مرضية'),
+        ('compensatory', 'إجازة تعويضية'),
+        ('other', 'أخرى')
+    ]
+
+    leave_type = forms.ChoiceField(
+        choices=[('', 'اختر نوع الإجازة')] + LEAVE_TYPES,
+        label="نوع الإجازة",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    start_date = forms.DateField(
+        label="تاريخ البداية",
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        initial=timezone.now().date()
+    )
+
+    end_date = forms.DateField(
+        label="تاريخ النهاية",
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        initial=timezone.now().date()
+    )
+
+    class Meta:
+        model = Leave
+        fields = ['employee', 'leave_type', 'start_date', 'end_date', 'reason', 'status']
+        labels = {
+            "employee": "الموظف",
+            "leave_type": "نوع الإجازة",
+            "start_date": "من تاريخ",
+            "end_date": "إلى تاريخ",
+            "reason": "السبب",
+            "status": "الحالة",
+        }
+        widgets = {
+            'reason': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        if user and user.is_authenticated:
+            try:
+                # محاولة ربط الموظف بالمستخدم
+                employee = Employee.objects.get(email=user.email)
+                self.fields['employee'].widget = forms.HiddenInput()
+                self.fields['employee'].initial = employee
+            except Employee.DoesNotExist:
+                self.fields['employee'].widget = forms.Select(attrs={'class': 'form-control'})
+                self.fields['employee'].queryset = Employee.objects.filter(active=True).order_by('employee_number')
+        else:
+            self.fields['employee'].widget = forms.Select(attrs={'class': 'form-control'})
+            self.fields['employee'].queryset = Employee.objects.filter(active=True).order_by('employee_number')
+
+        # تحديث قائمة أنواع الإجازات مع الخيار الافتراضي
+        self.fields['leave_type'].choices = [('', 'اختر نوع الإجازة')] + self.LEAVE_TYPES

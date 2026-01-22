@@ -10,96 +10,118 @@
     </h2>
 
     <!-- ================= فلترة التاريخ ================= -->
-    <form method="get" class="row g-3 mb-4 justify-content-center">
 
+
+
+    <!-- ================= كروت جميع التقارير ================= -->
+    <div class="row g-4 justify-content-center mt-4">
+
+        <!-- 1. قائمة الدخل -->
         <div class="col-md-3">
-            <label class="form-label fw-bold">من تاريخ</label>
-            <input type="date"
-                   name="date_from"
-                   value="{{ request.GET.date_from }}"
-                   class="form-control">
-        </div>
-
-        <div class="col-md-3">
-            <label class="form-label fw-bold">إلى تاريخ</label>
-            <input type="date"
-                   name="date_to"
-                   value="{{ request.GET.date_to }}"
-                   class="form-control">
-        </div>
-
-        <div class="col-md-2 d-flex align-items-end">
-            <button class="btn btn-primary w-100 fw-bold">
-                عرض
-            </button>
-        </div>
-
-        <!-- زر الانتقال لقائمة الدخل -->
-        <div class="col-md-2 d-flex align-items-end">
-            <a class="btn btn-outline-success w-100 fw-bold"
-               href="{% url 'reports:income_statement' %}?date_from={{ request.GET.date_from }}&date_to={{ request.GET.date_to }}">
-                📈 قائمة الدخل
+            <a href="/reports/income-statement/" class="text-decoration-none">
+                <div class="card shadow-lg border-success h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">📈</div>
+                        <h6 class="card-title fw-bold">قائمة الدخل</h6>
+                    </div>
+                </div>
             </a>
         </div>
 
-    </form>
-
-    <!-- مؤشر تأكيد الفلترة -->
-    <div class="text-center mb-3">
-        <small class="text-muted">
-            عدد سطور القيود داخل الفترة: <strong>{{ lines_count }}</strong>
-        </small>
-    </div>
-
-    <!-- ================= الكروت ================= -->
-    <div class="row g-4">
-
-        <!-- الإيرادات -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-success">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-2">إجمالي الإيرادات</h6>
-                    <h3 class="text-success fw-bold mb-0">
-                        {{ total_credit|default:"0.00"|floatformat:2 }}
-                    </h3>
+        <!-- 2. قائمة المركز المالي -->
+        <div class="col-md-3">
+            <a href="/reports/balance-sheet/" class="text-decoration-none">
+                <div class="card shadow-lg border-warning h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">💰</div>
+                        <h6 class="card-title fw-bold">قائمة المركز المالي</h6>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
-        <!-- المصروفات -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-danger">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-2">إجمالي المصروفات</h6>
-                    <h3 class="text-danger fw-bold mb-0">
-                        {{ total_debit|default:"0.00"|floatformat:2 }}
-                    </h3>
+        <!-- 3. ميزان المراجعة -->
+        <div class="col-md-3">
+            <a href="/reports/trial-balance/" class="text-decoration-none">
+                <div class="card shadow-lg border-primary h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">📋</div>
+                        <h6 class="card-title fw-bold">ميزان المراجعة</h6>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
-        <!-- صافي النتيجة -->
-        <div class="col-md-4">
-            <div class="card shadow-sm
-                {% if net_result >= 0 %}
-                    border-success
-                {% else %}
-                    border-danger
-                {% endif %}
-            ">
-                <div class="card-body text-center">
-                    <h6 class="text-muted mb-2">صافي النتيجة</h6>
-                    <h3 class="fw-bold mb-0
-                        {% if net_result >= 0 %}
-                            text-success
-                        {% else %}
-                            text-danger
-                        {% endif %}
-                    ">
-                        {{ net_result|default:"0.00"|floatformat:2 }}
-                    </h3>
+        <!-- 4. دفتر الحسابات -->
+        <div class="col-md-3">
+            <a href="/reports/account-ledger/" class="text-decoration-none">
+                <div class="card shadow-lg border-info h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">🗂️</div>
+                        <h6 class="card-title fw-bold">دفتر الحسابات</h6>
+                    </div>
                 </div>
-            </div>
+            </a>
+        </div>
+
+        <!-- 5. التدفقات النقدية -->
+        <div class="col-md-3">
+            <a href="/reports/cash-flow/" class="text-decoration-none">
+                <div class="card shadow-lg border-secondary h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">💵</div>
+                        <h6 class="card-title fw-bold">التدفقات النقدية</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 6. تقرير ضريبة القيمة المضافة -->
+        <div class="col-md-3">
+            <a href="/reports/vat-report/" class="text-decoration-none">
+                <div class="card shadow-lg border-danger h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">🧾</div>
+                        <h6 class="card-title fw-bold">تقرير ضريبة القيمة المضافة</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 7. تقرير نسبة ضريبة القيمة المضافة -->
+        <div class="col-md-3">
+            <a href="/reports/vat-rate-report/" class="text-decoration-none">
+                <div class="card shadow-lg border-dark h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">📊</div>
+                        <h6 class="card-title fw-bold">نسبة ضريبة القيمة المضافة</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 8. تقرير ضريبة المبيعات على المبيعات -->
+        <div class="col-md-3">
+            <a href="/reports/sales-vat-report/" class="text-decoration-none">
+                <div class="card shadow-lg border-success h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">💹</div>
+                        <h6 class="card-title fw-bold">ضريبة المبيعات - المبيعات</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 9. تقرير ضريبة المبيعات على المشتريات -->
+        <div class="col-md-3">
+            <a href="/reports/purchase-vat-report/" class="text-decoration-none">
+                <div class="card shadow-lg border-warning h-100 text-center p-3">
+                    <div class="card-body">
+                        <div class="display-4 mb-2">📦</div>
+                        <h6 class="card-title fw-bold">ضريبة المبيعات - المشتريات</h6>
+                    </div>
+                </div>
+            </a>
         </div>
 
     </div>

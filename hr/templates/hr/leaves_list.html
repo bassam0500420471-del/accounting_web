@@ -1,0 +1,52 @@
+{% extends "layout/base.html" %}
+{% block title %}إدارة الإجازات{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">إدارة الإجازات</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>الموظف</th>
+            <th>نوع الإجازة</th>
+            <th>من</th>
+            <th>إلى</th>
+            <th>السبب</th>
+            <th>الحالة</th>
+            <th>إجراء</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for leave in leaves %}
+        <tr>
+            <td>{{ leave.employee }}</td>
+            <td>{{ leave.get_leave_type_display }}</td>
+            <td>{{ leave.start_date }}</td>
+            <td>{{ leave.end_date }}</td>
+            <td>{{ leave.reason }}</td>
+            <td>
+                {% if leave.status == 'pending' %}
+                    <span class="badge bg-warning">معلقة</span>
+                {% elif leave.status == 'approved' %}
+                    <span class="badge bg-success">موافق</span>
+                {% else %}
+                    <span class="badge bg-danger">مرفوض</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if leave.status == 'pending' %}
+                    <a href="{% url 'hr:approve_leave' leave.id %}" class="btn btn-sm btn-success">✔</a>
+                    <a href="{% url 'hr:reject_leave' leave.id %}" class="btn btn-sm btn-danger">✖</a>
+                {% else %}
+                    ---
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center">لا توجد إجازات</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
