@@ -1,0 +1,101 @@
+BBBB BBBB
+
+XXXXXXXXX XXXXX
+XXXXX XXXXXXBBBBBBBBBBBBBBBBBBBB BB BBBBBBBBBBBBBX
+      XXXXXBB BBBBBBBBBBBBB BB BBBBXXXBBBBXXXBBBBBXX
+XXXXXX
+XXXXX XXXXXXXXXXXXXXXX
+XXXXXXX
+    XXXX X XXXXXXXXXXXX XXXXXXX XXXXXX XXXXXXXXXX XXXXX X
+
+    XXXXXX X
+        XXXXXXXXXXX XXXXXXX
+        XXXXXXXXXX XXXXX
+        XXXXXXXXXXXX XXXXX
+        XXXXXXXXXXXXXX XXXXX
+    X
+
+    XXXXX X
+        XXXXXX XXXXX
+        XXXXXXXXXXXXXXXX XXXXXXXXX
+        XXXXXXXXXXX XXXXX
+    X
+
+    XXXXXX XXX XX X
+        XXXXXXX XXX XXXXX XXXXX
+    X
+
+    XXX XX X
+        XXXXXXXX XXXX
+        XXXXXXXXXXX XXXXXXX
+    X
+
+    XXXXXXX X
+        XXXXXXXXXXX XXXXX
+        XXXXXX XXXXX
+    X
+
+    XXXXXXX XX X
+        XXXXXXXX XXXX
+    X
+XXXXXXXX
+XXXXXXX
+
+XXXXXX
+
+XXXX XXXXXXXXXXXXXX gettext(u'Sales Invoice') XXXXXX
+
+XXXXXXXXXXX gettext(u'Invoice No:') XXXXXXXXX XXXX
+XXXXXXXXXXX gettext(u'Customer:') XXXXXXXXX XXXX
+XXXXXXXXXXX gettext(u'Invoice Date:') XXXXXXXXX XXXX
+XXXXXXXXXXX gettext(u'Issue Date:') XXXXXXXXX XXXX
+XXXXXXXXXXX gettext(u'Description:') XXXXXXXXX XXXX
+
+XXXXXXX
+    XXXXXXX
+        XXXX
+            XXXX gettext(u'Item') XXXXX
+            XXXX gettext(u'Description') XXXXX
+            XXXX gettext(u'Quantity') XXXXX
+            XXXX gettext(u'Price') XXXXX
+            XXXX gettext(u'Discount') XXXXX
+            XXXX gettext(u'Tax %%') XXXXX
+            XXXX gettext(u'Total') XXXXX
+        XXXXX
+    XXXXXXXX
+    XXXXXXX
+        BBB BBBB BB BBBBB
+        XXXX
+            XXXXXXXXX
+            XXXXXXXXX
+            XXXXXXXXX
+            XXXXXXXXX
+            XXXXXXXXX
+            XXXXXXXXX
+            XXXXXXXXX
+        XXXXX
+        BBBBBB
+    XXXXXXXX
+XXXXXXXX
+
+XXXXXX XXXXXXXXXXXXXXX
+    XXXX
+        XXXXXXXXXXXX gettext(u'Total Before Tax:') XXXXXXXXXXXXXX
+        XXXXXXXXX
+    XXXXX
+    XXXX
+        XXXXXXXXXXXX gettext(u'Total After Discount:') XXXXXXXXXXXXXX
+        XXXXXXXXX
+    XXXXX
+    XXXX
+        XXXXXXXXXXXX gettext(u'Total Tax:') XXXXXXXXXXXXXX
+        XXXXXXXXX
+    XXXXX
+    XXXX
+        XXXXXXXXXXXX gettext(u'Total After Tax:') XXXXXXXXXXXXXX
+        XXXXXXXXXXXXXXXXXXXXXXXXXX
+    XXXXX
+XXXXXXXX
+
+XXXXXXX
+XXXXXXX

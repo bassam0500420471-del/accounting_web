@@ -1,8 +1,9 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
-    <title>عرض المنتج</title>
+    <title>{% trans "Product View" %}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -41,66 +42,62 @@
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>تفاصيل المنتج</h3>
-        <a href="{% url 'products_list' %}" class="btn btn-secondary">رجوع</a>
+        <h3>{% trans "Product Details" %}</h3>
+        <a href="{% url 'products_list' %}" class="btn btn-secondary">{% trans "Back" %}</a>
     </div>
 
     <div class="card p-4">
 
         <div class="row">
 
-            <!-- ======================
-                 صورة المنتج
-            ======================= -->
+            <!-- Product Image -->
             <div class="col-md-4 text-center">
                 {% if product.image %}
                     <img src="{{ product.image.url }}" class="img-fluid rounded" style="max-height: 220px;">
                 {% else %}
-                    <div class="border rounded p-5 text-muted">لا توجد صورة</div>
+                    <div class="border rounded p-5 text-muted">{% trans "No Image Available" %}</div>
                 {% endif %}
             </div>
 
-            <!-- ======================
-                 تفاصيل المنتج
-            ======================= -->
+            <!-- Product Details -->
             <div class="col-md-8">
 
                 <h4 class="fw-bold">{{ product.name }}</h4>
 
                 <p class="mb-2">
-                    <span class="info-title">النوع:</span>
+                    <span class="info-title">{% trans "Type:" %}</span>
                     {% if product.type == 'normal' %}
-                        <span class="pill normal">منتج عادي</span>
+                        <span class="pill normal">{% trans "Normal Product" %}</span>
                     {% elif product.type == 'service' %}
-                        <span class="pill service">خدمة</span>
+                        <span class="pill service">{% trans "Service" %}</span>
                     {% else %}
-                        <span class="pill bundle">منتج مركب</span>
+                        <span class="pill bundle">{% trans "Bundle Product" %}</span>
                     {% endif %}
                 </p>
 
                 <p class="mb-2">
-                    <span class="info-title">الكود (SKU):</span>
+                    <span class="info-title">{% trans "SKU:" %}</span>
                     {{ product.sku|default:"-" }}
                 </p>
 
                 <p class="mb-2">
-                    <span class="info-title">سعر الشراء:</span>
-                    {{ product.purchase_price }} ر.س
+                    <span class="info-title">{% trans "Purchase Price:" %}</span>
+                    {{ product.purchase_price }} {% trans "SAR" %}
                 </p>
 
                 <p class="mb-2">
-                    <span class="info-title">سعر البيع:</span>
-                    {{ product.sale_price }} ر.س
+                    <span class="info-title">{% trans "Sale Price:" %}</span>
+                    {{ product.sale_price }} {% trans "SAR" %}
                 </p>
 
                 {% if product.type == "normal" %}
                 <p class="mb-2">
-                    <span class="info-title">حد أدنى للمخزون:</span>
+                    <span class="info-title">{% trans "Minimum Stock:" %}</span>
                     {{ product.min_stock }}
                 </p>
 
                 <p class="mb-2">
-                    <span class="info-title">تنبيه عند النفاد:</span>
+                    <span class="info-title">{% trans "Low Stock Alert:" %}</span>
                     {{ product.alert_stock }}
                 </p>
                 {% endif %}
@@ -110,25 +107,21 @@
 
         <hr class="my-4">
 
-        <!-- ======================
-             الوصف
-        ======================= -->
-        <h5 class="info-title">الوصف</h5>
+        <!-- Description -->
+        <h5 class="info-title">{% trans "Description" %}</h5>
         <p class="mb-4">
-            {{ product.description|default:"لا يوجد وصف" }}
+            {{ product.description|default:_("No description available") }}
         </p>
 
-        <!-- ======================
-             المكونات للمنتج المركب
-        ======================= -->
+        <!-- Bundle Components -->
         {% if product.type == "bundle" %}
-            <h5 class="info-title mt-3">مكونات المنتج</h5>
+            <h5 class="info-title mt-3">{% trans "Product Components" %}</h5>
 
             <table class="table table-bordered text-center mt-3">
                 <thead class="table-light">
                     <tr>
-                        <th>المنتج</th>
-                        <th>الكمية</th>
+                        <th>{% trans "Product" %}</th>
+                        <th>{% trans "Quantity" %}</th>
                     </tr>
                 </thead>
 
@@ -140,7 +133,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="2" class="text-muted">لا توجد مكونات</td>
+                        <td colspan="2" class="text-muted">{% trans "No components found" %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -148,10 +141,10 @@
         {% endif %}
 
         <div class="text-end mt-4">
-            <a href="{% url 'product_edit' product.id %}" class="btn btn-primary">تعديل</a>
+            <a href="{% url 'product_edit' product.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
             <a href="{% url 'product_delete' product.id %}" class="btn btn-danger"
-               onclick="return confirm('هل أنت متأكد من حذف المنتج؟')">
-               حذف
+               onclick="return confirm('{% trans "Are you sure you want to delete this product?" %}')">
+               {% trans "Delete" %}
             </a>
         </div>
 

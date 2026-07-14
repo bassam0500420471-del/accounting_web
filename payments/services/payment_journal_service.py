@@ -6,13 +6,18 @@ from accounting.models import JournalEntry, JournalLine
 from payments.models import ReceiptVoucher, PaymentVoucher
 
 
+def _next_entry_no(company):
+    return (
+        JournalEntry.objects
+        .filter(company=company)
+        .aggregate(m=Max("entry_no"))
+    )["m"] or 0
+
+
 # ==================================================
-# 🧩 تحديد الجهة لسند القبض (آمن)
+# 🧩 تحديد الجهة لسند القبض
 # ==================================================
 def _get_receipt_party(voucher: ReceiptVoucher):
-    """
-    يرجع (account, name) للجهة المختارة في سند القبض
-    """
     if voucher.customer:
         return voucher.customer.account, voucher.customer.name
 
@@ -33,26 +38,29 @@ def _get_receipt_party(voucher: ReceiptVoucher):
 # ==================================================
 @transaction.atomic
 def post_receipt_voucher(voucher: ReceiptVoucher):
-
     if voucher.journal_entry or voucher.status == "cancelled":
         return voucher.journal_entry
 
-    last_no = JournalEntry.objects.aggregate(
-        m=Max("entry_no")
-    )["m"] or 0
+    if not voucher.company:
+        raise ValueError("سند القبض غير مرتبط بشركة")
+
+    next_no = _next_entry_no(voucher.company) + 1
 
     party_account, party_name = _get_receipt_party(voucher)
+
+    if not party_account:
+        raise ValueError("حساب الجهة غير موجود")
 
     description = f"سند قبض رقم {voucher.voucher_no} - {party_name}"
 
     entry = JournalEntry.objects.create(
-        entry_no=last_no + 1,
+        company=voucher.company,
+        entry_no=next_no,
         date=voucher.date,
         description=description,
         posted=True
     )
 
-    # 🔵 من ح/ الصندوق أو البنك
     JournalLine.objects.create(
         entry=entry,
         account=voucher.cash_account,
@@ -60,7 +68,6 @@ def post_receipt_voucher(voucher: ReceiptVoucher):
         credit=Decimal("0.00")
     )
 
-    # 🔴 إلى ح/ الجهة
     JournalLine.objects.create(
         entry=entry,
         account=party_account,
@@ -76,17 +83,17 @@ def post_receipt_voucher(voucher: ReceiptVoucher):
 
 
 # ==================================================
-# 📤 ترحيل سند صرف (لم نلمسه)
+# 📤 ترحيل سند صرف
 # ==================================================
 @transaction.atomic
 def post_payment_voucher(voucher: PaymentVoucher):
-
     if voucher.journal_entry or voucher.status == "cancelled":
         return voucher.journal_entry
 
-    last_no = JournalEntry.objects.aggregate(
-        m=Max("entry_no")
-    )["m"] or 0
+    if not voucher.company:
+        raise ValueError("سند الصرف غير مرتبط بشركة")
+
+    next_no = _next_entry_no(voucher.company) + 1
 
     if voucher.supplier:
         party_account = voucher.supplier.account
@@ -94,13 +101,23 @@ def post_payment_voucher(voucher: PaymentVoucher):
     elif voucher.customer:
         party_account = voucher.customer.account
         party_name = voucher.customer.name
+    elif voucher.cost_center:
+        party_account = voucher.cost_center.account
+        party_name = voucher.cost_center.name
+    elif voucher.other_account:
+        party_account = voucher.other_account
+        party_name = voucher.other_account.name
     else:
-        raise ValueError("يجب تحديد عميل أو مورد")
+        raise ValueError("يجب تحديد جهة صحيحة في سند الصرف")
+
+    if not party_account:
+        raise ValueError("حساب الجهة غير موجود")
 
     description = f"سند صرف رقم {voucher.voucher_no} - {party_name}"
 
     entry = JournalEntry.objects.create(
-        entry_no=last_no + 1,
+        company=voucher.company,
+        entry_no=next_no,
         date=voucher.date,
         description=description,
         posted=True
@@ -128,11 +145,10 @@ def post_payment_voucher(voucher: PaymentVoucher):
 
 
 # ==================================================
-# ❌ إلغاء سند قبض (بدون حذف)
+# ❌ إلغاء سند قبض
 # ==================================================
 @transaction.atomic
 def cancel_receipt_voucher(voucher: ReceiptVoucher):
-
     if voucher.status == "cancelled":
         return
 

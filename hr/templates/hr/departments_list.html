@@ -1,0 +1,47 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Departments List" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% trans "Departments List" %}</h2>
+
+    <a href="{% url 'hr:add_department' %}" class="btn btn-primary mb-3">
+        {% trans "Add New Department" %}
+    </a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>{% trans "Department Name" %}</th>
+                <th>{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dept in departments %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ dept.name }}</td>
+                <td>
+                    <a href="{% url 'hr:edit_department' dept.id %}" class="btn btn-sm btn-warning">
+                        {% trans "Edit" %}
+                    </a>
+                    <a href="{% url 'hr:delete_department' dept.id %}" class="btn btn-sm btn-danger" 
+                       onclick="return confirm('{% trans "Are you sure you want to delete?" %}')">
+                        {% trans "Delete" %}
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">
+                    {% trans "No departments found" %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -16,17 +16,27 @@ from .models import (
 )
 from .services_stock import apply_stock_movement
 
+
 # ======================================
 # 1) تعديل المخزون يدويًا
 # ======================================
 @login_required
 def stock_adjust(request):
-    products = Product.objects.filter(active=True).order_by("name")
-    reasons = StockAdjustReason.objects.filter(active=True).order_by("sort_order", "name")
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن تعديل المخزون قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    products = Product.objects.filter(company=request.company, active=True).order_by("name")
+    reasons = StockAdjustReason.objects.filter(company=request.company, active=True).order_by("sort_order", "name")
 
     DEFAULT_REASONS = ["جرد", "بيع", "تالف", "هدية"]
     for r_name in DEFAULT_REASONS:
-        StockAdjustReason.objects.get_or_create(name=r_name, defaults={"sort_order": 0})
+        StockAdjustReason.objects.get_or_create(
+            company=request.company,
+            name=r_name,
+            defaults={"sort_order": 0}
+        )
 
     if request.method == "POST":
         product_id = request.POST.get("product_id")
@@ -39,13 +49,13 @@ def stock_adjust(request):
                 qty_delta = -qty_delta
         except Exception:
             messages.error(request, "الكمية غير صحيحة")
-            return redirect("stock_adjust")
+            return redirect("products:stock_adjust")
 
         reason_id = request.POST.get("reason_id")
         note = request.POST.get("note", "").strip()
 
-        product = get_object_or_404(Product, id=product_id)
-        reason = get_object_or_404(StockAdjustReason, id=reason_id)
+        product = get_object_or_404(Product, id=product_id, company=request.company)
+        reason = get_object_or_404(StockAdjustReason, id=reason_id, company=request.company)
 
         apply_stock_movement(
             product=product,
@@ -58,7 +68,7 @@ def stock_adjust(request):
         )
 
         messages.success(request, "تم تعديل المخزون بنجاح")
-        return redirect("stock_ledger")
+        return redirect("products:stock_ledger")
 
     return render(request, "products/stock_adjust.html", {
         "products": products,
@@ -71,8 +81,17 @@ def stock_adjust(request):
 # ======================================
 @login_required
 def stock_ledger(request):
+
+    if not getattr(request, "company", None):
+        moves = StockMovement.objects.none()
+        q = (request.GET.get("q") or "").strip()
+        return render(request, "products/stock_ledger.html", {
+            "moves": moves,
+            "q": q,
+        })
+
     q = (request.GET.get("q") or "").strip()
-    moves = StockMovement.objects.select_related("product", "reason").order_by("id")
+    moves = StockMovement.objects.select_related("product", "reason").filter(company=request.company).order_by("id")
 
     if q:
         moves = moves.filter(
@@ -100,14 +119,20 @@ def stock_ledger(request):
 # ======================================
 @login_required
 def stock_take_sheet(request):
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن فتح ورقة جرد قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
     category_id = request.GET.get("category_id") or ""
     view_id = request.GET.get("view_id")
-    categories = Category.objects.filter(active=True).order_by("sort_order", "name")
+
+    categories = Category.objects.filter(company=request.company, active=True).order_by("sort_order", "name")
 
     if view_id:
-        stock_take = get_object_or_404(StockTake, id=view_id)
+        stock_take = get_object_or_404(StockTake, id=view_id, company=request.company)
         rows = []
-        for item in stock_take.items.all():
+        for item in stock_take.items.select_related("product", "product__category").all():
             rows.append({
                 "product": item.product,
                 "category": item.product.category.name if item.product.category else "",
@@ -121,7 +146,7 @@ def stock_take_sheet(request):
             "view_only": True,
         })
 
-    products = Product.objects.filter(active=True).select_related("category").order_by("name")
+    products = Product.objects.filter(company=request.company, active=True).select_related("category").order_by("name")
     if category_id:
         products = products.filter(category_id=category_id)
 
@@ -146,17 +171,23 @@ def stock_take_sheet(request):
 # ======================================
 @login_required
 def stock_take_save(request):
+
+    if not getattr(request, "company", None):
+        return JsonResponse({"status": "error", "error": "No company"}, status=403)
+
     if request.method != "POST":
         return JsonResponse({"status": "error", "error": "Method not allowed"}, status=400)
 
     try:
-        # 🟢 ربط الجرد بالمستخدم الحالي إذا موجود
+        # 🟢 ربط الجرد بالشركة والمستخدم الحالي
         stock_take = StockTake.objects.create(
+            company=request.company,
             created_at=timezone.now(),
             created_by=request.user if request.user.is_authenticated else None
         )
 
         reason, _ = StockAdjustReason.objects.get_or_create(
+            company=request.company,
             name="جرد",
             defaults={"sort_order": 0}
         )
@@ -169,7 +200,7 @@ def stock_take_save(request):
 
             product_id = key.replace("physical_", "")
             try:
-                product = Product.objects.get(id=product_id)
+                product = Product.objects.get(id=product_id, company=request.company)
             except Product.DoesNotExist:
                 continue
 
@@ -229,7 +260,12 @@ def stock_take_save(request):
 # ======================================
 @login_required
 def stock_take_list(request):
-    takes = StockTake.objects.select_related("created_by").all()
+
+    if not getattr(request, "company", None):
+        takes = StockTake.objects.none()
+    else:
+        takes = StockTake.objects.select_related("created_by").filter(company=request.company)
+
     return render(request, "products/stock_take_list.html", {
         "takes": takes
     })
@@ -240,8 +276,13 @@ def stock_take_list(request):
 # ======================================
 @login_required
 def stock_adjust_edit(request, move_id):
-    move = get_object_or_404(StockMovement, id=move_id)
-    reasons = StockAdjustReason.objects.filter(active=True).order_by("sort_order", "name")
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن تعديل العملية قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    move = get_object_or_404(StockMovement, id=move_id, company=request.company)
+    reasons = StockAdjustReason.objects.filter(company=request.company, active=True).order_by("sort_order", "name")
 
     if request.method == "POST":
         qty_delta = Decimal(request.POST.get("qty_delta", move.qty_delta))
@@ -253,7 +294,7 @@ def stock_adjust_edit(request, move_id):
 
         reason_id = request.POST.get("reason_id")
         note = request.POST.get("note", "").strip()
-        reason = get_object_or_404(StockAdjustReason, id=reason_id)
+        reason = get_object_or_404(StockAdjustReason, id=reason_id, company=request.company)
 
         move.qty_delta = qty_delta
         move.reason = reason
@@ -261,7 +302,7 @@ def stock_adjust_edit(request, move_id):
         move.save()
 
         messages.success(request, "تم تعديل العملية بنجاح")
-        return redirect("stock_ledger")
+        return redirect("products:stock_ledger")
 
     return render(request, "products/stock_adjust_edit.html", {
         "move": move,
@@ -274,10 +315,15 @@ def stock_adjust_edit(request, move_id):
 # ======================================
 @login_required
 def stock_adjust_delete(request, move_id):
-    move = get_object_or_404(StockMovement, id=move_id)
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن حذف العملية قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    move = get_object_or_404(StockMovement, id=move_id, company=request.company)
     move.delete()
     messages.success(request, "تم حذف العملية بنجاح")
-    return redirect("stock_ledger")
+    return redirect("products:stock_ledger")
 
 
 # ======================================
@@ -285,7 +331,12 @@ def stock_adjust_delete(request, move_id):
 # ======================================
 @login_required
 def stock_adjust_view(request, move_id):
-    move = get_object_or_404(StockMovement, id=move_id)
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن عرض العملية قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    move = get_object_or_404(StockMovement, id=move_id, company=request.company)
     return render(request, "products/stock_adjust_view.html", {
         "move": move
     })

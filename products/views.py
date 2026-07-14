@@ -11,7 +11,11 @@ from .models import Product, BundleComponent, Category  # ✅ إضافة Categor
 # ================================
 def products_list(request):
     q = request.GET.get("q", "")
-    products = Product.objects.all()
+
+    if not getattr(request, "company", None):
+        products = Product.objects.none()
+    else:
+        products = Product.objects.filter(company=request.company)
 
     if q:
         products = products.filter(name__icontains=q)
@@ -26,17 +30,22 @@ def products_list(request):
 # ================================
 def product_add(request):
 
-    products = Product.objects.all()          # لمنتجات bundle
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن إضافة منتج قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    products = Product.objects.filter(company=request.company)          # لمنتجات bundle داخل نفس الشركة
     accounts = Account.objects.all().order_by("code")  # ⭐ شجرة الحسابات
-    categories = Category.objects.filter(active=True)  # ✅ التصنيفات النشطة
+    categories = Category.objects.filter(company=request.company, active=True)  # ✅ التصنيفات النشطة لنفس الشركة
 
     if request.method == "POST":
 
         product_type = request.POST.get("type", "normal")
         category_id = request.POST.get("category") or None
-        category = Category.objects.filter(id=category_id).first() if category_id else None
+        category = Category.objects.filter(company=request.company, id=category_id).first() if category_id else None
 
         product = Product.objects.create(
+            company=request.company,  # ✅ الخطوة 4: تعيين الشركة تلقائياً عند الإنشاء
             name=request.POST.get("name"),
             sku=request.POST.get("sku"),
             category=category,  # ✅ ربط التصنيف
@@ -67,11 +76,14 @@ def product_add(request):
                 comp_id = request.POST.get(f"component_{i}")
                 qty = request.POST.get(f"qty_{i}")
                 if comp_id and qty:
-                    BundleComponent.objects.create(
-                        product=product,
-                        component_id=comp_id,
-                        quantity=qty,
-                    )
+                    # ✅ تأكيد أن المكوّن من نفس الشركة
+                    comp = Product.objects.filter(company=request.company, id=comp_id).first()
+                    if comp:
+                        BundleComponent.objects.create(
+                            product=product,
+                            component=comp,
+                            quantity=qty,
+                        )
 
         # الرجوع للفاتورة إن وجد
         if request.GET.get("return") == "invoice":
@@ -91,10 +103,14 @@ def product_add(request):
 # ================================
 def product_edit(request, pk):
 
-    product = get_object_or_404(Product, pk=pk)
-    products = Product.objects.exclude(id=pk)
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن تعديل منتج قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    product = get_object_or_404(Product, pk=pk, company=request.company)
+    products = Product.objects.filter(company=request.company).exclude(id=pk)
     accounts = Account.objects.all().order_by("code")
-    categories = Category.objects.filter(active=True)  # ✅ التصنيفات النشطة
+    categories = Category.objects.filter(company=request.company, active=True)  # ✅ التصنيفات النشطة
 
     if request.method == "POST":
 
@@ -112,9 +128,9 @@ def product_edit(request, pk):
         product.cost_account_id = request.POST.get("cost_account") or None
         product.revenue_account_id = request.POST.get("revenue_account") or None
 
-        # ✅ تحديث التصنيف
+        # ✅ تحديث التصنيف (من نفس الشركة)
         category_id = request.POST.get("category") or None
-        product.category = Category.objects.filter(id=category_id).first() if category_id else None
+        product.category = Category.objects.filter(company=request.company, id=category_id).first() if category_id else None
 
         product.description = request.POST.get("description", "")
 
@@ -135,11 +151,13 @@ def product_edit(request, pk):
                 comp_id = request.POST.get(f"component_{i}")
                 qty = request.POST.get(f"qty_{i}")
                 if comp_id and qty:
-                    BundleComponent.objects.create(
-                        product=product,
-                        component_id=comp_id,
-                        quantity=qty,
-                    )
+                    comp = Product.objects.filter(company=request.company, id=comp_id).first()
+                    if comp:
+                        BundleComponent.objects.create(
+                            product=product,
+                            component=comp,
+                            quantity=qty,
+                        )
 
         next_url = request.GET.get("next")
         if next_url:
@@ -162,9 +180,13 @@ def product_edit(request, pk):
 #   حذف منتج
 # ================================
 def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
 
-    # تحقق من وجود أي ارتباطات بالمكونات
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن حذف منتج قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    product = get_object_or_404(Product, pk=pk, company=request.company)
+
     linked_components = BundleComponent.objects.filter(component=product).exists()
     if linked_components:
         messages.error(request, "لا يمكن حذف المنتج لأنه مرتبط بمنتجات مركبة أو عمليات أخرى.")
@@ -182,7 +204,12 @@ def product_delete(request, pk):
 #   عرض منتج
 # ================================
 def product_view(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن عرض منتج قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
+    product = get_object_or_404(Product, pk=pk, company=request.company)
     components = BundleComponent.objects.filter(product=product)
 
     return render(request, "products/product_view.html", {
@@ -197,7 +224,11 @@ def product_view(request, pk):
 def search_products(request):
     q = request.GET.get("q", "").strip()
 
+    if not getattr(request, "company", None):
+        return JsonResponse([], safe=False)
+
     products = Product.objects.filter(
+        company=request.company,
         name__icontains=q,
         active=True
     )[:20]

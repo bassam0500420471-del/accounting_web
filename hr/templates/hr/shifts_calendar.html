@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% for week in weeks %}
 <tr>
     {% for day in week %}
@@ -8,7 +10,7 @@
                 {% if schedule_dict|get_item:(emp.id, day) %}
                     {{ schedule_dict|get_item:(emp.id, day).shift_name }}
                 {% else %}
-                    عطلة
+                    {% trans "Off Day" %}
                 {% endif %}
             {% endfor %}
         {% endif %}

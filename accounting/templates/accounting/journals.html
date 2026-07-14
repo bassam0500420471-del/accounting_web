@@ -1,4 +1,6 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
+
 {% block content %}
 
 <style>
@@ -15,99 +17,126 @@
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">إدارة القيود اليومية</h3>
+
+        <h3 class="fw-bold">
+            {% trans "Journal Entries Management" %}
+        </h3>
+
         <a href="{% url 'accounting:journal_add' %}" class="btn btn-secondary">
-            + إضافة قيد
+            + {% trans "Add Entry" %}
         </a>
+
     </div>
 
     {% if entries %}
+
     <div class="card">
         <div class="card-body p-0">
+
             <table class="table table-bordered table-hover mb-0 text-center align-middle">
+
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>رقم القيد</th>
-                        <th>التاريخ</th>
-                        <th>البيان</th>
-                        <th>مدين</th>
-                        <th>دائن</th>
-                        <th>الحالة</th>
-                        <th>الخيارات</th>
+                        <th>{% trans "Entry No" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Description" %}</th>
+                        <th>{% trans "Debit" %}</th>
+                        <th>{% trans "Credit" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Options" %}</th>
                     </tr>
                 </thead>
+
                 <tbody>
+
                 {% for e in entries %}
                     <tr>
+
                         <td>{{ forloop.counter }}</td>
                         <td>{{ e.entry_no }}</td>
                         <td>{{ e.date }}</td>
-                        <td class="text-end">{{ e.description }}</td>
+
+                        <td class="text-end">
+                            {{ e.description }}
+                        </td>
+
                         <td>{{ e.total_debit }}</td>
                         <td>{{ e.total_credit }}</td>
+
                         <td>
                             {% if e.posted %}
-                                <span class="badge bg-success">مرحّل</span>
+                                <span class="badge bg-success">{% trans "Posted" %}</span>
                             {% else %}
-                                <span class="badge bg-secondary">مسودة</span>
+                                <span class="badge bg-secondary">{% trans "Draft" %}</span>
                             {% endif %}
                         </td>
 
                         <td class="text-nowrap text-center">
+
                             <div class="dropdown">
+
                                 <button class="btn btn-secondary dropdown-toggle btn-options"
                                         type="button"
                                         data-bs-toggle="dropdown">
-                                    خيارات
+                                    {% trans "Options" %}
                                 </button>
 
                                 <ul class="dropdown-menu text-end">
 
-                                    <!-- 👁️ عرض -->
                                     <li>
                                         <a class="dropdown-item"
                                            href="{% url 'accounting:journal_view' e.id %}">
-                                            👁️ عرض
+                                            👁 {% trans "View" %}
                                         </a>
                                     </li>
 
                                     {% if not e.posted %}
                                         <li><hr class="dropdown-divider"></li>
 
-                                        <!-- 🚀 ترحيل -->
                                         <li>
                                             <a class="dropdown-item text-success"
                                                href="{% url 'accounting:journal_post' e.id %}"
-                                               onclick="return confirm('هل أنت متأكد من ترحيل القيد؟')">
-                                                🚀 ترحيل
+                                               onclick="return confirm('{% trans "Are you sure you want to post this entry?" %}')">
+                                                🚀 {% trans "Post" %}
                                             </a>
                                         </li>
                                     {% endif %}
 
-                                    {% if e.source_type %}
+                                    {% if e.source_type == "invoice" %}
                                         <li><hr class="dropdown-divider"></li>
+
                                         <li>
                                             <span class="dropdown-item text-muted">
-                                                🔒 قيد آلي (فاتورة)
+                                                🔒 {% trans "Auto Entry (Invoice)" %}
                                             </span>
                                         </li>
                                     {% endif %}
 
                                 </ul>
+
                             </div>
+
                         </td>
+
                     </tr>
                 {% endfor %}
+
                 </tbody>
+
             </table>
+
         </div>
     </div>
+
     {% else %}
+
         <div class="alert alert-info text-center p-4">
-            لا توجد قيود يومية حتى الآن
+            {% trans "No journal entries yet" %}
         </div>
+
     {% endif %}
+
 </div>
 
 {% endblock %}

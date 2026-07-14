@@ -1,29 +1,37 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
+
 {% block content %}
 
 <div class="container mt-5">
 
     <div class="card border-danger">
         <div class="card-body text-center">
-            <h4 class="text-danger mb-3">تأكيد حذف القيد</h4>
+
+            <h4 class="text-danger mb-3">
+                {% trans "Confirm Delete Entry" %}
+            </h4>
 
             <p>
-                هل أنت متأكد من حذف القيد رقم
-                <strong>{{ entry.entry_no }}</strong>؟
+                {% trans "Are you sure you want to delete entry number" %}
+                <strong>{{ entry.entry_no }}</strong>
             </p>
 
             <form method="post">
                 {% csrf_token %}
+
                 <button type="submit"
                         class="btn btn-danger px-4">
-                    نعم، احذف
+                    {% trans "Yes, Delete" %}
                 </button>
 
                 <a href="{% url 'accounting:journals_list' %}"
                    class="btn btn-secondary px-4">
-                    إلغاء
+                    {% trans "Cancel" %}
                 </a>
+
             </form>
+
         </div>
     </div>
 

@@ -1,38 +1,39 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container-fluid mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">مرتجع الفواتير</h3>
+        <h3 class="fw-bold">{% trans "Invoice Returns" %}</h3>
     </div>
 
-<!-- ░░ جدول البيانات ░░ -->
+<!-- ░░ Data Table ░░ -->
 {% if returns %}
 <table class="table table-hover text-center align-middle">
 
     <thead>
 
-        <!-- ⭐ صف الفلاتر ⭐ -->
+        <!-- ⭐ Filter Row ⭐ -->
         <tr>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الفاتورة الأصلية"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث المرتجع"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث العميل"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث التاريخ"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الإجمالي"></th>
-            <th></th> <!-- عمود الإجراءات بدون فلتر -->
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search No.' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Original Invoice' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Return' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Customer' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Date' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Total' %}"></th>
+            <th></th>
         </tr>
 
-        <!-- ⭐ صف العناوين ⭐ -->
+        <!-- ⭐ Header Row ⭐ -->
         <tr class="table-dark">
             <th>#</th>
-            <th>رقم الفاتورة الأصلية</th>
-            <th>رقم فاتورة المرتجع</th>
-            <th>العميل</th>
-            <th>تاريخ المرتجع</th>
-            <th>الإجمالي</th>
-            <th>الإجراءات</th>
+            <th>{% trans "Original Invoice No." %}</th>
+            <th>{% trans "Return Invoice No." %}</th>
+            <th>{% trans "Customer" %}</th>
+            <th>{% trans "Return Date" %}</th>
+            <th>{% trans "Total" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
 
     </thead>
@@ -51,32 +52,36 @@
 <td>
     <div class="dropdown">
         <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
-            خيارات
+            {% trans "Options" %}
         </button>
 
 <ul class="dropdown-menu text-end">
 
-    <!-- إنشاء مرتجع من الفاتورة الأصلية -->
 <li>
 <a class="dropdown-item"
    href="{% url 'sales:create_return' r.original_invoice.id %}">
-    إنشاء مرتجع
+    {% trans "Create Return" %}
 </a>
 </li>
 
-    <!-- عرض الفاتورة الأصلية -->
+<li>
+    <a class="dropdown-item"
+       href="{% url 'sales:return_view' r.id %}">
+        عرض سند المرتجع
+    </a>
+</li>
+
     <li>
         <a class="dropdown-item"
            href="/sales/invoices/{{ r.original_invoice.id }}/">
-            عرض الفاتورة الأصلية
+            {% trans "View Original Invoice" %}
         </a>
     </li>
 
-    <!-- تحميل PDF الفاتورة الأصلية -->
     <li>
         <a class="dropdown-item"
            href="/sales/invoices/{{ r.original_invoice.id }}/pdf/">
-            تحميل PDF
+            {% trans "Download PDF" %}
         </a>
     </li>
 
@@ -93,13 +98,13 @@
 
 {% else %}
 <div class="alert alert-info text-center">
-    لا توجد مرتجعات حتى الآن.
+    {% trans "No returns yet." %}
 </div>
 {% endif %}
 
 </div>
 
-<!-- ░░ تصميم الفلاتر وزر الخيارات ░░ -->
+<!-- ░░ Filter Design & Button ░░ -->
 <style>
 .filter-input {
     text-align: center;
@@ -120,7 +125,7 @@
 }
 </style>
 
-<!-- ░░ سكربت تفعيل الفلاتر ░░ -->
+<!-- ░░ Filter Script ░░ -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 

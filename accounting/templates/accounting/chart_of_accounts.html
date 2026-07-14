@@ -1,4 +1,7 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
 {% block content %}
 
 <!-- jQuery -->
@@ -14,20 +17,54 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
 <style>
-    #chartTree { direction: rtl; font-size: 18px; line-height: 1.9; }
-    .tree-row { display: flex; align-items: center; width: 100%; gap: 8px; }
-    .tree-actions { margin-left: auto; display: none; gap: 10px; }
-    .tree-actions i { cursor: pointer; font-size: 14px; color: #6c757d; }
-    .tree-actions i:hover { color: #0d6efd; }
-    .tree-actions .delete { color: #dc3545; }
-    .jstree-anchor:hover .tree-actions { display: inline-flex; }
+    #chartTree {
+        direction: {% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %};
+        font-size: 18px;
+        line-height: 1.9;
+    }
+
+    .tree-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .tree-actions {
+        margin-left: auto;
+        display: none;
+        gap: 10px;
+    }
+
+    .tree-actions i {
+        cursor: pointer;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .tree-actions i:hover {
+        color: #0d6efd;
+    }
+
+    .tree-actions .delete {
+        color: #dc3545;
+    }
+
+    .jstree-anchor:hover .tree-actions {
+        display: inline-flex;
+    }
 </style>
 
 <div class="container mt-4">
     <div class="card">
         <div class="card-body">
-            <h4 class="fw-bold text-end mb-3">شجرة الحسابات</h4>
+
+            <h4 class="fw-bold text-end mb-3">
+                {% trans "Chart of Accounts" %}
+            </h4>
+
             <div id="chartTree"></div>
+
         </div>
     </div>
 </div>
@@ -40,7 +77,7 @@ $(function () {
             data: {
                 url: "{% url 'accounting:chart_tree_api' %}",
                 data: function(node) {
-                    return { id: node.id === "#" ? "" : node.id };
+                    return { id: node.id };
                 },
                 dataType: "json"
             },
@@ -48,7 +85,7 @@ $(function () {
             check_callback: true
         },
         plugins: ["wholerow"],
-        rtl: true
+        rtl: {% if LANGUAGE_CODE == 'ar' %}true{% else %}false{% endif %}
     });
 
     function addActions() {
@@ -60,23 +97,28 @@ $(function () {
             if (!node) return;
 
             const id = node.id;
-            const is_root = node.parent === "#"; // الأب الحقيقي
+            const is_root = node.parent === "#";
 
             let actions = `<span class="tree-actions">
-                <i class="fa fa-eye" title="عرض"
+
+                <i class="fa fa-eye"
+                   title="{% trans 'View' %}"
                    onclick="window.location.href='/accounting/accounts/${id}/view/'"></i>
-                <i class="fa fa-plus" title="إضافة فرع"
+
+                <i class="fa fa-plus"
+                   title="{% trans 'Add Child' %}"
                    onclick="window.location.href='/accounting/accounts/${id}/add-child/'"></i>
             `;
 
-            // تعديل وحذف للأبناء فقط
             if (!is_root) {
-                actions += `<i class="fa fa-pen" title="تعديل"
+                actions += `<i class="fa fa-pen"
+                   title="{% trans 'Edit' %}"
                    onclick="window.location.href='/accounting/accounts/${id}/edit/'"></i>`;
 
                 if (!node.children || node.children.length === 0) {
-                    actions += `<i class="fa fa-trash delete" title="حذف"
-                       onclick="if(confirm('تأكيد الحذف؟')) {
+                    actions += `<i class="fa fa-trash delete"
+                       title="{% trans 'Delete' %}"
+                       onclick="if(confirm('{% trans "Confirm deletion?" %}')) {
                            window.location.href='/accounting/accounts/${id}/delete/';
                        }"></i>`;
                 }
@@ -92,7 +134,7 @@ $(function () {
         });
     }
 
-    $("#chartTree").on("ready.jstree open_node.jstree refresh.jstree", function () {
+    $("#chartTree").on("ready.jstree open_node.jstree refresh.jstree loaded.jstree", function () {
         addActions();
     });
 

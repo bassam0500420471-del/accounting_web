@@ -1,28 +1,29 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}سجل عمليات المخزون{% endblock %}
+{% block title %}{% trans "Inventory Transactions Log" %}{% endblock %}
 
 {% block content %}
-<h2>سجل عمليات المخزون</h2>
+<h2>{% trans "Inventory Transactions Log" %}</h2>
 
 <div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{% url 'products:stock_adjust' %}" class="btn btn-secondary">تعديل المخزون</a>
+    <a href="{% url 'products:stock_adjust' %}" class="btn btn-secondary">{% trans "Adjust Inventory" %}</a>
     <form method="get" class="mb-3 d-flex">
-        <input type="text" name="q" placeholder="بحث..." value="{{ q }}" class="form-control" style="width: 300px;">
-        <button type="submit" class="btn btn-secondary ms-2">بحث</button>
+        <input type="text" name="q" placeholder="{% trans 'Search...' %}" value="{{ q }}" class="form-control" style="width: 300px;">
+        <button type="submit" class="btn btn-secondary ms-2">{% trans "Search" %}</button>
     </form>
 </div>
 
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th>المنتج</th>
-      <th>النوع</th>
-      <th>التغير</th>
-      <th>الكمية بعد التعديل</th>
-      <th>التاريخ</th>
-      <th>ملاحظة</th>
-      <th>إجراءات</th>
+      <th>{% trans "Product" %}</th>
+      <th>{% trans "Type" %}</th>
+      <th>{% trans "Change" %}</th>
+      <th>{% trans "Stock After Adjustment" %}</th>
+      <th>{% trans "Date" %}</th>
+      <th>{% trans "Note" %}</th>
+      <th>{% trans "Actions" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -42,22 +43,22 @@
           <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
                   id="actionMenu{{ forloop.counter }}" data-bs-toggle="dropdown"
                   aria-expanded="false" data-bs-auto-close="true">
-            إجراءات
+            {% trans "Actions" %}
           </button>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="actionMenu{{ forloop.counter }}">
-            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_edit' move.id %}">تعديل</a></li>
-            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_delete' move.id %}" onclick="return confirm('هل أنت متأكد من حذف هذه الحركة؟');">حذف</a></li>
-            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_view' move.id %}">عرض</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_edit' move.id %}">{% trans "Edit" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_delete' move.id %}" onclick="return confirm('{% trans "Are you sure you want to delete this transaction?" %}');">{% trans "Delete" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_view' move.id %}">{% trans "View" %}</a></li>
           </ul>
         </div>
         {% else %}
-        <a href="{% url 'products:stock_adjust_view' move.id %}" class="btn btn-sm btn-secondary">عرض فقط</a>
+        <a href="{% url 'products:stock_adjust_view' move.id %}" class="btn btn-sm btn-secondary">{% trans "View Only" %}</a>
         {% endif %}
       </td>
     </tr>
     {% empty %}
     <tr>
-      <td colspan="7" class="text-center">لا توجد بيانات</td>
+      <td colspan="7" class="text-center">{% trans "No data available" %}</td>
     </tr>
     {% endfor %}
   </tbody>
@@ -65,17 +66,26 @@
 
 <style>
 .table th, .table td { width: auto; }
-/* تعديل عمود التاريخ والملاحظات */
+
+/* Adjust Date & Note columns */
 .table th:nth-child(5), .table td:nth-child(5) { width: 15%; }
 .table th:nth-child(6), .table td:nth-child(6) { width: 25%; }
-/* توسيط أرقام عمود الكمية بعد التعديل */
-.table th:nth-child(4), .table td:nth-child(4) { text-align: center; vertical-align: middle; }
-/* تعديل عمود الإجراءات */
-.table th:nth-child(7), .table td:nth-child(7) { width: 12%; text-align: center; }
 
-/* تأكد من ظهور القائمة فوق كل العناصر */
+/* Center stock column */
+.table th:nth-child(4), .table td:nth-child(4) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Actions column */
+.table th:nth-child(7), .table td:nth-child(7) {
+    width: 12%;
+    text-align: center;
+}
+
+/* Ensure dropdown appears above all elements */
 .dropdown-menu {
-    z-index: 2000 !important; /* أعلى من أي عنصر في الصفحة مثل sidebar */
+    z-index: 2000 !important;
 }
 </style>
 

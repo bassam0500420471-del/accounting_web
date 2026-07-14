@@ -15,12 +15,31 @@ def _has_field(model, field_name: str) -> bool:
         return False
 
 
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def income_statement(request):
+    company = _get_request_company(request)
+
     date_from = request.GET.get("date_from")
     date_to = request.GET.get("date_to")
     cost_center_ids = request.GET.getlist("cost_centers")  # ✅ متعدد
 
     lines = JournalLine.objects.select_related("account", "entry")
+
+    # ===== عزل الشركة =====
+    if company:
+        if _has_field(JournalLine, "company"):
+            lines = lines.filter(company=company)
+        else:
+            account_model = JournalLine._meta.get_field("account").remote_field.model
+            if _has_field(account_model, "company"):
+                lines = lines.filter(account__company=company)
+            else:
+                entry_model = JournalLine._meta.get_field("entry").remote_field.model
+                if _has_field(entry_model, "company"):
+                    lines = lines.filter(entry__company=company)
 
     # ===== فلترة الفترة =====
     if date_from:
@@ -100,6 +119,10 @@ def income_statement(request):
 
     net_profit = total_revenues - total_expenses
 
+    cost_centers = CostCenter.objects.all().order_by("name")
+    if company and _has_field(CostCenter, "company"):
+        cost_centers = cost_centers.filter(company=company)
+
     context = {
         "revenues": revenues,
         "expenses": expenses,
@@ -107,7 +130,7 @@ def income_statement(request):
         "total_expenses": total_expenses,
         "net_profit": net_profit,
 
-        "cost_centers": CostCenter.objects.all().order_by("name"),
+        "cost_centers": cost_centers,
         "selected_cost_centers": cost_center_ids,  # ✅ مهم
     }
 

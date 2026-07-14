@@ -1,18 +1,19 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}عرض الجرد{% endblock %}
+{% block title %}{% trans "Stock Take View" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
-    <h4 class="mb-3">عرض ورقة الجرد</h4>
+    <h4 class="mb-3">{% trans "Stock Take Sheet View" %}</h4>
 
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>الصنف</th>
-                <th>الكمية النظامية</th>
-                <th>الكمية الفعلية</th>
-                <th>الفرق</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "System Quantity" %}</th>
+                <th>{% trans "Physical Quantity" %}</th>
+                <th>{% trans "Difference" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +29,7 @@
     </table>
 
     <a href="{% url 'stock_adjust_list' %}" class="btn btn-secondary">
-        رجوع
+        {% trans "Back" %}
     </a>
 </div>
 {% endblock %}

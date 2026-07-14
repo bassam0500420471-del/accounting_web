@@ -1,10 +1,20 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone, translation
-from django.conf import settings  # لجلب قائمة اللغات
+from django.conf import settings
+from django.contrib import messages
 
 LANGUAGE_SESSION_KEY = "django_language"
 
 from .models import SystemSettings
+
+
+def get_user_company(request):
+    user = getattr(request, "user", None)
+    if not user or not user.is_authenticated:
+        return None
+    profile = getattr(user, "profile", None)
+    company = getattr(profile, "company", None) if profile else None
+    return company
 
 
 # ===============================
@@ -29,12 +39,11 @@ def user_settings(request):
 
 
 # ===============================
-# تغيير اللغة (يعمل فوراً من أي مكان)
+# تغيير اللغة
 # ===============================
 def change_language(request):
     if request.method == "POST":
         lang = request.POST.get("language", "ar")
-
         request.session[LANGUAGE_SESSION_KEY] = lang
         translation.activate(lang)
 
@@ -42,47 +51,36 @@ def change_language(request):
 
 
 # ===============================
-# إعدادات النظام (مرتبطة بقاعدة البيانات)
+# إعدادات النظام (معزولة حسب الشركة)
 # ===============================
 def system_settings_view(request):
+    company = get_user_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("dashboard:index")
 
-    # الحصول على أول صف في جدول الإعدادات
-    settings_obj = SystemSettings.objects.first()
+    settings_obj, _ = SystemSettings.objects.get_or_create(company=company)
 
-    # لو لا يوجد – أنشئ صف جديد
-    if not settings_obj:
-        settings_obj = SystemSettings.objects.create()
-
-    # جلب قائمة اللغات من settings.py
     languages = settings.LANGUAGES
 
     if request.method == "POST":
-
-        # ---- الإعدادات العامة ----
         language = request.POST.get("language", settings_obj.language)
         settings_obj.language = language
-
         settings_obj.date_format = request.POST.get("date_format", settings_obj.date_format)
         settings_obj.color_theme = request.POST.get("color_theme", settings_obj.color_theme)
-
-        # ---- إعدادات الطباعة ----
         settings_obj.page_size = request.POST.get("page_size", settings_obj.page_size)
         settings_obj.page_orientation = request.POST.get("page_orientation", settings_obj.page_orientation)
 
-        # ---- النسخ الاحتياطي ----
         if "create_backup" in request.POST:
             settings_obj.last_backup = timezone.now()
 
-        # ---- حفظ الإعدادات ----
         settings_obj.save()
 
-        # ---- تفعيل اللغة فوراً ----
         translation.activate(language)
         request.session["django_language"] = language
 
         return redirect("system_settings")
 
-    # إرسال البيانات للقالب
     return render(request, "settings_app/system_settings.html", {
         "settings": settings_obj,
         "languages": languages,

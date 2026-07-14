@@ -1,7 +1,11 @@
 {% extends "sales/invoice_base_a4.html" %}
+{% load i18n %}
 {% block content %}
 
 <style>
+    /* إضافة الخط لضمان ظهور اللغة العربية */
+    body { font-family: 'arial', sans-serif !important; }
+
     table {
         width: 100%;
         border-collapse: collapse;
@@ -25,33 +29,32 @@
     }
 </style>
 
-<h2 style="text-align:center; margin-bottom:15px;">فاتورة مبيعات</h2>
+<h2 style="text-align:center; margin-bottom:15px;">{% trans "Sales Invoice" %}</h2>
 
-<!-- بيانات الفاتورة -->
+<!-- Invoice Info -->
 <div style="margin-bottom:20px; font-size:15px;">
-
-    <p><span class="label">رقم الفاتورة:</span> {{ invoice.invoice_no }}</p>
-    <p><span class="label">العميل:</span> {{ invoice.customer.name }}</p>
+    <p><span class="label">{% trans "Invoice No:" %}</span> {{ invoice.invoice_no }}</p>
+    <p><span class="label">{% trans "Customer:" %}</span> {{ invoice.customer.name }}</p>
 
     {% if invoice.description %}
-    <p><span class="label">الوصف:</span> {{ invoice.description }}</p>
+    <p><span class="label">{% trans "Description:" %}</span> {{ invoice.description }}</p>
     {% endif %}
 
-    <p><span class="label">تاريخ الفاتورة:</span> {{ invoice.date_invoice }}</p>
-    <p><span class="label">تاريخ الإصدار:</span> {{ invoice.date_issue }}</p>
+    <p><span class="label">{% trans "Invoice Date:" %}</span> {{ invoice.date_invoice }}</p>
+    <p><span class="label">{% trans "Issue Date:" %}</span> {{ invoice.date_issue }}</p>
 </div>
 
-<!-- جدول الأصناف -->
+<!-- Items Table -->
 <table>
     <thead>
         <tr>
-            <th>الصنف</th>
-            <th>الوصف</th>
-            <th>الكمية</th>
-            <th>السعر</th>
-            <th>الخصم</th>
-            <th>%الضريبة</th>
-            <th>الإجمالي</th>
+            <th>{% trans "Item" %}</th>
+            <th>{% trans "Description" %}</th>
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Price" %}</th>
+            <th>{% trans "Discount" %}</th>
+            <th>{% trans "Tax %" %}</th>
+            <th>{% trans "Total" %}</th>
         </tr>
     </thead>
 
@@ -68,8 +71,8 @@
         </tr>
         {% endfor %}
 
-        <!-- صفوف فارغة (ثابتة – لن تسبب خطأ) -->
-        {% for i in ""|center:8 %}
+        <!-- Empty rows -->
+        {% for i in "12345678" %}
         <tr>
             <td style="height:18px;"></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
@@ -79,41 +82,83 @@
 
 <br/>
 
-<!-- المجاميع + QR -->
+<!-- Totals + QR -->
+<!-- Totals + QR + Footer -->
 <table style="margin-top:10px; width:100%; border:none;">
     <tr>
-        <td style="border:none; width:50%; vertical-align:top;">
-            <img src="data:image/png;base64,{{ qr_code }}" style="width:140px; height:140px;">
+
+        <!-- QR -->
+        <td style="border:none; width:35%; text-align:center; vertical-align:middle;">
+{% if qr_code %}
+<img src="{{ qr_code }}"
+     style="width:120px; height:120px;">
+{% endif %}
         </td>
 
-        <td style="border:none; width:50%; vertical-align:top;">
 
-            <p><span class="label">الإجمالي قبل الضريبة:</span>
-                <span class="total-box">{{ invoice.total_before_tax }}</span>
-            </p>
+        <!-- Totals -->
+        <td style="border:none; width:65%; vertical-align:top;">
 
-            <p><span class="label">الإجمالي بعد الخصم:</span>
+            <p>
+                <span class="label">
+                    {% trans "Total Before Tax:" %}
+                </span>
                 <span class="total-box">
-                    {% if invoice.total_after_discount %}
-                        {{ invoice.total_after_discount }}
-                    {% else %}
-                        {{ invoice.total_before_tax }}
-                    {% endif %}
+                    {{ invoice.total_before_tax }}
                 </span>
             </p>
 
-            <p><span class="label">إجمالي الضريبة:</span>
-                <span class="total-box">{{ invoice.tax_value }}</span>
+
+            <p>
+                <span class="label">
+                    {% trans "Total After Discount:" %}
+                </span>
+                <span class="total-box">
+                    {{ invoice.total_after_discount|default:invoice.total_before_tax }}
+                </span>
             </p>
 
-            <p><span class="label" style="font-size:17px;">الإجمالي بعد الضريبة:</span>
-                <span class="total-box" style="font-weight:bold; font-size:17px;">
+
+            <p>
+                <span class="label">
+                    {% trans "Total Tax:" %}
+                </span>
+                <span class="total-box">
+                    {{ invoice.tax_value }}
+                </span>
+            </p>
+
+
+            <p>
+                <span class="label" style="font-size:17px;">
+                    {% trans "Total After Tax:" %}
+                </span>
+                <span class="total-box"
+                      style="font-weight:bold;font-size:17px;">
                     {{ invoice.total_after_tax }}
                 </span>
             </p>
 
+
+            <p>
+                <span class="label">
+                    {% trans "Remaining Amount:" %}
+                </span>
+                <span class="total-box">
+                    {{ remaining_amount }}
+                </span>
+            </p>
+
         </td>
+
     </tr>
 </table>
+
+
+<div style="text-align:center; margin-top:15px; font-size:14px;">
+    شكراً لتعاملكم معنا
+    <br>
+    Thank you for your business
+</div>
 
 {% endblock %}

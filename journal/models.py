@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from accounting.models import Account
 from cost_centers.models import CostCenter
 
+# ✅ عدّل مسار Company حسب مشروعك (لو Company في مكان مختلف)
+from accounts.models import Company
+
 
 class JournalEntry(models.Model):
     STATUS_CHOICES = (
@@ -10,13 +13,22 @@ class JournalEntry(models.Model):
         ("POSTED", "مرحّل"),
     )
 
-    # ✅ الإضافة الوحيدة (تمييز مصدر القيد)
     SOURCE_CHOICES = (
         ("manual", "قيد يدوي"),
         ("sales_invoice", "فاتورة مبيعات"),
         ("sales_return", "مرتجع مبيعات"),
         ("purchase_invoice", "فاتورة مشتريات"),
         ("purchase_return", "مرتجع مشتريات"),
+    )
+
+    # ✅ عزل القيد بالشركة (مؤقتاً nullable لتفادي مشكلة المايجريشن)
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.PROTECT,
+        related_name="journal_entries",
+        null=True,
+        blank=True,
+        verbose_name="الشركة"
     )
 
     entry_no = models.IntegerField(
@@ -44,7 +56,6 @@ class JournalEntry(models.Model):
         verbose_name="الحالة"
     )
 
-    # ⭐️ مركز تكلفة عام للقيد
     header_cost_center = models.ForeignKey(
         CostCenter,
         on_delete=models.SET_NULL,
@@ -61,7 +72,6 @@ class JournalEntry(models.Model):
         verbose_name="أنشئ بواسطة"
     )
 
-    # ✅ الإضافة الوحيدة (لا تؤثر على أي شيء حالي)
     source_type = models.CharField(
         max_length=20,
         choices=SOURCE_CHOICES,

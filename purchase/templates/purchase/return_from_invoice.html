@@ -1,4 +1,5 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <style>
@@ -43,7 +44,7 @@
     padding-right:10px;
 }
 
-/* رسالة الخطأ */
+/* Alert message */
 .alert-box {
     display:none;
     background:#fff3cd;
@@ -57,7 +58,7 @@
 </style>
 
 <form method="POST"
-      action="{% url 'purchase_return_from_invoice' invoice.id %}"
+      action="{% url 'purchase:purchase_return_from_invoice' invoice.id %}"
       data-allow-submit="1">
 {% csrf_token %}
 <input type="hidden" name="total_rows" value="{{ items|length }}">
@@ -65,51 +66,51 @@
 <div class="page-box">
 
     <h2 class="text-center fw-bold mb-4">
-        إشعار مدين (مرتجع مشتريات)
+        {% trans "Debit Note (Purchase Return)" %}
     </h2>
 
-    <!-- بيانات الفاتورة -->
+    <!-- Invoice Data -->
     <div class="row mb-3">
         <div class="col-md-4">
-            <label>اسم المورد</label>
+            <label>{% trans "Supplier Name" %}</label>
             <input class="input-box" value="{{ invoice.supplier.commercial_name }}" readonly>
         </div>
         <div class="col-md-4">
-            <label>تاريخ الفاتورة</label>
+            <label>{% trans "Invoice Date" %}</label>
             <input class="input-box" value="{{ invoice.date_invoice }}" readonly>
         </div>
         <div class="col-md-4">
-            <label>رقم الفاتورة</label>
+            <label>{% trans "Invoice Number" %}</label>
             <input class="input-box" value="{{ invoice.invoice_no }}" readonly>
         </div>
     </div>
 
-    <!-- سبب الإرجاع -->
+    <!-- Return Reason -->
     <div class="mb-3">
         <label class="fw-bold">
-            سبب الإرجاع <span class="text-danger">*</span>
+            {% trans "Return Reason" %} <span class="text-danger">*</span>
         </label>
         <textarea name="reason" class="input-box"></textarea>
     </div>
 
-    <!-- رسالة تنبيه -->
+    <!-- Alert -->
     <div id="qtyAlert" class="alert-box">
-        ⚠ لا يمكن إرجاع كمية أكبر من الكمية المتاحة في الفاتورة
+        ⚠ {% trans "Cannot return quantity greater than available quantity in the invoice" %}
     </div>
 
-    <!-- الأصناف -->
-    <h4 class="section-title">الأصناف</h4>
+    <!-- Items -->
+    <h4 class="section-title">{% trans "Items" %}</h4>
 
     <table class="table table-bordered items-table mt-2">
         <thead>
             <tr>
-                <th>الصنف</th>
-                <th>الكمية المتاحة</th>
-                <th>السعر</th>
-                <th>الخصم</th>
-                <th>الضريبة %</th>
-                <th>الإجمالي بعد الضريبة</th>
-                <th style="width:140px;">كمية الإرجاع</th>
+                <th>{% trans "Product" %}</th>
+                <th>{% trans "Available Qty" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Discount" %}</th>
+                <th>{% trans "Tax %" %}</th>
+                <th>{% trans "Total After Tax" %}</th>
+                <th style="width:140px;">{% trans "Return Qty" %}</th>
             </tr>
         </thead>
 
@@ -146,31 +147,31 @@
 {% endfor %}
 </tbody>
 
-    <!-- المجاميع -->
-    <h4 class="section-title">المجاميع</h4>
+    <!-- Totals -->
+    <h4 class="section-title">{% trans "Totals" %}</h4>
 
     <table class="table table-bordered totals-box mt-2">
         <tr>
-            <td>الإجمالي قبل الضريبة:</td>
+            <td>{% trans "Total Before Tax:" %}</td>
             <td id="total_before">0.00</td>
         </tr>
         <tr>
-            <td>إجمالي بعد الخصم:</td>
+            <td>{% trans "Total After Discount:" %}</td>
             <td id="total_after_discount">0.00</td>
         </tr>
         <tr>
-            <td>قيمة الضريبة 15%:</td>
+            <td>{% trans "Tax Amount" %} 15%:</td>
             <td id="total_tax">0.00</td>
         </tr>
         <tr style="background:#e7f1ff;">
-            <td class="fw-bold">الإجمالي بعد الضريبة:</td>
+            <td class="fw-bold">{% trans "Total After Tax:" %}</td>
             <td id="total_after_tax" class="fw-bold">0.00</td>
         </tr>
     </table>
 
     <div class="text-end mt-4">
         <button type="submit" class="btn-main">
-            💾 حفظ المرتجع
+            💾 {% trans "Save Return" %}
         </button>
     </div>
 
@@ -178,6 +179,8 @@
 </form>
 
 <script>
+const ALERT_QTY_TEXT = "{% trans 'Cannot return quantity greater than available quantity in the invoice' %}";
+
 function toNum(v) {
     const n = parseFloat(v);
     return isNaN(n) ? 0 : n;
@@ -191,6 +194,7 @@ function calcTotals() {
 
     let alertBox = document.getElementById("qtyAlert");
     alertBox.style.display = "none";
+    alertBox.innerText = "⚠ " + ALERT_QTY_TEXT;
 
     document.querySelectorAll(".items-table tbody tr").forEach(row => {
 
@@ -198,7 +202,6 @@ function calcTotals() {
         const maxQty = toNum(input.max);
         let qty = toNum(input.value);
 
-        // 🚫 منع تجاوز الكمية
         if (qty > maxQty) {
             input.value = maxQty;
             qty = maxQty;

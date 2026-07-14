@@ -1,10 +1,11 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container-fluid mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">مرتجعات المشتريات</h3>
+        <h3 class="fw-bold">{% trans "Purchase Returns" %}</h3>
     </div>
 
 {% if returns %}
@@ -12,52 +13,52 @@
 
     <thead>
 
-        <!-- صف الفلاتر (متطابق 100% مع الأعمدة) -->
+        <!-- Filter Row -->
         <tr>
             <th></th>
 
             <th>
                 <input data-col="1"
                        class="filter-input form-control form-control-sm"
-                       placeholder="بحث الفاتورة الأصلية">
+                       placeholder="{% trans 'Search Original Invoice' %}">
             </th>
 
             <th>
                 <input data-col="2"
                        class="filter-input form-control form-control-sm"
-                       placeholder="بحث إشعار المدين">
+                       placeholder="{% trans 'Search Debit Note' %}">
             </th>
 
             <th>
                 <input data-col="3"
                        class="filter-input form-control form-control-sm"
-                       placeholder="بحث المورد">
+                       placeholder="{% trans 'Search Supplier' %}">
             </th>
 
             <th>
                 <input data-col="4"
                        class="filter-input form-control form-control-sm"
-                       placeholder="بحث التاريخ">
+                       placeholder="{% trans 'Search Date' %}">
             </th>
 
             <th>
                 <input data-col="5"
                        class="filter-input form-control form-control-sm"
-                       placeholder="بحث الإجمالي">
+                       placeholder="{% trans 'Search Total' %}">
             </th>
 
             <th></th>
         </tr>
 
-        <!-- صف العناوين -->
+        <!-- Header Row -->
         <tr class="table-dark">
             <th>#</th>
-            <th>رقم الفاتورة الأصلية</th>
-            <th>رقم إشعار المدين</th>
-            <th>المورد</th>
-            <th>تاريخ المرتجع</th>
-            <th>الإجمالي</th>
-            <th>الإجراءات</th>
+            <th>{% trans "Original Invoice No." %}</th>
+            <th>{% trans "Debit Note No." %}</th>
+            <th>{% trans "Supplier" %}</th>
+            <th>{% trans "Return Date" %}</th>
+            <th>{% trans "Total" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
 
     </thead>
@@ -76,28 +77,27 @@
                 <div class="dropdown">
                     <button class="btn-action dropdown-toggle"
                             data-bs-toggle="dropdown">
-                        خيارات
+                        {% trans "Options" %}
                     </button>
 
                     <ul class="dropdown-menu text-end">
 
-                        <!-- إنشاء / عرض مرتجع من الفاتورة -->
                         <li>
                             <a class="dropdown-item"
-                               href="{% url 'purchase_return_from_invoice' r.invoice.pk %}">
-                                فتح المرتجع
+                               href="{% url 'purchase:purchase_return_from_invoice' r.invoice.pk %}">
+                                {% trans "Open Return" %}
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="#">
-                                PDF (لاحقًا)
+                                {% trans "PDF (Later)" %}
                             </a>
                         </li>
 
                         <li>
                             <a class="dropdown-item" href="#">
-                                طباعة (لاحقًا)
+                                {% trans "Print (Later)" %}
                             </a>
                         </li>
 
@@ -112,7 +112,7 @@
 
 {% else %}
 <div class="alert alert-info text-center">
-    لا توجد مرتجعات مشتريات حتى الآن.
+    {% trans "No purchase returns yet." %}
 </div>
 {% endif %}
 

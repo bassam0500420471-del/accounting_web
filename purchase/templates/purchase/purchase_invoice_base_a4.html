@@ -1,9 +1,10 @@
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
 <head>
     <meta charset="UTF-8">
-    <title>فاتورة مشتريات</title>
+    <title>{% trans "Purchase Invoice" %}</title>
 
     <style>
 
@@ -12,12 +13,12 @@
             background: #fff;
             margin: 0;
             padding: 0;
-            direction: rtl;
+            direction: {% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %};
         }
 
         .invoice-container {
-            width: 794px;              /* عرض A4 */
-            min-height: 1123px;        /* ارتفاع A4 */
+            width: 794px;
+            min-height: 1123px;
             margin: auto;
             background: #fff;
             padding: 30px 40px;
@@ -60,7 +61,6 @@
             margin: 20px 0;
         }
 
-        /* الطباعة */
         @media print {
             body {
                 background: #fff;
@@ -84,7 +84,7 @@
 <body>
 
     {% block content %}
-    <!-- هنا يوضع محتوى purchase_view أو purchase_print -->
+    <!-- purchase_view or purchase_print content goes here -->
     {% endblock %}
 
 </body>

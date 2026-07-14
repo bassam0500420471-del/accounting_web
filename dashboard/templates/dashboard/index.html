@@ -1,8 +1,8 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}لوحة التحكم{% endblock %}
-
-{% block head %}
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -32,54 +32,63 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-full">
+<div class="container-fluid">
 
-    <!-- مؤشرات عليا -->
+    <!-- Top Indicators -->
     <div class="row mb-4">
         <div class="col-md-3 col-6">
-            <div class="indicator">الموظفين: {{ total_employees|default:0 }}</div>
+            <div class="indicator">{% trans "Employees" %}:
+ {{ total_employees|default:0 }}</div>
         </div>
         <div class="col-md-3 col-6">
-            <div class="indicator">الحضور اليوم: {{ total_attendance_today|default:0 }}</div>
+            <div class="indicator">{% trans "Today's Attendance" %}:
+ {{ total_attendance_today|default:0 }}</div>
         </div>
         <div class="col-md-3 col-6">
-            <div class="indicator">الفواتير: {{ total_invoices|default:0 }}</div>
+            <div class="indicator">{% trans "Invoices" %}:
+ {{ total_invoices|default:0 }}</div>
         </div>
         <div class="col-md-3 col-6">
-            <div class="indicator">الإجازات: {{ total_leaves|default:0 }}</div>
+            <div class="indicator">{% trans "Leaves" %}: {{ total_leaves|default:0 }}</div>
         </div>
     </div>
 
-    <!-- رسومات بيانية -->
+    <!-- Charts -->
     <div class="row">
         <div class="col-md-6 col-12">
             <div class="chart-container p-3 bg-white rounded shadow-sm">
-                <h2 class="section-title">فواتير المبيعات الشهرية</h2>
+                <h2 class="section-title">{% trans "Monthly Sales Invoices" %}
+</h2>
                 <canvas id="salesChart"></canvas>
             </div>
         </div>
         <div class="col-md-6 col-12">
             <div class="chart-container p-3 bg-white rounded shadow-sm">
-                <h2 class="section-title">فواتير المشتريات الشهرية</h2>
+                <h2 class="section-title">{% trans "Monthly Purchase Invoices" %}
+</h2>
                 <canvas id="purchaseChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- جدول الحضور اليومي -->
+    <!-- Daily Attendance Table -->
     <div class="row mt-4">
         <div class="col-12">
-            <h2 class="section-title">جدول الحضور اليومي</h2>
+            <h2 class="section-title">{% trans "Daily Attendance Table" %}</h2>
             <div class="card p-3 bg-white rounded shadow-sm table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>رقم الموظف</th>
-                            <th>الموظف</th>
-                            <th>التاريخ</th>
-                            <th>الحالة</th>
-                            <th>ملاحظات</th>
+                            <th>{% trans "Employee Number" %}
+</th>
+                            <th>{% trans "Employee" %}
+</th>
+                            <th>{% trans "Date" %}
+</th>
+                            <th>{% trans "Status" %}
+</th>
+                            <th>{% trans "Notes" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,14 +96,30 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ att.employee_number }}</td>
-                            <td>{{ att.employee.first_name_ar }} {{ att.employee.last_name_ar }}</td>
+                            {% get_current_language as LANGUAGE_CODE %}
+
+<td>
+    {% if LANGUAGE_CODE == "ar" %}
+        {{ att.employee.first_name_ar }} {{ att.employee.last_name_ar }}
+    {% else %}
+        {{ att.employee.first_name_en }} {{ att.employee.last_name_en }}
+    {% endif %}
+</td>
                             <td>{{ att.date }}</td>
-                            <td>{{ att.status }}</td>
+<td>
+    {% if att.status == "absent" or att.status == "Absent" or att.status == "غياب" %}
+        {% trans "Absent" %}
+    {% elif att.status == "present" or att.status == "Present" or att.status == "حضور" %}
+        {% trans "Present" %}
+    {% else %}
+        {{ att.status }}
+    {% endif %}
+</td>
                             <td>{{ att.notes|default:"-" }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6">لا توجد بيانات حضور اليوم</td>
+                            <td colspan="6">{% trans "No attendance data today" %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -103,18 +128,20 @@
         </div>
     </div>
 
-    <!-- أعلى المنتجات مبيعًا وأقل المخزون -->
+    <!-- Top Products & Low Stock -->
     <div class="row mt-4">
-        <!-- أعلى المنتجات مبيعًا -->
+        <!-- Top Products -->
         <div class="col-md-6 col-12">
             <div class="card p-3 bg-white rounded shadow-sm table-responsive">
-                <h2 class="section-title">أعلى المنتجات مبيعًا</h2>
+                <h2 class="section-title">{% trans "Top Selling Products" %}</h2>
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>اسم المنتج</th>
-                            <th>المبيعات</th>
+                            <th>{% trans "Product Name" %}
+</th>
+                            <th>{% trans "Sales" %}
+</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -126,7 +153,8 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3">لا توجد بيانات مبيعات</td>
+                            <td colspan="3">{% trans "No sales data" %}
+</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -134,16 +162,16 @@
             </div>
         </div>
 
-        <!-- أقل المخزون -->
+        <!-- Low Stock -->
         <div class="col-md-6 col-12">
             <div class="card p-3 bg-white rounded shadow-sm table-responsive">
-                <h2 class="section-title">أقل المخزون</h2>
+                <h2 class="section-title">{% trans "Low Stock" %}</h2>
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>اسم المنتج</th>
-                            <th>المخزون</th>
+                            <th>{% trans "Product Name" %}</th>
+                            <th>{% trans "Stock" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -155,7 +183,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3">لا توجد بيانات مخزون</td>
+                            <td colspan="3">{% trans "No stock data" %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -167,9 +195,8 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
-    // المبيعات Chart مع عمود السدادات
     const salesLabels = [{% for inv in top_sales %}"{{ inv.date_invoice|date:'d-m' }}",{% endfor %}];
     const salesData = [{% for inv in top_sales %}{{ inv.total_after_tax|default:0 }},{% endfor %}];
     const salesPaidData = [{% for inv in top_sales %}{{ inv.paid_amount|default:0 }},{% endfor %}];
@@ -179,14 +206,12 @@
         data: {
             labels: salesLabels,
             datasets: [
-                { label: 'إجمالي الفاتورة', data: salesData, backgroundColor: '#007bff' },
-                { label: 'السدادات', data: salesPaidData, backgroundColor: '#28a745' }
+                { label: "{% trans 'Total Invoice' %}", data: salesData, backgroundColor: '#007bff' },
+                { label: "{% trans 'Payments' %}", data: salesPaidData, backgroundColor: '#28a745' }
             ]
-        },
-        options: { responsive: true, scales: { x:{ ticks:{color:'black'} }, y:{ ticks:{color:'black', beginAtZero:true} } } }
+        }
     });
 
-    // المشتريات Chart مع عمود السدادات
     const purchaseLabels = [{% for inv in top_purchases %}"{{ inv.date_invoice|date:'d-m' }}",{% endfor %}];
     const purchaseData = [{% for inv in top_purchases %}{{ inv.total_after_tax|default:0 }},{% endfor %}];
     const purchasePaidData = [{% for inv in top_purchases %}{{ inv.paid_amount|default:0 }},{% endfor %}];
@@ -196,11 +221,10 @@
         data: {
             labels: purchaseLabels,
             datasets: [
-                { label: 'إجمالي الفاتورة', data: purchaseData, backgroundColor: '#007bff' },
-                { label: 'السدادات', data: purchasePaidData, backgroundColor: '#ffc107' }
+                { label: "{% trans 'Total Invoice' %}", data: purchaseData, backgroundColor: '#007bff' },
+                { label: "{% trans 'Payments' %}", data: purchasePaidData, backgroundColor: '#ffc107' }
             ]
-        },
-        options: { responsive: true, scales: { x:{ ticks:{color:'black'} }, y:{ ticks:{color:'black', beginAtZero:true} } } }
+        }
     });
 </script>
 {% endblock %}

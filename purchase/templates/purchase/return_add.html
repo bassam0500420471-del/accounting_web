@@ -1,4 +1,5 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <style>
@@ -17,38 +18,46 @@
 <div class="container mt-4">
 
     <h2 class="fw-bold text-center mb-4">
-        إنشاء إشعار مدين (مرتجع مشتريات)
+        {% trans "Create Debit Note (Purchase Return)" %}
     </h2>
 
-    <!-- ================= المورد ================= -->
-    <label class="fw-bold">اختر المورد:</label>
+    <!-- ================= Supplier ================= -->
+    <label class="fw-bold">{% trans "Select Supplier:" %}</label>
     <select id="supplierSelect" class="form-select mb-3">
-        <option value="">-- اختر المورد --</option>
+        <option value="">{% trans "-- Select Supplier --" %}</option>
         {% for s in suppliers %}
             <option value="{{ s.id }}">{{ s.commercial_name }}</option>
         {% endfor %}
     </select>
 
-    <!-- ================= الفاتورة ================= -->
-    <label class="fw-bold">اختر فاتورة المشتريات:</label>
+    <!-- ================= Invoice ================= -->
+    <label class="fw-bold">{% trans "Select Purchase Invoice:" %}</label>
     <select id="invoiceSelect" class="form-select mb-4" disabled>
-        <option value="">-- اختر المورد أولاً --</option>
+        <option value="">{% trans "-- Select supplier first --" %}</option>
     </select>
 
-    <!-- ================= متابعة ================= -->
+    <!-- ================= Continue ================= -->
     <div class="text-center mt-4">
         <a id="continueBtn"
            class="btn-main btn-lg disabled"
            role="button">
-            متابعة إنشاء المرتجع
+            {% trans "Continue Creating Return" %}
         </a>
     </div>
 
 </div>
 
 <script>
+const LOADING_TEXT = "{% trans 'Loading...' %}";
+const SELECT_SUPPLIER_FIRST_TEXT = "{% trans '-- Select supplier first --' %}";
+const SELECT_INVOICE_TEXT = "{% trans '-- Select Invoice --' %}";
+const NO_INVOICES_FOUND_TEXT = "{% trans 'No invoices found for this supplier' %}";
+const ERROR_LOADING_INVOICES_TEXT = "{% trans 'Error loading invoices' %}";
+const INVOICE_NO_TEXT = "{% trans 'Invoice No' %}";
+const SAR_TEXT = "{% trans 'SAR' %}";
+
 // =================================================
-// اختيار المورد → تحميل فواتير الشراء
+// Select Supplier → Load Purchase Invoices
 // =================================================
 document.getElementById("supplierSelect").addEventListener("change", function () {
 
@@ -56,48 +65,47 @@ document.getElementById("supplierSelect").addEventListener("change", function ()
     const invoiceSelect = document.getElementById("invoiceSelect");
 
     invoiceSelect.disabled = true;
-    invoiceSelect.innerHTML = "<option>جاري التحميل...</option>";
+    invoiceSelect.innerHTML = `<option>${LOADING_TEXT}</option>`;
 
     if (!supplierId) {
-        invoiceSelect.innerHTML = "<option>-- اختر المورد أولاً --</option>";
+        invoiceSelect.innerHTML = `<option value="">${SELECT_SUPPLIER_FIRST_TEXT}</option>`;
         return;
     }
 
-    // ✅ استخدم URL من Django (حل نهائي)
-    fetch("{% url 'api_supplier_invoices' %}?supplier_id=" + supplierId)
+    fetch("{% url 'purchase:api_supplier_invoices' %}?supplier_id=" + supplierId)
         .then(res => {
             if (!res.ok) throw new Error("HTTP Error");
             return res.json();
         })
         .then(data => {
 
-            invoiceSelect.innerHTML = "<option value=''>-- اختر الفاتورة --</option>";
+            invoiceSelect.innerHTML = `<option value="">${SELECT_INVOICE_TEXT}</option>`;
             invoiceSelect.disabled = false;
 
             if (!data.invoices || data.invoices.length === 0) {
                 invoiceSelect.innerHTML +=
-                    "<option value=''>لا توجد فواتير لهذا المورد</option>";
+                    `<option value="">${NO_INVOICES_FOUND_TEXT}</option>`;
                 return;
             }
 
             data.invoices.forEach(inv => {
                 invoiceSelect.innerHTML += `
                     <option value="${inv.id}">
-                        فاتورة رقم ${inv.invoice_no}
-                        | ${inv.total} ريال
+                        ${INVOICE_NO_TEXT} ${inv.invoice_no}
+                        | ${inv.total} ${SAR_TEXT}
                     </option>
                 `;
             });
         })
         .catch(() => {
             invoiceSelect.innerHTML =
-                "<option value=''>حدث خطأ أثناء تحميل الفواتير</option>";
+                `<option value="">${ERROR_LOADING_INVOICES_TEXT}</option>`;
         });
 });
 
 
 // =================================================
-// اختيار الفاتورة → تفعيل زر المتابعة
+// Select Invoice → Enable Continue Button
 // =================================================
 document.getElementById("invoiceSelect").addEventListener("change", function () {
 

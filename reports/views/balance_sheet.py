@@ -8,8 +8,21 @@ from accounting.models import Account, JournalLine
 from cost_centers.models import CostCenter
 
 
+def _has_field(model, field_name: str) -> bool:
+    try:
+        model._meta.get_field(field_name)
+        return True
+    except Exception:
+        return False
+
+
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def balance_sheet(request):
     today = date.today()
+    company = _get_request_company(request)
 
     # ================== الفلاتر ==================
     date_str = request.GET.get("date")
@@ -21,9 +34,23 @@ def balance_sheet(request):
     )
 
     cost_centers = CostCenter.objects.all()
+    if company and _has_field(CostCenter, "company"):
+        cost_centers = cost_centers.filter(company=company)
 
     # ================== القيود ==================
     lines = JournalLine.objects.filter(entry__date__lte=as_of_date)
+
+    if company:
+        if _has_field(JournalLine, "company"):
+            lines = lines.filter(company=company)
+        else:
+            account_model = JournalLine._meta.get_field("account").remote_field.model
+            if _has_field(account_model, "company"):
+                lines = lines.filter(account__company=company)
+            else:
+                entry_model = JournalLine._meta.get_field("entry").remote_field.model
+                if _has_field(entry_model, "company"):
+                    lines = lines.filter(entry__company=company)
 
     if cost_center_id:
         lines = lines.filter(cost_center_id=cost_center_id)
@@ -44,6 +71,8 @@ def balance_sheet(request):
 
     # ================== شجرة الحسابات ==================
     accounts = Account.objects.select_related("parent").order_by("code")
+    if company and _has_field(Account, "company"):
+        accounts = accounts.filter(company=company)
 
     def build_tree(parent=None):
         tree = []

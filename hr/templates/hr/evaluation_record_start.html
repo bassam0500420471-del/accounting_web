@@ -1,0 +1,73 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Create Evaluation Record" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <h3 class="fw-bold mb-3">➕ {% trans "Create Evaluation Record" %}</h3>
+
+    <form method="post" class="card shadow-sm">
+        {% csrf_token %}
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{% trans "Select Evaluation" %}</label>
+                    <select name="evaluation" class="form-control"
+                            onchange="window.location.href='?evaluation=' + this.value + '&role={{ role }}&employee={{ selected_employee_id|default:'' }}'">
+                        <option value="">{% trans "— Select —" %}</option>
+                        {% for e in evaluations %}
+                            <option value="{{ e.id }}" {% if selected_eval_id == e.id %}selected{% endif %}>
+                                {{ e.name }} ({{ e.start_date }} → {{ e.end_date }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{% trans "Select Employee" %}</label>
+                    <select name="employee" class="form-control" {% if not selected_eval_id %}disabled{% endif %}
+                            onchange="window.location.href='?evaluation={{ selected_eval_id|default:'' }}&role={{ role }}&employee=' + this.value">
+                        <option value="">{% trans "— Select —" %}</option>
+                        {% for emp in employees %}
+                            <option value="{{ emp.id }}" {% if selected_employee_id == emp.id %}selected{% endif %}>
+                                {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                                {% if emp.department %} - {{ emp.department }}{% endif %}
+                            </option>
+                        {% empty %}
+                            <option value="">{% trans "No employees available for this evaluation" %}</option>
+                        {% endfor %}
+                    </select>
+
+                    {% if selected_eval_id and not criteria %}
+                        <small class="text-danger d-block mt-2">{% trans "There are no criteria for this evaluation." %}</small>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">{% trans "Evaluator Type" %}</label>
+                    <select name="role" class="form-control"
+                            onchange="window.location.href='?evaluation={{ selected_eval_id|default:'' }}&role=' + this.value + '&employee={{ selected_employee_id|default:'' }}'">
+                        <option value="peer" {% if role == "peer" %}selected{% endif %}>{% trans "Peer Evaluation" %}</option>
+                        <option value="manager" {% if role == "manager" %}selected{% endif %}>{% trans "Manager Evaluation" %}</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success fw-bold"
+                        {% if not selected_eval_id or not selected_employee_id or not criteria %}disabled{% endif %}>
+                    {% trans "Start Entering Scores" %}
+                </button>
+                <a href="{% url 'hr:evaluations' %}" class="btn btn-secondary fw-bold">{% trans "Back" %}</a>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+{% endblock %}

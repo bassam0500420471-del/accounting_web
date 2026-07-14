@@ -1,6 +1,7 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}قائمة فواتير المشتريات{% endblock %}
+{% block title %}{% trans "Purchase Invoices List" %}{% endblock %}
 
 {% block head %}
 <style>
@@ -68,34 +69,34 @@
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0">قائمة فواتير المشتريات</h2>
+    <h2 class="fw-bold mb-0">{% trans "Purchase Invoices List" %}</h2>
 
-    <a href="{% url 'purchase_invoice_add' %}" class="btn btn-main">
-        + إضافة فاتورة
+    <a href="{% url 'purchase:purchase_invoice_add' %}" class="btn btn-main">
+        + {% trans "Add Purchase Invoice" %}
     </a>
 </div>
 
-<table class="table text-center align-middle">
+<table class="table text-center align-middle" dir="rtl">
     <thead>
 
         <tr>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث رقم الفاتورة"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث المورد"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث التاريخ"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الإجمالي"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الحالة"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search ID' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Invoice No' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Supplier' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Date' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Total' %}"></th>
+            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Status' %}"></th>
             <th></th>
         </tr>
 
         <tr class="table-dark">
-            <th>#</th>
-            <th>رقم الفاتورة</th>
-            <th>المورد</th>
-            <th>التاريخ</th>
-            <th>الإجمالي</th>
-            <th>الحالة</th>
-            <th>الإجراءات</th>
+            <th>{% trans "No." %}</th>
+            <th>{% trans "Invoice No" %}</th>
+            <th>{% trans "Supplier" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Total" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
 
     </thead>
@@ -108,20 +109,18 @@
             <td>{{ invoice.supplier.commercial_name }}</td>
             <td>{{ invoice.date_invoice }}</td>
 
-            <!-- ✅ الإجمالي الحقيقي -->
             <td>
-                {{ invoice.total_amount|floatformat:2 }}
+                {{ invoice.total_after_tax|floatformat:2 }}
             </td>
 
-            <!-- ✅ الحالة المنطقية -->
             <td>
-                {% if invoice.total_amount > 0 %}
+                {% if invoice.total_after_tax > 0 %}
                     <span class="badge" style="background:#6c757d;color:white">
-                        مسددة
+                        {% trans "Paid" %}
                     </span>
                 {% else %}
                     <span class="badge" style="background:#6c757d;color:white">
-                        غير مسددة
+                        {% trans "Unpaid" %}
                     </span>
                 {% endif %}
             </td>
@@ -129,38 +128,41 @@
             <td>
                 <div class="dropdown">
                     <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
-                        خيارات
+                        {% trans "Options" %}
                     </button>
 
                     <ul class="dropdown-menu custom-menu text-end">
-                        <li>
-                            <a class="dropdown-item" href="{% url 'purchase_invoice_view' invoice.id %}">
-                                👁️ عرض
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{% url 'purchase_invoice_pdf' invoice.id %}">
-                                📄 تحميل PDF
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{% url 'purchase_invoice_print' invoice.id %}" target="_blank">
-                                🖨️ طباعة
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-warning fw-bold"
-                               href="{% url 'purchase_return_from_invoice' invoice.id %}">
-                                ↩ إنشاء إشعار مدين
-                            </a>
-                        </li>
+<li>
+    <a class="dropdown-item" href="{% url 'purchase:purchase_invoice_view' invoice.id %}">
+        👁️ {% trans "View" %}
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item" href="{% url 'purchase:purchase_invoice_pdf' invoice.id %}">
+        📄 {% trans "Download PDF" %}
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item" href="{% url 'purchase:purchase_invoice_print' invoice.id %}" target="_blank">
+        🖨️ {% trans "Print" %}
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item text-warning fw-bold"
+       href="{% url 'purchase:purchase_return_from_invoice' invoice.id %}">
+        ↩ {% trans "Create Debit Note" %}
+    </a>
+</li>
                     </ul>
                 </div>
             </td>
         </tr>
     {% empty %}
         <tr>
-            <td colspan="7" class="text-muted">لا توجد فواتير مشتريات</td>
+            <td colspan="7" class="text-muted">{% trans "No purchase invoices found" %}</td>
         </tr>
     {% endfor %}
     </tbody>

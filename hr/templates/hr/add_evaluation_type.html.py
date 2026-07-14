@@ -1,0 +1,47 @@
+BBBBBBB BBBBBBBBBBBBBBBBBB
+BBBB BBBB
+BBBBB BBBBB gettext(u'Add New Evaluation Type') BBBBBBBB
+
+BBBBB BBBBBBB
+XXXX XXXXXXXXXXXXXXXXXXXXXX XXXXX
+     XXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXX X XXXXXXX XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXX
+
+    XXXX XXXXXXXXXXX XXXXXXXXXXX
+        XXXX XXXXXXXXXXXXXXXXXX
+
+            XXX XXXXXXXXXXXXXX XXXXXXX  gettext(u'Add New Evaluation Type') XXXXX
+
+            XXXXX XXXXXXXXXXXXXX
+                BBBBBBBBBB
+
+                XXXX X XXXXXXXX XX XXXX XX XXXXXX XXX XXX XX XXXXX XXX XX XXXXXXX XXX
+                XXXXXX XXXXXXXXXXXXX XXXXXXXXXXX XXXXXXXFFFFFFFFFFFFFFFFFFFFFFXX
+
+                XXXX XXXXXXXXXXXXX
+                    XXXXXX XXXXXXXXXXXXXXXXX XXXXXXXXX gettext(u'Evaluation Type') XXXXXXXX
+                    XXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Enter evaluation type') X XXXXXXXXX
+                XXXXXX
+
+                XXXX XXXXXXXXXXX XXXXXXXXX XXXXXX
+                    XXXX XXXXXXXXXXXXXXXX XXXXXXXXXX
+                        XXXXXXX XXXXXXXXXXXXX XXXXXXXXXX XXXXXXXXXXXXX XXXXXXX  gettext(u'Save') XXXXXXXXX
+
+                        BB BBBBBBBBBBBBBBBB BB BBBB
+                            XX XXXXXXFFFFFFFFFFFFX XXXXXXXXXX XXXXXXXXXXXXX XXXXXX
+                                X  gettext(u'Back to Create Evaluation') 
+                            XXXX
+                        BBBB
+                            XX XXXXXXBBB BBBBBBBBBBBBBBBBX XXXXXXXXXX XXXXXXXXXXXXX XXXXXX
+                                X  gettext(u'Back to Evaluation List') 
+                            XXXX
+                        BBBBB
+                    XXXXXX
+                XXXXXX
+
+            XXXXXXX
+
+        XXXXXX
+    XXXXXX
+
+XXXXXX
+BBBBBBBB

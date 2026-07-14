@@ -1,17 +1,18 @@
+{% load i18n %}
 
 <div class="container mt-4">
 
     <h3 class="fw-bold text-center mb-4">
-        إنشاء إشعار مدين (مرتجع)
+        {% trans "Create Debit Note (Return)" %}
     </h3>
 
     <!-- =========================
-         اختيار المورد
+         Select Supplier
     ========================== -->
     <div class="mb-3">
-        <label class="fw-bold">اختر المورد:</label>
+        <label class="fw-bold">{% trans "Select Supplier:" %}</label>
         <select id="supplierSelect" class="form-select">
-            <option value="">-- اختر المورد --</option>
+            <option value="">{% trans "-- Select Supplier --" %}</option>
             {% for s in suppliers %}
                 <option value="{{ s.id }}">{{ s.commercial_name }}</option>
             {% endfor %}
@@ -19,27 +20,27 @@
     </div>
 
     <!-- =========================
-         اختيار الفاتورة
+         Select Invoice
     ========================== -->
     <div class="mb-4">
-        <label class="fw-bold">اختر الفاتورة:</label>
+        <label class="fw-bold">{% trans "Select Invoice:" %}</label>
         <select id="invoiceSelect" class="form-select" disabled>
-            <option value="">-- اختر الفاتورة --</option>
+            <option value="">{% trans "-- Select Invoice --" %}</option>
         </select>
     </div>
 
     <!-- =========================
-         عرض مبسط لبيانات الفاتورة
+         Invoice Preview
     ========================== -->
     <div id="invoiceData" style="display:none">
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <strong>رقم الفاتورة:</strong>
+                <strong>{% trans "Invoice Number:" %}</strong>
                 <span id="invNo"></span>
             </div>
             <div class="col-md-6">
-                <strong>تاريخ الفاتورة:</strong>
+                <strong>{% trans "Invoice Date:" %}</strong>
                 <span id="invDate"></span>
             </div>
         </div>
@@ -47,12 +48,12 @@
         <table class="table table-bordered text-center align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>الصنف</th>
-                    <th>الكمية</th>
-                    <th>السعر</th>
-                    <th>% الضريبة</th>
-                    <th>الخصم</th>
-                    <th>الإجمالي</th>
+                    <th>{% trans "Product" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Tax %" %}</th>
+                    <th>{% trans "Discount" %}</th>
+                    <th>{% trans "Total" %}</th>
                 </tr>
             </thead>
             <tbody id="itemsBody"></tbody>
@@ -63,7 +64,7 @@
             class="btn btn-secondary w-100"
             type="button"
             disabled>
-            متابعة إنشاء المرتجع
+            {% trans "Continue Creating Return" %}
         </button>
     </div>
 
@@ -81,7 +82,7 @@ const continueBtn    = document.getElementById("continueBtn");
 supplierSelect.addEventListener("change", function () {
     const supplierId = this.value;
 
-    invoiceSelect.innerHTML = `<option value="">-- اختر الفاتورة --</option>`;
+    invoiceSelect.innerHTML = `<option value="">{% trans "-- Select Invoice --" %}</option>`;
     invoiceSelect.disabled = true;
     invoiceData.style.display = "none";
     continueBtn.disabled = true;
@@ -94,7 +95,7 @@ supplierSelect.addEventListener("change", function () {
             data.invoices.forEach(inv => {
                 invoiceSelect.insertAdjacentHTML("beforeend", `
                     <option value="${inv.id}">
-                        فاتورة رقم ${inv.invoice_no} | ${inv.date} | ${inv.total}
+                        {% blocktrans %}Invoice No{% endblocktrans %} ${inv.invoice_no} | ${inv.date} | ${inv.total}
                     </option>
                 `);
             });
@@ -106,7 +107,11 @@ invoiceSelect.addEventListener("change", function () {
     const invoiceId = this.value;
     selectedInvoiceId = invoiceId;
 
-    if (!invoiceId) return;
+    if (!invoiceId) {
+        invoiceData.style.display = "none";
+        continueBtn.disabled = true;
+        return;
+    }
 
     fetch(`/purchase/api/invoice-data/?invoice_id=${invoiceId}`)
         .then(res => res.json())
@@ -139,4 +144,3 @@ continueBtn.addEventListener("click", function () {
     window.location.href = `/purchase/returns/from-invoice/${selectedInvoiceId}/`;
 });
 </script>
-

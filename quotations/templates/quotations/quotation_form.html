@@ -1,7 +1,8 @@
 {% extends 'sales/invoice_base_a4.html' %}
+{% load i18n %}
 {% block content %}
 
-<h3 class="mb-4 text-center">إنشاء عرض سعر</h3>
+<h3 class="mb-4 text-center">{% trans "Create Quotation" %}</h3>
 
 <div class="container">
 
@@ -11,29 +12,29 @@
 
     <div class="card p-4">
 
-        <!-- رقم عرض السعر + التاريخ -->
+        <!-- Quotation No + Date -->
         <div class="row mb-3">
 
             <div class="col-md-4">
-                <label>رقم عرض السعر:</label>
+                <label>{% trans "Quotation No:" %}</label>
                 <input type="number" class="form-control"
                        name="quotation_no" value="{{ next_number }}" readonly>
             </div>
 
             <div class="col-md-4">
-                <label>تاريخ عرض السعر:</label>
+                <label>{% trans "Quotation Date:" %}</label>
                 <input type="date" id="date_invoice" name="date_quotation"
                        class="form-control">
             </div>
 
         </div>
 
-        <!-- العميل -->
+        <!-- Customer -->
         <div class="row mb-3">
             <div class="col-md-10">
-                <label>العميل:</label>
+                <label>{% trans "Customer:" %}</label>
                 <select name="customer" class="form-control">
-                    <option value="">اختر العميل</option>
+                    <option value="">{% trans "Select Customer" %}</option>
                     {% for c in customers %}
                     <option value="{{ c.id }}">{{ c.name }}</option>
                     {% endfor %}
@@ -41,24 +42,24 @@
             </div>
         </div>
 
-        <!-- الوصف -->
+        <!-- Description -->
         <div class="mb-3">
-            <label>الوصف:</label>
+            <label>{% trans "Description:" %}</label>
             <textarea name="description" class="form-control"></textarea>
         </div>
 
-        <!-- جدول الأصناف -->
+        <!-- Items Table -->
         <table class="table table-bordered text-center">
             <thead class="table-light">
                 <tr>
-                    <th>الصنف</th>
-                    <th>الوصف</th>
-                    <th>الكمية</th>
-                    <th>السعر</th>
-                    <th>الخصم</th>
-                    <th>%ضريبة</th>
-                    <th>الإجمالي</th>
-                    <th>حذف</th>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Discount" %}</th>
+                    <th>{% trans "Tax %" %}</th>
+                    <th>{% trans "Total" %}</th>
+                    <th>{% trans "Delete" %}</th>
                 </tr>
             </thead>
 
@@ -67,7 +68,7 @@
 
                     <td style="width:23%;">
                         <select name="row_1_product_id" class="form-control">
-                            <option value="">اختر منتج</option>
+                            <option value="">{% trans "Select Product" %}</option>
                             {% for p in products %}
                             <option value="{{ p.id }}">{{ p.name }}</option>
                             {% endfor %}
@@ -91,23 +92,29 @@
                     <td><input type="number" name="row_1_total"
                                class="form-control row-total" readonly></td>
 
-                    <td><button type="button" class="btn btn-danger"
-                                onclick="deleteRow(1)">X</button></td>
+                    <td>
+                        <button type="button" class="btn btn-danger"
+                                onclick="deleteRow(1)">
+                            {% trans "Delete" %}
+                        </button>
+                    </td>
 
                 </tr>
             </tbody>
 
         </table>
 
-        <button type="button" class="btn btn-primary" onclick="addRow()">+ إضافة صنف</button>
+        <button type="button" class="btn btn-primary" onclick="addRow()">
+            + {% trans "Add Item" %}
+        </button>
 
     </div>
 
-    <!-- المجاميع -->
+    <!-- Totals -->
     <div class="mt-4">
 
         <div class="row mb-3">
-            <label class="col-md-3 text-end fw-bold">الإجمالي قبل الضريبة:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total Before Tax:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="total_before"
                        class="form-control" readonly>
@@ -115,7 +122,7 @@
         </div>
 
         <div class="row mb-3">
-            <label class="col-md-3 text-end fw-bold">الإجمالي بعد الخصم:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total After Discount:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="total_after_discount"
                        class="form-control" readonly>
@@ -123,7 +130,7 @@
         </div>
 
         <div class="row mb-3">
-            <label class="col-md-3 text-end fw-bold">إجمالي الضريبة:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total Tax:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="total_tax"
                        class="form-control" readonly>
@@ -131,7 +138,7 @@
         </div>
 
         <div class="row mb-4">
-            <label class="col-md-3 text-end fw-bold">الإجمالي بعد الضريبة:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total After Tax:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="final_total"
                        class="form-control" readonly>
@@ -142,7 +149,7 @@
 
     <div class="text-end mt-3">
         <button type="submit" class="btn btn-success btn-lg px-5">
-            حفظ عرض السعر
+            {% trans "Save Quotation" %}
         </button>
     </div>
 

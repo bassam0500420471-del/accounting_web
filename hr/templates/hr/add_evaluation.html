@@ -1,0 +1,357 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if edit_mode %}{% trans "Edit Evaluation" %}{% else %}{% trans "Create New Evaluation" %}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4" style="background:#f1f3f5; min-height: calc(100vh - 120px); padding: 20px; border-radius: 10px;">
+
+    <h3 class="fw-bold mb-4">
+        {% if edit_mode %}✏ {% trans "Edit Evaluation" %}{% else %}➕ {% trans "Create New Evaluation" %}{% endif %}
+    </h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- ================= Evaluation Information ================= -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold">🟦 {% trans "Evaluation Information" %}</div>
+            <div class="card-body">
+                <div class="row">
+
+                    <!-- Evaluation Name -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "Evaluation Name" %}</label>
+                        <input type="text"
+                               name="name"
+                               class="form-control"
+                               placeholder="{% trans 'Enter evaluation name' %}"
+                               value="{% if evaluation %}{{ evaluation.name }}{% endif %}"
+                               required>
+                    </div>
+
+                    <!-- Evaluation Type -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">{% trans "Evaluation Type" %}</label>
+                        <select name="evaluation_type"
+                                id="evaluation_type_select"
+                                class="form-select">
+                            <option value="">{% trans "Select evaluation type" %}</option>
+                            <option value="__add__">➕ {% trans "Add New Evaluation Type" %}</option>
+
+                            {% for etype in evaluation_types %}
+                                <option value="{{ etype.id }}"
+                                    {% if evaluation and evaluation.evaluation_type_id == etype.id %}selected{% endif %}>
+                                    {{ etype.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">{% trans "Status" %}</label>
+                        <select name="status" class="form-select" required>
+                            <option value="active" {% if evaluation and evaluation.status == 'active' %}selected{% endif %}>🟢 {% trans "Active" %}</option>
+                            <option value="draft"  {% if evaluation and evaluation.status == 'draft' %}selected{% endif %}>🔴 {% trans "Inactive" %}</option>
+                            {% if evaluation and evaluation.status == 'closed' %}
+                                <option value="closed" selected>🔒 {% trans "Closed" %}</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">{% trans "Start Date" %}</label>
+                        <input type="date"
+                               name="start_date"
+                               id="start_date"
+                               class="form-control"
+                               value="{% if evaluation and evaluation.start_date %}{{ evaluation.start_date|date:'Y-m-d' }}{% endif %}"
+                               required>
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">{% trans "End Date" %}</label>
+                        <input type="date"
+                               name="end_date"
+                               id="end_date"
+                               class="form-control"
+                               value="{% if evaluation and evaluation.end_date %}{{ evaluation.end_date|date:'Y-m-d' }}{% endif %}"
+                               required>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "Department" %}</label>
+                        <select name="department" id="department_select" class="form-select">
+                            <option value="">{% trans "Select Department" %}</option>
+                            <option value="__add__">➕ {% trans "Add New Department" %}</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}"
+                                    {% if evaluation and evaluation.department_id == dept.id %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= Target Group ================= -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold">🟦 {% trans "Target Group" %}</div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "Evaluation Method" %}</label>
+                        <select name="target_type" id="target_type" class="form-select">
+                            <option value="employee" {% if target_type_selected == 'employee' %}selected{% endif %}>
+                                {% trans "Specific Employee" %}
+                            </option>
+                            <option value="department" {% if target_type_selected == 'department' %}selected{% endif %}>
+                                {% trans "Full Department" %}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="employee-field">
+                        <label class="form-label fw-bold">{% trans "Employee" %}</label>
+
+                        <select class="form-select" id="employee_select">
+                            <option value="">{% trans "Select Employee" %}</option>
+                            {% for emp in employees %}
+                                <option value="{{ emp.id }}">{{ emp.display_employee_number }} - {{ emp.first_name_ar }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="mt-2" id="selected-employees-box"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= Evaluation Criteria ================= -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                🟦 {% trans "Evaluation Criteria" %}
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCriteriaRow()">
+                    ➕ {% trans "Add Criteria" %}
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-bordered mb-0 text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% trans "Criteria Name" %}</th>
+                            <th>{% trans "Criteria Type" %}</th>
+                            <th>{% trans "Weight (%)" %}</th>
+                            <th>{% trans "Delete" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="criteria-body">
+
+                        {% if edit_mode and criteria %}
+                            {% for c in criteria %}
+                            <tr>
+                                <td>
+                                    <input type="text" name="criteria_name[]" class="form-control" value="{{ c.name }}" required>
+                                </td>
+                                <td>
+                                    <select name="criteria_type[]" class="form-select">
+                                        <option value="score"   {% if c.criteria_type == 'score' %}selected{% endif %}>{% trans "Score (1-5)" %}</option>
+                                        <option value="yesno"   {% if c.criteria_type == 'yesno' %}selected{% endif %}>{% trans "Yes / No" %}</option>
+                                        <option value="percent" {% if c.criteria_type == 'percent' %}selected{% endif %}>{% trans "Percentage" %}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="criteria_weight[]" class="form-control" min="1" max="100" value="{{ c.weight }}" required>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove();">✖</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td><input type="text" name="criteria_name[]" class="form-control" required></td>
+                                <td>
+                                    <select name="criteria_type[]" class="form-select">
+                                        <option value="score">{% trans "Score (1-5)" %}</option>
+                                        <option value="yesno">{% trans "Yes / No" %}</option>
+                                        <option value="percent">{% trans "Percentage" %}</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" name="criteria_weight[]" class="form-control" min="1" max="100" required></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove();">✖</button>
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= Notes ================= -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold">🟦 {% trans "Notes" %}</div>
+            <div class="card-body">
+                <textarea name="comment" class="form-control" rows="3" placeholder="{% trans 'Enter notes' %}">{% if evaluation and evaluation.comment %}{{ evaluation.comment }}{% endif %}</textarea>
+            </div>
+        </div>
+
+        <!-- ================= Save Buttons ================= -->
+        <div class="card shadow-sm mb-2">
+            <div class="card-body text-end">
+                <button type="submit" class="btn btn-secondary px-4">💾 {% trans "Save Evaluation" %}</button>
+                <a href="{% url 'hr:evaluations' %}" class="btn btn-secondary px-4">↩ {% trans "Cancel" %}</a>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<style>
+.employee-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    margin:4px 6px 0 0;
+    border:1px solid #ddd;
+    border-radius:999px;
+    background:#fff;
+    font-size:14px;
+}
+.employee-chip .remove-chip{
+    border:none;
+    background:transparent;
+    color:#c0392b;
+    font-weight:bold;
+    cursor:pointer;
+    line-height:1;
+    font-size:14px;
+    padding:0 2px;
+}
+</style>
+
+<!-- ================= JS ================= -->
+<script>
+function addCriteriaRow() {
+    const body = document.getElementById('criteria-body');
+    const row = `
+        <tr>
+            <td><input type="text" name="criteria_name[]" class="form-control" required></td>
+            <td>
+                <select name="criteria_type[]" class="form-select">
+                    <option value="score">{% trans "Score (1-5)" %}</option>
+                    <option value="yesno">{% trans "Yes / No" %}</option>
+                    <option value="percent">{% trans "Percentage" %}</option>
+                </select>
+            </td>
+            <td><input type="number" name="criteria_weight[]" class="form-control" min="1" max="100" required></td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove();">✖</button>
+            </td>
+        </tr>
+    `;
+    body.insertAdjacentHTML('beforeend', row);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    function syncTargetFields(){
+        const targetType = document.querySelector('select[name="target_type"]');
+        const employeeField = document.getElementById('employee-field');
+        if (!targetType || !employeeField) return;
+
+        employeeField.style.display = (targetType.value === 'employee') ? 'block' : 'none';
+    }
+
+    syncTargetFields();
+    const targetType = document.querySelector('select[name="target_type"]');
+    if (targetType) targetType.addEventListener('change', syncTargetFields);
+
+    const empSelect = document.getElementById("employee_select");
+    const box = document.getElementById("selected-employees-box");
+    if (empSelect && box) {
+
+        function addChip(id, label){
+            if (box.querySelector('input[type="hidden"][value="'+id+'"]')) {
+                empSelect.value = "";
+                return;
+            }
+
+            const chip = document.createElement("span");
+            chip.className = "employee-chip";
+            chip.setAttribute("data-id", id);
+
+            chip.innerHTML = `
+                <span>${label}</span>
+                <button type="button" class="remove-chip" title="{% trans "Delete" %}">✖</button>
+                <input type="hidden" name="employee_ids[]" value="${id}">
+            `;
+
+            chip.querySelector(".remove-chip").addEventListener("click", function(){
+                chip.remove();
+            });
+
+            box.appendChild(chip);
+            empSelect.value = "";
+        }
+
+        empSelect.addEventListener("change", function(){
+            const id = this.value;
+            if (!id) return;
+
+            const label = this.options[this.selectedIndex].text;
+            addChip(id, label);
+        });
+
+        {% if selected_employee_ids %}
+            const selectedIds = {{ selected_employee_ids|safe }};
+            const idSet = new Set(selectedIds.map(String));
+
+            Array.from(empSelect.options).forEach(opt => {
+                if (opt.value && idSet.has(String(opt.value))) {
+                    addChip(opt.value, opt.text);
+                }
+            });
+        {% endif %}
+    }
+
+    const evalTypeSelect = document.getElementById("evaluation_type_select");
+    if (evalTypeSelect) {
+        evalTypeSelect.addEventListener("change", function () {
+            if (this.value === "__add__") {
+                window.location.href = "{% url 'hr:add_evaluation_type' %}?next={{ request.get_full_path|urlencode }}";
+            }
+        });
+    }
+
+    const deptSelect = document.getElementById("department_select");
+    if (deptSelect) {
+        deptSelect.addEventListener("change", function () {
+            if (this.value === "__add__") {
+                window.location.href = "{% url 'hr:add_department' %}?next={{ request.get_full_path|urlencode }}";
+            }
+        });
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const startDate = document.getElementById("start_date");
+    const endDate = document.getElementById("end_date");
+    if (startDate && !startDate.value) startDate.value = today;
+    if (endDate && !endDate.value) endDate.value = today;
+
+});
+</script>
+
+{% endblock %}

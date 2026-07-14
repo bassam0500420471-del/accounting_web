@@ -1,9 +1,23 @@
 from django.shortcuts import render
 from decimal import Decimal
+
 from sales.models import SalesInvoice, ReturnInvoice
 
 
+def _has_field(model, field_name: str) -> bool:
+    try:
+        model._meta.get_field(field_name)
+        return True
+    except Exception:
+        return False
+
+
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def sales_vat_report(request):
+    company = _get_request_company(request)
 
     date_from = request.GET.get("date_from")
     date_to = request.GET.get("date_to")
@@ -17,9 +31,24 @@ def sales_vat_report(request):
     invoices = SalesInvoice.objects.all()
     returns = ReturnInvoice.objects.all()
 
+    # ===== عزل الشركة =====
+    if company:
+        if _has_field(SalesInvoice, "company"):
+            invoices = invoices.filter(company=company)
+        if _has_field(ReturnInvoice, "company"):
+            returns = returns.filter(company=company)
+
+    # ===== فلترة التاريخ =====
     if date_from and date_to:
         invoices = invoices.filter(date_invoice__range=(date_from, date_to))
         returns = returns.filter(date_return__range=(date_from, date_to))
+    else:
+        if date_from:
+            invoices = invoices.filter(date_invoice__gte=date_from)
+            returns = returns.filter(date_return__gte=date_from)
+        if date_to:
+            invoices = invoices.filter(date_invoice__lte=date_to)
+            returns = returns.filter(date_return__lte=date_to)
 
     invoices = invoices.order_by("date_invoice")
     returns = returns.order_by("date_return")
@@ -61,6 +90,8 @@ def sales_vat_report(request):
         total_before_tax -= before_tax
         total_tax -= tax
         total_after_tax -= after_tax
+
+    rows = sorted(rows, key=lambda x: (x["date"], x["type"], x["number"]))
 
     context = {
         "rows": rows,

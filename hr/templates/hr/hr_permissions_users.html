@@ -1,0 +1,53 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Permissions Management" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h3 class="mb-4">{% trans "User Permissions Management" %}</h3>
+
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% trans "Username" %}</th>
+                        <th>{% trans "Employee" %}</th>
+                        <th>{% trans "Email" %}</th>
+                        <th>{% trans "Manage" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.employee %}
+                                {{ user.employee.first_name_ar }} {{ user.employee.last_name_ar }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                        </td>
+                        <td>{{ user.email|default:"---" }}</td>
+                        <td>
+                            <a href="{% url 'hr:hr_permissions_page' user.id %}" class="btn btn-sm btn-primary">
+                                {% trans "Edit Permissions" %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            {% trans "No users found" %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="/dashboard/" class="btn btn-secondary">{% trans "Back" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+BBBBBBB BBBBBBBBBBBBBBBBBB
+BBBB BBBB
+
+BBBBB BBBBB gettext(u'Add Department') BBBBBBBB
+
+BBBBB BBBBBBB
+XXXX XXXXXXXXXXXXXXXX XXXXXX
+    XXX XXXXXXXXXXXXX gettext(u'Add New Department') XXXXX
+
+    XXXXX XXXXXXXXXXXXXX
+        BBBBBBBBBB
+
+        XXXX XXXXXXXXXXXXX
+            
+            
+            BB BBBBBBBBBBBBBBBB
+                XXXX XXXXXXXXXXXXXXXXXXXX
+                    
+                XXXXXX
+            BBBBB
+        XXXXXX
+
+        XXXXXXX XXXXXXXXXXXXX XXXXXXXXXX XXXXXXXXXXXXX
+             gettext(u'Save') 
+        XXXXXXXXX
+
+        XX XXXXXXBBB BBBBBBBBBBBBBBBBX XXXXXXXXXX XXXXXXXXXXXXXXX
+             gettext(u'Cancel') 
+        XXXX
+    XXXXXXX
+XXXXXX
+BBBBBBBB

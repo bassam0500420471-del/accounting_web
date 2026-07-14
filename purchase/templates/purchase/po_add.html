@@ -1,4 +1,5 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <style>
@@ -34,9 +35,9 @@
 
     <h3 class="mb-4">
         {% if edit_mode %}
-            تعديل أمر شراء رقم {{ po.po_no }}
+            {% blocktrans %}Edit Purchase Order No {{ po.po_no }}{% endblocktrans %}
         {% else %}
-            إنشاء أمر شراء
+            {% trans "Create Purchase Order" %}
         {% endif %}
     </h3>
 
@@ -47,37 +48,37 @@
 
     <div class="card p-4">
 
-        <!-- التاريخ -->
+        <!-- Dates -->
         <div class="row mb-3">
 
             <div class="col-md-4">
-                <label>رقم أمر الشراء:</label>
+                <label>{% trans "Purchase Order No:" %}</label>
                 <input type="number" class="form-control" name="po_no"
                        value="{% if edit_mode %}{{ po.po_no }}{% else %}{{ next_number }}{% endif %}">
             </div>
 
             <div class="col-md-4">
-                <label>تاريخ الإصدار:</label>
+                <label>{% trans "Issue Date:" %}</label>
                 <input type="date" id="date_issue" name="date_issue" class="form-control"
                        value="{% if edit_mode %}{{ po.date_issue|date:'Y-m-d' }}{% endif %}">
             </div>
 
             <div class="col-md-4">
-                <label>تاريخ التسليم:</label>
+                <label>{% trans "Delivery Date:" %}</label>
                 <input type="date" id="date_delivery" name="date_delivery" class="form-control"
                        value="{% if edit_mode %}{{ po.date_delivery|date:'Y-m-d' }}{% endif %}">
             </div>
 
         </div>
 
-        <!-- المورد -->
+        <!-- Supplier -->
         <div class="row mb-3">
 
             <div class="col-md-10">
-                <label>المورد:</label>
+                <label>{% trans "Supplier:" %}</label>
                 <div class="dropdown-box">
                     <input type="text" id="supplier_search" class="form-control"
-                           placeholder="بحث عن مورد..." autocomplete="off">
+                           placeholder="{% trans 'Search for a supplier...' %}" autocomplete="off">
 
                     <input type="hidden" id="supplier_id" name="supplier">
 
@@ -88,38 +89,38 @@
             <div class="col-md-2 d-flex align-items-end">
                 <button type="button" class="btn btn-secondary w-100"
                         onclick="window.location.href='{% url "supplier_add_from_purchase" %}'">
-                    + إضافة مورد
+                    + {% trans "Add Supplier" %}
                 </button>
             </div>
 
         </div>
 
-        <!-- الوصف -->
+        <!-- Description -->
         <div class="mb-3">
-            <label>الوصف:</label>
+            <label>{% trans "Description:" %}</label>
             <textarea name="description" class="form-control">{% if edit_mode %}{{ po.description }}{% endif %}</textarea>
         </div>
 
-        <!-- زر إضافة منتج -->
+        <!-- Add Product Button -->
         <div class="text-end mt-2 mb-2">
             <button type="button" class="btn btn-secondary"
                     onclick="window.location.href='/products/add/?return=po'">
-                + إضافة منتج
+                + {% trans "Add Product" %}
             </button>
         </div>
 
-        <!-- جدول الأصناف -->
+        <!-- Items Table -->
         <table class="table table-bordered text-center">
             <thead class="table-light">
                 <tr>
-                    <th>الصنف</th>
-                    <th>الوصف</th>
-                    <th>الكمية</th>
-                    <th>السعر</th>
-                    <th>الخصم</th>
-                    <th>الضريبة%</th>
-                    <th>الإجمالي</th>
-                    <th>حذف</th>
+                    <th>{% trans "Product" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Discount" %}</th>
+                    <th>{% trans "Tax %" %}</th>
+                    <th>{% trans "Total" %}</th>
+                    <th>{% trans "Delete" %}</th>
                 </tr>
             </thead>
 
@@ -130,7 +131,7 @@
                 <td style="width:23%;">
                     <div class="dropdown-box">
                         <input type="text" class="form-control product-input"
-                               placeholder="بحث عن منتج..." autocomplete="off">
+                               placeholder="{% trans 'Search for a product...' %}" autocomplete="off">
                         <input type="hidden" class="product-id" name="row_1_product_id">
                         <div class="dropdown-list"></div>
                     </div>
@@ -158,27 +159,27 @@
                            class="form-control row-total" readonly></td>
 
                 <td><button type="button" class="btn btn-danger"
-                            onclick="deleteRow(1)">X</button></td>
+                            onclick="deleteRow(1)">{% trans "Delete" %}</button></td>
 
             </tr>
 
             </tbody>
         </table>
 
-        <!-- زر إضافة صف -->
+        <!-- Add Row Button -->
         <div class="text-end mt-2">
             <button type="button" class="btn btn-secondary" onclick="addRow()">
-                + إضافة صف
+                + {% trans "Add Row" %}
             </button>
         </div>
 
     </div>
 
-    <!-- المجاميع -->
+    <!-- Totals -->
     <div class="mt-4">
 
         <div class="mb-3 row">
-            <label class="col-md-3 text-end fw-bold">الإجمالي قبل الضريبة:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total Before Tax:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="total_before" name="total_before_tax"
                        class="form-control" readonly>
@@ -186,7 +187,7 @@
         </div>
 
         <div class="mb-3 row">
-            <label class="col-md-3 text-end fw-bold">إجمالي الخصم:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total Discount:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="total_discount" name="total_discount"
                        class="form-control" readonly>
@@ -194,7 +195,7 @@
         </div>
 
         <div class="mb-3 row">
-            <label class="col-md-3 text-end fw-bold">إجمالي الضريبة:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Total Tax:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="total_tax" name="tax_value"
                        class="form-control" readonly>
@@ -202,7 +203,7 @@
         </div>
 
         <div class="mb-3 row">
-            <label class="col-md-3 text-end fw-bold">الإجمالي النهائي:</label>
+            <label class="col-md-3 text-end fw-bold">{% trans "Final Total:" %}</label>
             <div class="col-md-4">
                 <input type="number" id="final_total" name="total"
                        class="form-control" readonly>
@@ -216,7 +217,7 @@
 
 <div class="text-end mt-3 mb-5">
     <button type="submit" class="btn btn-secondary btn-lg px-5">
-        حفظ أمر الشراء
+        {% trans "Save Purchase Order" %}
     </button>
 </div>
 
@@ -236,6 +237,13 @@ document.getElementById("po_form").addEventListener("submit", function() {
 </div>
 
 <script>
+const NO_RESULTS_TEXT = "{% trans 'No results found' %}";
+const SEARCH_PRODUCT_TEXT = "{% trans 'Search for a product...' %}";
+const PRODUCT_CURRENCY_TEXT = "{% trans 'SAR' %}";
+const SEARCH_SUPPLIER_TEXT = "{% trans 'Search for a supplier...' %}";
+</script>
+
+<script>
 document.getElementById("supplier_search").addEventListener("keyup", function () {
     loadSuppliers(this.value.trim());
 });
@@ -252,6 +260,14 @@ function loadSuppliers(q) {
         .then(data => {
             list.innerHTML = "";
             list.style.display = "block";
+
+            if (!data.length) {
+                const div = document.createElement("div");
+                div.className = "dropdown-item";
+                div.textContent = NO_RESULTS_TEXT;
+                list.appendChild(div);
+                return;
+            }
 
             data.forEach(s => {
                 const div = document.createElement("div");
@@ -299,10 +315,18 @@ function showProducts(row, list) {
     dropdown.innerHTML = "";
     dropdown.style.display = "block";
 
+    if (!list.length) {
+        let div = document.createElement("div");
+        div.className = "dropdown-item";
+        div.textContent = NO_RESULTS_TEXT;
+        dropdown.appendChild(div);
+        return;
+    }
+
     list.forEach(p => {
         let div = document.createElement("div");
         div.className = "dropdown-item";
-        div.textContent = `${p.name} — ${p.price} ريال`;
+        div.textContent = `${p.name} — ${p.price} ${PRODUCT_CURRENCY_TEXT}`;
 
         div.onclick = () => {
             input.value = p.name;
@@ -334,7 +358,7 @@ function addRow() {
     tr.innerHTML = `
         <td>
             <div class="dropdown-box">
-                <input type="text" class="form-control product-input" placeholder="بحث عن منتج..." autocomplete="off">
+                <input type="text" class="form-control product-input" placeholder="${SEARCH_PRODUCT_TEXT}" autocomplete="off">
                 <input type="hidden" name="row_${rowIndex}_product_id" class="product-id">
                 <div class="dropdown-list"></div>
             </div>
@@ -358,7 +382,7 @@ function addRow() {
                    class="form-control row-total" readonly></td>
 
         <td><button type="button" class="btn btn-danger"
-                    onclick="deleteRow(${rowIndex})">X</button></td>
+                    onclick="deleteRow(${rowIndex})">{% trans "Delete" %}</button></td>
     `;
 
     tbody.appendChild(tr);
@@ -417,6 +441,29 @@ function calculateTotals() {
     document.getElementById("total_discount").value = totalDiscount.toFixed(2);
     document.getElementById("total_tax").value = totalTax.toFixed(2);
     document.getElementById("final_total").value = finalTotal.toFixed(2);
+}
+</script>
+
+<script>
+function deleteRow(row) {
+    const tr = document.getElementById(`row_${row}`);
+    if (!tr) return;
+
+    if (document.querySelectorAll(".item-row").length === 1) {
+        tr.querySelector(".product-input").value = "";
+        tr.querySelector(".product-id").value = "";
+        tr.querySelector(".row-desc").value = "";
+        tr.querySelector(".row-qty").value = 1;
+        tr.querySelector(".row-price").value = 0;
+        tr.querySelector(".row-discount").value = 0;
+        tr.querySelector(".row-tax").value = 15;
+        tr.querySelector(".row-total").value = "";
+        calculateTotals();
+        return;
+    }
+
+    tr.remove();
+    calculateTotals();
 }
 </script>
 

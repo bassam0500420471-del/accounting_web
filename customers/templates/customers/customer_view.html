@@ -1,0 +1,75 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "View Customer" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+        <div class="d-flex justify-content-between mb-4">
+            <h3>{% trans "View Customer" %}</h3>
+            <a href="{% url 'customers_list' %}" class="btn btn-secondary">{% trans "Back" %}</a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="border-bottom pb-2">{% trans "Customer Information" %}</h5>
+                
+                <label class="form-label text-muted">{% trans "Customer Type" %}</label>
+                <div class="form-control bg-light mb-2">{{ customer.customer_type|capfirst }}</div>
+
+<label class="form-label text-muted">{% trans "Commercial Name" %}</label>
+<div class="form-control bg-light mb-2" style="display: flex; justify-content: space-between; align-items: center;">
+    <!-- الاسم العربي (الأساسي) -->
+    <span style="text-align: right;">{{ customer.commercial_name|default:customer.name }}</span>
+    
+    <!-- الاسم الإنجليزي (من الحقل الذي أضفته) -->
+    <span style="text-align: left; color: #555;">{{ customer.name_en|default:"" }}</span>
+</div>
+                <div class="row">
+                    <div class="col-6">
+                        <label class="form-label text-muted">{% trans "First Name" %}</label>
+                        <div class="form-control bg-light mb-2">{{ customer.first_name|default:"-" }}</div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted">{% trans "Last Name" %}</label>
+                        <div class="form-control bg-light mb-2">{{ customer.last_name|default:"-" }}</div>
+                    </div>
+                </div>
+
+                <label class="form-label text-muted">{% trans "Phone" %}</label>
+                <div class="form-control bg-light mb-2">{{ customer.phone|default:"-" }}</div>
+
+                <label class="form-label text-muted">{% trans "Street Address 1" %}</label>
+                <div class="form-control bg-light mb-2">{{ customer.street1|default:"-" }}</div>
+            </div>
+
+            <div class="col-md-6">
+                <h5 class="border-bottom pb-2">{% trans "Additional Information" %}</h5>
+                
+                <label class="form-label text-muted">{% trans "Email" %}</label>
+                <div class="form-control bg-light mb-2">{{ customer.email|default:"-" }}</div>
+
+                <label class="form-label text-muted">{% trans "Opening Balance" %}</label>
+                <div class="form-control bg-light mb-2">{{ customer.opening_balance|default:"0.00" }}</div>
+
+                <label class="form-label text-muted">{% trans "Notes" %}</label>
+                <div class="form-control bg-light mb-2" style="height: 100px;">{{ customer.notes|default:"-" }}</div>
+
+                <label class="form-label text-muted">{% trans "Attachments" %}</label>
+                <div class="form-control bg-light mb-2">
+                    {% if customer.attachment %}
+                        <a href="{{ customer.attachment.url }}" target="_blank">{% trans "View File" %}</a>
+                    {% else %}
+                        {% trans "No attachment" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <a href="{% url 'customer_edit' customer.pk %}" class="btn btn-primary">{% trans "Edit Customer" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,15 +1,16 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}جدول الموظفين{% endblock %}
+{% block title %}{% trans "Employee Schedule" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3 class="mb-4">{% if create_mode %}{% else %}جدول الموظفين{% endif %}</h3>
+    <h3 class="mb-4">{% if create_mode %}{% else %}{% trans "Employee Schedule" %}{% endif %}</h3>
 
     <div class="row mb-3 align-items-end">
         <!-- الشهر -->
         <div class="col-md-2">
-            <label class="form-label">الشهر</label>
+            <label class="form-label">{% trans "Month" %}</label>
             <select name="month" id="monthSelect" class="form-select" required>
                 {% for m in months %}
                     <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
@@ -19,7 +20,7 @@
 
         <!-- السنة -->
         <div class="col-md-2">
-            <label class="form-label">السنة</label>
+            <label class="form-label">{% trans "Year" %}</label>
             <select name="year" id="yearSelect" class="form-select" required>
                 {% for y in years %}
                     <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
@@ -29,12 +30,14 @@
 
         <!-- الموظف -->
         <div class="col-md-3">
-            <label class="form-label">الموظف</label>
+            <label class="form-label">{% trans "Employee" %}</label>
             <select name="employee" id="employeeSelect" class="form-select">
-                <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>الكل</option>
+                <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>
+                    {% trans "All" %}
+                </option>
                 {% for emp in employees %}
                     <option value="{{ emp.id }}" {% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
-                        {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                        {{ emp.get_full_name }}
                     </option>
                 {% endfor %}
             </select>
@@ -42,7 +45,9 @@
 
         <!-- زر الحفظ -->
         <div class="col-md-2 d-flex align-items-end">
-            <button type="button" id="save_schedule_btn" class="btn btn-save w-100">حفظ</button>
+            <button type="button" id="save_schedule_btn" class="btn btn-secondary w-100">
+                {% trans "Save" %}
+            </button>
         </div>
     </div>
 
@@ -50,10 +55,10 @@
     <table class="table table-bordered text-center">
         <thead>
             <tr>
-                <th>اليوم</th>
-                <th>التاريخ</th>
+                <th>{% trans "Day" %}</th>
+                <th>{% trans "Date" %}</th>
                 {% for emp in employees %}
-                    <th>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</th>
+                    <th>{{ emp.get_full_name }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -86,12 +91,12 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">اختيار الشفت</h5>
+                <h5 class="modal-title">{% trans "Select Shift" %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <ul class="list-group">
-                    <li class="list-group-item list-group-item-action" onclick="selectShift('0', 'عطلة')">عطلة</li>
+                    
                     {% for shift in shifts %}
                     <li class="list-group-item list-group-item-action"
                         onclick="selectShift('{{ shift.id }}', '{{ shift.shift_name }}')">
@@ -107,11 +112,10 @@
 
 {% block styles %}
 <style>
-/* ================= تنسيق الجدول ================= */
 .shift-cell {
     cursor: pointer;
     transition: background-color 0.2s;
-    color: #212529; /* نص أسود واضح */
+    color: #212529;
 }
 .shift-cell:hover {
     background-color: #f0f8ff;
@@ -120,18 +124,17 @@
     top: 2px;
     right: 2px;
     font-size: 0.9rem;
-    color: #6c757d; /* رمادي متناسق */
+    color: #6c757d;
     display: none;
 }
 .shift-cell:hover .shift-edit-icon {
     display: inline;
 }
 
-/* زر الحفظ رمادي */
 .btn-save {
     border-radius: 12px;
     padding: 10px 30px;
-    background-color: #6c757d; /* رمادي */
+    background-color: #6c757d;
     color: #fff;
     font-weight: 500;
     transition: 0.3s;
@@ -140,7 +143,6 @@
     background-color: #5a6268;
 }
 
-/* اللون الأسود لليوم والتاريخ واسماء الموظفين */
 table th, table td {
     color: #000 !important;
     vertical-align: middle;
@@ -151,14 +153,13 @@ table th, table td {
 {% block scripts %}
 <script>
 let currentCell = null;
-const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+const today = new Date().toISOString().split("T")[0];
 
-// فتح Modal عند النقر على خلية الشفت مع منع تعديل الأيام الماضية
 document.querySelectorAll(".shift-cell").forEach(cell => {
     cell.addEventListener("click", function() {
         const cellDate = cell.dataset.date;
         if (cellDate < today) {
-            alert("لا يمكن تعديل الأيام الماضية.");
+            alert("{% trans 'Cannot edit past days.' %}");
             return;
         }
         currentCell = this;
@@ -167,7 +168,6 @@ document.querySelectorAll(".shift-cell").forEach(cell => {
     });
 });
 
-// اختيار شفت من Modal
 function selectShift(id, text) {
     if (currentCell) {
         let shiftText = currentCell.querySelector(".shift-text");
@@ -178,7 +178,6 @@ function selectShift(id, text) {
     modal.hide();
 }
 
-// جلب CSRF Token
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -194,7 +193,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// زر الحفظ عبر AJAX وإرسال JSON
 document.getElementById("save_schedule_btn").addEventListener("click", function() {
     let scheduleData = [];
 
@@ -224,16 +222,15 @@ document.getElementById("save_schedule_btn").addEventListener("click", function(
             window.location.href = `{% url 'hr:employee_schedule' %}?month=${month}&year=${year}&employee=${employee}`;
         } else {
             document.getElementById("form-message").innerHTML =
-                `<div class="alert alert-danger">خطأ: ${result.error}</div>`;
+                `<div class="alert alert-danger">{% trans "Error" %}: ${result.error}</div>`;
         }
     })
     .catch(() => {
         document.getElementById("form-message").innerHTML =
-            `<div class="alert alert-danger">خطأ غير متوقع</div>`;
+            `<div class="alert alert-danger">{% trans "Unexpected error" %}</div>`;
     });
 });
 
-// إعادة تحميل الجدول عند تغيير الشهر أو السنة أو الموظف
 document.getElementById("monthSelect").addEventListener("change", reloadSchedule);
 document.getElementById("yearSelect").addEventListener("change", reloadSchedule);
 document.getElementById("employeeSelect").addEventListener("change", reloadSchedule);

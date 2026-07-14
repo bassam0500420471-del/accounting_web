@@ -1,9 +1,10 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
 
-    <!-- تحميل خط عربي يعمل مع WeasyPrint -->
     <style>
 
     @font-face {
@@ -16,11 +17,15 @@
         font-size: 16px;
     }
 
+    body {
+        direction: {% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %};
+    }
+
     h2 {
-        text-align:center;
-        margin-bottom:20px;
-        font-size:22px;
-        font-weight:bold;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 22px;
+        font-weight: bold;
     }
 
     table {
@@ -42,47 +47,51 @@
     }
 
     .top-info {
-        display:flex;
-        justify-content:space-between;
-        margin-bottom:25px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
     }
 
     .totals-box {
-        display:flex;
-        flex-direction:column;
-        align-items:flex-end;
-        margin-top:25px;
+        display: flex;
+        flex-direction: column;
+        align-items: {% if LANGUAGE_CODE == 'ar' %}flex-start{% else %}flex-end{% endif %};
+        margin-top: 25px;
     }
 
     .totals-box div {
-        display:flex;
-        flex-direction:row;
-        margin-bottom:10px;
-        align-items:center;
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 10px;
+        align-items: center;
     }
 
     .totals-box span {
-        font-weight:bold;
-        margin-left:12px;
-        white-space:nowrap;
-        font-size:16px;
+        font-weight: bold;
+        {% if LANGUAGE_CODE == 'ar' %}
+        margin-right: 12px;
+        {% else %}
+        margin-left: 12px;
+        {% endif %}
+        white-space: nowrap;
+        font-size: 16px;
     }
 
     .totals-box input {
-        width:230px;
-        padding:6px 10px;
-        background:#f8f9fa;
-        border:1px solid #bbb;
-        border-radius:6px;
-        direction:ltr;
-        text-align:left;
-        font-family:'Amiri';
-        font-size:16px;
+        width: 230px;
+        padding: 6px 10px;
+        background: #f8f9fa;
+        border: 1px solid #bbb;
+        border-radius: 6px;
+        direction: ltr;
+        text-align: left;
+        font-family: 'Amiri';
+        font-size: 16px;
     }
 
     .qr-box img {
-        border:1px solid #ccc;
-        padding:5px;
+        border: 1px solid #ccc;
+        padding: 5px;
     }
 
     </style>
@@ -91,40 +100,39 @@
 <body>
 
 {% if qr_code %}
-<div style="text-align:left; margin-bottom:15px;">
+<div style="{% if LANGUAGE_CODE == 'ar' %}text-align:right;{% else %}text-align:left;{% endif %} margin-bottom:15px;">
     <img src="data:image/png;base64,{{ qr_code }}" width="140" height="140"
          style="border:1px solid #ccc; padding:5px;">
 </div>
 {% endif %}
 
-<h2>فاتورة مشتريات</h2>
+<h2>{% trans "Purchase Invoice" %}</h2>
 
 <div class="top-info">
 
     <div>
-        <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
-        <p><strong>المورد:</strong> {{ invoice.supplier.commercial_name }}</p>
+        <p><strong>{% trans "Invoice Number:" %}</strong> {{ invoice.invoice_no }}</p>
+        <p><strong>{% trans "Supplier:" %}</strong> {{ invoice.supplier.commercial_name }}</p>
 
         {% if invoice.description %}
-        <p><strong>الوصف:</strong> {{ invoice.description }}</p>
+        <p><strong>{% trans "Description:" %}</strong> {{ invoice.description }}</p>
         {% endif %}
     </div>
 
-    <div style="text-align:left;">
-        <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
-        <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
+    <div style="{% if LANGUAGE_CODE == 'ar' %}text-align:right;{% else %}text-align:left;{% endif %}">
+        <p><strong>{% trans "Invoice Date:" %}</strong> {{ invoice.date_invoice }}</p>
+        <p><strong>{% trans "Issue Date:" %}</strong> {{ invoice.date_issue }}</p>
     </div>
 
 </div>
 
-
 <table>
     <thead>
         <tr>
-            <th>الصنف</th>
-            <th>الكمية</th>
-            <th>السعر</th>
-            <th>الإجمالي</th>
+            <th>{% trans "Product" %}</th>
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Price" %}</th>
+            <th>{% trans "Total" %}</th>
         </tr>
     </thead>
 
@@ -164,24 +172,24 @@
     <div class="totals-box">
 
         <div>
-            <span>الإجمالي قبل الضريبة:</span>
+            <span>{% trans "Total Before Tax:" %}</span>
             <input type="text" value="{{ invoice.total_before_tax }}" readonly>
         </div>
 
         <div>
-            <span>الإجمالي بعد الخصم:</span>
+            <span>{% trans "Total After Discount:" %}</span>
             <input type="text"
                    value="{% if invoice.total_after_discount %}{{ invoice.total_after_discount }}{% else %}{{ invoice.total_before_tax }}{% endif %}"
                    readonly>
         </div>
 
         <div>
-            <span>إجمالي الضريبة:</span>
+            <span>{% trans "Total Tax:" %}</span>
             <input type="text" value="{{ invoice.tax_value }}" readonly>
         </div>
 
         <div>
-            <span style="font-size:18px;">الإجمالي بعد الضريبة:</span>
+            <span style="font-size:18px;">{% trans "Total After Tax:" %}</span>
             <input type="text" value="{{ invoice.total_after_tax }}" style="font-weight:bold; font-size:18px;" readonly>
         </div>
 

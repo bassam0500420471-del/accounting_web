@@ -1,10 +1,11 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}إضافة إجازة{% endblock %}
+{% block title %}{% trans "Add Leave" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3 class="mb-4">إضافة إجازة</h3>
+    <h3 class="mb-4">{% trans "Add Leave" %}</h3>
 
     <form method="post">
         {% csrf_token %}
@@ -73,8 +74,12 @@
 
         <!-- الأزرار -->
         <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-secondary">حفظ</button>
-            <a href="{% url 'hr:leaves' %}" class="btn btn-secondary">إلغاء</a>
+            <button type="submit" class="btn btn-secondary">
+                {% trans "Save" %}
+            </button>
+            <a href="{% url 'hr:leaves' %}" class="btn btn-secondary">
+                {% trans "Cancel" %}
+            </a>
         </div>
     </form>
 </div>

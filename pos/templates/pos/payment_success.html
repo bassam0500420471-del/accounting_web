@@ -1,47 +1,111 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}تم الدفع بنجاح{% endblock %}
+{% block title %}
+{% trans "Payment Successful" %}
+{% endblock %}
 
 {% block content %}
+
 <div class="container mt-4">
-    <h2>تم الدفع بنجاح!</h2>
 
-    <h4 class="mt-3">تفاصيل الدفع</h4>
+    <h2>
+        {% trans "Payment Successful!" %}
+    </h2>
+
+    <h4 class="mt-3">
+        {% trans "Payment Details" %}
+    </h4>
+
     <table class="table table-bordered table-striped">
+
         <tr>
-            <th>المبلغ المدفوع</th>
-            <td>{{ payment.amount }} ريال</td>
+            <th>
+                {% trans "Amount Paid" %}
+            </th>
+
+            <td>
+                {{ payment.amount }} {% trans "SAR" %}
+            </td>
         </tr>
+
         <tr>
-            <th>تاريخ الدفع</th>
-            <td>{{ payment.date|date:"Y-m-d H:i" }}</td>
+            <th>
+                {% trans "Payment Date" %}
+            </th>
+
+            <td>
+                {{ payment.date|date:"Y-m-d H:i" }}
+            </td>
         </tr>
+
         <tr>
-            <th>طريقة الدفع</th>
-            <td>{{ payment.method|default:"-" }}</td>
+            <th>
+                {% trans "Payment Method" %}
+            </th>
+
+            <td>
+                {{ payment.method|default:"-" }}
+            </td>
         </tr>
+
     </table>
 
-    <h4 class="mt-4">الفاتورة المرتبطة</h4>
+    <h4 class="mt-4">
+        {% trans "Related Invoice" %}
+    </h4>
+
     <table class="table table-bordered">
+
         <tr>
-            <th>رقم الفاتورة</th>
-            <td>#{{ invoice.id }}</td>
+            <th>
+                {% trans "Invoice Number" %}
+            </th>
+
+            <td>
+                #{{ invoice.id }}
+            </td>
         </tr>
+
         <tr>
-            <th>إجمالي الفاتورة</th>
-            <td>{{ invoice.total }} ريال</td>
+            <th>
+                {% trans "Invoice Total" %}
+            </th>
+
+            <td>
+                {{ invoice.total }} {% trans "SAR" %}
+            </td>
         </tr>
+
         <tr>
-            <th>المدفوع حتى الآن</th>
-            <td>{{ total_paid }} ريال</td>
+            <th>
+                {% trans "Paid So Far" %}
+            </th>
+
+            <td>
+                {{ total_paid }} {% trans "SAR" %}
+            </td>
         </tr>
+
         <tr>
-            <th>المتبقي</th>
-            <td>{{ remaining }} ريال</td>
+            <th>
+                {% trans "Remaining" %}
+            </th>
+
+            <td>
+                {{ remaining }} {% trans "SAR" %}
+            </td>
         </tr>
+
     </table>
 
-    <a href="{% url 'pos:pos_home' %}" class="btn btn-primary mt-3">العودة إلى POS</a>
+    <a href="{% url 'pos:pos_home' %}"
+       class="btn btn-primary mt-3">
+
+        {% trans "Back to POS" %}
+
+    </a>
+
 </div>
+
 {% endblock %}

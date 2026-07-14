@@ -1,7 +1,8 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}إدارة المنتجات{% endblock %}
+{% block title %}{% trans "Product Management" %}{% endblock %}
 
 {% block head %}
 <style>
@@ -15,35 +16,32 @@
         box-shadow: 0px 2px 7px rgba(0,0,0,0.08);
     }
 
-    /* نوع المنتج باللون الرمادي */
     .product-type {
         font-size: 12px;
         padding: 4px 8px;
         border-radius: 6px;
         color: white;
-        background-color: #6c757d; /* رمادي */
+        background-color: #6c757d;
     }
 
-    /* زر إضافة منتج بالرمادي */
     .btn-add-product {
         background-color: #6c757d !important;
         color: white !important;
     }
 
-    /* محاذاة وسط للمنتج + الصورة */
     .product-cell {
         display: flex;
-        align-items: center; /* مركز عمودي */
+        align-items: center;
         justify-content: center;
         gap: 10px;
-        height: 60px; /* ارتفاع ثابت للصف */
+        height: 60px;
     }
 
     .product-image-wrapper {
         position: relative;
         display: inline-block;
-        width: 50px; /* ثابت */
-        height: 50px; /* ثابت */
+        width: 50px;
+        height: 50px;
         flex-shrink: 0;
     }
 
@@ -82,7 +80,6 @@
         color: #0d6efd;
     }
 
-    /* قائمة الإجراءات */
     .dropdown {
         position: relative;
         display: inline-block;
@@ -125,7 +122,6 @@
     .dropdown:hover .dropdown-content {
         display: block;
     }
-
 </style>
 {% endblock %}
 
@@ -134,24 +130,26 @@
 <div class="container-fluid mt-2">
 
     <div class="d-flex justify-content-between mb-3">
-        <h3 class="fw-bold">إدارة المنتجات</h3>
-        <a href="{% url 'products:product_add' %}" class="btn btn-add-product">+ إضافة منتج</a>
+        <h3 class="fw-bold">{% trans "Product Management" %}</h3>
+        <a href="{% url 'products:product_add' %}" class="btn btn-add-product">
+            + {% trans "Add Product" %}
+        </a>
     </div>
 
     <form method="get" class="mb-3">
-        <input type="text" name="q" class="form-control" placeholder="ابحث عن منتج...">
+        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search product...' %}">
     </form>
 
     <div class="card p-3">
         <table class="table table-hover text-center align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>المنتج</th>
-                    <th>السعر</th>
-                    <th>الكمية المتاحة</th>
-                    <th>النوع</th>
-                    <th>الحالة</th>
-                    <th>الإجراءات</th>
+                    <th>{% trans "Product" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Available Quantity" %}</th>
+                    <th>{% trans "Type" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Actions" %}</th>
                 </tr>
             </thead>
 
@@ -170,38 +168,38 @@
                         <span>{{ p.name }}</span>
                     </td>
 
-                    <td class="price-cell">{{ p.sale_price }} ر.س</td>
+                    <td class="price-cell">{{ p.sale_price }} {% trans "SAR" %}</td>
                     <td class="qty-cell">{{ p.current_stock }}</td>
 
-<td>
-    <span class="product-type" style="background:#6c757d; color:white; padding:4px 8px; border-radius:6px;">
-        {% if p.type == 'normal' %}
-            منتج عادي
-        {% elif p.type == 'service' %}
-            خدمة
-        {% elif p.type == 'bundle' %}
-            منتج مركب
-        {% else %}
-            غير محدد
-        {% endif %}
-    </span>
-</td>
+                    <td>
+                        <span class="product-type">
+                            {% if p.type == 'normal' %}
+                                {% trans "Normal Product" %}
+                            {% elif p.type == 'service' %}
+                                {% trans "Service" %}
+                            {% elif p.type == 'bundle' %}
+                                {% trans "Bundle Product" %}
+                            {% else %}
+                                {% trans "Undefined" %}
+                            {% endif %}
+                        </span>
+                    </td>
 
                     <td>
                         {% if p.active %}
-                            <span class="text-success fw-bold">نشط</span>
+                            <span class="text-success fw-bold">{% trans "Active" %}</span>
                         {% else %}
-                            <span class="text-danger fw-bold">متوقف</span>
+                            <span class="text-danger fw-bold">{% trans "Inactive" %}</span>
                         {% endif %}
                     </td>
 
                     <td>
                         <div class="dropdown">
-                            <button class="dropdown-btn">خيارات ▾</button>
+                            <button class="dropdown-btn">{% trans "Options" %} ▾</button>
                             <div class="dropdown-content">
-                                <a href="{% url 'products:product_view' p.id %}">👁️ عرض</a>
-                                <a href="{% url 'products:product_edit' p.id %}">✏️ تعديل</a>
-                                <a href="{% url 'products:product_delete' p.id %}">🗑️ حذف</a>
+                                <a href="{% url 'products:product_view' p.id %}">👁️ {% trans "View" %}</a>
+                                <a href="{% url 'products:product_edit' p.id %}">✏️ {% trans "Edit" %}</a>
+                                <a href="{% url 'products:product_delete' p.id %}">🗑️ {% trans "Delete" %}</a>
                             </div>
                         </div>
                     </td>
@@ -209,7 +207,7 @@
 
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-muted">لا توجد منتجات</td>
+                    <td colspan="6" class="text-muted">{% trans "No products found" %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

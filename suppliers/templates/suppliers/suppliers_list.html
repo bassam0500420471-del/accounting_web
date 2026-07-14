@@ -1,40 +1,41 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container-fluid mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">قائمة الموردين</h3>
+        <h3 class="fw-bold">{% trans "Supplier List" %}</h3>
 
-        <!-- زر إضافة مورد -->
+        <!-- Add Supplier Button -->
         <a href="/suppliers/add/"
            class="btn"
            style="background:#6c757d; color:white; border-radius:6px; padding:6px 18px; font-weight:bold;">
-            + إضافة مورد
+            + {% trans "Add Supplier" %}
         </a>
     </div>
 
     <table class="table table-hover text-center align-middle">
 
         <thead>
-            <!-- صف الفلاتر -->
+            <!-- Filter Row -->
             <tr>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرقم"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث المورد"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الفواتير"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الرصيد"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="بحث الحالة"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search No.' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Supplier' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Invoices' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Balance' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Status' %}"></th>
                 <th></th>
             </tr>
 
-            <!-- عناوين الجدول -->
+            <!-- Table Headers -->
             <tr class="table-dark">
                 <th>#</th>
-                <th>المورد</th>
-                <th>عدد الفواتير</th>
-                <th>الرصيد</th>
-                <th>الحالة</th>
-                <th>الإجراءات</th>
+                <th>{% trans "Supplier" %}</th>
+                <th>{% trans "Invoice Count" %}</th>
+                <th>{% trans "Balance" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Actions" %}</th>
             </tr>
         </thead>
 
@@ -48,33 +49,33 @@
 
                 <td>
                     {% if s.balance > 0 %}
-                        <span class="badge bg-secondary">مدين</span>
+                        <span class="badge bg-secondary">{% trans "Debtor" %}</span>
                     {% elif s.balance < 0 %}
-                        <span class="badge bg-secondary">دائن</span>
+                        <span class="badge bg-secondary">{% trans "Creditor" %}</span>
                     {% else %}
-                        <span class="badge bg-secondary">متزن</span>
+                        <span class="badge bg-secondary">{% trans "Balanced" %}</span>
                     {% endif %}
                 </td>
 
-                <!-- الإجراءات -->
+                <!-- Actions -->
                 <td>
                     <div class="dropdown">
                         <button class="btn btn-secondary btn-sm dropdown-toggle"
                                 type="button"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                            خيارات
+                            {% trans "Options" %}
                         </button>
 
                         <ul class="dropdown-menu text-end">
                             <li>
-                                <a class="dropdown-item" href="/suppliers/{{ s.id }}/edit/">تعديل</a>
+                                <a class="dropdown-item" href="/suppliers/{{ s.id }}/edit/">{% trans "Edit" %}</a>
                             </li>
                             <li>
                                 <a class="dropdown-item text-danger"
                                    href="/suppliers/{{ s.id }}/delete/"
-                                   onclick="return confirm('هل أنت متأكد من الحذف؟');">
-                                   حذف
+                                   onclick="return confirm('{% trans "Are you sure you want to delete?" %}');">
+                                   {% trans "Delete" %}
                                 </a>
                             </li>
                         </ul>

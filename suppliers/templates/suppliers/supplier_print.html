@@ -1,47 +1,48 @@
 {% extends "purchase/purchase_base_a4.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="invoice-container">
 
-    <!-- رأس الفاتورة -->
+    <!-- Invoice Header -->
     <div class="header">
-        <h2 class="text-center fw-bold">فاتورة مشتريات</h2>
+        <h2 class="text-center fw-bold">{% trans "Purchase Invoice" %}</h2>
     </div>
 
     <div class="row mt-3">
         <div class="col-md-6">
-            <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
-            <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
-            <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
+            <p><strong>{% trans "Invoice No:" %}</strong> {{ invoice.invoice_no }}</p>
+            <p><strong>{% trans "Invoice Date:" %}</strong> {{ invoice.date_invoice }}</p>
+            <p><strong>{% trans "Issue Date:" %}</strong> {{ invoice.date_issue }}</p>
         </div>
 
         <div class="col-md-6 text-end">
-            <p><strong>المورد:</strong> {{ invoice.supplier.commercial_name }}</p>
-            <p><strong>الرقم الضريبي:</strong> {{ invoice.supplier.tax_number }}</p>
-            <p><strong>السجل التجاري:</strong> {{ invoice.supplier.cr_number }}</p>
+            <p><strong>{% trans "Supplier:" %}</strong> {{ invoice.supplier.commercial_name }}</p>
+            <p><strong>{% trans "Tax Number:" %}</strong> {{ invoice.supplier.tax_number }}</p>
+            <p><strong>{% trans "CR Number:" %}</strong> {{ invoice.supplier.cr_number }}</p>
         </div>
     </div>
 
     <hr>
 
-    <h5 class="fw-bold">الوصف:</h5>
+    <h5 class="fw-bold">{% trans "Description:" %}</h5>
     <p>{{ invoice.description }}</p>
 
     <hr>
 
-    <!-- جدول الأصناف -->
+    <!-- Items Table -->
     <table class="table table-bordered">
         <thead class="table-light">
             <tr>
-                <th>الصنف</th>
-                <th>الوصف</th>
-                <th>الكمية</th>
-                <th>السعر</th>
-                <th>الخصم</th>
-                <th>الضريبة%</th>
-                <th>الإجمالي</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Description" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Discount" %}</th>
+                <th>{% trans "Tax %" %}</th>
+                <th>{% trans "Total" %}</th>
             </tr>
         </thead>
 
@@ -62,27 +63,27 @@
 
     <hr>
 
-    <!-- المجاميع -->
+    <!-- Totals -->
     <div class="row mt-3">
         <div class="col-md-3">
-            <p><strong>الإجمالي قبل الخصم:</strong> {{ invoice.total_before_tax }}</p>
+            <p><strong>{% trans "Total Before Discount:" %}</strong> {{ invoice.total_before_tax }}</p>
         </div>
 
         <div class="col-md-3">
-            <p><strong>إجمالي الخصم:</strong> {{ invoice.total_discount }}</p>
+            <p><strong>{% trans "Total Discount:" %}</strong> {{ invoice.total_discount }}</p>
         </div>
 
         <div class="col-md-3">
-            <p><strong>بعد الخصم:</strong> {{ invoice.total_after_discount }}</p>
+            <p><strong>{% trans "After Discount:" %}</strong> {{ invoice.total_after_discount }}</p>
         </div>
 
         <div class="col-md-3">
-            <p><strong>قيمة الضريبة:</strong> {{ invoice.tax_value }}</p>
+            <p><strong>{% trans "Tax Value:" %}</strong> {{ invoice.tax_value }}</p>
         </div>
 
         <div class="col-md-12 mt-3">
             <p class="fw-bold fs-4 text-success">
-                الإجمالي النهائي: {{ invoice.total_after_tax }}
+                {% trans "Final Total:" %} {{ invoice.total_after_tax }}
             </p>
         </div>
     </div>
@@ -92,7 +93,7 @@
     <!-- QR Code -->
     <div class="text-center mt-4">
         <img src="data:image/png;base64,{{ qr_code }}" width="180">
-        <p class="mt-2">مسح رمز QR للتحقق من الفاتورة</p>
+        <p class="mt-2">{% trans "Scan QR code to verify the invoice" %}</p>
     </div>
 
 </div>

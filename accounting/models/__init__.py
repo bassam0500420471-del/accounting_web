@@ -1,3 +1,3 @@
-from .chart import Account
+from .account import Account
 from .cost_centers import CostCenter
 from .journal import JournalEntry, JournalLine

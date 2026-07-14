@@ -12,21 +12,41 @@ from products.models import Product
 def index(request):
     today = timezone.now().date()
 
-    # ==============================
-    # مؤشرات عليا
-    # ==============================
-    total_employees = Employee.objects.count()
-    total_attendance_today = Attendance.objects.filter(date=today).count()
-    total_invoices = SalesInvoice.objects.count()
-    pending_invoices = SalesInvoice.objects.filter(payment_status='pending').count()
-    total_leaves = Leave.objects.filter(status='approved').count()
+    # ✅ الشركة الحالية
+    company = getattr(getattr(request.user, "profile", None), "company", None)
 
     # ==============================
-    # الحضور اليومي
+    # مؤشرات عليا (عزل HR لو company موجودة)
     # ==============================
-    # جلب حضور اليوم مع بيانات الموظف
-    attendance_today = Attendance.objects.filter(date=today).select_related('employee')
-    employees = Employee.objects.all()
+    if company:
+        total_employees = Employee.objects.filter(company=company).count()
+        total_attendance_today = Attendance.objects.filter(date=today, employee__company=company).count()
+        total_leaves = Leave.objects.filter(status='approved', employee__company=company).count()
+    else:
+        total_employees = Employee.objects.count()
+        total_attendance_today = Attendance.objects.filter(date=today).count()
+        total_leaves = Leave.objects.filter(status='approved').count()
+
+    # ==============================
+    # مؤشرات الفواتير (بدون عزل حالياً لأن الموديلات ما فيها company)
+    # ==============================
+    total_invoices = SalesInvoice.objects.count()
+    pending_invoices = SalesInvoice.objects.filter(payment_status='pending').count()
+
+    # ==============================
+    # الحضور اليومي (✅ مع العزل بالشركة)
+    # ==============================
+    if company:
+        attendance_today = Attendance.objects.filter(
+            date=today,
+            employee__company=company
+        ).select_related('employee')
+
+        employees = Employee.objects.filter(company=company)
+    else:
+        attendance_today = Attendance.objects.filter(date=today).select_related('employee')
+        employees = Employee.objects.all()
+
     attendance_list = []
 
     for emp in employees:
@@ -40,27 +60,31 @@ def index(request):
         })
 
     # ==============================
-    # بيانات المبيعات
+    # بيانات المبيعات (بدون عزل حالياً لأن الموديلات ما فيها company)
     # ==============================
     sales_invoices = SalesInvoice.objects.all()
-    top_sales = sales_invoices.order_by('-total_after_tax')[:5]      # أعلى فواتير مبيعات
-    daily_sales_payment = sales_invoices.filter(date_invoice=today)   # المدفوع اليوم
+    top_sales = sales_invoices.order_by('-total_after_tax')[:5]
+    daily_sales_payment = sales_invoices.filter(date_invoice=today)
 
     # ==============================
-    # بيانات المشتريات
+    # بيانات المشتريات (بدون عزل حالياً لأن الموديلات ما فيها company)
     # ==============================
     purchase_invoices = PurchaseInvoice.objects.all()
-    top_purchases = purchase_invoices.order_by('-total_after_tax')[:5]  # أعلى فواتير مشتريات
-    daily_purchases_payment = purchase_invoices.filter(date_invoice=today)  # المدفوع اليوم
+    top_purchases = purchase_invoices.order_by('-total_after_tax')[:5]
+    daily_purchases_payment = purchase_invoices.filter(date_invoice=today)
 
     # ==============================
-    # بيانات المنتجات
+    # ✅ بيانات المنتجات (عزل بالشركة)
     # ==============================
-    top_products = Product.objects.annotate(
-        total_sold=Sum('salesitem__qty')
-    ).order_by('-total_sold')[:5]
+    if company:
+        top_products = Product.objects.filter(company=company).annotate(
+            total_sold=Sum('salesitem__qty')
+        ).order_by('-total_sold')[:5]
 
-    low_stock_products = Product.objects.order_by('current_stock')[:5]
+        low_stock_products = Product.objects.filter(company=company).order_by('current_stock')[:5]
+    else:
+        top_products = Product.objects.none()
+        low_stock_products = Product.objects.none()
 
     # ==============================
     # إرسال البيانات للقالب
@@ -71,7 +95,7 @@ def index(request):
         'total_invoices': total_invoices,
         'pending_invoices': pending_invoices,
         'total_leaves': total_leaves,
-        'attendance_data': attendance_list,  # الآن يعرض كل الموظفين اليوم
+        'attendance_data': attendance_list,
         'top_sales': top_sales,
         'daily_sales_payment': daily_sales_payment,
         'top_purchases': top_purchases,
@@ -84,31 +108,53 @@ def index(request):
 
 
 # ==================================================
-# جدول الموظفين
+# جدول الموظفين (✅ عزل بالشركة)
 # ==================================================
 def employees(request):
-    employees_list = Employee.objects.all()
+    company = getattr(getattr(request.user, "profile", None), "company", None)
+
+    if company:
+        employees_list = Employee.objects.filter(company=company)
+    else:
+        employees_list = Employee.objects.all()
+
     return render(request, 'dashboard/employees.html', {'employees': employees_list})
 
 
 # ==================================================
-# سجل الحضور والانصراف
+# سجل الحضور والانصراف (✅ عزل بالشركة)
 # ==================================================
 def attendance(request):
-    attendance_list = Attendance.objects.all().select_related('employee')
+    company = getattr(getattr(request.user, "profile", None), "company", None)
+
+    qs = Attendance.objects.all().select_related('employee')
+
+    if company:
+        attendance_list = qs.filter(employee__company=company)
+    else:
+        attendance_list = qs
+
     return render(request, 'dashboard/attendance.html', {'attendance_list': attendance_list})
 
 
 # ==================================================
-# إدارة الإجازات
+# إدارة الإجازات (✅ عزل بالشركة)
 # ==================================================
 def leaves(request):
-    leaves_list = Leave.objects.all()
+    company = getattr(getattr(request.user, "profile", None), "company", None)
+
+    qs = Leave.objects.all()
+
+    if company:
+        leaves_list = qs.filter(employee__company=company)
+    else:
+        leaves_list = qs
+
     return render(request, 'dashboard/leaves.html', {'leaves_list': leaves_list})
 
 
 # ==================================================
-# عرض الفواتير
+# عرض الفواتير (بدون عزل حالياً لأن الموديلات ما فيها company)
 # ==================================================
 def invoices(request):
     invoices_list = SalesInvoice.objects.all()

@@ -1,16 +1,31 @@
 from django.db import models
+from django.db.models import Max
+from decimal import Decimal
+
+from accounts.models import Company
 from products.models import Product
 from cost_centers.models import CostCenter
 from suppliers.models import Supplier
-from decimal import Decimal
 
 
 # =====================================================
-# 🧾 فاتورة المشتريات
+# 🧾 فاتورة المشتريات / أمر شراء (PO)
 # =====================================================
 class PurchaseInvoice(models.Model):
 
-    invoice_no = models.IntegerField(unique=True)
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="purchase_invoices",
+        null=True,
+        blank=True,
+        verbose_name="الشركة"
+    )
+
+    # ✅ دعم أوامر الشراء
+    is_po = models.BooleanField(default=False, verbose_name="أمر شراء")
+
+    invoice_no = models.IntegerField()
 
     supplier = models.ForeignKey(
         Supplier,
@@ -46,12 +61,22 @@ class PurchaseInvoice(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "invoice_no", "is_po"],
+                name="purchase_uniq_invoice_no_per_company_and_type"
+            )
+        ]
+
     def __str__(self):
-        return f"فاتورة مشتريات #{self.invoice_no}"
+        label = "أمر شراء" if self.is_po else "فاتورة مشتريات"
+        return f"{label} #{self.invoice_no}"
 
 
 # =====================================================
-# 📦 أصناف الفاتورة
+# 📦 أصناف الفاتورة / أمر الشراء
 # =====================================================
 class PurchaseItem(models.Model):
 
@@ -72,13 +97,13 @@ class PurchaseItem(models.Model):
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
     total_before_tax = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
+        max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
     tax_value = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
+        max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
     total_after_tax = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0
+        max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
 
     cost_center = models.ForeignKey(
@@ -98,17 +123,24 @@ class PurchaseItem(models.Model):
 # =====================================================
 class PurchaseReturn(models.Model):
 
-    # ❗ التعديل المهم هنا
-    return_no = models.IntegerField(
-        unique=True,
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="purchase_returns",
+        null=True,
         blank=True,
-        null=True
+        verbose_name="الشركة"
     )
 
+    return_no = models.IntegerField(null=True, blank=True)
+
+    # ✅ لازم يبقى nullable لدعم "مرتجع مستقل"
     invoice = models.ForeignKey(
         PurchaseInvoice,
         on_delete=models.CASCADE,
-        related_name="returns"
+        related_name="returns",
+        null=True,
+        blank=True
     )
 
     supplier = models.ForeignKey(
@@ -133,13 +165,24 @@ class PurchaseReturn(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # ✅ توليد رقم المرتجع تلقائيًا من الـ ID
+    class Meta:
+        ordering = ["-id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "return_no"],
+                name="purchase_uniq_return_no_per_company"
+            )
+        ]
+
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
+        # ✅ توليد رقم المرتجع داخل نفس الشركة إن لم يُرسل
+        if not self.return_no:
+            qs = PurchaseReturn.objects.all()
+            if self.company_id:
+                qs = qs.filter(company_id=self.company_id)
+            last_no = qs.aggregate(Max("return_no"))["return_no__max"] or 0
+            self.return_no = last_no + 1
         super().save(*args, **kwargs)
-        if is_new and not self.return_no:
-            self.return_no = self.id
-            super().save(update_fields=["return_no"])
 
     def __str__(self):
         return f"مرتجع مشتريات #{self.return_no}"

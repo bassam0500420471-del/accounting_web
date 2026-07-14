@@ -1,59 +1,178 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
+<div class="container mt-4" dir="rtl">
+    <h3 class="mb-4 text-primary fw-bold"><i class="bi bi-gear-fill me-2"></i>إعدادات معلومات الشركة</h3>
 
-<div class="container mt-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
 
-    <h3 class="mb-4">إعدادات الشركة</h3>
-
-    <form method="post" enctype="multipart/form-data" class="card p-4">
+    <form method="post" action="{% url 'company_settings' %}" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
-        <div class="mb-3">
-            <label class="form-label">اسم الشركة:</label>
-            <input type="text" class="form-control" name="name"
-                value="{{ company.name|default:'' }}">
+        <div class="card p-4 shadow-sm mb-4">
+            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
+                <i class="bi bi-building me-1"></i> البيانات الأساسية والرسمية
+            </h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.name.label }}</label>
+                    <input type="text" name="name" class="form-control" value="{{ company_info.name|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.name.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.name_en.label }}</label>
+                    <input type="text" name="name_en" class="form-control" value="{{ company_info.name_en|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.name_en.errors }}</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.tax_number.label }}</label>
+                    {{ form.tax_number }}
+                    <div class="text-danger small">{{ form.tax_number.errors }}</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.commercial_number.label }}</label>
+                    {{ form.commercial_number }}
+                    <div class="text-danger small">{{ form.commercial_number.errors }}</div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">السجل التجاري:</label>
-            <input type="text" class="form-control" name="commercial_number"
-                value="{{ company.commercial_number|default:'' }}">
+        <div class="card p-4 shadow-sm mb-4">
+            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
+                <i class="bi bi-geo-alt-fill me-1"></i> بيانات الموقع والعنوان الوطني
+            </h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.country.label }}</label>
+                    <input type="text" name="country" class="form-control" value="{{ company_info.country|default_if_none:'المملكة العربية السعودية' }}">
+                    <div class="text-danger small">{{ form.country.errors }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.city.label }}</label>
+                    <input type="text" name="city" class="form-control" value="{{ company_info.city|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.city.errors }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.district.label }}</label>
+                    <input type="text" name="district" class="form-control" value="{{ company_info.district|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.district.errors }}</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">{{ form.street.label }}</label>
+                    <input type="text" name="street" class="form-control" value="{{ company_info.street|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.street.errors }}</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">{{ form.building_no.label }}</label>
+                    <input type="text" name="building_no" class="form-control" value="{{ company_info.building_no|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.building_no.errors }}</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">{{ form.postal_code.label }}</label>
+                    <input type="text" name="postal_code" class="form-control" value="{{ company_info.postal_code|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.postal_code.errors }}</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">{{ form.additional_no.label }}</label>
+                    <input type="text" name="additional_no" class="form-control" value="{{ company_info.additional_no|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.additional_no.errors }}</div>
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">{{ form.national_address.label }}</label>
+                    <textarea name="national_address" class="form-control" rows="2">{{ company_info.national_address|default_if_none:'' }}</textarea>
+                    <div class="text-danger small">{{ form.national_address.errors }}</div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">الرقم الضريبي:</label>
-            <input type="text" class="form-control" name="tax_number"
-                value="{{ company.tax_number|default:'' }}">
+        <div class="card p-4 shadow-sm mb-4">
+            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
+                <i class="bi bi-telephone-fill me-1"></i> وسائل الاتصال والشعار
+            </h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.phone.label }}</label>
+                    <input type="text" name="phone" class="form-control" value="{{ company_info.phone|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.phone.errors }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.mobile.label }}</label>
+                    <input type="text" name="mobile" class="form-control" value="{{ company_info.mobile|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.mobile.errors }}</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.email.label }}</label>
+                    <input type="email" name="email" class="form-control" value="{{ company_info.email|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.email.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.website.label }}</label>
+                    <input type="url" name="website" class="form-control" value="{{ company_info.website|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.website.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.logo.label }}</label>
+                    {{ form.logo }}
+                    <div class="text-danger small">{{ form.logo.errors }}</div>
+                    
+                    {% if company_info.logo %}
+                        <div class="mt-2 p-2 border rounded bg-light d-inline-block">
+                            <span class="d-block small text-muted mb-1">الشعار الحالي:</span>
+                            <img src="{{ company_info.logo.url }}" width="100" class="img-thumbnail">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">العنوان:</label>
-            <input type="text" class="form-control" name="address"
-                value="{{ company.address|default:'' }}">
+        <div class="card p-4 shadow-sm mb-4">
+            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
+                <i class="bi bi-bank me-1"></i> الحساب البنكي والملاحظات
+            </h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.bank_name.label }}</label>
+                    <input type="text" name="bank_name" class="form-control" value="{{ company_info.bank_name|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.bank_name.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.iban.label }}</label>
+                    <input type="text" name="iban" class="form-control" value="{{ company_info.iban|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.iban.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.account_number.label }}</label>
+                    <input type="text" name="account_number" class="form-control" value="{{ company_info.account_number|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.account_number.errors }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.swift_code.label }}</label>
+                    <input type="text" name="swift_code" class="form-control" value="{{ company_info.swift_code|default_if_none:'' }}">
+                    <div class="text-danger small">{{ form.swift_code.errors }}</div>
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">{{ form.notes.label }}</label>
+                    <textarea name="notes" class="form-control" rows="2">{{ company_info.notes|default_if_none:'' }}</textarea>
+                    <div class="text-danger small">{{ form.notes.errors }}</div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">رقم الجوال:</label>
-            <input type="text" class="form-control" name="phone"
-                value="{{ company.phone|default:'' }}">
+        <div class="mb-5">
+            <button type="submit" class="btn btn-primary btn-lg w-100 py-2 fw-bold shadow-sm">
+                <i class="bi bi-check-circle-fill me-1"></i> حفظ كافة التغييرات والإعدادات
+            </button>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">شعار الشركة:</label>
-            <input type="file" class="form-control" name="logo">
-
-            {% if company.logo %}
-                <img src="{{ company.logo.url }}" class="mt-3" width="120">
-            {% endif %}
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 mt-3">
-            حفظ
-        </button>
 
     </form>
-
 </div>
-
 {% endblock %}

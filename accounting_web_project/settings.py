@@ -28,8 +28,18 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-# بعد تسجيل الدخول، تحويل المستخدم مباشرة للوحة التحكم
-LOGIN_REDIRECT_URL = '/dashboard/'
+# ============================================================
+# AUTH SETTINGS
+# ============================================================
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = "/"
+
+# ============================================================
+# MEDIA FILES
+# ============================================================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # ============================================================
 # DATABASE - SQLite مؤقت للسيرفر
@@ -38,7 +48,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3'
-  # ← المسار الصحيح لقاعدة البيانات
     }
 }
 
@@ -56,7 +65,7 @@ INSTALLED_APPS = [
 
     # apps
     'cost_centers.apps.CostCentersConfig',
-    'accounting',
+    'accounting.apps.AccountingConfig',
     'products',
     'customers',
     'sales',
@@ -70,12 +79,18 @@ INSTALLED_APPS = [
     'lookup',
     'payments',
     'reports',
+    'accounts',
 
-    # ⭐ POS
+    # POS
     'pos',
 
-    # 🟢 HR الجديد
-    'hr',   # هنا ضيفنا تطبيق الموارد البشرية
+    # ZATCA
+    'zatca',
+
+    # HR
+    'hr',
+
+    'django_extensions',
 ]
 
 # ============================================================
@@ -83,20 +98,21 @@ INSTALLED_APPS = [
 # ============================================================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
-    # WhiteNoise
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
 
-    # ✅ إنشاء شجرة الحسابات تلقائيًا عند أول تشغيل
-    'accounting.middleware.chart_init_middleware.EnsureChartExistsMiddleware',
-
+    # لازم يكون بعد Session مباشرة
     'django.middleware.locale.LocaleMiddleware',
-    'accounting.language_middleware.SettingsLanguageMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    'accounting.middleware.chart_init_middleware.EnsureChartExistsMiddleware',
+    'accounts.middleware.CurrentCompanyMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -114,8 +130,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'layout',  # ← هذا يربط Django بمجلد layout حيث يوجد base.html
+            BASE_DIR / 'layout' / 'templates',
             BASE_DIR / 'templates',
+            BASE_DIR / 'accounts' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -169,14 +186,18 @@ STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
 # EMAIL CONFIGURATION
 # ============================================================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"  # يمكن تغييره حسب السيرفر
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "your_email@gmail.com")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "your_email_password")
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+EMAIL_HOST_USER = "bassam0500420471@gmail.com"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # ============================================================
-# DEFAULT FIELD
+# ADVANCED CONFIGURATIONS
 # ============================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# تفعيل تفضيل https الافتراضي لحقول الروابط وإسكات تحذير جنجو للأبد
+FORMS_URLFIELD_ASSUME_HTTPS = True

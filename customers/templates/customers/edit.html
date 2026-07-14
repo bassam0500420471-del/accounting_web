@@ -1,0 +1,17 @@
+<h2>تعديل عميل</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>الاسم</label>
+    <input type="text" name="name" value="{{ customer.name }}">
+
+    <br><br>
+
+    <label>الجوال</label>
+    <input type="text" name="phone" value="{{ customer.phone }}">
+
+    <br><br>
+
+    <button type="submit">حفظ</button>
+</form>

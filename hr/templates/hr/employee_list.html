@@ -1,7 +1,8 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}الموظفين{% endblock %}
+{% block title %}{% trans "Employees" %}{% endblock %}
 
 {% block content %}
 <style>
@@ -117,31 +118,37 @@
 </style>
 
 <div class="container mt-3">
-    <h3 class="mb-3">الموظفين</h3>
+    <h3 class="mb-3">{% trans "Employees" %}</h3>
 
     <!-- زر إضافة موظف -->
-    <a href="{% url 'hr:add_employee' %}" class="add-employee-btn">➕ إضافة موظف</a>
+    <a href="{% url 'hr:add_employee' %}" class="add-employee-btn">➕ {% trans "Add Employee" %}</a>
 
     <div class="employees-cards">
         {% for emp in employees %}
         <div class="employee-card">
             <div class="employee-photo-container">
                 {% if emp.photo %}
-                    <img src="{{ emp.photo.url }}" alt="صورة الموظف">
+                    <img src="{{ emp.photo.url }}" alt="{% trans 'Employee Photo' %}">
                 {% else %}
-                    <img src="{% static 'images/default-user.png' %}" alt="صورة الموظف">
+                    <img src="{% static 'images/default-user.png' %}" alt="{% trans 'Employee Photo' %}">
                 {% endif %}
             </div>
 
-            <h5>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</h5>
-            <p>رقم الموظف: {{ emp.employee_number }}</p>
-            <p>القسم: {% if emp.department %}{{ emp.department.name }}{% else %}---{% endif %}</p>
-            <p>الفرع: {% if emp.branch %}{{ emp.branch.name }}{% else %}---{% endif %}</p>
-            <p>الراتب: {{ emp.base_salary }}</p>
-            <p>تاريخ التعيين: {{ emp.hire_date }}</p>
-            <p>الحالة: 
+            <h5>{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == "ar" %}
+    {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+{% else %}
+    {{ emp.first_name_en }} {{ emp.last_name_en }}
+{% endif %}
+</h5>
+            <p>{% trans "Employee No." %}: {{ emp.employee_number }}</p>
+            <p>{% trans "Department" %}: {% if emp.department %}{{ emp.department.name }}{% else %}---{% endif %}</p>
+            <p>{% trans "Branch" %}: {% if emp.branch %}{{ emp.branch.name }}{% else %}---{% endif %}</p>
+            <p>{% trans "Salary" %}: {{ emp.base_salary }}</p>
+            <p>{% trans "Hire Date" %}: {{ emp.hire_date }}</p>
+            <p>{% trans "Status" %}: 
                 <span class="{% if emp.active %}status-active{% else %}status-inactive{% endif %}">
-                    {% if emp.active %}نشط{% else %}متوقف{% endif %}
+                    {% if emp.active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
                 </span>
             </p>
 
@@ -149,7 +156,7 @@
             <a href="{% url 'hr:edit_employee' emp.id %}" class="edit-btn">✏️</a>
         </div>
         {% empty %}
-        <p class="text-center">لا يوجد موظفين</p>
+        <p class="text-center">{% trans "No employees found" %}</p>
         {% endfor %}
     </div>
 </div>

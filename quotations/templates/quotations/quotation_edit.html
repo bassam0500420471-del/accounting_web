@@ -1,0 +1,1194 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<style>
+.dropdown-box {
+    position: relative;
+    width:100%;
+}
+
+.dropdown-list {
+    position:absolute;
+    top:40px;
+    right:0;
+    width:100%;
+    max-height:220px;
+    overflow-y:auto;
+    background:#fff;
+    border:2px solid #6c757d;
+    border-top:none;
+    z-index:9999;
+    border-radius:0 0 8px 8px;
+    display:none;
+}
+
+.dropdown-item {
+    padding:8px 12px;
+    cursor:pointer;
+    border-bottom:1px solid #eee;
+    text-align:right;
+}
+
+.dropdown-item:hover {
+    background:#f2f2f2;
+}
+
+.btn-grey {
+    background:#6c757d !important;
+    color:white !important;
+    border:none !important;
+    border-radius:6px;
+}
+
+.btn-wide {
+    width:230px;
+    padding:8px 0;
+}
+
+.btn-save {
+    background:#2563eb !important;
+    color:white !important;
+    border:none !important;
+    padding:12px 40px;
+    width:260px;
+    font-size:17px;
+}
+
+</style>
+
+
+<div class="container mt-4">
+
+<h3 class="mb-4 text-center">
+    تعديل عرض السعر رقم {{ quotation.quotation_no }}
+</h3>
+
+
+<form method="post" id="quotation_form">
+
+{% csrf_token %}
+
+
+<input type="hidden"
+       id="total_rows"
+       name="total_rows"
+       value="{{ items|length }}">
+
+
+
+<div class="card p-4">
+
+
+<div class="row mb-3">
+
+<div class="col-md-4">
+
+<label>
+رقم عرض السعر:
+</label>
+
+<input type="number"
+       class="form-control"
+       value="{{ quotation.quotation_no }}"
+       readonly>
+
+</div>
+
+
+<div class="col-md-4">
+
+<label>
+تاريخ عرض السعر:
+</label>
+
+<input type="date"
+       id="date_quotation"
+       name="date_quotation"
+       value="{{ quotation.date_quotation|date:'Y-m-d' }}"
+       class="form-control">
+
+</div>
+
+
+</div>
+
+
+
+<div class="row mb-3">
+
+
+<div class="col-md-10">
+
+<label>
+العميل:
+</label>
+
+
+<div class="dropdown-box">
+
+
+<input type="text"
+       id="customer_search"
+       class="form-control"
+       value="{{ quotation.customer.name }}"
+       autocomplete="off">
+
+
+<input type="hidden"
+       id="customer_id"
+       name="customer"
+       value="{{ quotation.customer.id }}">
+
+
+<div id="customer_list"
+     class="dropdown-list">
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<div class="col-md-2 d-flex align-items-end">
+
+<button type="button"
+        class="btn btn-grey btn-wide w-100"
+        onclick="window.location.href='/customers/add/?return=quotation'">
+
++ إضافة عميل
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+<div class="mb-3">
+
+<label>
+الوصف:
+</label>
+
+
+<textarea name="description"
+          class="form-control">{{ quotation.description }}</textarea>
+
+
+</div>
+<div class="text-end mb-3">
+
+<button type="button"
+        class="btn btn-grey btn-wide"
+        onclick="window.location.href='/products/add/?return=quotation'">
+
++ إضافة منتج
+
+</button>
+
+</div>
+
+
+
+<table class="table table-bordered text-center">
+
+<thead class="table-light">
+
+<tr>
+
+<th>الصنف</th>
+<th>الوصف</th>
+<th>الكمية</th>
+<th>السعر</th>
+<th>الخصم</th>
+<th>الضريبة %</th>
+<th>الإجمالي</th>
+<th>حذف</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="items_table">
+
+
+{% for item in items %}
+
+<tr id="row_{{ forloop.counter }}"
+    class="item-row">
+
+
+<td style="width:23%;">
+
+<div class="dropdown-box">
+
+
+<input type="text"
+       name="row_{{ forloop.counter }}_product"
+       class="form-control product-input"
+       value="{{ item.product.name }}"
+       autocomplete="off">
+
+
+<input type="hidden"
+       name="row_{{ forloop.counter }}_product_id"
+       id="row_{{ forloop.counter }}_product_id"
+       value="{{ item.product.id }}">
+
+
+<div id="dropdown_{{ forloop.counter }}"
+     class="dropdown-list">
+</div>
+
+
+</div>
+
+</td>
+
+
+
+<td style="width:28%;">
+
+<input type="text"
+       name="row_{{ forloop.counter }}_desc"
+       class="form-control"
+       value="{{ item.description }}">
+
+</td>
+
+
+
+<td style="width:8%;">
+
+<input type="number"
+       name="row_{{ forloop.counter }}_qty"
+       value="{{ item.qty|stringformat:'g' }}"
+       step="any"
+       class="form-control row-qty">
+
+</td>
+
+
+
+<td style="width:10%;">
+
+<input type="number"
+       name="row_{{ forloop.counter }}_price"
+       value="{{ item.price|stringformat:'g' }}"
+       step="any"
+       class="form-control row-price">
+
+</td>
+
+
+
+<td style="width:8%;">
+
+<input type="text"
+       name="row_{{ forloop.counter }}_discount"
+       value="{{ item.discount }}"
+       class="form-control row-discount">
+
+</td>
+
+
+
+<td style="width:8%;">
+
+<input type="number"
+       name="row_{{ forloop.counter }}_tax"
+       value="{{ item.tax|stringformat:'g' }}"
+       step="any"
+       class="form-control row-tax">
+
+</td>
+
+
+
+<td style="width:12%;">
+
+<input type="number"
+       name="row_{{ forloop.counter }}_total"
+       value="{{ item.total }}"
+       step="any"
+       readonly
+       class="form-control row-total">
+
+</td>
+
+
+
+<td>
+
+<button type="button"
+        class="btn btn-danger"
+        onclick="deleteRow({{ forloop.counter }})">
+
+حذف
+
+</button>
+
+</td>
+
+
+</tr>
+
+
+{% endfor %}
+
+
+</tbody>
+
+
+</table>
+
+
+
+<div class="text-end mt-2">
+
+<button type="button"
+        class="btn btn-grey btn-wide"
+        onclick="addRow()">
+
++ إضافة سطر
+
+</button>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="mt-4">
+
+
+<div class="row mb-3">
+
+<label class="col-md-3 text-end fw-bold">
+الإجمالي قبل الضريبة:
+</label>
+
+<div class="col-md-4">
+
+<input type="number"
+       id="total_before"
+       value="{{ quotation.total_before_tax }}"
+       class="form-control"
+       readonly>
+
+</div>
+
+</div>
+
+
+
+<div class="row mb-3">
+
+<label class="col-md-3 text-end fw-bold">
+الإجمالي بعد الخصم:
+</label>
+
+<div class="col-md-4">
+
+<input type="number"
+       id="total_after_discount"
+       value="{{ quotation.total_after_discount }}"
+       class="form-control"
+       readonly>
+
+</div>
+
+</div>
+
+
+
+
+<div class="row mb-3">
+
+<label class="col-md-3 text-end fw-bold">
+إجمالي الضريبة:
+</label>
+
+<div class="col-md-4">
+
+<input type="number"
+       id="total_tax"
+       value="{{ quotation.tax_value }}"
+       class="form-control"
+       readonly>
+
+</div>
+
+</div>
+
+
+
+
+<div class="row mb-4">
+
+<label class="col-md-3 text-end fw-bold">
+الإجمالي بعد الضريبة:
+</label>
+
+<div class="col-md-4">
+
+<input type="number"
+       id="final_total"
+       value="{{ quotation.total_after_tax }}"
+       class="form-control"
+       readonly>
+
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+
+<div class="text-end mt-3 mb-5">
+
+
+<button type="submit"
+        class="btn btn-save">
+
+حفظ التعديل
+
+</button>
+
+
+</div>
+
+
+
+</form>
+
+</div>
+
+<script>
+
+let rowCount = {{ items|length }};
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    setupCustomerDropdown();
+
+document.querySelectorAll("#items_table .item-row").forEach(row => {
+
+    let rowId = row.getAttribute("id").replace("row_","");
+
+
+    let qty = row.querySelector(
+        `input[name="row_${rowId}_qty"]`
+    );
+
+    let price = row.querySelector(
+        `input[name="row_${rowId}_price"]`
+    );
+
+    let tax = row.querySelector(
+        `input[name="row_${rowId}_tax"]`
+    );
+
+
+
+
+    setupProductDropdown(rowId);
+
+    bindRowEvents(rowId);
+
+    calculateRow(rowId);
+
+});
+
+    calculateAll();
+
+});
+
+
+// ===============================
+// العملاء
+// ===============================
+
+function setupCustomerDropdown() {
+
+    const searchInput = document.getElementById("customer_search");
+    const listDiv = document.getElementById("customer_list");
+
+    if (!searchInput || !listDiv) return;
+
+
+    searchInput.addEventListener("focus", function() {
+        fetchCustomers(this.value);
+    });
+
+
+    searchInput.addEventListener("input", function() {
+        fetchCustomers(this.value);
+    });
+
+
+    document.addEventListener("click", function(e) {
+
+        if (!searchInput.contains(e.target) &&
+            !listDiv.contains(e.target)) {
+
+            listDiv.style.display = "none";
+
+        }
+
+    });
+
+
+    function fetchCustomers(query) {
+
+        fetch(`/quotations/api/search-customer/?q=${encodeURIComponent(query)}`)
+
+        .then(res => res.json())
+
+        .then(data => {
+
+            listDiv.innerHTML = "";
+
+
+            if(data.length > 0) {
+
+                data.forEach(cust => {
+
+
+                    let item = document.createElement("div");
+
+                    item.className = "dropdown-item";
+
+                    item.innerText = cust.name;
+
+
+                    item.onclick = function() {
+
+                        searchInput.value = cust.name;
+
+                        document.getElementById("customer_id").value = cust.id;
+
+                        listDiv.style.display = "none";
+
+                    };
+
+
+                    listDiv.appendChild(item);
+
+
+                });
+
+
+                listDiv.style.display = "block";
+
+
+            } else {
+
+                listDiv.style.display = "none";
+
+            }
+
+
+        });
+
+    }
+
+}
+
+
+
+// ===============================
+// المنتجات
+// ===============================
+
+function setupProductDropdown(rowId) {
+
+
+    const input = document.querySelector(
+        `input[name="row_${rowId}_product"]`
+    );
+
+
+    const listDiv = document.getElementById(
+        `dropdown_${rowId}`
+    );
+
+
+    const hiddenInput = document.getElementById(
+        `row_${rowId}_product_id`
+    );
+
+
+    if(!input || !listDiv) return;
+
+
+
+    input.addEventListener("focus", function(){
+
+        fetchProducts(this.value);
+
+    });
+
+
+
+    input.addEventListener("input", function(){
+
+        fetchProducts(this.value);
+
+    });
+
+
+
+    document.addEventListener("click", function(e){
+
+        if(!input.contains(e.target) &&
+           !listDiv.contains(e.target)){
+
+            listDiv.style.display="none";
+
+        }
+
+    });
+
+
+
+    function fetchProducts(query){
+
+
+        fetch(`/quotations/api/search-product/?q=${encodeURIComponent(query)}`)
+
+        .then(res=>res.json())
+
+        .then(data=>{
+
+
+            listDiv.innerHTML="";
+
+
+            data.forEach(prod=>{
+
+
+                let item=document.createElement("div");
+
+                item.className="dropdown-item";
+
+                item.innerText=prod.name;
+
+
+
+                item.onclick=function(){
+
+
+                    input.value=prod.name;
+
+
+                    hiddenInput.value=prod.id;
+
+
+
+                    let priceInput=document.querySelector(
+                        `input[name="row_${rowId}_price"]`
+                    );
+
+
+                    if(priceInput){
+
+                        priceInput.value =
+                        prod.price ||
+                        prod.sale_price ||
+                        0;
+
+                    }
+
+
+                    listDiv.style.display="none";
+
+
+                    calculateRow(rowId);
+
+
+                };
+
+
+                listDiv.appendChild(item);
+
+
+            });
+
+
+
+            if(data.length){
+
+                listDiv.style.display="block";
+
+            }else{
+
+                listDiv.style.display="none";
+
+            }
+
+
+        });
+
+
+    }
+
+
+}
+
+
+
+// ===============================
+// ربط الحسابات
+// ===============================
+
+function bindRowEvents(rowId){
+
+
+    const row=document.getElementById(`row_${rowId}`);
+
+
+    if(!row) return;
+
+
+
+    row.querySelectorAll(
+        ".row-qty,.row-price,.row-discount,.row-tax"
+    )
+    .forEach(input=>{
+
+
+        input.addEventListener("input",function(){
+
+            calculateRow(rowId);
+
+        });
+
+
+    });
+
+
+}
+
+
+
+// ===============================
+// حساب السطر
+// ===============================
+
+function calculateRow(rowId){
+
+    let qtyInput = document.querySelector(
+        `input[name="row_${rowId}_qty"]`
+    );
+
+    let priceInput = document.querySelector(
+        `input[name="row_${rowId}_price"]`
+    );
+
+    let discountInput = document.querySelector(
+        `input[name="row_${rowId}_discount"]`
+    );
+
+    let taxInput = document.querySelector(
+        `input[name="row_${rowId}_tax"]`
+    );
+
+    let totalInput = document.querySelector(
+        `input[name="row_${rowId}_total"]`
+    );
+
+
+    if(!qtyInput || !priceInput || !taxInput || !totalInput){
+        return;
+    }
+
+
+    let qty = parseFloat(
+        qtyInput.value.replace(",", ".")
+    ) || 0;
+
+
+    let price = parseFloat(
+        priceInput.value.replace(",", ".")
+    ) || 0;
+
+
+    let discount = parseFloat(
+        discountInput.value.replace(",", ".")
+    ) || 0;
+
+
+    let tax = parseFloat(
+        taxInput.value.replace(",", ".")
+    ) || 0;
+
+
+
+    let subtotal = (qty * price) - discount;
+
+
+    let taxAmount = subtotal * tax / 100;
+
+
+    let total = subtotal + taxAmount;
+
+
+    totalInput.value = total.toFixed(2);
+
+
+    calculateAll();
+
+}
+
+
+// ===============================
+// الإجماليات
+// ===============================
+
+function calculateAll(){
+
+
+    let before=0;
+    let discount=0;
+    let tax=0;
+    let final=0;
+
+
+
+    document.querySelectorAll(
+        "#items_table .item-row"
+    )
+    .forEach(row=>{
+
+
+        let id=row.id.replace("row_","");
+
+
+        let qty =
+        parseFloat(
+        document.querySelector(
+        `input[name="row_${id}_qty"]`
+        ).value
+        )||0;
+
+
+
+        let price =
+        parseFloat(
+        document.querySelector(
+        `input[name="row_${id}_price"]`
+        ).value
+        )||0;
+
+
+
+        let disc =
+        parseFloat(
+        document.querySelector(
+        `input[name="row_${id}_discount"]`
+        ).value
+        )||0;
+
+
+
+        let taxRate =
+        parseFloat(
+        document.querySelector(
+        `input[name="row_${id}_tax"]`
+        ).value
+        )||0;
+
+
+
+        let subtotal=qty*price;
+
+
+        let after=subtotal-disc;
+
+
+        let taxValue=after*taxRate/100;
+
+
+        before+=subtotal;
+
+        discount+=disc;
+
+        tax+=taxValue;
+
+        final+=after+taxValue;
+
+
+    });
+
+
+
+    document.getElementById("total_before").value =
+    before.toFixed(2);
+
+
+    document.getElementById("total_after_discount").value =
+    (before-discount).toFixed(2);
+
+
+    document.getElementById("total_tax").value =
+    tax.toFixed(2);
+
+
+    document.getElementById("final_total").value =
+    final.toFixed(2);
+
+
+}
+
+
+
+// ===============================
+// إضافة صف
+// ===============================
+
+function addRow(){
+
+    rowCount++;
+
+    const table = document.getElementById("items_table");
+
+    const tr = document.createElement("tr");
+
+    tr.id = `row_${rowCount}`;
+    tr.className = "item-row";
+
+
+    tr.innerHTML = `
+
+<td style="width:23%;">
+<div class="dropdown-box">
+
+<input type="text"
+name="row_${rowCount}_product"
+class="form-control product-input"
+autocomplete="off">
+
+<input type="hidden"
+name="row_${rowCount}_product_id"
+id="row_${rowCount}_product_id">
+
+<div id="dropdown_${rowCount}"
+class="dropdown-list">
+</div>
+
+</div>
+</td>
+
+
+<td style="width:28%;">
+<input type="text"
+name="row_${rowCount}_desc"
+class="form-control">
+</td>
+
+
+<td style="width:8%;">
+<input type="number"
+name="row_${rowCount}_qty"
+value="1"
+step="any"
+class="form-control row-qty">
+</td>
+
+
+<td style="width:10%;">
+<input type="number"
+name="row_${rowCount}_price"
+value="0"
+step="any"
+class="form-control row-price">
+</td>
+
+
+<td style="width:8%;">
+<input type="text"
+name="row_${rowCount}_discount"
+value="0"
+class="form-control row-discount">
+</td>
+
+
+<td style="width:8%;">
+<input type="number"
+name="row_${rowCount}_tax"
+value="15"
+step="any"
+class="form-control row-tax">
+</td>
+
+
+<td style="width:12%;">
+<input type="number"
+name="row_${rowCount}_total"
+readonly
+step="any"
+class="form-control row-total">
+</td>
+
+
+<td>
+<button type="button"
+class="btn btn-danger"
+onclick="deleteRow(${rowCount})">
+
+حذف
+
+</button>
+</td>
+
+`;
+
+
+    table.appendChild(tr);
+
+
+    document.getElementById("total_rows").value = rowCount;
+
+
+    setupProductDropdown(rowCount);
+
+    bindRowEvents(rowCount);
+
+    calculateRow(rowCount);
+
+}
+
+
+// ===============================
+// حذف صف
+// ===============================
+
+function deleteRow(rowId){
+
+    let rows=document.querySelectorAll(
+        "#items_table .item-row"
+    );
+
+
+    if(rows.length > 1){
+
+        document.getElementById(
+            `row_${rowId}`
+        ).remove();
+
+
+        renumberRows();
+
+
+        calculateAll();
+
+
+    }else{
+
+        alert("يجب أن يحتوي المستند على صنف واحد على الأقل");
+
+    }
+
+}
+
+
+
+function renumberRows(){
+
+    let rows = document.querySelectorAll(
+        "#items_table .item-row"
+    );
+
+
+    rowCount = 0;
+
+
+    rows.forEach(row => {
+
+        rowCount++;
+
+        row.id = `row_${rowCount}`;
+
+
+        row.querySelectorAll("input").forEach(input=>{
+
+            if(input.name){
+
+                input.name =
+                input.name.replace(
+                    /row_\d+/,
+                    `row_${rowCount}`
+                );
+
+            }
+
+
+            if(input.id){
+
+                input.id =
+                input.id.replace(
+                    /row_\d+/,
+                    `row_${rowCount}`
+                );
+
+            }
+
+        });
+
+
+        let dropdown =
+        row.querySelector(".dropdown-list");
+
+
+        if(dropdown){
+
+            dropdown.id =
+            `dropdown_${rowCount}`;
+
+        }
+
+
+        let btn =
+        row.querySelector("button");
+
+
+        if(btn){
+
+            btn.setAttribute(
+                "onclick",
+                `deleteRow(${rowCount})`
+            );
+
+        }
+
+
+    });
+
+
+    document.getElementById(
+        "total_rows"
+    ).value = rowCount;
+
+}
+
+</script>
+{% endblock %}

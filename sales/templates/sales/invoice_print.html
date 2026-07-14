@@ -1,117 +1,549 @@
 {% extends "sales/invoice_base_a4.html" %}
+{% load i18n %}
 {% block content %}
 
-<div class="top-section" style="flex:0 0 auto;">
+<style>
+/* 🌍 الخلفية العامة للشاشة وتناسقها مع النظام */
+body {
+    background-color: #f1f5f9 !important; 
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+}
 
-    <h2 class="text-center" style="margin-bottom:20px;">فاتورة مبيعات</h2>
+.page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
 
-    <!-- بيانات الفاتورة -->
-    <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:16px;">
-        <div>
-            <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</p>
-            <p><strong>العميل:</strong> {{ invoice.customer.name }}</p>
+.top-action-bar {
+    width: 100%; 
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+    background: #111827; 
+    padding: 14px 24px;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #1f2937;
+    box-sizing: border-box;
+}
 
-            <!-- 🔥 إظهار الوصف هنا -->
-            {% if invoice.description %}
-                <p><strong>الوصف:</strong> {{ invoice.description }}</p>
-            {% endif %}
-        </div>
-        <div style="text-align:left;">
-            <p><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice }}</p>
-            <p><strong>تاريخ الإصدار:</strong> {{ invoice.date_issue }}</p>
-        </div>
+.top-action-btn {
+    background: #1f2937; 
+    color: #f9fafb !important;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #374151;
+    transition: 0.15s ease-in-out;
+}
+
+.top-action-btn:hover {
+    background: #374151;
+    color: #fff !important;
+}
+
+.btn-pay-highlight {
+    background: #10b981; 
+    border-color: #059669;
+}
+
+.invoice-paper {
+    width: 100%;
+    background: #ffffff;
+    padding: 40px; 
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.05); 
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+}
+
+@media print {
+
+    .top-action-bar, 
+    .payments-box, 
+    #paymentModal, 
+    .sidebar, 
+    .main-sidebar, 
+    #sidebar, 
+    .app-menu {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    .items-table th {
+        background-color: #1e293b !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .items-table td {
+        color: #000 !important;
+        border-color: #000 !important;
+    }
+
+    .totals-table td {
+        color: #000 !important;
+        border-color: #000 !important;
+    }
+
+    .totals-table tr:last-child {
+        background-color: #f8fafc !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body { 
+        background: #fff !important;
+    }
+
+    .page-container { 
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .invoice-paper { 
+        width: 100% !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+    }
+
+}
+
+.header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 25px; }
+.header-logo { text-align: center; flex: 1; }
+.header-logo img { max-height: 100px; max-width: 200px; object-fit: contain; }
+.company-name-ar { font-size: 24px; font-weight: bold; color: #000; text-align: right; flex: 1; }
+.company-name-en { font-size: 22px; font-weight: bold; color: #000; text-align: left; flex: 1; font-family: Arial, sans-serif; }
+.invoice-main-title { text-align: center; font-size: 20px; font-weight: bold; color: #000; margin: 20px 0; }
+.meta-data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+.meta-data-table td { padding: 6px 4px; font-size: 14px; vertical-align: middle; color: #000; }
+.items-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.items-table th { background-color: #1e293b; color: #ffffff; padding: 8px 6px; font-size: 14px; font-weight: bold; border: 1px solid #000; text-align: center; }
+.items-table td { padding: 10px 6px; font-size: 14px; border: 1px solid #000; text-align: center; color: #000; }
+.totals-table { width: 100%; border-collapse: collapse; margin-top: -1px; }
+.totals-table td { padding: 8px 12px; font-size: 14px; border: 1px solid #000; color: #000; }
+.totals-text-ar { text-align: right; font-weight: bold; width: 250px; }
+.totals-text-en { text-align: left; font-weight: bold; width: 250px; }
+.totals-value { text-align: center; font-weight: bold; }
+.amount-text-box { width: 100%; border: 1px solid #000; border-radius: 15px; padding: 12px; text-align: center; font-weight: bold; font-size: 15px; color: #000; margin-top: 15px; box-sizing: border-box; }
+.payments-box { margin-top: 25px; border: 1px dashed #64748b; border-radius: 6px; padding: 12px; background: #f8fafc; }
+.payments-box {
+    margin-top: 25px;
+    border: 1px dashed #64748b;
+    border-radius: 6px;
+    padding: 12px;
+    background: #f8fafc;
+}
+
+/* ===== QR Code ===== */
+
+.invoice-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:20px;
+    margin-bottom:20px;
+}
+
+.invoice-qr{
+    width:140px;
+}
+
+.invoice-qr img{
+    width:130px;
+    height:130px;
+    border:1px solid #ccc;
+    padding:4px;
+}
+
+.invoice-note{
+    flex:1;
+    text-align:center;
+    font-size:15px;
+    color:#444;
+    font-weight:bold;
+}
+</style>
+
+<div class="page-container">
+
+    <div class="top-action-bar">
+        <a href="/sales/invoices/{{ invoice.id }}/print/" class="top-action-btn" target="_blank">🖨 {% trans "Print" %}</a>
+        <a href="/sales/invoices/{{ invoice.id }}/pdf/" class="top-action-btn">⬇ {% trans "Download PDF" %}</a>
+        <a href="/sales/return/{{ invoice.id }}/" class="top-action-btn">↩ {% trans "Invoice Return" %}</a>
+        {% if invoice_balance > 0 %}
+        <a href="#" class="top-action-btn btn-pay-highlight" onclick="openPaymentModal(); return false;">💳 {% trans "Pay" %}</a>
+        {% endif %}
     </div>
 
-    <!-- جدول الأصناف -->
-    <table class="table" style="width:100%; border-collapse:collapse; margin-bottom:5px;">
-        <thead>
-            <tr>
-                <th>الصنف</th>
-                <th>الوصف</th>
-                <th>الكمية</th>
-                <th>السعر</th>
-                <th>الخصم</th>
-                <th>%الضريبة</th>
-                <th>الإجمالي</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            {% for item in items %}
-            <tr>
-                <td>{{ item.product.name }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.qty }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.discount }}</td>
-                <td>{{ item.tax }}%</td>
-                <td>{{ item.total }}</td>
-            </tr>
-            {% endfor %}
-
-            <!-- صفوف فارغة ليصبح العدد دائماً 10 -->
-            {% for i in "1234567890" %}
-                {% if forloop.counter > items|length %}
-                <tr>
-                    <td style="height:22px;"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                {% endif %}
-            {% endfor %}
-
-        </tbody>
-    </table>
-
-</div>
-
-<!-- ====================== المجاميع + QR ====================== -->
-
-<div style="width:100%; display:flex; justify-content:space-between; margin-top:20px;">
-
-    <!-- 🔥 الباركود مضبوط -->
-    <div style="flex:0 0 auto;">
-        <img src="data:image/png;base64,{{ qr_code }}"
-             style="width:150px; height:150px; border:1px solid #ccc; padding:5px; object-fit:contain;">
-    </div>
-
-    <!-- 🔥 المجاميع بنفس محاذاة صفحة العرض -->
-    <div style="display:flex; flex-direction:column; align-items:flex-end; width:auto; font-size:17px;">
-
-        <div style="margin-bottom:10px;">
-            <strong>الإجمالي قبل الضريبة:</strong>
-            <span style="margin-right:10px;">{{ invoice.total_before_tax }}</span>
-        </div>
-
-        <div style="margin-bottom:10px;">
-            <strong>الإجمالي بعد الخصم:</strong>
-            <span style="margin-right:10px;">
-                {% if invoice.total_after_discount %}
-                    {{ invoice.total_after_discount }}
+    <div class="invoice-paper">
+        <div class="header-top-row">
+            <div class="company-name-ar">{{ company.name|default:"" }}</div>
+            <div class="header-logo">
+                {% if company and company.logo %}
+                <img src="{{ company.logo.url }}" alt="Company Logo">
                 {% else %}
-                    {{ invoice.total_before_tax }}
+                <div>{{ company.name|default:"نظام محاسبك" }}</div>
                 {% endif %}
-            </span>
+            </div>
+            <div class="company-name-en">{% if company %}{{ company.name_en|default:company.name }}{% endif %}</div>
         </div>
 
-        <div style="margin-bottom:10px;">
-            <strong>إجمالي الضريبة:</strong>
-            <span style="margin-right:10px;">{{ invoice.tax_value }}</span>
-        </div>
+        <div class="invoice-main-title">فاتورة ضريبية مبسطة - Simplified Tax Invoice</div>
 
-        <div style="margin-bottom:10px; font-size:20px;">
-            <strong>الإجمالي بعد الضريبة:</strong>
-            <span style="margin-right:10px; font-weight:bold;">
-                {{ invoice.total_after_tax }}
-            </span>
-        </div>
+        <table class="meta-data-table">
+            <tr>
+                <td style="text-align: right; width: 50%;"><strong>الرقم الضريبي:</strong> {{ company.vat_no|default:"-" }}</td>
+                <td style="text-align: left; width: 50%; font-family: Arial;"><strong>VAT No:</strong> {{ company.vat_no|default:"-" }}</td> 
+            </tr>
+            <tr>
+                <td style="text-align: right;"><strong>نوع الدفع:</strong> أجل</td>
+                <td style="text-align: left; font-family: Arial;"><strong>Payment Type:</strong> Credit</td>
+            </tr>
+            <tr>
+<tr>
+    <!-- الجانب العربي: استخدم commercial_name -->
+    <td style="text-align: right;"><strong>اسم العميل:</strong> {{ invoice.customer.commercial_name|default:invoice.customer.name }}</td>
+    
+    <!-- الجانب الإنجليزي: استخدم name_en -->
+    <td style="text-align: left; font-family: Arial;"><strong>Customer Name:</strong> {{ invoice.customer.name_en|default:"" }}</td>
+</tr>
+            </tr>
+<tr>
+    <td style="text-align: right;"><strong>تاريخ الفاتورة:</strong> {{ invoice.date_invoice|date:"Y-m-d" }}</td>
+    <td style="text-align: left; font-family: Arial;"><strong>Invoice Date:</strong> {{ invoice.date_invoice|date:"d/m/Y" }}</td>
+</tr>
+            <tr>
+                <td style="text-align: right;"><strong>رقم الفاتورة:</strong> {{ invoice.invoice_no }}</td>
+                <td style="text-align: left; font-family: Arial;"><strong>Invoice No:</strong> {{ invoice.invoice_no }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;"><strong>الرقم الضريبي للعميل:</strong> {{ invoice.customer.tax_number|default:"-" }}</td>
+                <td style="text-align: left; font-family: Arial;"><strong>Customer VAT No.:</strong> {{ invoice.customer.tax_number|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;"><strong>العنوان:</strong> {{ invoice.customer.address|default:"-" }}</td>
+<td style="text-align: left; font-family: Arial;">
+    <strong>Address:</strong> 
+    <span style="color: black;">
+        {{ invoice.customer.address_en|default:"-" }}
+    </span>
+</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;"><strong>الرصيد السابق للعميل:</strong> {{ customer_previous_balance|default:"0.00" }}</td>
+                <td style="text-align: left; font-family: Arial;"><strong>Customer's Previous Balance:</strong> {{ customer_previous_balance|default:"0.00" }}</td>
+            </tr>
 
+        </table>
+
+<table class="items-table">
+    <thead>
+        <tr>
+            <th style="width:5%;">#</th>
+            <th style="width:15%;">الرمز<br>Code</th>
+            <th style="width:30%;">اسم الصنف<br>Item Name</th>
+            <th style="width:8%;">الكمية<br>Quantity</th>
+            <th style="width:10%;">السعر<br>Price</th>
+
+            <!-- أضف هذا السطر -->
+            <th style="width:10%;">الإجمالي<br>Subtotal</th>
+
+            <th style="width:8%;">الخصم<br>Discount</th>
+            <th style="width:8%;">الضريبة<br>VAT</th>
+            <th style="width:10%;">الإجمالي<br>Total</th>
+        </tr>
+    </thead>
+<tbody>
+{% for item in items %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ item.product.sku|default:"-" }}</td>
+    <td style="text-align:right;font-weight:bold;">
+        {{ item.product.name }}
+    </td>
+
+    <td>{{ item.qty }}</td>
+
+    <td>{{ item.price|floatformat:2 }}</td>
+
+    <!-- العمود الجديد -->
+    <td>{{ item.subtotal|floatformat:2 }}</td>
+
+    <td>{{ item.discount|floatformat:2 }}</td>
+
+    <td>{{ item.tax_value|floatformat:2 }}</td>
+
+    <td style="font-weight:bold;">
+        {{ item.total|floatformat:2 }}
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+        </table>
+
+        <table class="totals-table">
+            <tr>
+                <td class="totals-text-ar">إجمالي الاصناف</td>
+                <td class="totals-text-en">Total Quantity</td>
+                <td class="totals-value">{{ total_qty|default:items.count }}</td>
+            </tr>
+            <tr>
+                <td class="totals-text-ar">المبلغ الإجمالي (غير شامل الضريبة)</td>
+                <td class="totals-text-en">Total Excluding VAT</td>
+                <td class="totals-value">{{ invoice.total_before_tax }}</td>
+            </tr>
+            <tr>
+                <td class="totals-text-ar">الخصم</td>
+                <td class="totals-text-en">Discount</td>
+                <td class="totals-value">{{ invoice.total_discount|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td class="totals-text-ar">ضريبة القيمة المضافة</td>
+                <td class="totals-text-en">Total VAT</td>
+                <td class="totals-value">{{ invoice.tax_value }}</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f8fafc;">
+                <td class="totals-text-ar" style="font-size: 16px;">الصافي</td>
+                <td class="totals-text-en" style="font-size: 16px;">Total Including VAT</td>
+                <td class="totals-value" style="font-size: 16px;">{{ invoice.total_after_tax }}</td>
+            </tr>
+        </table>
+<div class="amount-text-box">
+
+{% if invoice_balance > 0 %}
+
+    <strong>المبلغ المستحق للشركة:</strong>
+    {{ invoice_balance|floatformat:2 }} ريال
+
+{% elif invoice_balance < 0 %}
+
+    <strong style="color:#dc2626;">
+        المبلغ المستحق للعميل:
+    </strong>
+
+    <span style="color:#dc2626;font-weight:bold;">
+        {{ invoice_balance|floatformat:2|cut:"-" }} ريال
+    </span>
+
+{% else %}
+
+    <strong style="color:#16a34a;">
+        الفاتورة مسددة بالكامل
+    </strong>
+
+{% endif %}
+
+</div>
+
+<!-- ضع هذا خارج amount-text-box -->
+<div class="invoice-footer">
+
+<div class="invoice-qr">
+
+
+    {% if qr_code %}
+    <img src="{{ qr_code }}" 
+         alt="ZATCA QR"
+         style="width:120px;height:120px;object-fit:contain;">
+    {% endif %}
+
+</div>
+
+    <div class="invoice-note">
+        <strong>شكراً لتعاملكم معنا</strong><br>
+        Thank you for your business
+    </div>
+
+</div>
+
+<div class="payments-box">
+    <div style="font-weight: bold; font-size: 14px; color: #1e293b; cursor: pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none';">
+        ▼ {% trans "Receipts / Payments (السندات المرتبطة بالفاتورة)" %}
+    </div>
+    <div style="display:none; margin-top: 10px;">
+        {% if invoice.allocations.all %} 
+        <table style="width: 100%; font-size: 13px; text-align: center; border-collapse: collapse; border: 1px solid #000;">
+            <thead>
+                <tr style="background: #e2e8f0;">
+                    <th style="padding: 6px; border: 1px solid #000;">{% trans "Voucher No" %}</th>
+                    <th style="padding: 6px; border: 1px solid #000;">{% trans "Date" %}</th>
+                    <th style="padding: 6px; border: 1px solid #000;">{% trans "Amount" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alloc in invoice.allocations.all %}
+                <tr>
+                    <td style="padding: 6px; border: 1px solid #000;">{{ alloc.receipt_voucher.voucher_no }}</td>
+                    <td style="padding: 6px; border: 1px solid #000;">{{ alloc.created_at|date:"Y-m-d" }}</td>
+                    <td style="padding: 6px; border: 1px solid #000;">{{ alloc.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="text-align:center; font-size: 12px; color: #64748b; margin: 5px 0 0 0;">{% trans "No payments linked to this invoice" %}</p>
+        {% endif %}
+    </div>
+</div>
     </div>
 </div>
 
+<div id="paymentModal" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.6); z-index:9999; backdrop-filter: blur(2px);">
+<div style="
+    background:#fff;
+    width:620px;
+    max-width:95%;
+    margin:70px auto;
+    padding:30px;
+    border-radius:14px;
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
+">
+        <h4 class="mb-4" style="font-weight: 700; color: #0f172a;">{% trans "Pay Invoice No" %} {{ invoice.invoice_no }}</h4>
+<form method="post" action="{% url 'payments:receipt_create' %}">
+    {% csrf_token %}
+
+    <input type="hidden" name="invoice_id" value="{{ invoice.id }}">
+
+    <input type="hidden" name="party_type" value="customer">
+
+    <input type="hidden" name="party_id" value="{{ invoice.customer.id }}">
+<div class="mb-3">
+    <label class="fw-bold">مبلغ الفاتورة</label>
+    <input type="text"
+           class="form-control"
+           value="{{ invoice_balance|floatformat:2 }}"
+           readonly
+           style="background:#f8fafc;font-weight:bold;">
+</div>
+
+<div class="mb-3">
+    <label class="fw-bold">المدفوع</label>
+
+    <input
+        type="number"
+        step="0.01"
+        min="0"
+        max="{{ invoice_balance }}"
+        id="paid_amount"
+        name="amount"
+        value="{{ invoice_balance }}"
+        class="form-control"
+        required>
+</div>
+<div class="mb-3">
+    <label class="fw-bold">المتبقي</label>
+
+    <input
+        type="text"
+        id="remaining_amount"
+        class="form-control"
+        readonly
+        value="0.00"
+        style="background:#f8fafc;font-weight:bold;color:#dc2626;">
+</div>
+            <div class="mb-3">
+                <label class="fw-bold mb-1">{% trans "Account (Cash / Bank)" %}</label>
+                <select name="cash_account" class="form-select" required>
+                    {% for a in cash_accounts %}
+                        <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="fw-bold mb-1">{% trans "Description" %}</label>
+                <input type="text" name="description" class="form-control" value="{% trans 'Payment for Invoice' %} {{ invoice.invoice_no }}">
+            </div>
+            <div style="display:flex; justify-content:space-between; gap: 10px;">
+                <button type="submit" class="btn btn-success" style="flex: 1;">✔ {% trans "Save Payment" %}</button>
+                <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">{% trans "Cancel" %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openPaymentModal() {
+    alert("الدالة تعمل");
+    document.getElementById("paymentModal").style.display = "block";
+}
+function closePaymentModal() { document.getElementById("paymentModal").style.display = "none"; }
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const params = new URLSearchParams(window.location.search);
+
+    console.log("open_payment =", params.get("open_payment"));
+
+    if (params.get("open_payment") === "1") {
+        console.log("Opening modal...");
+
+        const modal = document.getElementById("paymentModal");
+
+        console.log(modal);
+
+        if (modal) {
+            modal.style.display = "block";
+        }
+    }
+
+});
+</script>
+<script>
+
+function calculateRemaining() {
+
+    const invoice = parseFloat("{{ invoice_balance }}") || 0;
+
+    const paid = parseFloat(document.getElementById("paid_amount").value) || 0;
+
+let remaining = invoice - paid;
+
+document.getElementById("remaining_amount").value =
+    remaining.toFixed(2);
+
+    document.getElementById("remaining_amount").value =
+        remaining.toFixed(2);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    calculateRemaining();
+
+    const paid = document.getElementById("paid_amount");
+
+    if (paid)
+        paid.addEventListener("input", calculateRemaining);
+
+});
+
+</script>
+<script>
+window.onload = function () {
+    setTimeout(function(){
+        window.print();
+    }, 800);
+};
+</script>
 {% endblock %}

@@ -1,0 +1,124 @@
+BBBBBBB BBBBBBBBBBBBBBBBBB
+BBBB BBBB
+BBBBB BBBBBBB
+
+XXXX XXXXXXXXXXXXXXXXXXXXXX XXXXXX
+
+    XXXX XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXX XXXXXX
+        XXX XXXXXXXXXXXXXXXX gettext(u'Supplier List') XXXXX
+
+        XXXX XXX XXXXXXXX XXXXXX XXX
+        XX XXXXXXXXXXXXXXXXXXXXXX
+           XXXXXXXXXXX
+           XXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX XXXXXXXXXXXXXXXXXX XXXXXXXXXXX XXXXX XXXXXXXXXXXXXXXXXXX
+            X  gettext(u'Add Supplier') 
+        XXXX
+    XXXXXX
+
+    XXXXXX XXXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXX
+
+        XXXXXXX
+            XXXX XXXXXX XXX XXX
+            XXXX
+                XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Search No.') XXXXXXX
+                XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Search Supplier') XXXXXXX
+                XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Search Invoices') XXXXXXX
+                XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Search Balance') XXXXXXX
+                XXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Search Status') XXXXXXX
+                XXXXXXXXX
+            XXXXX
+
+            XXXX XXXXX XXXXXXX XXX
+            XXX XXXXXXXXXXXXXXXXXXX
+                XXXXXXXXXX
+                XXXX gettext(u'Supplier') XXXXX
+                XXXX gettext(u'Invoice Count') XXXXX
+                XXXX gettext(u'Balance') XXXXX
+                XXXX gettext(u'Status') XXXXX
+                XXXX gettext(u'Actions') XXXXX
+            XXXXX
+        XXXXXXXX
+
+        XXXXXXX
+            BBB B BB BBBBBBBBB
+            XXXX
+                XXXXXXXXX
+                XXXXXXXXX
+                XXXXXXXXX
+                XXXXFFFFFFFFFFFFFXXXXX
+
+                XXXX
+                    BB BBBBBBBBB B B
+                        XXXXX XXXXXXXXXXXX XXXXXXXXXXXXXX gettext(u'Debtor') XXXXXXX
+                    BBBB BBBBBBBBB B B
+                        XXXXX XXXXXXXXXXXX XXXXXXXXXXXXXX gettext(u'Creditor') XXXXXXX
+                    BBBB
+                        XXXXX XXXXXXXXXXXX XXXXXXXXXXXXXX gettext(u'Balanced') XXXXXXX
+                    BBBBB
+                XXXXX
+
+                XXXX XXXXXXX XXX
+                XXXX
+                    XXXX XXXXXXXXXXXXXXXXX
+                        XXXXXXX XXXXXXXXXX XXXXXXXXXXXXX XXXXXX XXXXXXXXXXXXXXXX
+                                XXXXXXXXXXXXX
+                                XXXXXXXXXXXXXXXXXXXXXXXXX
+                                XXXXXXXXXXXXXXXXXXXXXX
+                             gettext(u'Options') 
+                        XXXXXXXXX
+
+                        XXX XXXXXXXXXXXXXXXXXXXX XXXXXXXXXX
+                            XXXX
+                                XX XXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXX gettext(u'Edit') XXXX
+                            XXXXX
+                            XXXX
+                                XX XXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXX
+                                   XXXXXXXXXXXXXXXXXXXXXXXXXX
+                                   XXXXXXXXXXXXXXX XXXXXXXXX gettext(u'Are you sure you want to delete?') XXXXX
+                                    gettext(u'Delete') 
+                                XXXX
+                            XXXXX
+                        XXXXX
+                    XXXXXX
+                XXXXX
+            XXXXX
+            BBBBBB
+        XXXXXXXX
+
+    XXXXXXXX
+
+XXXXXX
+
+XXXXXXX
+XXXXXXXXXXXXX X
+    XXXXXXXXXXX XXXXXXX
+    XXXXXXX XXX XXXXX XXXXXXX XXXXXXXXXXX
+    XXXXXXXXXXXXXX XXXX
+X
+XXXXXXXXXXXXXXXXXXXXXXXXXX X
+    XXXXXXXXXXX XXXXXXX
+    XXXXXX XXXXXXXX
+X
+XXXXXXXX
+
+XXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXX X
+    XXXXX XXXXXXXXXXXX X XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    XXXXX XXXX X XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXX
+
+    XXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXX XX X
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXX XX X
+            XXXXX XXXXX X XXXXXXXXXXXXXXXXXXXXXXXXX
+            XXXXXXXXXXXXXXXX XX X
+                XXXXX XXXX X XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                XX XXXXXX X
+                    XXXXX XXXX X XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                    XXXXXXXXXXXXXXXXX X XXXXXXXXXXXXXXXXXXXX X XX X XXXXXXX
+                X
+            XXX
+        XXX
+    XXX
+XXX
+XXXXXXXXX
+
+BBBBBBBB

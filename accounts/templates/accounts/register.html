@@ -1,0 +1,636 @@
+{% extends "layout/blank.html" %}
+
+{% block title %}تسجيل شركة جديدة{% endblock %}
+
+{% block content %}
+<div class="split">
+
+  <div class="main">
+    <div class="card" style="max-width: 650px;">
+      <h2>تسجيل شركة جديدة</h2>
+      <p>أدخل بيانات الشركة والمالك، ثم سيتم نقلك تلقائيًا إلى لوحة التحكم.</p>
+
+      <form id="register-form" method="post" action="{% url 'accounts:register_company' %}" novalidate autocomplete="off">
+        {% csrf_token %}
+
+        <input type="text" name="fake_username" autocomplete="username" tabindex="-1" aria-hidden="true" style="position:absolute; left:-9999px; top:-9999px;">
+        <input type="password" name="fake_password" autocomplete="current-password" tabindex="-1" aria-hidden="true" style="position:absolute; left:-9999px; top:-9999px;">
+
+        {% if form.non_field_errors %}
+          <div class="alert">
+            {% for error in form.non_field_errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <h3 style="margin-top: 24px; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; color: #2563eb; font-size: 16px;">🏢 بيانات الشركة الرسمية</h3>
+        
+        <label for="id_company_name">{{ form.company_name.label }}</label>
+        {{ form.company_name }}
+        {% if form.company_name.errors %}
+          <div class="err">{% for error in form.company_name.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+
+        <label for="id_company_name_en">{{ form.company_name_en.label }}</label>
+        {{ form.company_name_en }}
+        {% if form.company_name_en.errors %}
+          <div class="err">{% for error in form.company_name_en.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+
+        <div class="grid">
+          <div>
+            <label for="id_vat_no">{{ form.vat_no.label }}</label>
+            {{ form.vat_no }}
+            {% if form.vat_no.errors %}
+              <div class="err">{% for error in form.vat_no.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_commercial_record">{{ form.commercial_record.label }}</label>
+            {{ form.commercial_record }}
+            {% if form.commercial_record.errors %}
+              <div class="err">{% for error in form.commercial_record.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <h3 style="margin-top: 28px; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; color: #2563eb; font-size: 16px;">📍 الموقع والعنوان الوطني</h3>
+        
+        <div class="grid">
+          <div>
+            <label for="id_country">{{ form.country.label }}</label>
+            {{ form.country }}
+            {% if form.country.errors %}
+              <div class="err">{% for error in form.country.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_city">{{ form.city.label }}</label>
+            {{ form.city }}
+            {% if form.city.errors %}
+              <div class="err">{% for error in form.city.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="id_district">{{ form.district.label }}</label>
+            {{ form.district }}
+            {% if form.district.errors %}
+              <div class="err">{% for error in form.district.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_street">{{ form.street.label }}</label>
+            {{ form.street }}
+            {% if form.street.errors %}
+              <div class="err">{% for error in form.street.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div>
+            <label for="id_building_no">{{ form.building_no.label }}</label>
+            {{ form.building_no }}
+            {% if form.building_no.errors %}
+              <div class="err">{% for error in form.building_no.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_postal_code">{{ form.postal_code.label }}</label>
+            {{ form.postal_code }}
+            {% if form.postal_code.errors %}
+              <div class="err">{% for error in form.postal_code.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_additional_no">{{ form.additional_no.label }}</label>
+            {{ form.additional_no }}
+            {% if form.additional_no.errors %}
+              <div class="err">{% for error in form.additional_no.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <label for="id_national_address">{{ form.national_address.label }}</label>
+        {{ form.national_address }}
+        {% if form.national_address.errors %}
+          <div class="err">{% for error in form.national_address.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+
+        <h3 style="margin-top: 28px; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; color: #2563eb; font-size: 16px;">📞 وسائل التواصل</h3>
+        
+        <div class="grid">
+          <div>
+            <label for="id_phone">{{ form.phone.label }}</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+              <div class="err">{% for error in form.phone.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_mobile">{{ form.mobile.label }}</label>
+            {{ form.mobile }}
+            {% if form.mobile.errors %}
+              <div class="err">{% for error in form.mobile.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="id_email">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="err">{% for error in form.email.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_website">{{ form.website.label }}</label>
+            {{ form.website }}
+            {% if form.website.errors %}
+              <div class="err">{% for error in form.website.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <h3 style="margin-top: 28px; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; color: #2563eb; font-size: 16px;">🏦 الحساب البنكي والملاحظات</h3>
+        
+        <div class="grid">
+          <div>
+            <label for="id_bank_name">{{ form.bank_name.label }}</label>
+            {{ form.bank_name }}
+            {% if form.bank_name.errors %}
+              <div class="err">{% for error in form.bank_name.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_iban">{{ form.iban.label }}</label>
+            {{ form.iban }}
+            {% if form.iban.errors %}
+              <div class="err">{% for error in form.iban.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="id_account_number">{{ form.account_number.label }}</label>
+            {{ form.account_number }}
+            {% if form.account_number.errors %}
+              <div class="err">{% for error in form.account_number.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_swift_code">{{ form.swift_code.label }}</label>
+            {{ form.swift_code }}
+            {% if form.swift_code.errors %}
+              <div class="err">{% for error in form.swift_code.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <label for="id_notes">{{ form.notes.label }}</label>
+        {{ form.notes }}
+        {% if form.notes.errors %}
+          <div class="err">{% for error in form.notes.errors %}<div>{{ error }}</div>{% endfor %}</div>
+        {% endif %}
+
+        <h3 style="margin-top: 28px; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; color: #2563eb; font-size: 16px;">👤 بيانات مدير النظام (Owner)</h3>
+
+        <div class="grid">
+          <div>
+            <label for="id_owner_username">{{ form.owner_username.label }}</label>
+            {{ form.owner_username }}
+            {% if form.owner_username.errors %}
+              <div class="err">{% for error in form.owner_username.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="id_owner_email">{{ form.owner_email.label }}</label>
+            {{ form.owner_email }}
+            {% if form.owner_email.errors %}
+              <div class="err">{% for error in form.owner_email.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="id_password1">{{ form.password1.label }}</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+              <div class="err">{% for error in form.password1.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="id_password2">{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+              <div class="err">{% for error in form.password2.errors %}<div>{{ error }}</div>{% endfor %}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <button class="btn" type="submit">إنشاء الشركة وحفظ البيانات</button>
+
+        <div class="link">
+          لديك حساب بالفعل؟
+          <a href="{% url 'accounts:login' %}">تسجيل الدخول</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="brand">
+      <div class="brand-logo">ERP</div>
+      <div>
+        <div class="brand-title">النظام المحاسبي</div>
+        <div class="brand-sub">SaaS ERP Platform</div>
+      </div>
+    </div>
+
+    <h1 class="headline">ابدأ شركتك الآن</h1>
+    <p class="desc">
+      سجّل شركتك خلال دقيقة، وبعدها أضف المستخدمين والموظفين.
+    </p>
+
+    <div class="mini-card">
+      <b>✨</b>
+      حلول رقمية تصنع الفرق
+      فكل رقم له معنى
+      وكل قرار له أساس
+    </div>
+
+    <div class="illus">
+      <svg viewBox="0 0 640 420" width="100%" height="auto">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#60a5fa" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#a78bfa" stop-opacity=".9"/>
+          </linearGradient>
+        </defs>
+
+        <ellipse cx="320" cy="360" rx="180" ry="26" fill="rgba(0,0,0,.20)"/>
+
+        <g>
+          <path d="M250 300 C260 240, 380 240, 390 300 C400 360, 240 360, 250 300Z" fill="url(#g1)"/>
+          <rect x="295" y="270" width="50" height="90" rx="16" fill="rgba(255,255,255,.88)"/>
+          <text x="320" y="325" text-anchor="middle" font-size="18" font-weight="900" fill="#1d4ed8">ERP</text>
+        </g>
+
+        <g>
+          <circle cx="320" cy="170" r="72" fill="#ffd7b3"/>
+          <path d="M260 175 C265 120, 305 95, 360 110 C395 120, 410 150, 400 190
+                   C385 170, 360 162, 330 165 C305 168, 285 175, 260 175Z"
+                fill="#111827" opacity=".9"/>
+          <path d="M295 175 C305 165, 315 165, 325 175" stroke="#111827" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M335 175 C345 165, 355 165, 365 175" stroke="#111827" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M300 210 C315 230, 325 235, 340 235 C355 235, 365 230, 380 210"
+                stroke="#111827" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="280" cy="205" r="10" fill="rgba(244,114,182,.28)"/>
+          <circle cx="360" cy="205" r="10" fill="rgba(244,114,182,.28)"/>
+        </g>
+
+        <path d="M250 285 C210 300, 190 330, 205 360" stroke="url(#g1)" stroke-width="22" fill="none" stroke-linecap="round"/>
+        <circle cx="205" cy="360" r="16" fill="#ffd7b3"/>
+
+        <g class="wave-hand">
+          <path d="M390 285 C430 270, 470 235, 500 210" stroke="url(#g1)" stroke-width="22" fill="none" stroke-linecap="round"/>
+          <circle cx="500" cy="210" r="18" fill="#ffd7b3"/>
+          <path d="M515 198 C535 180, 560 186, 570 205" stroke="#ffd7b3" stroke-width="16" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: #f3f4f6;
+    font-family: Tahoma, Arial, sans-serif;
+  }
+
+  .split {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    direction: rtl;
+  }
+
+  .main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    background: #f3f4f6;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    padding: 34px 30px;
+  }
+
+  .card h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+    text-align: center;
+  }
+
+  .card p {
+    margin: 0 0 24px;
+    color: #6b7280;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    margin-top: 14px;
+    font-weight: 700;
+    color: #111827;
+    font-size: 14px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+  }
+
+  textarea {
+    height: auto;
+    min-height: 80px;
+    padding: 12px 14px;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #4f7cff;
+    box-shadow: 0 0 0 3px rgba(79,124,255,.12);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 28px;
+    height: 48px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #2563eb, #4f46e5);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    opacity: .95;
+  }
+
+  .link {
+    margin-top: 16px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .link a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .alert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .err {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  /* 🛠️ تم تعديل هذا الجزء للبدء من أعلى الشاشة تماماً وموازاة الفورم */
+  .side {
+    background:
+      radial-gradient(circle at top left, rgba(255,255,255,.10), transparent 28%),
+      linear-gradient(180deg, #0b1d57 0%, #091746 100%);
+    color: #fff;
+    padding: 74px 40px;          /* زيادة البادينج العلوي ليوازي الصندوق الأبيض بدقة */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* إلغاء التوسيط وجعل العناصر تبدأ من الأعلى */
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4f7cff;
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 8px 20px rgba(79,124,255,.35);
+  }
+
+  .brand-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .brand-sub {
+    font-size: 13px;
+    color: #dbe4ff;
+  }
+
+  .headline {
+    margin: 8px 0 14px;
+    font-size: 54px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+
+  .desc {
+    font-size: 18px;
+    line-height: 1.9;
+    color: #e5ecff;
+    margin-bottom: 26px;
+    max-width: 520px;
+  }
+
+  .mini-card {
+    width: fit-content;
+    max-width: 420px;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 18px;
+    padding: 16px 18px;
+    color: #fff;
+    line-height: 1.9;
+    font-size: 17px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(3px);
+  }
+
+  .mini-card b {
+    margin-left: 6px;
+  }
+
+  .illus {
+    margin-top: 10px;
+    max-width: 520px;
+  }
+
+  .wave-hand {
+    transform-origin: 500px 210px;
+    animation: wave 2.2s ease-in-out infinite;
+  }
+
+  @keyframes wave {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(-7deg); }
+    40% { transform: rotate(6deg); }
+    60% { transform: rotate(-5deg); }
+    80% { transform: rotate(4deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @media (max-width: 991px) {
+    .split {
+      grid-template-columns: 1fr;
+    }
+
+    .side {
+      order: -1;
+      min-height: 430px;
+      padding: 32px 24px;
+    }
+
+    .headline {
+      font-size: 38px;
+    }
+
+    .desc,
+    .mini-card,
+    .illus {
+      max-width: 100%;
+    }
+
+    .grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .main {
+      padding: 24px 16px 40px;
+    }
+
+    .card {
+      padding: 26px 20px;
+    }
+  }
+</style>
+
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("register-form");
+    if (!form) return;
+
+    const fields = form.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea');
+
+    fields.forEach(function(field) {
+      if (field.name === "fake_username" || field.name === "fake_password") return;
+
+      if (field.value && field.value.trim() !== "" && field.id !== "id_country") {
+        field.removeAttribute("readonly");
+        return; 
+      }
+
+      if (field.id !== "id_country") {
+        field.setAttribute("readonly", "readonly");
+      }
+      field.setAttribute("autocomplete", "new-password");
+
+      field.addEventListener("focus", function () {
+        this.removeAttribute("readonly");
+      }, { once: true });
+
+      field.addEventListener("mousedown", function () {
+        this.removeAttribute("readonly");
+      }, { once: true });
+    });
+
+    setTimeout(function () {
+      fields.forEach(function(field) {
+        if (field.name === "fake_username" || field.name === "fake_password" || field.id === "id_country") return;
+        if (field.hasAttribute("readonly") && field.value) {
+          field.value = "";
+        }
+      });
+    }, 100);
+
+    setTimeout(function () {
+      fields.forEach(function(field) {
+        if (field.name === "fake_username" || field.name === "fake_password" || field.id === "id_country") return;
+        if (field.hasAttribute("readonly") && field.value) {
+          field.value = "";
+        }
+      });
+    }, 500);
+  });
+</script>
+{% endblock %}

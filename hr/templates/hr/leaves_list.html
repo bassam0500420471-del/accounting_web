@@ -1,19 +1,21 @@
 {% extends "layout/base.html" %}
-{% block title %}إدارة الإجازات{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Leave Management" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-4">إدارة الإجازات</h3>
+<h3 class="mb-4">{% trans "Leave Management" %}</h3>
 
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>الموظف</th>
-            <th>نوع الإجازة</th>
-            <th>من</th>
-            <th>إلى</th>
-            <th>السبب</th>
-            <th>الحالة</th>
-            <th>إجراء</th>
+            <th>{% trans "Employee" %}</th>
+            <th>{% trans "Leave Type" %}</th>
+            <th>{% trans "From" %}</th>
+            <th>{% trans "To" %}</th>
+            <th>{% trans "Reason" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Action" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -26,11 +28,11 @@
             <td>{{ leave.reason }}</td>
             <td>
                 {% if leave.status == 'pending' %}
-                    <span class="badge bg-warning">معلقة</span>
+                    <span class="badge bg-warning">{% trans "Pending" %}</span>
                 {% elif leave.status == 'approved' %}
-                    <span class="badge bg-success">موافق</span>
+                    <span class="badge bg-success">{% trans "Approved" %}</span>
                 {% else %}
-                    <span class="badge bg-danger">مرفوض</span>
+                    <span class="badge bg-danger">{% trans "Rejected" %}</span>
                 {% endif %}
             </td>
             <td>
@@ -44,7 +46,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="7" class="text-center">لا توجد إجازات</td>
+            <td colspan="7" class="text-center">{% trans "No leaves found" %}</td>
         </tr>
         {% endfor %}
     </tbody>

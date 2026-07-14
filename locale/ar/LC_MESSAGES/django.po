@@ -1,43 +1,5318 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: accounting_web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-25 16:20+0300\n"
+"PO-Revision-Date: 2026-04-12 00:00+0300\n"
 "Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-msgid "Dashboard"
-msgstr "لوحة التحكم"
+#: .\accounting\templates\accounting\account_view.html:15
+msgid "Back to Chart of Accounts"
+msgstr "العودة إلى شجرة الحسابات"
 
-msgid "Settings"
-msgstr "الإعدادات"
+#: .\accounting\templates\accounting\account_view.html:25
+msgid "Code"
+msgstr "رمز الاستجابة السريعة"
 
-msgid "Logout"
-msgstr "تسجيل الخروج"
+#: .\accounting\templates\accounting\account_view.html:26
+#: .\accounting\templates\accounting\add_child_account.html:182
+msgid "Account Name"
+msgstr "كود الحساب"
 
-msgid "Login"
-msgstr "تسجيل الدخول"
+#: .\accounting\templates\accounting\account_view.html:27
+#: .\customers\templates\customers\customers_list.html:48
+#: .\customers\templates\customers\list.html:21
+#: .\hr\templates\hr\add_shift.html:28 .\hr\templates\hr\add_shift.html:56
+#: .\hr\templates\hr\departments_list.html:19
+#: .\hr\templates\hr\evaluation_detail.html:81
+#: .\hr\templates\hr\evaluation_list.html:32
+#: .\hr\templates\hr\hr_reports.html:138 .\hr\templates\hr\shifts_list.html:28
+#: .\hr\templates\hr\shifts_list.html:51
+#: .\products\templates\products\products_list.html:152
+#: .\products\templates\products\stock_ledger.html:26
+#: .\products\templates\products\stock_ledger.html:46
+#: .\purchase\templates\purchase\invoices_list.html:99
+#: .\purchase\templates\purchase\po_list.html:34
+#: .\purchase\templates\purchase\purchase_dashboard.html:22
+#: .\purchase\templates\purchase\returns_list.html:61
+#: .\quotations\templates\quotations\quotation_list.html:39
+#: .\sales\templates\sales\invoices_list.html:120
+#: .\sales\templates\sales\returns_list.html:36
+#: .\suppliers\templates\suppliers\suppliers_list.html:38
+msgid "Actions"
+msgstr "الإجراءات"
 
-msgid "Users"
-msgstr "المستخدمون"
+#: .\accounting\templates\accounting\account_view.html:41
+#: .\accounting\templates\accounting\chart\chart_tree.html:104
+#: .\accounting\templates\accounting\chart_of_accounts.html:69
+#: .\accounting\templates\accounting\journals.html:73
+#: .\customers\templates\customers\customers_list.html:81
+#: .\customers\templates\customers\list.html:51
+#: .\hr\templates\hr\evaluation_list.html:86
+#: .\hr\templates\hr\hr_reports.html:191
+#: .\products\templates\products\products_list.html:200
+#: .\products\templates\products\stock_ledger.html:51
+#: .\products\templates\products\stock_take_list.html:16
+#: .\products\templates\products\stock_take_list.html:40
+#: .\purchase\templates\purchase\invoices_list.html:137
+#: .\purchase\templates\purchase\po_list.html:56
+#: .\quotations\templates\quotations\quotation_list.html:71
+#: .\sales\templates\sales\invoices_list.html:159
+msgid "View"
+msgstr "عرض"
 
-msgid "Add"
-msgstr "إضافة"
+#: .\accounting\templates\accounting\account_view.html:52
+msgid "No sub accounts found"
+msgstr "لا توجد نتائج"
 
+#: .\accounting\templates\accounting\accounts\add_child.html:5
+msgid "إضافة فرع حساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:15
+#, python-format
+msgid "إضافة فرع تحت الحساب: %(parent.name)s"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:23
+#: .\accounting\templates\accounting\accounts\edit.html:13
+msgid "اسم الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:35
+#: .\accounting\templates\accounting\accounts\edit.html:18
+#: .\accounting\templates\accounting\accounts\view.html:17
+msgid "الرمز"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:48
+msgid "إضافة"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:53
+#: .\accounting\templates\accounting\accounts\edit.html:25
+msgid "إلغاء"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\edit.html:7
+msgid "تعديل الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\edit.html:22
+msgid "حفظ"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:12
+msgid "حركة الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:17
+msgid "رجوع للحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:31
+#, fuzzy
+#| msgid "تنسيق التاريخ"
+msgid "التاريخ"
+msgstr "Date Format"
+
+#: .\accounting\templates\accounting\accounts\ledger.html:32
+msgid "رقم القيد"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:33
+msgid "البيان"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:34
+msgid "مدين"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:35
+msgid "دائن"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:36
+msgid "الرصيد"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:65
+msgid "الرصيد النهائي"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:80
+msgid "لا توجد حركة على هذا الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:7
+msgid "عرض الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:12
+msgid "الاسم"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:22
+msgid "النوع"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:27
+msgid "الطبيعة"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:34
+msgid "رجوع للشجرة"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:39
+#, fuzzy
+#| msgid "الإعدادات العامة"
+msgid "الحسابات الفرعية"
+msgstr "General Settings"
+
+#: .\accounting\templates\accounting\accounts\view.html:52
+msgid "عرض"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:60
+msgid "لا توجد حسابات فرعية"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:8
+#: .\accounting\templates\accounting\add_child_account.html:154
+msgid "Add Sub Account"
+msgstr "إضافة حساب فرعي"
+
+#: .\accounting\templates\accounting\add_child_account.html:167
+msgid "Parent Account"
+msgstr "الحساب الرئيسي"
+
+#: .\accounting\templates\accounting\add_child_account.html:177
+msgid "Account Code"
+msgstr "كود الحساب"
+
+#: .\accounting\templates\accounting\add_child_account.html:187
+msgid "Account Type"
+msgstr "نوع الحساب"
+
+#: .\accounting\templates\accounting\add_child_account.html:189
+msgid "Assets"
+msgstr "أصول"
+
+#: .\accounting\templates\accounting\add_child_account.html:190
+msgid "Liabilities"
+msgstr "خصوم"
+
+#: .\accounting\templates\accounting\add_child_account.html:191
+msgid "Equity"
+msgstr "حقوق ملكية"
+
+#: .\accounting\templates\accounting\add_child_account.html:192
+msgid "Revenue"
+msgstr "إيرادات"
+
+#: .\accounting\templates\accounting\add_child_account.html:193
+msgid "Expenses"
+msgstr "مصروفات"
+
+#: .\accounting\templates\accounting\add_child_account.html:198
+#, fuzzy
+#| msgid "Add Sub Account"
+msgid "Save Sub Account"
+msgstr "إضافة حساب فرعي"
+
+#: .\accounting\templates\accounting\add_child_account.html:199
+#: .\accounting\templates\accounting\journal_add.html:66
+#: .\accounting\templates\accounting\journal_view.html:15
+#: .\hr\templates\hr\evaluation_fill.html:87
+#: .\hr\templates\hr\evaluation_record_start.html:66
+#: .\hr\templates\hr\hr_permissions.html:125
+#: .\hr\templates\hr\hr_permissions_users.html:49
+#: .\hr\templates\hr\hr_report_detail_items.html:18
+#: .\products\templates\products\product_view.html:46
+#: .\products\templates\products\stock_adjust_view.html:32
+#: .\suppliers\templates\suppliers\supplier_view.html:14
+msgid "Back"
+msgstr "رجوع"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:62
+msgid "Chart of Accounts Tree"
+msgstr "شجرة الحسابات"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:108
+#: .\accounting\templates\accounting\chart_of_accounts.html:76
+#: .\customers\templates\customers\customers_list.html:82
+#: .\customers\templates\customers\list.html:52
+#: .\hr\templates\hr\add_shift.html:61
+#: .\hr\templates\hr\departments_list.html:29
+#: .\hr\templates\hr\evaluation_list.html:92
+#: .\hr\templates\hr\shifts_list.html:56
+#: .\products\templates\products\product_view.html:144
+#: .\products\templates\products\products_list.html:201
+#: .\products\templates\products\stock_ledger.html:49
+#: .\purchase\templates\purchase\po_view.html:90
+#: .\quotations\templates\quotations\quotation_list.html:74
+#: .\suppliers\templates\suppliers\supplier_view.html:17
+#: .\suppliers\templates\suppliers\suppliers_list.html:72
 msgid "Edit"
 msgstr "تعديل"
 
+#: .\accounting\templates\accounting\chart\chart_tree.html:112
+#: .\accounting\templates\accounting\chart_of_accounts.html:71
+msgid "Add Child"
+msgstr "إضافة فرع"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:118
+#: .\accounting\templates\accounting\chart_of_accounts.html:80
+#: .\customers\templates\customers\customers_list.html:83
+#: .\customers\templates\customers\list.html:53
+#: .\hr\templates\hr\add_evaluation.html:154
+#: .\hr\templates\hr\add_evaluation.html:298
+#: .\hr\templates\hr\add_shift.html:68
+#: .\hr\templates\hr\departments_list.html:33
+#: .\hr\templates\hr\shifts_list.html:63 .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\product_edit.html:165
+#: .\products\templates\products\product_edit.html:229
+#: .\products\templates\products\product_form.html:205
+#: .\products\templates\products\product_view.html:147
+#: .\products\templates\products\products_list.html:202
+#: .\products\templates\products\stock_ledger.html:50
+#: .\purchase\templates\purchase\invoice_add.html:153
+#: .\purchase\templates\purchase\invoice_add.html:191
+#: .\purchase\templates\purchase\invoice_add.html:245
+#: .\purchase\templates\purchase\po_add.html:123
+#: .\purchase\templates\purchase\po_add.html:162
+#: .\purchase\templates\purchase\po_add.html:385
+#: .\purchase\templates\purchase\po_list.html:58
+#: .\quotations\templates\quotations\quotation_add.html:132
+#: .\quotations\templates\quotations\quotation_add.html:181
+#: .\quotations\templates\quotations\quotation_form.html:62
+#: .\quotations\templates\quotations\quotation_form.html:98
+#: .\quotations\templates\quotations\quotation_list.html:75
+#: .\sales\templates\sales\invoice_add.html:165
+#: .\sales\templates\sales\invoice_add.html:202
+#: .\suppliers\templates\suppliers\supplier_view.html:23
+#: .\suppliers\templates\suppliers\suppliers_list.html:78
+#: .\venv\Lib\site-packages\django\forms\formsets.py:499
 msgid "Delete"
 msgstr "حذف"
 
-msgid "Save"
-msgstr "حفظ"
+#: .\accounting\templates\accounting\chart\chart_tree.html:119
+#, fuzzy
+#| msgid "Confirm Delete Entry"
+msgid "Confirm delete?"
+msgstr "تأكيد حذف القيد"
 
+#: .\accounting\templates\accounting\chart_of_accounts.html:32
+#: .\templates\layout\base.html:557
+msgid "Chart of Accounts"
+msgstr "شجرة الحسابات"
+
+#: .\accounting\templates\accounting\chart_of_accounts.html:81
+#, fuzzy
+#| msgid "Confirm Delete Entry"
+msgid "Confirm deletion?"
+msgstr "تأكيد حذف القيد"
+
+#: .\accounting\templates\accounting\journal_add.html:63
+msgid "Add Manual Journal Entry"
+msgstr "إضافة قيد يومي"
+
+#: .\accounting\templates\accounting\journal_add.html:78
+#: .\accounting\templates\accounting\journal_view.html:25
+#: .\accounting\templates\accounting\journals.html:34
+#: .\dashboard\templates\dashboard\index.html:87 .\hr\models.py:397
+#: .\hr\templates\hr\add_employee_schedule.html:70
+#: .\hr\templates\hr\attendance_page.html:47
+#: .\hr\templates\hr\employee_schedule_calendar.html:59
+#: .\products\templates\products\stock_ledger.html:24
+#: .\purchase\templates\purchase\invoices_list.html:96
+#: .\purchase\templates\purchase\po_list.html:22
+#: .\purchase\templates\purchase\po_list.html:32
+#: .\quotations\templates\quotations\quotation_list.html:36
+#: .\sales\templates\sales\invoice_view.html:190
+#: .\sales\templates\sales\invoices_list.html:117
+msgid "Date"
+msgstr "التاريخ"
+
+#: .\accounting\templates\accounting\journal_add.html:87
+#: .\accounting\templates\accounting\journal_view.html:46
+#: .\accounting\templates\accounting\journals.html:35
+#: .\products\templates\products\product_edit.html:125
+#: .\products\templates\products\product_form.html:167
+#: .\products\templates\products\product_form_base.html:40
+#: .\products\templates\products\product_view.html:111
+#: .\purchase\templates\purchase\invoice_add.html:127
+#: .\purchase\templates\purchase\invoice_add.html:146
+#: .\purchase\templates\purchase\po_add.html:117
+#: .\purchase\templates\purchase\po_view.html:29
+#: .\quotations\templates\quotations\quotation_add.html:126
+#: .\quotations\templates\quotations\quotation_form.html:56
+#: .\quotations\templates\quotations\quotation_view.html:30
+#: .\sales\templates\sales\invoice_add.html:158
+#: .\sales\templates\sales\invoice_pdf.html:50
+#: .\sales\templates\sales\invoice_print.html:31
+#: .\sales\templates\sales\invoice_view.html:129
+#: .\sales\templates\sales\invoice_view.html:233
+#: .\sales\templates\sales\pdf_template.html:58
+#: .\suppliers\templates\suppliers\supplier_pdf.html:91
+#: .\suppliers\templates\suppliers\supplier_print.html:40
+#: .\suppliers\templates\suppliers\supplier_view.html:90
+msgid "Description"
+msgstr "الوصف"
+
+#: .\accounting\templates\accounting\journal_add.html:91
+
+#: .\accounting\templates\accounting\journal_add.html:105
+#: .\accounting\templates\accounting\journal_view.html:61
+msgid "Account"
+msgstr "المحاسبة"
+
+#: .\accounting\templates\accounting\journal_add.html:106
+#: .\accounting\templates\accounting\journal_view.html:62
+#: .\accounting\templates\accounting\journals.html:36
+msgid "Debit"
+msgstr "مدين"
+
+#: .\accounting\templates\accounting\journal_add.html:107
+#: .\accounting\templates\accounting\journal_view.html:63
+#: .\accounting\templates\accounting\journals.html:37
+msgid "Credit"
+msgstr "دائن"
+
+#: .\accounting\templates\accounting\journal_add.html:117
+#: .\accounting\templates\accounting\journal_add.html:136
+#: .\accounting\templates\accounting\journal_add.html:197
+#: .\products\templates\products\product_edit.html:85
+#: .\products\templates\products\product_edit.html:98
+#: .\products\templates\products\product_edit.html:111
+#: .\products\templates\products\product_form.html:128
+#: .\products\templates\products\product_form.html:141
+#: .\products\templates\products\product_form.html:154
+msgid "Select Account"
+msgstr "اختر الحساب"
+
+#: .\accounting\templates\accounting\journal_add.html:153
+#: .\accounting\templates\accounting\journal_view.html:88
+#: .\pos\templates\pos\pos.html:112
+#: .\purchase\templates\purchase\_return_selector.html:56
+#: .\purchase\templates\purchase\invoice_add.html:151
+#: .\purchase\templates\purchase\invoices_list.html:97
+#: .\purchase\templates\purchase\po_add.html:122
+#: .\purchase\templates\purchase\po_list.html:23
+#: .\purchase\templates\purchase\po_list.html:33
+#: .\purchase\templates\purchase\po_view.html:34
+#: .\purchase\templates\purchase\purchase_print.html:47
+#: .\purchase\templates\purchase\purchase_return_view.html:37
+#: .\purchase\templates\purchase\purchase_view.html:60
+#: .\purchase\templates\purchase\purchase_view_pdf.html:135
+#: .\purchase\templates\purchase\returns_list.html:60
+#: .\quotations\templates\quotations\quotation_add.html:131
+#: .\quotations\templates\quotations\quotation_form.html:61
+#: .\quotations\templates\quotations\quotation_list.html:37
+#: .\quotations\templates\quotations\quotation_view.html:35
+#: .\sales\templates\sales\invoice_add.html:163
+#: .\sales\templates\sales\invoice_pdf.html:55
+#: .\sales\templates\sales\invoice_print.html:36
+#: .\sales\templates\sales\invoice_view.html:134
+#: .\sales\templates\sales\invoices_list.html:118
+#: .\sales\templates\sales\pdf_template.html:63
+#: .\sales\templates\sales\returns_list.html:35
+#: .\suppliers\templates\suppliers\supplier_pdf.html:96
+#: .\suppliers\templates\suppliers\supplier_print.html:45
+#: .\suppliers\templates\suppliers\supplier_view.html:95
+msgid "Total"
+msgstr "الإجمالي"
+
+#: .\accounting\templates\accounting\journal_add.html:167
+#: .\purchase\templates\purchase\invoice_add.html:200
+#: .\purchase\templates\purchase\po_add.html:172
+#: .\quotations\templates\quotations\quotation_add.html:191
+#: .\sales\templates\sales\invoice_add.html:215
+msgid "Add Row"
+msgstr "إضافة سطر"
+
+#: .\accounting\templates\accounting\journal_add.html:173
+msgid "Save Entry"
+msgstr "حفظ القيد"
+
+#: .\accounting\templates\accounting\journal_add.html:231
+#: .\accounting\templates\accounting\journal_view.html:95
+msgid "Not Balanced"
+msgstr "غير متوازن"
+
+#: .\accounting\templates\accounting\journal_add.html:235
+msgid "Balanced Entry"
+msgstr "قيد متوازن"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:10
+msgid "Confirm Delete Entry"
+msgstr "تأكيد حذف القيد"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:13
+msgid "Are you sure you want to delete entry number"
+msgstr "هل أنت متأكد من الحذف؟"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:21
+msgid "Yes, Delete"
+msgstr "نعم، احذف"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:26
+#: .\customers\templates\customers\customer_form.html:152
+#: .\hr\templates\hr\add_department.html:28
+#: .\hr\templates\hr\add_employee_schedule.html:130
+#: .\hr\templates\hr\add_evaluation.html:214
+#: .\hr\templates\hr\add_leave.html:81
+#: .\products\templates\products\category_add.html:36
+#: .\products\templates\products\stock_adjust.html:122
+#: .\products\templates\products\stock_adjust_edit.html:36
+#: .\sales\templates\sales\invoice_view.html:240
+#: .\suppliers\templates\suppliers\supplier_add.html:153
+#: .\suppliers\templates\suppliers\supplier_edit.html:207
 msgid "Cancel"
 msgstr "إلغاء"
 
+#: .\accounting\templates\accounting\journal_view.html:10
+msgid "View Entry No"
+msgstr "عرض القيد رقم"
+
+#: .\accounting\templates\accounting\journal_view.html:28
+#: .\accounting\templates\accounting\journals.html:38
+#: .\customers\templates\customers\customers_list.html:47
+#: .\customers\templates\customers\list.html:20
+#: .\dashboard\templates\dashboard\index.html:89 .\hr\forms.py:331
+#: .\hr\models.py:402 .\hr\templates\hr\add_evaluation.html:53
+#: .\hr\templates\hr\employee_list.html:149
+#: .\hr\templates\hr\evaluation_list.html:31
+#: .\hr\templates\hr\hr_reports.html:137 .\hr\templates\hr\leaves_list.html:17
+#: .\products\templates\products\category_list.html:22
+#: .\products\templates\products\products_list.html:151
+#: .\products\templates\products\stock_take_list.html:15
+#: .\purchase\templates\purchase\invoices_list.html:98
+#: .\purchase\templates\purchase\purchase_dashboard.html:21
+#: .\quotations\templates\quotations\quotation_list.html:38
+#: .\sales\templates\sales\invoices_list.html:119
+#: .\suppliers\templates\suppliers\suppliers_list.html:37
+msgid "Status"
+msgstr "الحالة"
+
+#: .\accounting\templates\accounting\journal_view.html:30
+#: .\accounting\templates\accounting\journals.html:53
+msgid "Posted"
+msgstr "ترحيل"
+
+#: .\accounting\templates\accounting\journal_view.html:32
+#: .\accounting\templates\accounting\journals.html:55 .\hr\models.py:364
+#: .\hr\templates\hr\evaluation_list.html:66
+#: .\quotations\templates\quotations\quotation_list.html:62
+msgid "Draft"
+msgstr "مسودة"
+
+#: .\accounting\templates\accounting\journal_view.html:36
+msgid "Source"
+msgstr "المصدر"
+
+#: .\accounting\templates\accounting\journal_view.html:38
+msgid "Auto"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:38
+#: .\pos\templates\pos\pos.html:87
+msgid "Invoice"
+msgstr "فاتورة"
+
+#: .\accounting\templates\accounting\journal_view.html:40
+msgid "Manual"
+msgstr "يدوي"
+
+#: .\accounting\templates\accounting\journal_view.html:64
+#: .\purchase\templates\purchase\invoice_add.html:152
+#: .\sales\templates\sales\invoice_add.html:164
+msgid "Cost Center"
+msgstr "مركز التكلفة"
+
+#: .\accounting\templates\accounting\journal_view.html:80
+msgid "None"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:93
+#: .\customers\templates\customers\customers_list.html:70
+#: .\customers\templates\customers\list.html:41
+#: .\suppliers\templates\suppliers\suppliers_list.html:56
+msgid "Balanced"
+msgstr "متوازن"
+
+#: .\accounting\templates\accounting\journals.html:20
+msgid "Journal Entries Management"
+msgstr "إدارة القيود اليومية"
+
+#: .\accounting\templates\accounting\journals.html:22
+msgid "Add Entry"
+msgstr "إضافة قيد"
+
+#: .\accounting\templates\accounting\journals.html:33
+msgid "Entry No"
+msgstr "رقم القيد"
+
+#: .\accounting\templates\accounting\journals.html:39
+#: .\accounting\templates\accounting\journals.html:64
+#: .\customers\templates\customers\customers_list.html:77
+#: .\hr\templates\hr\evaluation_list.html:80
+#: .\products\templates\products\products_list.html:198
+#: .\purchase\templates\purchase\invoices_list.html:131
+#: .\purchase\templates\purchase\po_list.html:52
+#: .\purchase\templates\purchase\returns_list.html:80
+#: .\quotations\templates\quotations\quotation_list.html:68
+#: .\sales\templates\sales\invoices_list.html:150
+#: .\sales\templates\sales\returns_list.html:55
+#: .\suppliers\templates\suppliers\suppliers_list.html:67
+msgid "Options"
+msgstr "خيارات"
+
+#: .\accounting\templates\accounting\journals.html:84
+msgid "Are you sure you want to post this entry?"
+msgstr "هل أنت متأكد من حذف الشفت؟"
+
+#: .\accounting\templates\accounting\journals.html:85
+msgid "Post"
+msgstr "ترحيل"
+
+#: .\accounting\templates\accounting\journals.html:94
+msgid "Auto Entry (Invoice)"
+msgstr "قيد آلي (فاتورة)"
+
+#: .\accounting\templates\accounting\journals.html:110
+msgid "No journal entries yet"
+msgstr "لا توجد قيود"
+
+# ====== Languages ======
+#: .\accounting_web_project\settings.py:162
+msgid "Arabic"
+msgstr "العربية"
+
+#: .\accounting_web_project\settings.py:163
+msgid "English"
+msgstr "الإنجليزية"
+
+#: .\app_settings\templates\settings_app\settings_home.html:4
+#: .\app_settings\templates\settings_app\settings_home.html:8
+#: .\app_settings\templates\settings_app\system_settings.html:52
+msgid "إعدادات النظام"
+msgstr "System Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:12
+#: .\app_settings\templates\settings_app\system_settings.html:61
+#: .\app_settings\templates\settings_app\system_settings.html:91
+msgid "الإعدادات العامة"
+msgstr "General Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:15
+#: .\app_settings\templates\settings_app\system_settings.html:67
+#: .\app_settings\templates\settings_app\system_settings.html:146
+msgid "إعدادات الطباعة"
+msgstr "Print Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:18
+#: .\app_settings\templates\settings_app\system_settings.html:73
+#: .\app_settings\templates\settings_app\system_settings.html:188
+msgid "النسخ الاحتياطي"
+msgstr "Backup"
+
+#: .\app_settings\templates\settings_app\settings_home.html:21
+#: .\app_settings\templates\settings_app\system_settings.html:79
+#: .\app_settings\templates\settings_app\system_settings.html:215
+msgid "إعدادات متقدمة"
+msgstr "Advanced Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:28
+#: .\app_settings\templates\settings_app\system_settings.html:98
+msgid "اللغة الافتراضية للنظام"
+msgstr "Default System Language"
+
+#: .\app_settings\templates\settings_app\settings_home.html:32
+#: .\app_settings\templates\settings_app\system_settings.html:109
+msgid "تنسيق التاريخ"
+msgstr "Date Format"
+
+#: .\app_settings\templates\settings_app\settings_home.html:36
+#: .\app_settings\templates\settings_app\system_settings.html:122
+msgid "نمط الألوان"
+msgstr "Color Theme"
+
+#: .\app_settings\templates\settings_app\settings_home.html:37
+#: .\app_settings\templates\settings_app\system_settings.html:125
+msgid "الوضع الفاتح"
+msgstr "Light Mode"
+
+#: .\app_settings\templates\settings_app\settings_home.html:39
+#: .\app_settings\templates\settings_app\system_settings.html:136
+#: .\app_settings\templates\settings_app\system_settings.html:177
+msgid "حفظ الإعدادات"
+msgstr "Save Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:43
+msgid "هنا يمكنك ضبط إعدادات الطباعة."
+msgstr "Here you can configure printing settings."
+
+#: .\app_settings\templates\settings_app\settings_home.html:47
+msgid "هنا يمكنك إعداد النسخ الاحتياطي التلقائي."
+msgstr "Here you can set up automatic backups."
+
+#: .\app_settings\templates\settings_app\settings_home.html:51
+msgid "خيارات متقدمة لإعداد النظام."
+msgstr "Advanced system configuration options."
+
+#: .\app_settings\templates\settings_app\system_settings.html:112
+msgid "YYYY-MM-DD"
+msgstr "YYYY-MM-DD"
+
+#: .\app_settings\templates\settings_app\system_settings.html:116
+msgid "DD/MM/YYYY"
+msgstr "DD/MM/YYYY"
+
+#: .\app_settings\templates\settings_app\system_settings.html:129
+msgid "الوضع الداكن"
+msgstr "Dark Mode"
+
+#: .\app_settings\templates\settings_app\system_settings.html:152
+msgid "مقاس الصفحة"
+msgstr "Page Size"
+
+#: .\app_settings\templates\settings_app\system_settings.html:157
+msgid "حراري 80mm"
+msgstr "Thermal 80mm"
+
+#: .\app_settings\templates\settings_app\system_settings.html:163
+msgid "اتجاه الصفحة"
+msgstr "Page Orientation"
+
+#: .\app_settings\templates\settings_app\system_settings.html:166
+msgid "عمودي"
+msgstr "Portrait"
+
+#: .\app_settings\templates\settings_app\system_settings.html:170
+msgid "أفقي"
+msgstr "Landscape"
+
+#: .\app_settings\templates\settings_app\system_settings.html:194
+#, fuzzy
+#| msgid "النسخ الاحتياطي"
+msgid "إنشاء نسخة احتياطية"
+msgstr "Backup"
+
+#: .\app_settings\templates\settings_app\system_settings.html:198
+#, fuzzy
+#| msgid "النسخ الاحتياطي"
+msgid "استعادة نسخة احتياطية"
+msgstr "Backup"
+
+#: .\app_settings\templates\settings_app\system_settings.html:204
+msgid "استعادة البيانات"
+msgstr ""
+
+#: .\app_settings\templates\settings_app\system_settings.html:217
+msgid "رقم الإصدار: 1.0.0"
+msgstr ""
+
+#: .\app_settings\templates\settings_app\system_settings.html:218
+#, fuzzy
+#| msgid "خيارات متقدمة لإعداد النظام."
+msgid "خيارات متقدمة سيتم إضافتها لاحقاً."
+msgstr "Advanced system configuration options."
+
+#: .\customers\templates\customers\customer_form.html:5
+#: .\customers\templates\customers\customer_form.html:9
+#: .\customers\templates\customers\customers_list.html:24
+#: .\customers\templates\customers\list.html:10
+#: .\quotations\templates\quotations\quotation_add.html:105
+#: .\sales\templates\sales\invoice_add.html:133
+msgid "Add Customer"
+msgstr "إضافة عميل"
+
+#: .\customers\templates\customers\customer_form.html:23
+msgid "Customer Information"
+msgstr "معلومات العميل"
+
+#: .\customers\templates\customers\customer_form.html:25
+msgid "Customer Type"
+msgstr "نوع العميل"
+
+#: .\customers\templates\customers\customer_form.html:29
+msgid "Individual"
+msgstr "فرد"
+
+#: .\customers\templates\customers\customer_form.html:35
+msgid "Business"
+msgstr "شركة"
+
+#: .\customers\templates\customers\customer_form.html:39
+#: .\suppliers\templates\suppliers\supplier_add.html:26
+#: .\suppliers\templates\suppliers\supplier_edit.html:52
+msgid "Commercial Name"
+msgstr "الاسم التجاري"
+
+#: .\customers\templates\customers\customer_form.html:45
+#: .\suppliers\templates\suppliers\supplier_add.html:34
+#: .\suppliers\templates\suppliers\supplier_edit.html:61
+msgid "First Name"
+msgstr "الاسم الأول"
+
+#: .\customers\templates\customers\customer_form.html:49
+#: .\suppliers\templates\suppliers\supplier_add.html:39
+#: .\suppliers\templates\suppliers\supplier_edit.html:67
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+#: .\customers\templates\customers\customer_form.html:56
+#: .\suppliers\templates\suppliers\supplier_add.html:47
+#: .\suppliers\templates\suppliers\supplier_edit.html:76
+msgid "Phone"
+msgstr "الهاتف"
+
+#: .\customers\templates\customers\customer_form.html:60
+#: .\suppliers\templates\suppliers\supplier_add.html:52
+#: .\suppliers\templates\suppliers\supplier_edit.html:82
+msgid "Mobile"
+msgstr "الجوال"
+
+#: .\customers\templates\customers\customer_form.html:66
+#: .\suppliers\templates\suppliers\supplier_add.html:59
+#: .\suppliers\templates\suppliers\supplier_edit.html:90
+msgid "Street Address 1"
+msgstr "العنوان 1"
+
+#: .\customers\templates\customers\customer_form.html:71
+#: .\suppliers\templates\suppliers\supplier_add.html:65
+#: .\suppliers\templates\suppliers\supplier_edit.html:97
+msgid "Street Address 2"
+msgstr "العنوان 2"
+
+#: .\customers\templates\customers\customer_form.html:77
+#: .\suppliers\templates\suppliers\supplier_add.html:72
+#: .\suppliers\templates\suppliers\supplier_edit.html:105
+msgid "City"
+msgstr "المدينة"
+
+#: .\customers\templates\customers\customer_form.html:81
+#: .\suppliers\templates\suppliers\supplier_add.html:77
+#: .\suppliers\templates\suppliers\supplier_edit.html:111
+msgid "Region"
+msgstr "المنطقة"
+
+#: .\customers\templates\customers\customer_form.html:85
+#: .\suppliers\templates\suppliers\supplier_add.html:82
+#: .\suppliers\templates\suppliers\supplier_edit.html:117
+msgid "Postal Code"
+msgstr "الرمز البريدي"
+
+#: .\customers\templates\customers\customer_form.html:91
+#: .\suppliers\templates\suppliers\supplier_add.html:89
+#: .\suppliers\templates\suppliers\supplier_edit.html:125
+msgid "Country"
+msgstr "الدولة"
+
+#: .\customers\templates\customers\customer_form.html:93
+#: .\suppliers\templates\suppliers\supplier_add.html:91
+msgid "Saudi Arabia (SA)"
+msgstr "السعودية (SA)"
+
+#: .\customers\templates\customers\customer_form.html:100
+#: .\suppliers\templates\suppliers\supplier_add.html:97
+#: .\suppliers\templates\suppliers\supplier_edit.html:133
+msgid "Tax Number (Optional)"
+msgstr "الرقم الضريبي (اختياري)"
+
+#: .\customers\templates\customers\customer_form.html:104
+#: .\suppliers\templates\suppliers\supplier_add.html:102
+#: .\suppliers\templates\suppliers\supplier_edit.html:139
+msgid "CR Number (Optional)"
+msgstr "رقم السجل التجاري (اختياري)"
+
+#: .\customers\templates\customers\customer_form.html:115
+#: .\suppliers\templates\suppliers\supplier_add.html:113
+msgid "Additional Information"
+msgstr "معلومات إضافية"
+
+#: .\customers\templates\customers\customer_form.html:117 .\hr\forms.py:113
+#: .\hr\forms.py:159 .\hr\templates\hr\hr_permissions_users.html:17
+#: .\suppliers\templates\suppliers\supplier_add.html:115
+#: .\suppliers\templates\suppliers\supplier_edit.html:171
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#: .\customers\templates\customers\customer_form.html:121
+#: .\suppliers\templates\suppliers\supplier_add.html:120
+#: .\suppliers\templates\suppliers\supplier_edit.html:177
+msgid "Opening Balance"
+msgstr "الرصيد الافتتاحي"
+
+#: .\customers\templates\customers\customer_form.html:128
+#: .\dashboard\templates\dashboard\index.html:91 .\hr\forms.py:374
+#: .\hr\models.py:256 .\hr\templates\hr\add_evaluation.html:204
+#: .\hr\templates\hr\add_shift.html:27 .\hr\templates\hr\shifts_list.html:27
+#: .\products\templates\products\stock_adjust.html:97
+#: .\suppliers\templates\suppliers\supplier_add.html:128
+#: .\suppliers\templates\suppliers\supplier_edit.html:183
+msgid "Notes"
+msgstr "ملاحظات"
+
+#: .\customers\templates\customers\customer_form.html:135
+#: .\suppliers\templates\suppliers\supplier_add.html:135
+#: .\suppliers\templates\suppliers\supplier_edit.html:190
+msgid "Attachments"
+msgstr "المرفقات"
+
+#: .\customers\templates\customers\customer_form.html:149
+#: .\hr\templates\hr\add_department.html:24
+#: .\hr\templates\hr\add_employee.html:234
+#: .\hr\templates\hr\add_employee_schedule.html:126
+#: .\hr\templates\hr\add_evaluation_type.html:27
+#: .\hr\templates\hr\add_leave.html:78
+#: .\hr\templates\hr\employee_schedule_calendar.html:49
+#: .\hr\templates\hr\evaluation_fill.html:84
+#: .\products\templates\products\category_add.html:39
+#: .\products\templates\products\stock_adjust.html:125
+#: .\suppliers\templates\suppliers\supplier_add.html:149
+msgid "Save"
+msgstr "حفظ"
+
+#: .\customers\templates\customers\customers_list.html:21
+#: .\customers\templates\customers\list.html:9
+msgid "Customer List"
+msgstr "قائمة العملاء"
+
+#: .\customers\templates\customers\customers_list.html:33
+#: .\quotations\templates\quotations\quotation_list.html:23
+#: .\sales\templates\sales\returns_list.html:19
+#: .\suppliers\templates\suppliers\suppliers_list.html:23
+msgid "Search No."
+msgstr "بحث الرقم"
+
+#: .\customers\templates\customers\customers_list.html:34
+#: .\quotations\templates\quotations\quotation_list.html:25
+#: .\sales\templates\sales\invoices_list.html:106
+#: .\sales\templates\sales\returns_list.html:22
+msgid "Search Customer"
+msgstr "بحث العميل"
+
+#: .\customers\templates\customers\customers_list.html:35
+msgid "Search Invoice Count"
+msgstr "بحث عدد الفواتير"
+
+#: .\customers\templates\customers\customers_list.html:36
+#: .\suppliers\templates\suppliers\suppliers_list.html:26
+msgid "Search Balance"
+msgstr "بحث الرصيد"
+
+#: .\customers\templates\customers\customers_list.html:37
+#: .\purchase\templates\purchase\invoices_list.html:88
+#: .\sales\templates\sales\invoices_list.html:109
+#: .\suppliers\templates\suppliers\suppliers_list.html:27
+msgid "Search Status"
+msgstr "بحث الحالة"
+
+#: .\customers\templates\customers\customers_list.html:44
+#: .\customers\templates\customers\list.html:17
+#: .\quotations\templates\quotations\quotation_list.html:35
+#: .\sales\templates\sales\invoices_list.html:116
+#: .\sales\templates\sales\returns_list.html:33
+msgid "Customer"
+msgstr "العميل"
+
+#: .\customers\templates\customers\customers_list.html:45
+#: .\customers\templates\customers\list.html:18
+#: .\suppliers\templates\suppliers\suppliers_list.html:35
+msgid "Invoice Count"
+msgstr "عدد الفواتير"
+
+#: .\customers\templates\customers\customers_list.html:46
+#: .\customers\templates\customers\list.html:19
+#: .\purchase\templates\purchase\purchase_dashboard.html:20
+#: .\suppliers\templates\suppliers\suppliers_list.html:36
+msgid "Balance"
+msgstr "الرصيد"
+
+#: .\customers\templates\customers\customers_list.html:66
+#: .\customers\templates\customers\list.html:37
+#: .\suppliers\templates\suppliers\suppliers_list.html:52
+msgid "Debtor"
+msgstr "مدين"
+
+#: .\customers\templates\customers\customers_list.html:68
+#: .\customers\templates\customers\list.html:39
+#: .\suppliers\templates\suppliers\suppliers_list.html:54
+msgid "Creditor"
+msgstr "دائن"
+
+# ====== Dashboard ======
+#: .\dashboard\templates\dashboard\index.html:4
+#: .\templates\layout\base.html:375
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+# ====== Employees ======
+#: .\dashboard\templates\dashboard\index.html:40
+#: .\hr\templates\hr\employee_list.html:5
+#: .\hr\templates\hr\employee_list.html:121
+#: .\hr\templates\hr\hr_permissions.html:17
+msgid "Employees"
+msgstr "الموظفون"
+
+#: .\dashboard\templates\dashboard\index.html:44
+msgid "Today's Attendance"
+msgstr "حضور اليوم"
+
+#: .\dashboard\templates\dashboard\index.html:48
+msgid "Invoices"
+msgstr "الفواتير"
+
+#: .\dashboard\templates\dashboard\index.html:52
+#: .\hr\templates\hr\add_employee.html:192
+#: .\hr\templates\hr\hr_permissions.html:63
+msgid "Leaves"
+msgstr "الإجازات"
+
+#: .\dashboard\templates\dashboard\index.html:60
+msgid "Monthly Sales Invoices"
+msgstr "فواتير المبيعات"
+
+#: .\dashboard\templates\dashboard\index.html:67
+msgid "Monthly Purchase Invoices"
+msgstr "فواتير المشتريات"
+
+#: .\dashboard\templates\dashboard\index.html:77
+msgid "Daily Attendance Table"
+msgstr "جدول الحضور اليومي"
+
+#: .\dashboard\templates\dashboard\index.html:83 .\hr\forms.py:25
+#: .\hr\templates\hr\add_employee.html:76
+msgid "Employee Number"
+msgstr "رقم الموظف"
+
+#: .\dashboard\templates\dashboard\index.html:85 .\hr\forms.py:326
+#: .\hr\models.py:396 .\hr\templates\hr\add_employee_schedule.html:45
+#: .\hr\templates\hr\add_evaluation.html:123
+#: .\hr\templates\hr\attendance_page.html:46
+#: .\hr\templates\hr\employee_schedule_calendar.html:33
+#: .\hr\templates\hr\evaluation_detail.html:79
+#: .\hr\templates\hr\hr_permissions_users.html:16
+#: .\hr\templates\hr\hr_report_detail_items.html:26
+#: .\hr\templates\hr\hr_reports.html:28 .\hr\templates\hr\hr_reports.html:76
+#: .\hr\templates\hr\hr_reports.html:129 .\hr\templates\hr\leaves_list.html:12
+msgid "Employee"
+msgstr "الموظف"
+
+#: .\dashboard\templates\dashboard\index.html:111 .\hr\models.py:393
+msgid "Absent"
+msgstr "غائب"
+
+#: .\dashboard\templates\dashboard\index.html:113 .\hr\models.py:391
+msgid "Present"
+msgstr "حاضر"
+
+#: .\dashboard\templates\dashboard\index.html:122
+msgid "No attendance data today"
+msgstr "لا توجد بيانات حضور اليوم"
+
+#: .\dashboard\templates\dashboard\index.html:136
+msgid "Top Selling Products"
+msgstr "أكثر المنتجات مبيعًا"
+
+#: .\dashboard\templates\dashboard\index.html:141
+#: .\dashboard\templates\dashboard\index.html:173
+#: .\products\templates\products\product_edit.html:39
+#: .\products\templates\products\product_form.html:62
+#: .\products\templates\products\product_form_base.html:5
+msgid "Product Name"
+msgstr "اسم المنتج"
+
+#: .\dashboard\templates\dashboard\index.html:143
+#: .\templates\layout\base.html:458
+msgid "Sales"
+msgstr "المبيعات"
+
+#: .\dashboard\templates\dashboard\index.html:156
+msgid "No sales data"
+msgstr "لا توجد بيانات مبيعات"
+
+#: .\dashboard\templates\dashboard\index.html:168
+msgid "Low Stock"
+msgstr "مخزون منخفض"
+
+#: .\dashboard\templates\dashboard\index.html:174
+#: .\pos\templates\pos\pos.html:60
+msgid "Stock"
+msgstr "المخزون"
+
+#: .\dashboard\templates\dashboard\index.html:186
+msgid "No stock data"
+msgstr "لا توجد بيانات مخزون"
+
+#: .\dashboard\templates\dashboard\index.html:209
+#: .\dashboard\templates\dashboard\index.html:224
+msgid "Total Invoice"
+msgstr "إجمالي الفاتورة"
+
+#: .\dashboard\templates\dashboard\index.html:210
+#: .\dashboard\templates\dashboard\index.html:225
+#: .\templates\layout\base.html:572
+msgid "Payments"
+msgstr "المدفوعات"
+
+#: .\hr\forms.py:30
+msgid "Employee number will be generated automatically"
+msgstr "سيتم إنشاء رقم الموظف تلقائياً"
+
+#: .\hr\forms.py:35 .\hr\models.py:125
+msgid "This employee uses a login account"
+msgstr "هذا الموظف لديه حساب دخول"
+
+#: .\hr\forms.py:43 .\hr\templates\hr\hr_permissions_users.html:15
+#: .\templates\layout\base.html:662
+msgid "Username"
+msgstr "اسم المستخدم"
+
+#: .\hr\forms.py:47
+msgid "Enter username"
+msgstr "أدخل اسم المستخدم"
+
+#: .\hr\forms.py:53
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: .\hr\forms.py:57
+msgid "Enter password"
+msgstr "أدخل كلمة المرور"
+
+#: .\hr\forms.py:63
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+#: .\hr\forms.py:67
+msgid "Re-enter password"
+msgstr "أعد إدخال كلمة المرور"
+
+# ====== Employee Form ======
+#: .\hr\forms.py:108
+msgid "First Name (Arabic)"
+msgstr "الاسم الأول (عربي)"
+
+#: .\hr\forms.py:109
+msgid "Last Name (Arabic)"
+msgstr "اسم العائلة (عربي)"
+
+#: .\hr\forms.py:110
+msgid "First Name (English)"
+msgstr "الاسم الأول (إنجليزي)"
+
+#: .\hr\forms.py:111
+msgid "Last Name (English)"
+msgstr "اسم العائلة (إنجليزي)"
+
+#: .\hr\forms.py:112
+msgid "Gender"
+msgstr "الجنس"
+
+#: .\hr\forms.py:114 .\hr\forms.py:163
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+#: .\hr\forms.py:115 .\hr\forms.py:167 .\hr\models.py:92
+msgid "National ID"
+msgstr "رقم الهوية"
+
+#: .\hr\forms.py:116 .\hr\templates\hr\employee_list.html:148
+msgid "Hire Date"
+msgstr "تاريخ التوظيف"
+
+#: .\hr\forms.py:117
+msgid "Probation Period (Days)"
+msgstr "فترة التجربة (أيام)"
+
+#: .\hr\forms.py:118 .\hr\models.py:364
+#: .\hr\templates\hr\add_evaluation.html:55
+#: .\hr\templates\hr\employee_list.html:151
+#: .\hr\templates\hr\evaluation_list.html:68
+#: .\hr\templates\hr\hr_reports.html:183
+#: .\products\templates\products\category_list.html:34
+#: .\products\templates\products\products_list.html:190
+msgid "Active"
+msgstr "نشط"
+
+#: .\hr\forms.py:119 .\hr\templates\hr\add_evaluation.html:87
+#: .\hr\templates\hr\employee_list.html:145
+#: .\hr\templates\hr\evaluation_detail.html:80
+#: .\hr\templates\hr\evaluation_list.html:29
+#: .\hr\templates\hr\hr_report_detail_items.html:35
+#: .\hr\templates\hr\hr_reports.html:77 .\hr\templates\hr\hr_reports.html:130
+msgid "Department"
+msgstr "القسم"
+
+#: .\hr\forms.py:120 .\hr\templates\hr\employee_list.html:146
+msgid "Branch"
+msgstr "الفرع"
+
+#: .\hr\forms.py:121
+msgid "Job Title"
+msgstr "المسمى الوظيفي"
+
+#: .\hr\forms.py:122
+msgid "Employee Type"
+msgstr "نوع الموظف"
+
+#: .\hr\forms.py:123
+msgid "Direct Supervisor"
+msgstr "المشرف المباشر"
+
+#: .\hr\forms.py:124
+msgid "Base Salary"
+msgstr "الراتب الأساسي"
+
+#: .\hr\forms.py:125
+msgid "Housing Allowance"
+msgstr "بدل السكن"
+
+#: .\hr\forms.py:126
+msgid "Transport Allowance"
+msgstr "بدل النقل"
+
+#: .\hr\forms.py:127
+msgid "Clothing Allowance"
+msgstr "بدل الملابس"
+
+#: .\hr\forms.py:128
+msgid "Other Allowances"
+msgstr "بدلات أخرى"
+
+#: .\hr\forms.py:129 .\hr\models.py:144
+msgid "Annual Leave Entitlement"
+msgstr "استحقاق الإجازة السنوية"
+
+#: .\hr\forms.py:130 .\hr\models.py:145
+msgid "Current Annual Leave"
+msgstr "رصيد الإجازة السنوية الحالي"
+
+#: .\hr\forms.py:131 .\hr\forms.py:300 .\hr\models.py:146 .\hr\models.py:214
+msgid "Compensatory Leave"
+msgstr "الإجازة التعويضية"
+
+#: .\hr\forms.py:132 .\hr\models.py:149
+#: .\hr\templates\hr\employee_list.html:131
+#: .\hr\templates\hr\employee_list.html:133
+msgid "Employee Photo"
+msgstr "صورة الموظف"
+
+#: .\hr\forms.py:133 .\hr\models.py:150
+msgid "National ID File"
+msgstr "ملف الهوية الوطنية"
+
+#: .\hr\forms.py:134 .\hr\models.py:155
+msgid "Passport Number"
+msgstr "رقم الجواز"
+
+#: .\hr\forms.py:135 .\hr\models.py:157
+msgid "Passport File"
+msgstr "ملف الجواز"
+
+#: .\hr\forms.py:136 .\hr\models.py:158
+msgid "Contract File"
+msgstr "ملف العقد"
+
+#: .\hr\forms.py:137 .\hr\models.py:159
+msgid "Other Files"
+msgstr "ملفات أخرى"
+
+#: .\hr\forms.py:142
+msgid "Enter first name in Arabic"
+msgstr "أدخل الاسم الأول بالعربي"
+
+#: .\hr\forms.py:146
+msgid "Enter last name in Arabic"
+msgstr "أدخل اسم العائلة بالعربي"
+
+#: .\hr\forms.py:150
+msgid "Enter first name in English"
+msgstr "أدخل الاسم الأول بالإنجليزي"
+
+#: .\hr\forms.py:154
+msgid "Enter last name in English"
+msgstr "أدخل اسم العائلة بالإنجليزي"
+
+#: .\hr\forms.py:175
+msgid "Probation period in days"
+msgstr "مدة التجربة بالأيام"
+
+#: .\hr\forms.py:182
+msgid "Job title"
+msgstr "المسمى الوظيفي"
+
+#: .\hr\forms.py:186
+msgid "Employee type"
+msgstr "نوع الموظف"
+
+#: .\hr\forms.py:191
+msgid "Base salary"
+msgstr "الراتب الأساسي"
+
+#: .\hr\forms.py:195
+msgid "Housing allowance"
+msgstr "بدل السكن"
+
+#: .\hr\forms.py:199
+msgid "Transport allowance"
+msgstr "بدل النقل"
+
+#: .\hr\forms.py:203
+msgid "Clothing allowance"
+msgstr "بدل الملابس"
+
+#: .\hr\forms.py:207
+msgid "Other allowances"
+msgstr "بدلات أخرى"
+
+#: .\hr\forms.py:216
+msgid "Passport number"
+msgstr "رقم الجواز"
+
+#: .\hr\forms.py:241
+msgid "Email is required if the employee will use a login account."
+msgstr "البريد الإلكتروني مطلوب إذا كان الموظف سيستخدم حساب دخول."
+
+#: .\hr\forms.py:250
+msgid "Another user with this email already exists."
+msgstr "يوجد مستخدم آخر بهذا البريد الإلكتروني."
+
+#: .\hr\forms.py:259
+msgid "Username is required when enabling a login account."
+msgstr "اسم المستخدم مطلوب عند تفعيل حساب الدخول."
+
+#: .\hr\forms.py:268
+msgid "This username is already in use."
+msgstr "اسم المستخدم هذا مستخدم بالفعل."
+
+#: .\hr\forms.py:282
+msgid "Password is required when creating a login account."
+msgstr "كلمة المرور مطلوبة عند إنشاء حساب دخول."
+
+#: .\hr\forms.py:284
+msgid "Password confirmation is required."
+msgstr "تأكيد كلمة المرور مطلوب."
+
+#: .\hr\forms.py:288
+msgid "The two passwords do not match."
+msgstr "كلمتا المرور غير متطابقتين."
+
+# ====== Leave Form ======
+#: .\hr\forms.py:298 .\hr\models.py:212
+msgid "Annual Leave"
+msgstr "إجازة سنوية"
+
+#: .\hr\forms.py:299 .\hr\models.py:213
+msgid "Sick Leave"
+msgstr "إجازة مرضية"
+
+#: .\hr\forms.py:301 .\hr\models.py:215
+#: .\products\templates\products\stock_adjust.html:82
+msgid "Other"
+msgstr "أخرى"
+
+#: .\hr\forms.py:305
+msgid "Select Leave Type"
+msgstr "اختر نوع الإجازة"
+
+#: .\hr\forms.py:306 .\hr\forms.py:327 .\hr\templates\hr\leaves_list.html:13
+msgid "Leave Type"
+msgstr "نوع الإجازة"
+
+#: .\hr\forms.py:311 .\hr\templates\hr\add_evaluation.html:65
+msgid "Start Date"
+msgstr "تاريخ البداية"
+
+#: .\hr\forms.py:317 .\hr\templates\hr\add_evaluation.html:76
+msgid "End Date"
+msgstr "تاريخ النهاية"
+
+#: .\hr\forms.py:328 .\hr\templates\hr\hr_reports.html:40
+msgid "From Date"
+msgstr "من تاريخ"
+
+#: .\hr\forms.py:329 .\hr\templates\hr\hr_reports.html:45
+msgid "To Date"
+msgstr "إلى تاريخ"
+
+#: .\hr\forms.py:330 .\hr\templates\hr\leaves_list.html:16
+msgid "Reason"
+msgstr "السبب"
+
+#: .\hr\forms.py:338
+msgid "Write the leave reason here"
+msgstr "اكتب سبب الإجازة هنا"
+
+#: .\hr\forms.py:363
+msgid "Evaluation name"
+msgstr "اسم التقييم"
+
+#: .\hr\forms.py:395
+msgid "Enter criteria name"
+msgstr "أدخل اسم المعيار"
+
+#: .\hr\forms.py:400
+msgid "Weight as percentage"
+msgstr "الوزن كنسبة مئوية"
+
+#: .\hr\forms.py:413 .\hr\templates\hr\add_evaluation.html:35
+#: .\hr\templates\hr\add_evaluation_type.html:21
+#: .\hr\templates\hr\hr_reports.html:132
+msgid "Evaluation Type"
+msgstr "نوع التقييم"
+
+#: .\hr\forms.py:418 .\hr\templates\hr\add_evaluation_type.html:22
+msgid "Enter evaluation type"
+msgstr "أدخل نوع التقييم"
+
+#: .\hr\forms.py:431 .\hr\templates\hr\departments_list.html:18
+msgid "Department Name"
+msgstr "اسم القسم"
+
+#: .\hr\forms.py:436
+msgid "Enter department name"
+msgstr "أدخل اسم القسم"
+
+#: .\hr\models.py:19 .\hr\models.py:41 .\hr\models.py:64 .\hr\models.py:206
+#: .\hr\models.py:245 .\hr\models.py:274 .\hr\models.py:305 .\hr\models.py:327
+#: .\hr\models.py:349 .\hr\models.py:385 .\hr\models.py:439 .\hr\models.py:455
+#: .\hr\models.py:482 .\templates\layout\base.html:664
+msgid "Company"
+msgstr "الشركة"
+
+#: .\hr\models.py:82
+msgid "Male"
+msgstr "ذكر"
+
+#: .\hr\models.py:82
+msgid "Female"
+msgstr "أنثى"
+
+#: .\hr\models.py:114
+msgid "Full-time Employee"
+msgstr "موظف بدوام كامل"
+
+#: .\hr\models.py:219
+msgid "Pending Review"
+msgstr "قيد المراجعة"
+
+#: .\hr\models.py:220 .\hr\templates\hr\leaves_list.html:33
+#: .\quotations\templates\quotations\quotation_list.html:60
+msgid "Approved"
+msgstr "معتمد"
+
+#: .\hr\models.py:221 .\hr\templates\hr\leaves_list.html:35
+msgid "Rejected"
+msgstr "مرفوض"
+
+#: .\hr\models.py:236 .\hr\templates\hr\evaluation_list.html:52
+#: .\hr\templates\hr\hr_reports.html:161 .\hr\templates\hr\leaves_list.html:15
+msgid "To"
+msgstr "إلى"
+
+#: .\hr\models.py:250 .\hr\templates\hr\add_shift.html:22
+#: .\hr\templates\hr\shifts_list.html:22
+msgid "Shift Name"
+msgstr "اسم المناوبة"
+
+#: .\hr\models.py:251 .\hr\templates\hr\add_shift.html:21
+#: .\hr\templates\hr\shifts_list.html:21
+msgid "Shift Order"
+msgstr "ترتيب المناوبة"
+
+#: .\hr\models.py:252 .\hr\templates\hr\add_shift.html:23
+#: .\hr\templates\hr\shifts_list.html:23
+msgid "Start Time"
+msgstr "وقت البداية"
+
+#: .\hr\models.py:253 .\hr\templates\hr\add_shift.html:24
+#: .\hr\templates\hr\shifts_list.html:24
+msgid "End Time"
+msgstr "وقت النهاية"
+
+#: .\hr\models.py:254
+msgid "Break Start Time"
+msgstr "وقت بداية الاستراحة"
+
+#: .\hr\models.py:255
+msgid "Break End Time"
+msgstr "وقت نهاية الاستراحة"
+
+#: .\hr\models.py:292 .\hr\templates\hr\add_employee_schedule.html:101
+#: .\hr\templates\hr\add_employee_schedule.html:111
+#: .\hr\templates\hr\add_employee_schedule.html:152
+#: .\hr\templates\hr\add_employee_schedule.html:153
+#: .\hr\templates\hr\add_employee_schedule.html:158
+#: .\hr\templates\hr\add_employee_schedule.html:160
+#: .\hr\templates\hr\add_shift.html:37
+#: .\hr\templates\hr\shifts_calendar.html:13
+msgid "Off Day"
+msgstr "عطلة"
+
+#: .\hr\models.py:364 .\hr\templates\hr\add_evaluation.html:58
+#: .\hr\templates\hr\evaluation_list.html:70
+#: .\hr\templates\hr\hr_reports.html:185
+msgid "Closed"
+msgstr "مغلق"
+
+#: .\hr\models.py:392
+msgid "Late"
+msgstr "متأخر"
+
+#: .\hr\models.py:398
+msgid "Shift"
+msgstr "الشفت"
+
+#: .\hr\models.py:399 .\hr\templates\hr\attendance_page.html:48
+msgid "Check In Time"
+msgstr "وقت الحضور"
+
+#: .\hr\models.py:400 .\hr\templates\hr\attendance_page.html:49
+msgid "Check Out Time"
+msgstr "وقت الانصراف"
+
+#: .\hr\models.py:401
+msgid "Late Minutes"
+msgstr "دقائق التأخير"
+
+#: .\hr\models.py:405
+msgid "Attendance Record"
+msgstr "سجل الحضور والانصراف"
+
+#: .\hr\models.py:406
+msgid "Attendance Records"
+msgstr "سجلات الحضور والانصراف"
+
+#: .\hr\models.py:500 .\hr\templates\hr\evaluation_records_list.html:53
+msgid "Peer"
+msgstr "زميل"
+
+#: .\hr\models.py:500 .\hr\templates\hr\evaluation_records_list.html:55
+msgid "Manager"
+msgstr "مدير"
+
+# ====== Employees ======
+#: .\hr\models.py:522
+msgid "View Employees"
+msgstr "عرض الموظفين"
+
+#: .\hr\models.py:523 .\hr\templates\hr\add_employee.html:4
+#: .\hr\templates\hr\employee_list.html:124
+msgid "Add Employee"
+msgstr "إضافة موظف"
+
+#: .\hr\models.py:524 .\hr\templates\hr\add_employee.html:32
+msgid "Edit Employee"
+msgstr "تعديل موظف"
+
+#: .\hr\models.py:525
+msgid "Delete Employee"
+msgstr "حذف موظف"
+
+#: .\hr\models.py:526
+msgid "Export Employees"
+msgstr "تصدير الموظفين"
+
+#: .\hr\models.py:527
+msgid "View All Departments or Own Department Only"
+msgstr "عرض كل الأقسام أو القسم الخاص فقط"
+
+#: .\hr\models.py:530
+msgid "View Departments"
+msgstr "عرض الأقسام"
+
+#: .\hr\models.py:531 .\hr\templates\hr\add_department.html:4
+msgid "Add Department"
+msgstr "إضافة قسم"
+
+#: .\hr\models.py:532
+msgid "Edit Department"
+msgstr "تعديل قسم"
+
+#: .\hr\models.py:533
+msgid "Delete Department"
+msgstr "حذف قسم"
+
+#: .\hr\models.py:536
+msgid "View Attendance"
+msgstr "عرض الحضور"
+
+#: .\hr\models.py:537
+msgid "Check In/Out"
+msgstr "تسجيل دخول / خروج"
+
+#: .\hr\models.py:538
+msgid "Edit Attendance"
+msgstr "تعديل الحضور"
+
+#: .\hr\models.py:539
+msgid "Approve Attendance"
+msgstr "اعتماد الحضور"
+
+#: .\hr\models.py:540
+msgid "View Attendance for Own Department or All"
+msgstr "عرض حضور القسم الخاص أو كل الأقسام"
+
+#: .\hr\models.py:543
+msgid "View Leaves"
+msgstr "عرض الإجازات"
+
+#: .\hr\models.py:544
+msgid "Submit Leave"
+msgstr "تقديم إجازة"
+
+#: .\hr\models.py:545
+msgid "Approve Leave"
+msgstr "اعتماد الإجازة"
+
+#: .\hr\models.py:546
+msgid "Reject Leave"
+msgstr "رفض الإجازة"
+
+#: .\hr\models.py:547
+msgid "View Leaves for Own Department or All"
+msgstr "عرض إجازات القسم الخاص أو كل الأقسام"
+
+#: .\hr\models.py:550
+msgid "View Evaluations"
+msgstr "عرض التقييمات"
+
+# ====== Evaluation / Criteria / Type / Department ======
+#: .\hr\models.py:551
+msgid "Create Evaluation"
+msgstr "إنشاء تقييم"
+
+#: .\hr\models.py:552 .\hr\templates\hr\add_evaluation.html:4
+#: .\hr\templates\hr\add_evaluation.html:10
+msgid "Edit Evaluation"
+msgstr "تعديل التقييم"
+
+#: .\hr\models.py:553
+msgid "Delete Evaluation"
+msgstr "حذف التقييم"
+
+#: .\hr\models.py:554
+msgid "Evaluate as Peer"
+msgstr "التقييم كزميل"
+
+# ====== Evaluations ======
+#: .\hr\models.py:555
+msgid "Evaluate as Manager"
+msgstr "التقييم كمدير"
+
+#: .\hr\models.py:556
+msgid "Approve Results"
+msgstr "اعتماد النتائج"
+
+# ====== Reports ======
+#: .\hr\models.py:557
+msgid "View Evaluation Reports"
+msgstr "عرض تقارير التقييم"
+
+#: .\hr\models.py:560
+msgid "View Payroll"
+msgstr "عرض مسيرات الرواتب"
+
+#: .\hr\models.py:561
+msgid "Create Payroll"
+msgstr "إنشاء مسير رواتب"
+
+#: .\hr\models.py:562
+msgid "Edit Payroll"
+msgstr "تعديل مسير الرواتب"
+
+#: .\hr\models.py:563
+msgid "Delete Payroll"
+msgstr "حذف مسير الرواتب"
+
+#: .\hr\models.py:564
+msgid "Approve Salary Payment"
+msgstr "اعتماد صرف الراتب"
+
+#: .\hr\models.py:567
+msgid "View Reports"
+msgstr "عرض التقارير"
+
+#: .\hr\models.py:568
+msgid "Export PDF / Excel"
+msgstr "تصدير PDF / Excel"
+
+#: .\hr\models.py:569
+msgid "View Reports for Own Department or Entire Company"
+msgstr "عرض تقارير القسم الخاص أو الشركة بالكامل"
+
+#: .\hr\models.py:575
+msgid "HR Permission"
+msgstr "صلاحية الموارد البشرية"
+
+#: .\hr\models.py:576 .\hr\models.py:582
+msgid "HR Permissions"
+msgstr "صلاحيات الموارد البشرية"
+
+#: .\hr\templates\hr\add_department.html:8
+#: .\hr\templates\hr\add_evaluation.html:90
+#: .\hr\templates\hr\departments_list.html:11
+msgid "Add New Department"
+msgstr "إضافة قسم جديد"
+
+#: .\hr\templates\hr\add_employee.html:34
+msgid "Add New Employee"
+msgstr "إضافة موظف جديد"
+
+#: .\hr\templates\hr\add_employee.html:67
+msgid "Basic Information"
+msgstr "البيانات الأساسية"
+
+#: .\hr\templates\hr\add_employee.html:139
+msgid ""
+"When enabled, a login account will be created or updated for this employee."
+msgstr "عند التفعيل سيتم إنشاء أو تحديث حساب دخول لهذا الموظف."
+
+#: .\hr\templates\hr\add_employee.html:150
+msgid "Salary & Allowances"
+msgstr "الراتب والبدلات"
+
+#: .\hr\templates\hr\add_employee.html:171
+msgid "Work Details"
+msgstr "تفاصيل العمل"
+
+#: .\hr\templates\hr\add_employee.html:213
+msgid "Documents"
+msgstr "المستندات"
+
+# ====== Schedule ======
+#: .\hr\templates\hr\add_employee_schedule.html:4
+msgid "Monthly Employee Schedule"
+msgstr "الجدول الشهري للموظفين"
+
+#: .\hr\templates\hr\add_employee_schedule.html:10
+msgid "Create New Schedule"
+msgstr "إنشاء جدول جديد"
+
+#: .\hr\templates\hr\add_employee_schedule.html:12
+#: .\hr\templates\hr\employee_schedule_calendar.html:4
+#: .\hr\templates\hr\employee_schedule_calendar.html:8
+msgid "Employee Schedule"
+msgstr "جدول الموظفين"
+
+#: .\hr\templates\hr\add_employee_schedule.html:22
+#: .\hr\templates\hr\employee_schedule_calendar.html:13
+#: .\hr\templates\hr\hr_reports.html:78
+msgid "Month"
+msgstr "الشهر"
+
+#: .\hr\templates\hr\add_employee_schedule.html:33
+#: .\hr\templates\hr\employee_schedule_calendar.html:23
+msgid "Year"
+msgstr "السنة"
+
+#: .\hr\templates\hr\add_employee_schedule.html:48
+#: .\hr\templates\hr\employee_schedule_calendar.html:36
+#: .\pos\templates\pos\pos.html:21
+msgid "All"
+msgstr "الكل"
+
+#: .\hr\templates\hr\add_employee_schedule.html:69
+#: .\hr\templates\hr\employee_schedule_calendar.html:58
+msgid "Day"
+msgstr "اليوم"
+
+#: .\hr\templates\hr\add_employee_schedule.html:106
+#: .\hr\templates\hr\add_employee_schedule.html:145
+#: .\hr\templates\hr\employee_schedule_calendar.html:94
+msgid "Select Shift"
+msgstr "اختر الشفت"
+
+#: .\hr\templates\hr\add_employee_schedule.html:231
+msgid "Saved successfully"
+msgstr "تم الحفظ بنجاح"
+
+#: .\hr\templates\hr\add_employee_schedule.html:233
+#: .\hr\templates\hr\employee_schedule_calendar.html:225
+msgid "Error"
+msgstr "خطأ"
+
+#: .\hr\templates\hr\add_employee_schedule.html:238
+#: .\hr\templates\hr\employee_schedule_calendar.html:230
+msgid "Unexpected error"
+msgstr "خطأ غير متوقع"
+
+# ====== Evaluation / Criteria / Type / Department ======
+#: .\hr\templates\hr\add_evaluation.html:4
+#: .\hr\templates\hr\add_evaluation.html:10
+msgid "Create New Evaluation"
+msgstr "إنشاء تقييم جديد"
+
+#: .\hr\templates\hr\add_evaluation.html:18
+msgid "Evaluation Information"
+msgstr "بيانات التقييم"
+
+#: .\hr\templates\hr\add_evaluation.html:24
+#: .\hr\templates\hr\evaluation_list.html:26
+msgid "Evaluation Name"
+msgstr "اسم التقييم"
+
+#: .\hr\templates\hr\add_evaluation.html:28
+msgid "Enter evaluation name"
+msgstr "أدخل اسم التقييم"
+
+#: .\hr\templates\hr\add_evaluation.html:39
+msgid "Select evaluation type"
+msgstr "اختر نوع التقييم"
+
+#: .\hr\templates\hr\add_evaluation.html:40
+#: .\hr\templates\hr\add_evaluation_type.html:3
+#: .\hr\templates\hr\add_evaluation_type.html:12
+msgid "Add New Evaluation Type"
+msgstr "إضافة نوع تقييم جديد"
+
+#: .\hr\templates\hr\add_evaluation.html:56
+#: .\hr\templates\hr\employee_list.html:151
+#: .\products\templates\products\category_list.html:36
+#: .\products\templates\products\products_list.html:192
+msgid "Inactive"
+msgstr "غير نشط"
+
+#: .\hr\templates\hr\add_evaluation.html:89
+msgid "Select Department"
+msgstr "اختر القسم"
+
+#: .\hr\templates\hr\add_evaluation.html:106
+msgid "Target Group"
+msgstr "الفئة المستهدفة"
+
+#: .\hr\templates\hr\add_evaluation.html:111
+msgid "Evaluation Method"
+msgstr "طريقة التقييم"
+
+#: .\hr\templates\hr\add_evaluation.html:114
+msgid "Specific Employee"
+msgstr "موظف محدد"
+
+#: .\hr\templates\hr\add_evaluation.html:117
+msgid "Full Department"
+msgstr "القسم بالكامل"
+
+#: .\hr\templates\hr\add_evaluation.html:126
+#: .\hr\templates\hr\evaluation_record_start.html:31
+msgid "Select Employee"
+msgstr "اختر الموظف"
+
+#: .\hr\templates\hr\add_evaluation.html:142
+#: .\hr\templates\hr\evaluation_detail.html:38
+msgid "Evaluation Criteria"
+msgstr "معايير التقييم"
+
+#: .\hr\templates\hr\add_evaluation.html:144
+msgid "Add Criteria"
+msgstr "إضافة معيار"
+
+#: .\hr\templates\hr\add_evaluation.html:151
+#: .\hr\templates\hr\evaluation_detail.html:45
+msgid "Criteria Name"
+msgstr "اسم المعيار"
+
+#: .\hr\templates\hr\add_evaluation.html:152
+#: .\hr\templates\hr\hr_report_detail_items.html:90
+msgid "Criteria Type"
+msgstr "نوع المعيار"
+
+#: .\hr\templates\hr\add_evaluation.html:153
+#, python-format
+msgid "Weight (%%)"
+msgstr "الوزن (%%)"
+
+#: .\hr\templates\hr\add_evaluation.html:167
+#: .\hr\templates\hr\add_evaluation.html:185
+#: .\hr\templates\hr\add_evaluation.html:254
+msgid "Score (1-5)"
+msgstr "درجة (1-5)"
+
+#: .\hr\templates\hr\add_evaluation.html:168
+#: .\hr\templates\hr\add_evaluation.html:186
+#: .\hr\templates\hr\add_evaluation.html:255
+msgid "Yes / No"
+msgstr "نعم / لا"
+
+#: .\hr\templates\hr\add_evaluation.html:169
+#: .\hr\templates\hr\add_evaluation.html:187
+#: .\hr\templates\hr\add_evaluation.html:256
+msgid "Percentage"
+msgstr "نسبة مئوية"
+
+#: .\hr\templates\hr\add_evaluation.html:206
+msgid "Enter notes"
+msgstr "أدخل ملاحظات"
+
+#: .\hr\templates\hr\add_evaluation.html:213
+msgid "Save Evaluation"
+msgstr "حفظ التقييم"
+
+# ====== Evaluation / Criteria / Type / Department ======
+#: .\hr\templates\hr\add_evaluation_type.html:31
+msgid "Back to Create Evaluation"
+msgstr "الرجوع إلى إنشاء التقييم"
+
+# ====== Evaluation / Criteria / Type / Department ======
+#: .\hr\templates\hr\add_evaluation_type.html:35
+msgid "Back to Evaluation List"
+msgstr "الرجوع إلى إنشاء التقييم"
+
+# ====== Leaves ======
+#: .\hr\templates\hr\add_leave.html:4 .\hr\templates\hr\add_leave.html:8
+msgid "Add Leave"
+msgstr "إضافة إجازة"
+
+#: .\hr\templates\hr\add_shift.html:4 .\hr\templates\hr\add_shift.html:8
+#: .\hr\templates\hr\shifts_list.html:4 .\hr\templates\hr\shifts_list.html:8
+#: .\templates\layout\base.html:393
+msgid "Shift Management"
+msgstr "إدارة المناوبات"
+
+# ====== Shifts ======
+#: .\hr\templates\hr\add_shift.html:13 .\hr\templates\hr\shifts_list.html:13
+msgid "Add New Shift"
+msgstr "إضافة شفت جديد"
+
+#: .\hr\templates\hr\add_shift.html:25 .\hr\templates\hr\shifts_list.html:25
+msgid "Break From"
+msgstr "بداية الاستراحة"
+
+#: .\hr\templates\hr\add_shift.html:26 .\hr\templates\hr\shifts_list.html:26
+msgid "Break To"
+msgstr "نهاية الاستراحة"
+
+#: .\hr\templates\hr\add_shift.html:67 .\hr\templates\hr\shifts_list.html:62
+msgid "Are you sure you want to delete this shift?"
+msgstr "هل أنت متأكد من حذف الشفت؟"
+
+#: .\hr\templates\hr\add_shift.html:78 .\hr\templates\hr\shifts_list.html:73
+#: .\products\templates\products\stock_ledger.html:61
+msgid "No data available"
+msgstr "لا توجد بيانات"
+
+# ====== Attendance ======
+#: .\hr\templates\hr\attendance_check.html:4
+#: .\hr\templates\hr\attendance_check.html:9
+msgid "Quick Check In and Check Out"
+msgstr "تسجيل حضور وانصراف سريع"
+
+#: .\hr\templates\hr\attendance_check.html:14
+msgid "Employee is not linked to the user account."
+msgstr "الموظف غير مرتبط بحساب المستخدم."
+
+#: .\hr\templates\hr\attendance_check.html:31 .\hr\views.py:998
+#: .\hr\views.py:1023
+msgid "Check In"
+msgstr "تسجيل حضور"
+
+#: .\hr\templates\hr\attendance_check.html:38
+msgid "Last record:"
+msgstr "آخر تسجيل:"
+
+#: .\hr\templates\hr\attendance_check.html:40
+msgid "Checked out at"
+msgstr "تم الانصراف في"
+
+#: .\hr\templates\hr\attendance_check.html:42
+msgid "Checked in at"
+msgstr "تم الحضور في"
+
+#: .\hr\templates\hr\attendance_check.html:90 .\hr\views.py:1021
+msgid "Please wait before making a new record!"
+msgstr "انتظر قبل تسجيل جديد"
+
+#: .\hr\templates\hr\attendance_page.html:6
+#: .\hr\templates\hr\attendance_page.html:11
+msgid "Attendance Log"
+msgstr "سجل الحضور"
+
+#: .\hr\templates\hr\attendance_page.html:15
+msgid "Employee:"
+msgstr "الموظف"
+
+# ====== Purchase Invoice Add ======
+#: .\hr\templates\hr\attendance_page.html:18
+msgid "Show All"
+msgstr "عرض الكل"
+
+#: .\hr\templates\hr\attendance_page.html:27
+msgid "From:"
+msgstr "من"
+
+#: .\hr\templates\hr\attendance_page.html:30
+msgid "To:"
+msgstr "إلى"
+
+#: .\hr\templates\hr\attendance_page.html:34
+#: .\products\templates\products\stock_ledger.html:13
 msgid "Search"
 msgstr "بحث"
 
-msgid "Language"
-msgstr "اللغة"
+#: .\hr\templates\hr\attendance_page.html:38
+#: .\hr\templates\hr\hr_reports.html:56
+msgid "Reset"
+msgstr "إعادة تعيين"
 
+# ====== Departments ======
+#: .\hr\templates\hr\departments_list.html:4
+#: .\hr\templates\hr\departments_list.html:8
+msgid "Departments List"
+msgstr "قائمة الأقسام"
+
+#: .\hr\templates\hr\departments_list.html:32
+#: .\suppliers\templates\suppliers\suppliers_list.html:77
+msgid "Are you sure you want to delete?"
+msgstr "هل أنت متأكد من الحذف؟"
+
+#: .\hr\templates\hr\departments_list.html:40
+msgid "No departments found"
+msgstr "لا توجد أقسام"
+
+#: .\hr\templates\hr\employee_list.html:144
+msgid "Employee No."
+msgstr "رقم الموظف"
+
+#: .\hr\templates\hr\employee_list.html:147
+msgid "Salary"
+msgstr "الراتب"
+
+#: .\hr\templates\hr\employee_list.html:159
+msgid "No employees found"
+msgstr "لا يوجد موظفون"
+
+#: .\hr\templates\hr\employee_schedule_calendar.html:162
+msgid "Cannot edit past days."
+msgstr "لا يمكن تعديل الأيام الماضية."
+
+# ====== Evaluation Details ======
+#: .\hr\templates\hr\evaluation_detail.html:4
+msgid "Evaluation Details"
+msgstr "تفاصيل التقييم"
+
+# ====== More Evaluation Details ======
+#: .\hr\templates\hr\evaluation_detail.html:10
+msgid "Evaluation Details:"
+msgstr "تفاصيل التقييم:"
+
+#: .\hr\templates\hr\evaluation_detail.html:17
+#: .\products\templates\products\product_view.html:68
+msgid "Type:"
+msgstr "النوع:"
+
+#: .\hr\templates\hr\evaluation_detail.html:21
+#: .\hr\templates\hr\evaluation_fill.html:33
+msgid "Period:"
+msgstr "الفترة:"
+
+#: .\hr\templates\hr\evaluation_detail.html:25
+#: .\hr\templates\hr\evaluation_fill.html:25
+msgid "Department:"
+msgstr "القسم:"
+
+#: .\hr\templates\hr\evaluation_detail.html:29
+msgid "Status:"
+msgstr "الحالة:"
+
+#: .\hr\templates\hr\evaluation_detail.html:46
+#: .\hr\templates\hr\evaluation_list.html:27
+#: .\products\templates\products\products_list.html:150
+#: .\products\templates\products\stock_adjust.html:76
+#: .\products\templates\products\stock_ledger.html:21
+msgid "Type"
+msgstr "النوع"
+
+#: .\hr\templates\hr\evaluation_detail.html:47
+#: .\hr\templates\hr\evaluation_fill.html:52
+msgid "Weight"
+msgstr "الوزن"
+
+#: .\hr\templates\hr\evaluation_detail.html:60
+msgid "No criteria found"
+msgstr "لا توجد معايير"
+
+#: .\hr\templates\hr\evaluation_detail.html:71
+msgid "Target Employees"
+msgstr "الموظفون المستهدفون"
+
+#: .\hr\templates\hr\evaluation_detail.html:78
+msgid "Target ID"
+msgstr "رقم الهدف"
+
+#: .\hr\templates\hr\evaluation_detail.html:107
+#: .\hr\templates\hr\evaluation_record_start.html:54
+msgid "Peer Evaluation"
+msgstr "تقييم زميل"
+
+#: .\hr\templates\hr\evaluation_detail.html:112
+#: .\hr\templates\hr\evaluation_record_start.html:55
+msgid "Manager Evaluation"
+msgstr "تقييم مدير"
+
+#: .\hr\templates\hr\evaluation_detail.html:121
+msgid "No targets found"
+msgstr "لا توجد أهداف"
+
+#: .\hr\templates\hr\evaluation_fill.html:17
+msgid "Target Employee:"
+msgstr "الموظف المستهدف:"
+
+# ====== Scores ======
+#: .\hr\templates\hr\evaluation_fill.html:43
+msgid "Enter Scores"
+msgstr "إدخال الدرجات"
+
+#: .\hr\templates\hr\evaluation_fill.html:51
+#: .\hr\templates\hr\evaluation_records_list.html:24
+#: .\hr\templates\hr\hr_report_detail_items.html:89
+msgid "Criteria"
+msgstr "المعيار"
+
+#: .\hr\templates\hr\evaluation_fill.html:53
+#: .\hr\templates\hr\evaluation_records_list.html:25
+#: .\hr\templates\hr\hr_report_detail_items.html:93
+msgid "Score"
+msgstr "الدرجة"
+
+#: .\hr\templates\hr\evaluation_fill.html:71
+msgid "0 - 100"
+msgstr "0 - 100"
+
+#: .\hr\templates\hr\evaluation_fill.html:76
+msgid "No criteria for this evaluation"
+msgstr "لا توجد معايير لهذا التقييم"
+
+# ====== Evaluations ======
+#: .\hr\templates\hr\evaluation_list.html:4
+#: .\hr\templates\hr\evaluation_list.html:11
+msgid "Evaluations Management"
+msgstr "إدارة التقييمات"
+
+#: .\hr\templates\hr\evaluation_list.html:14
+msgid "Add Evaluation"
+msgstr "إضافة تقييم"
+
+#: .\hr\templates\hr\evaluation_list.html:28
+#: .\hr\templates\hr\hr_reports.html:133
+msgid "Period"
+msgstr "الفترة"
+
+#: .\hr\templates\hr\evaluation_list.html:30
+msgid "Employees Count"
+msgstr "عدد الموظفين"
+
+#: .\hr\templates\hr\evaluation_list.html:49
+#: .\hr\templates\hr\leaves_list.html:14
+msgid "From"
+msgstr "من"
+
+#: .\hr\templates\hr\evaluation_list.html:101
+msgid "Are you sure you want to close the evaluation?"
+msgstr "هل أنت متأكد من إغلاق التقييم؟"
+
+#: .\hr\templates\hr\evaluation_list.html:102
+msgid "Close"
+msgstr "إغلاق"
+
+#: .\hr\templates\hr\evaluation_list.html:113
+msgid "No evaluations available"
+msgstr "لا توجد تقييمات"
+
+#: .\hr\templates\hr\evaluation_record_start.html:4
+#: .\hr\templates\hr\evaluation_record_start.html:9
+msgid "Create Evaluation Record"
+msgstr "إنشاء سجل تقييم"
+
+#: .\hr\templates\hr\evaluation_record_start.html:18
+msgid "Select Evaluation"
+msgstr "اختر التقييم"
+
+#: .\hr\templates\hr\evaluation_record_start.html:21
+#: .\hr\templates\hr\evaluation_record_start.html:34
+msgid "— Select —"
+msgstr "— اختر —"
+
+#: .\hr\templates\hr\evaluation_record_start.html:41
+msgid "No employees available for this evaluation"
+msgstr "لا يوجد موظفون متاحون لهذا التقييم"
+
+#: .\hr\templates\hr\evaluation_record_start.html:46
+msgid "There are no criteria for this evaluation."
+msgstr "لا توجد معايير لهذا التقييم."
+
+#: .\hr\templates\hr\evaluation_record_start.html:51
+msgid "Evaluator Type"
+msgstr "نوع المقيم"
+
+#: .\hr\templates\hr\evaluation_record_start.html:64
+msgid "Start Entering Scores"
+msgstr "ابدأ إدخال الدرجات"
+
+# ====== Records ======
+#: .\hr\templates\hr\evaluation_records_list.html:4
+#: .\hr\templates\hr\evaluation_records_list.html:10
+msgid "Evaluation Records"
+msgstr "سجلات التقييم"
+
+#: .\hr\templates\hr\evaluation_records_list.html:12
+msgid "Create Record"
+msgstr "إنشاء سجل"
+
+#: .\hr\templates\hr\evaluation_records_list.html:22
+#: .\hr\templates\hr\hr_reports.html:131
+msgid "Evaluation"
+msgstr "التقييم"
+
+#: .\hr\templates\hr\evaluation_records_list.html:23
+msgid "Target Employee"
+msgstr "الموظف المستهدف"
+
+#: .\hr\templates\hr\evaluation_records_list.html:26
+#: .\hr\templates\hr\hr_report_detail_items.html:92
+msgid "Evaluator"
+msgstr "المقيم"
+
+#: .\hr\templates\hr\evaluation_records_list.html:27
+#: .\hr\templates\hr\hr_report_detail_items.html:91
+msgid "Role"
+msgstr "الدور"
+
+#: .\hr\templates\hr\evaluation_records_list.html:64
+msgid "No evaluation records yet"
+msgstr "لا توجد سجلات"
+
+#: .\hr\templates\hr\hr_permissions.html:4
+#: .\hr\templates\hr\hr_permissions_users.html:35
+msgid "Edit Permissions"
+msgstr "تعديل الصلاحيات"
+
+# ====== More Permissions / Reports ======
+#: .\hr\templates\hr\hr_permissions.html:10
+msgid "Edit Permissions:"
+msgstr "تعديل الصلاحيات:"
+
+#: .\hr\templates\hr\hr_permissions.html:31
+msgid "Departments"
+msgstr "الأقسام"
+
+#: .\hr\templates\hr\hr_permissions.html:45
+msgid "Attendance"
+msgstr "الحضور"
+
+#: .\hr\templates\hr\hr_permissions.html:77
+msgid "Evaluations"
+msgstr "التقييمات"
+
+#: .\hr\templates\hr\hr_permissions.html:91 .\templates\layout\base.html:417
+msgid "Payroll"
+msgstr "مسيرات الرواتب"
+
+#: .\hr\templates\hr\hr_permissions.html:109 .\templates\layout\base.html:440
+#: .\templates\layout\base.html:589
+msgid "Reports"
+msgstr "التقارير"
+
+#: .\hr\templates\hr\hr_permissions.html:124
+#: .\products\templates\products\stock_adjust_edit.html:35
+#: .\suppliers\templates\suppliers\supplier_edit.html:204
+msgid "Save Changes"
+msgstr "حفظ التعديلات"
+
+# ====== Permissions ======
+#: .\hr\templates\hr\hr_permissions_users.html:4
+msgid "Permissions Management"
+msgstr "إدارة الصلاحيات"
+
+#: .\hr\templates\hr\hr_permissions_users.html:10
+msgid "User Permissions Management"
+msgstr "إدارة صلاحيات المستخدمين"
+
+#: .\hr\templates\hr\hr_permissions_users.html:18
+msgid "Manage"
+msgstr "إدارة"
+
+#: .\hr\templates\hr\hr_permissions_users.html:42
+msgid "No users found"
+msgstr "لا يوجد مستخدمين"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:4
+#: .\hr\templates\hr\hr_report_detail_items.html:11
+msgid "Evaluation Item Details"
+msgstr "تفاصيل بنود التقييم"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:44
+msgid "Records Count"
+msgstr "عدد السجلات"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:53
+msgid "Final Score"
+msgstr "النتيجة النهائية"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:62
+#: .\hr\templates\hr\hr_reports.html:81 .\hr\templates\hr\hr_reports.html:136
+msgid "Grade"
+msgstr "التقدير"
+
+# ====== Grades ======
+#: .\hr\templates\hr\hr_report_detail_items.html:65
+#: .\hr\templates\hr\hr_reports.html:99 .\hr\templates\hr\hr_reports.html:171
+msgid "Excellent"
+msgstr "ممتاز"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:67
+#: .\hr\templates\hr\hr_reports.html:101 .\hr\templates\hr\hr_reports.html:173
+msgid "Very Good"
+msgstr "جيد جداً"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:69
+#: .\hr\templates\hr\hr_reports.html:103 .\hr\templates\hr\hr_reports.html:175
+msgid "Good"
+msgstr "جيد"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:71
+#: .\hr\templates\hr\hr_reports.html:105 .\hr\templates\hr\hr_reports.html:177
+msgid "Needs Improvement"
+msgstr "يحتاج تحسين"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:81
+msgid "Recorded Evaluation Items"
+msgstr "بنود التقييم المسجلة"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:119
+msgid "No evaluation items recorded"
+msgstr "لا توجد بنود تقييم مسجلة"
+
+# ====== Reports ======
+#: .\hr\templates\hr\hr_reports.html:4
+msgid "Evaluation Reports"
+msgstr "تقارير التقييم"
+
+#: .\hr\templates\hr\hr_reports.html:9
+msgid "Evaluation Reports & Performance Analysis"
+msgstr "تقارير التقييم وتحليل الأداء"
+
+#: .\hr\templates\hr\hr_reports.html:16
+msgid "View Mode"
+msgstr "وضع العرض"
+
+#: .\hr\templates\hr\hr_reports.html:19
+msgid "Monthly Summary"
+msgstr "ملخص شهري"
+
+#: .\hr\templates\hr\hr_reports.html:22
+msgid "Details by Evaluation Type"
+msgstr "تفاصيل حسب النوع"
+
+#: .\hr\templates\hr\hr_reports.html:30
+msgid "All Employees"
+msgstr "كل الموظفين"
+
+#: .\hr\templates\hr\hr_reports.html:51
+msgid "Show"
+msgstr "عرض"
+
+#: .\hr\templates\hr\hr_reports.html:68
+msgid "Monthly Summary per Employee"
+msgstr "ملخص شهري لكل موظف"
+
+#: .\hr\templates\hr\hr_reports.html:79 .\hr\templates\hr\hr_reports.html:134
+msgid "Evaluations Count"
+msgstr "عدد التقييمات"
+
+#: .\hr\templates\hr\hr_reports.html:80
+#, python-format
+msgid "Monthly Average %%"
+msgstr "متوسط شهري"
+
+#: .\hr\templates\hr\hr_reports.html:111
+msgid "No monthly results"
+msgstr "لا توجد نتائج"
+
+#: .\hr\templates\hr\hr_reports.html:121
+msgid "Evaluation Details by Type"
+msgstr "تفاصيل حسب النوع"
+
+#: .\hr\templates\hr\hr_reports.html:135
+#, fuzzy, python-format
+#| msgid "Score %%"
+msgid "Score %%"
+msgstr "الدرجة %"
+
+#: .\hr\templates\hr\hr_reports.html:198
+#: .\purchase\templates\purchase\invoice_add.html:240
+#: .\purchase\templates\purchase\po_add.html:240
+msgid "No results found"
+msgstr "لا توجد نتائج"
+
+#: .\hr\templates\hr\leaves_list.html:4 .\hr\templates\hr\leaves_list.html:7
+#: .\templates\layout\base.html:411
+msgid "Leave Management"
+msgstr "إدارة الإجازات"
+
+#: .\hr\templates\hr\leaves_list.html:18
+msgid "Action"
+msgstr "الإجراء"
+
+#: .\hr\templates\hr\leaves_list.html:31
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+#: .\hr\templates\hr\leaves_list.html:49
+msgid "No leaves found"
+msgstr "لا توجد إجازات"
+
+#: .\hr\views.py:627
+msgid "Not Scheduled"
+msgstr "غير مجدول"
+
+#: .\hr\views.py:730
+msgid "Employee is not linked to the user account or not in the same company."
+msgstr "الموظف غير مرتبط بحساب المستخدم أو ليس ضمن نفس الشركة"
+
+#: .\hr\views.py:1023
+msgid "Check Out"
+msgstr "تسجيل خروج"
+
+#: .\hr\views.py:1030
+msgid "Checked out successfully."
+msgstr "تم الحفظ بنجاح"
+
+#: .\pos\templates\pos\pos.html:4 .\templates\layout\base.html:446
+#: .\templates\layout\base.html:451
+msgid "Point of Sale"
+msgstr "نقاط البيع"
+
+#: .\pos\templates\pos\pos.html:11
+#: .\products\templates\products\products_list.html:140
+#: .\quotations\templates\quotations\quotation_add.html:146
+#: .\sales\templates\sales\invoice_add.html:176
+msgid "Search product..."
+msgstr "بحث عن منتج..."
+
+#: .\pos\templates\pos\pos.html:12
+msgid "Search invoice..."
+msgstr "بحث عن فاتورة"
+
+#: .\pos\templates\pos\pos.html:13
+msgid "New Invoice"
+msgstr "فاتورة جديدة"
+
+#: .\pos\templates\pos\pos.html:19
+msgid "Categories"
+msgstr "التصنيفات"
+
+#: .\pos\templates\pos\pos.html:57
+#: .\products\templates\products\product_view.html:85
+#: .\products\templates\products\product_view.html:90
+#: .\products\templates\products\products_list.html:171
+#: .\purchase\templates\purchase\po_add.html:242
+#: .\purchase\templates\purchase\return_add.html:57
+#: .\sales\templates\sales\return_add.html:78
+#, fuzzy
+msgid "SAR"
+msgstr ""
+"#-#-#-#-#  django.po (accounting_web)  #-#-#-#-#\n"
+"ريال\n"
+"#-#-#-#-#  django.po (accounting_web)  #-#-#-#-#\n"
+"ر.س"
+
+#: .\pos\templates\pos\pos.html:102
+#: .\quotations\templates\quotations\quotation_form.html:37
+msgid "Select Customer"
+msgstr "اختر العميل"
+
+#: .\pos\templates\pos\pos.html:104
+msgid "Cash Customer"
+msgstr "عميل نقدي"
+
+#: .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\stock_adjust_edit.html:16
+#: .\products\templates\products\stock_adjust_view.html:13
+#: .\quotations\templates\quotations\quotation_add.html:125
+#: .\quotations\templates\quotations\quotation_form.html:55
+#: .\quotations\templates\quotations\quotation_view.html:29
+#: .\sales\templates\sales\create_return.html:93
+#: .\sales\templates\sales\invoice_add.html:157
+#: .\sales\templates\sales\invoice_pdf.html:49
+#: .\sales\templates\sales\invoice_print.html:30
+#: .\sales\templates\sales\invoice_view.html:128
+#: .\sales\templates\sales\pdf_template.html:57
+#: .\suppliers\templates\suppliers\supplier_pdf.html:90
+#: .\suppliers\templates\suppliers\supplier_print.html:39
+#: .\suppliers\templates\suppliers\supplier_view.html:89
+msgid "Item"
+msgstr "الصنف"
+
+#: .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\product_view.html:124
+#: .\purchase\templates\purchase\_return_selector.html:52
+#: .\purchase\templates\purchase\invoice_add.html:147
+#: .\purchase\templates\purchase\po_add.html:118
+#: .\purchase\templates\purchase\po_view.html:30
+#: .\purchase\templates\purchase\purchase_print.html:43
+#: .\purchase\templates\purchase\purchase_return_view.html:33
+#: .\purchase\templates\purchase\purchase_view.html:56
+#: .\purchase\templates\purchase\purchase_view_pdf.html:133
+#: .\quotations\templates\quotations\quotation_add.html:127
+#: .\quotations\templates\quotations\quotation_form.html:57
+#: .\quotations\templates\quotations\quotation_view.html:31
+#: .\sales\templates\sales\invoice_add.html:159
+#: .\sales\templates\sales\invoice_pdf.html:51
+#: .\sales\templates\sales\invoice_print.html:32
+#: .\sales\templates\sales\invoice_view.html:130
+#: .\sales\templates\sales\pdf_template.html:59
+#: .\suppliers\templates\suppliers\supplier_pdf.html:92
+#: .\suppliers\templates\suppliers\supplier_print.html:41
+#: .\suppliers\templates\suppliers\supplier_view.html:91
+msgid "Quantity"
+msgstr "الكمية"
+
+#: .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\products_list.html:148
+#: .\purchase\templates\purchase\_return_selector.html:53
+#: .\purchase\templates\purchase\invoice_add.html:148
+#: .\purchase\templates\purchase\po_add.html:119
+#: .\purchase\templates\purchase\po_view.html:31
+#: .\purchase\templates\purchase\purchase_print.html:44
+#: .\purchase\templates\purchase\purchase_return_view.html:34
+#: .\purchase\templates\purchase\purchase_view.html:57
+#: .\purchase\templates\purchase\purchase_view_pdf.html:134
+#: .\purchase\templates\purchase\return_from_invoice.html:109
+#: .\quotations\templates\quotations\quotation_add.html:128
+#: .\quotations\templates\quotations\quotation_form.html:58
+#: .\quotations\templates\quotations\quotation_view.html:32
+#: .\sales\templates\sales\create_return.html:95
+#: .\sales\templates\sales\invoice_add.html:160
+#: .\sales\templates\sales\invoice_pdf.html:52
+#: .\sales\templates\sales\invoice_print.html:33
+#: .\sales\templates\sales\invoice_view.html:131
+#: .\sales\templates\sales\pdf_template.html:60
+#: .\suppliers\templates\suppliers\supplier_pdf.html:93
+#: .\suppliers\templates\suppliers\supplier_print.html:42
+#: .\suppliers\templates\suppliers\supplier_view.html:92
+msgid "Price"
+msgstr "السعر"
+
+#: .\pos\templates\pos\pos.html:116
+msgid "Grand Total"
+msgstr "الإجمالي الكلي"
+
+#: .\pos\templates\pos\pos.html:119
+msgid "Save & Proceed to Payment"
+msgstr "حفظ والانتقال للدفع"
+
+#: .\pos\templates\pos\pos.html:162
+msgid "Open an invoice first!"
+msgstr "افتح فاتورة أولاً"
+
+#: .\pos\templates\pos\pos.html:172 .\pos\templates\pos\pos.html:180
+msgid "Stock is lower than the requested quantity for product"
+msgstr "المخزون أقل من الكمية المطلوبة للصنف"
+
+#: .\pos\templates\pos\pos.html:172 .\pos\templates\pos\pos.html:180
+msgid "Allow negative stock?"
+msgstr "السماح بالمخزون السالب؟"
+
+#: .\pos\templates\pos\pos.html:230
+msgid "Add products first!"
+msgstr "أضف منتجات أولاً"
+
+#: .\products\templates\products\category_add.html:4
+#: .\products\templates\products\category_add.html:13
+#: .\products\templates\products\category_list.html:11
+msgid "Add Category"
+msgstr "إضافة تصنيف"
+
+#: .\products\templates\products\category_add.html:20
+msgid "Category Name"
+msgstr "اسم التصنيف"
+
+#: .\products\templates\products\category_add.html:25
+#: .\products\templates\products\category_list.html:21
+#: .\venv\Lib\site-packages\django\forms\formsets.py:484
+#: .\venv\Lib\site-packages\django\forms\formsets.py:491
+#, fuzzy
+msgid "Order"
+msgstr ""
+"#-#-#-#-#  django.po (accounting_web)  #-#-#-#-#\n"
+"ترتيب الشفت\n"
+"#-#-#-#-#  django.po (accounting_web)  #-#-#-#-#\n"
+"الترتيب"
+
+#: .\products\templates\products\category_add.html:30
+#: .\products\templates\products\product_edit.html:131
+#: .\products\templates\products\product_form.html:174
+#: .\products\templates\products\product_form_base.html:45
+#: .\venv\Lib\site-packages\django\db\models\fields\files.py:420
+msgid "Image"
+msgstr ""
+
+#: .\products\templates\products\category_list.html:4
+#: .\products\templates\products\category_list.html:10
+msgid "Category Management"
+msgstr "إدارة التصنيفات"
+
+#: .\products\templates\products\category_list.html:20
+msgid "Name"
+msgstr "الاسم"
+
+#: .\products\templates\products\category_list.html:23
+#: .\templates\layout\base.html:512
+msgid "Products"
+msgstr "المنتجات"
+
+#: .\products\templates\products\category_list.html:47
+msgid "No products"
+msgstr "لا توجد منتجات"
+
+#: .\products\templates\products\category_list.html:53
+msgid "No categories found"
+msgstr "لم يتم العثور على تصنيفات"
+
+#: .\products\templates\products\product_edit.html:5
+#: .\products\templates\products\product_edit.html:13
+#: .\products\templates\products\product_form.html:6
+#: .\products\templates\products\product_form.html:35
+msgid "Edit Product"
+msgstr "تعديل منتج"
+
+#: .\products\templates\products\product_edit.html:22
+msgid "Product Type"
+msgstr "نوع المنتج"
+
+#: .\products\templates\products\product_edit.html:25
+#: .\products\templates\products\product_form.html:43
+#: .\products\templates\products\product_view.html:70
+#: .\products\templates\products\products_list.html:177
+msgid "Normal Product"
+msgstr "منتج عادي"
+
+#: .\products\templates\products\product_edit.html:28
+#: .\products\templates\products\product_form.html:46
+#: .\products\templates\products\product_view.html:74
+#: .\products\templates\products\products_list.html:181
+msgid "Bundle Product"
+msgstr "منتج مركب"
+
+#: .\products\templates\products\product_edit.html:31
+#: .\products\templates\products\product_form.html:49
+#: .\products\templates\products\product_view.html:72
+#: .\products\templates\products\products_list.html:179
+msgid "Service"
+msgstr "خدمة"
+
+#: .\products\templates\products\product_edit.html:44
+#: .\products\templates\products\product_form.html:69
+#: .\products\templates\products\product_form_base.html:10
+msgid "SKU"
+msgstr "SKU"
+
+#: .\products\templates\products\product_edit.html:52
+#: .\products\templates\products\product_form.html:92
+#: .\products\templates\products\product_form_base.html:17
+msgid "Purchase Price"
+msgstr "سعر الشراء"
+
+#: .\products\templates\products\product_edit.html:58
+#: .\products\templates\products\product_form.html:99
+#: .\products\templates\products\product_form_base.html:22
+msgid "Sale Price"
+msgstr "سعر البيع"
+
+#: .\products\templates\products\product_edit.html:67
+#: .\products\templates\products\product_form.html:109
+#: .\products\templates\products\product_form_base.html:29
+msgid "Minimum Stock"
+msgstr "الحد الأدنى للمخزون"
+
+#: .\products\templates\products\product_edit.html:73
+#: .\products\templates\products\product_form.html:116
+#: .\products\templates\products\product_form_base.html:34
+msgid "Low Stock Alert"
+msgstr "تنبيه انخفاض المخزون"
+
+#: .\products\templates\products\product_edit.html:83
+#: .\products\templates\products\product_form.html:126
+msgid "Inventory Account"
+msgstr "حساب المخزون"
+
+#: .\products\templates\products\product_edit.html:96
+#: .\products\templates\products\product_form.html:139
+msgid "Cost of Sales Account"
+msgstr "حساب تكلفة المبيعات"
+
+#: .\products\templates\products\product_edit.html:109
+#: .\products\templates\products\product_form.html:152
+msgid "Revenue Account"
+msgstr "حساب الإيرادات"
+
+#: .\products\templates\products\product_edit.html:141
+#: .\products\templates\products\product_form.html:184
+#: .\products\templates\products\product_view.html:118
+msgid "Product Components"
+msgstr "مكونات المنتج"
+
+#: .\products\templates\products\product_edit.html:173
+#: .\products\templates\products\product_form.html:213
+msgid "Add Component"
+msgstr "إضافة مكوّن"
+
+#: .\products\templates\products\product_edit.html:182
+#: .\products\templates\products\product_form.html:221
+msgid "Save Product"
+msgstr "حفظ المنتج"
+
+#: .\products\templates\products\product_edit.html:193
+#, fuzzy
+#| msgid "Search product..."
+msgid "Search account..."
+msgstr "بحث عن منتج..."
+
+#: .\products\templates\products\product_form.html:6
+#: .\products\templates\products\product_form.html:35
+#: .\products\templates\products\products_list.html:135
+#: .\purchase\templates\purchase\invoice_add.html:136
+#: .\purchase\templates\purchase\po_add.html:108
+#: .\quotations\templates\quotations\quotation_add.html:118
+#: .\sales\templates\sales\invoice_add.html:149
+msgid "Add Product"
+msgstr "إضافة منتج"
+
+#: .\products\templates\products\product_form.html:76
+#: .\products\templates\products\stock_take_sheet.html:25
+#: .\products\templates\products\stock_take_sheet.html:48
+msgid "Category"
+msgstr "التصنيف"
+
+#: .\products\templates\products\product_form.html:78
+msgid "Select Category"
+msgstr "اختر التصنيف"
+
+#: .\products\templates\products\product_form.html:231
+#: .\products\templates\products\stock_ledger.html:12
+msgid "Search..."
+msgstr "بحث..."
+
+#: .\products\templates\products\product_view.html:6
+msgid "Product View"
+msgstr "عرض المنتج"
+
+#: .\products\templates\products\product_view.html:45
+msgid "Product Details"
+msgstr "تفاصيل المنتج"
+
+#: .\products\templates\products\product_view.html:58
+msgid "No Image Available"
+msgstr "لا توجد صورة"
+
+#: .\products\templates\products\product_view.html:79
+msgid "SKU:"
+msgstr "SKU:"
+
+#: .\products\templates\products\product_view.html:84
+msgid "Purchase Price:"
+msgstr "سعر الشراء:"
+
+#: .\products\templates\products\product_view.html:89
+msgid "Sale Price:"
+msgstr "سعر البيع:"
+
+#: .\products\templates\products\product_view.html:95
+msgid "Minimum Stock:"
+msgstr "الحد الأدنى للمخزون:"
+
+#: .\products\templates\products\product_view.html:100
+msgid "Low Stock Alert:"
+msgstr "تنبيه انخفاض المخزون:"
+
+#: .\products\templates\products\product_view.html:113
+msgid "No description available"
+msgstr "لا يوجد وصف"
+
+#: .\products\templates\products\product_view.html:123
+#: .\products\templates\products\products_list.html:147
+#: .\products\templates\products\stock_adjust.html:39
+#: .\products\templates\products\stock_ledger.html:20
+#: .\products\templates\products\stock_take_sheet.html:47
+#: .\purchase\templates\purchase\_return_selector.html:51
+#: .\purchase\templates\purchase\invoice_add.html:145
+#: .\purchase\templates\purchase\po_add.html:116
+#: .\purchase\templates\purchase\po_view.html:28
+#: .\purchase\templates\purchase\purchase_print.html:42
+#: .\purchase\templates\purchase\purchase_return_view.html:32
+#: .\purchase\templates\purchase\purchase_view.html:55
+#: .\purchase\templates\purchase\purchase_view_pdf.html:132
+#: .\purchase\templates\purchase\return_from_invoice.html:107
+msgid "Product"
+msgstr "المنتج"
+
+#: .\products\templates\products\product_view.html:136
+#, fuzzy
+#| msgid "No employees found"
+msgid "No components found"
+msgstr "لا يوجد موظفون"
+
+#: .\products\templates\products\product_view.html:146
+#, fuzzy
+#| msgid "Are you sure you want to delete this shift?"
+msgid "Are you sure you want to delete this product?"
+msgstr "هل أنت متأكد من حذف الشفت؟"
+
+#: .\products\templates\products\products_list.html:5
+#: .\products\templates\products\products_list.html:133
+msgid "Product Management"
+msgstr "إدارة المنتجات"
+
+#: .\products\templates\products\products_list.html:149
+#: .\sales\templates\sales\create_return.html:94
+msgid "Available Quantity"
+msgstr "الكمية المتاحة"
+
+#: .\products\templates\products\products_list.html:183
+msgid "Undefined"
+msgstr "غير محدد"
+
+#: .\products\templates\products\products_list.html:210
+#: .\products\templates\products\stock_take_sheet.html:74
+msgid "No products found"
+msgstr "لا توجد منتجات"
+
+#: .\products\templates\products\stock_adjust.html:4
+#: .\products\templates\products\stock_adjust.html:32
+#: .\templates\layout\base.html:527
+msgid "Manual Stock Adjustment"
+msgstr "تعديل المخزون اليدوي"
+
+#: .\products\templates\products\stock_adjust.html:41
+#: .\products\templates\products\stock_adjust.html:142
+#: .\quotations\templates\quotations\quotation_form.html:71
+msgid "Select Product"
+msgstr "اختر المنتج"
+
+#: .\products\templates\products\stock_adjust.html:52
+#: .\products\templates\products\stock_take_sheet.html:49
+msgid "Current Stock"
+msgstr "المخزون الحالي"
+
+#: .\products\templates\products\stock_adjust.html:58
+msgid "Adjustment (+ / -)"
+msgstr "التعديل (+ / -)"
+
+#: .\products\templates\products\stock_adjust.html:70
+msgid "Final Quantity"
+msgstr "الكمية النهائية"
+
+#: .\products\templates\products\stock_adjust.html:78
+msgid "Select"
+msgstr "اختر"
+
+#: .\products\templates\products\stock_adjust.html:88
+#: .\products\templates\products\stock_adjust.html:117
+msgid "New Type"
+msgstr "نوع جديد"
+
+#: .\products\templates\products\stock_adjust.html:91
+#: .\products\templates\products\stock_adjust.html:113
+msgid "Add New Type"
+msgstr "إضافة نوع جديد"
+
+#: .\products\templates\products\stock_adjust.html:103
+msgid "Execute"
+msgstr "تنفيذ"
+
+#: .\products\templates\products\stock_adjust.html:178
+msgid "Enter new type first"
+msgstr "أدخل النوع الجديد أولاً"
+
+#: .\products\templates\products\stock_adjust.html:187
+msgid "Enter new type"
+msgstr "أدخل نوع جديد"
+
+#: .\products\templates\products\stock_adjust_edit.html:4
+#, fuzzy
+#| msgid "Stock Take Date"
+msgid "Edit Stock Take"
+msgstr "تاريخ الجرد"
+
+#: .\products\templates\products\stock_adjust_edit.html:8
+#, fuzzy
+#| msgid "Stock Take Sheet"
+msgid "Edit Stock Take Sheet"
+msgstr "ورقة الجرد"
+
+#: .\products\templates\products\stock_adjust_edit.html:17
+#: .\products\templates\products\stock_adjust_view.html:15
+msgid "Physical Quantity"
+msgstr "الكمية الفعلية"
+
+#: .\products\templates\products\stock_adjust_view.html:4
+msgid "Stock Take View"
+msgstr "عرض الجرد"
+
+#: .\products\templates\products\stock_adjust_view.html:8
+msgid "Stock Take Sheet View"
+msgstr "عرض ورقة الجرد"
+
+#: .\products\templates\products\stock_adjust_view.html:14
+msgid "System Quantity"
+msgstr "كمية النظام"
+
+#: .\products\templates\products\stock_adjust_view.html:16
+msgid "Difference"
+msgstr "الفرق"
+
+#: .\products\templates\products\stock_ledger.html:4
+#: .\products\templates\products\stock_ledger.html:7
+msgid "Inventory Transactions Log"
+msgstr "سجل حركات المخزون"
+
+#: .\products\templates\products\stock_ledger.html:10
+msgid "Adjust Inventory"
+msgstr "تعديل المخزون"
+
+#: .\products\templates\products\stock_ledger.html:22
+#: .\venv\Lib\site-packages\django\forms\widgets.py:529
+#, fuzzy
+msgid "Change"
+msgstr ""
+"#-#-#-#-#  django.po (accounting_web)  #-#-#-#-#\n"
+"حفظ التعديلات\n"
+"#-#-#-#-#  django.po (accounting_web)  #-#-#-#-#\n"
+"التغيير"
+
+#: .\products\templates\products\stock_ledger.html:23
+msgid "Stock After Adjustment"
+msgstr "المخزون بعد التعديل"
+
+#: .\products\templates\products\stock_ledger.html:25
+msgid "Note"
+msgstr "ملاحظة"
+
+#: .\products\templates\products\stock_ledger.html:50
+msgid "Are you sure you want to delete this transaction?"
+msgstr "هل أنت متأكد أنك تريد حذف هذه الحركة؟"
+
+#: .\products\templates\products\stock_ledger.html:55
+msgid "View Only"
+msgstr "عرض فقط"
+
+#: .\products\templates\products\stock_take_list.html:4
+#: .\products\templates\products\stock_take_list.html:7
+msgid "Stock Take Management"
+msgstr "إدارة الجرد"
+
+#: .\products\templates\products\stock_take_list.html:13
+msgid "Stock Take Date"
+msgstr "تاريخ الجرد"
+
+#: .\products\templates\products\stock_take_list.html:14
+#: .\sales\templates\sales\invoice_view.html:192
+msgid "User"
+msgstr "المستخدم"
+
+#: .\products\templates\products\stock_take_list.html:28
+#: .\products\templates\products\stock_take_sheet.html:105
+msgid "Matched"
+msgstr "مطابق"
+
+#: .\products\templates\products\stock_take_list.html:31
+msgid "Partially Matched"
+msgstr "مطابق جزئياً"
+
+#: .\products\templates\products\stock_take_list.html:34
+msgid "Not Matched"
+msgstr "غير مطابق"
+
+#: .\products\templates\products\stock_take_list.html:46
+msgid "No stock take records found"
+msgstr "لا توجد سجلات جرد"
+
+#: .\products\templates\products\stock_take_sheet.html:4
+#: .\products\templates\products\stock_take_sheet.html:21
+msgid "Stock Take Sheet"
+msgstr "ورقة الجرد"
+
+#: .\products\templates\products\stock_take_sheet.html:27
+msgid "All Categories"
+msgstr "كل التصنيفات"
+
+#: .\products\templates\products\stock_take_sheet.html:37
+msgid "Stock saved successfully!"
+msgstr "تم حفظ الجرد بنجاح"
+
+#: .\products\templates\products\stock_take_sheet.html:50
+msgid "Physical Count"
+msgstr "الكمية الفعلية"
+
+#: .\products\templates\products\stock_take_sheet.html:51
+msgid "Difference / Comment"
+msgstr "الفرق / الملاحظة"
+
+#: .\products\templates\products\stock_take_sheet.html:65
+msgid "Enter quantity"
+msgstr "أدخل الكمية"
+
+#: .\products\templates\products\stock_take_sheet.html:83
+msgid "Save Stock"
+msgstr "حفظ الجرد"
+
+#: .\products\templates\products\stock_take_sheet.html:106
+msgid "Over by"
+msgstr "زيادة بمقدار"
+
+#: .\products\templates\products\stock_take_sheet.html:107
+msgid "Short by"
+msgstr "نقص بمقدار"
+
+#: .\products\templates\products\stock_take_sheet.html:128
+#: .\products\templates\products\stock_take_sheet.html:132
+msgid "Error while saving"
+msgstr "خطأ أثناء الحفظ"
+
+#: .\purchase\templates\purchase\_return_selector.html:6
+#: .\purchase\templates\purchase\purchase_view.html:8
+msgid "Create Debit Note (Return)"
+msgstr "إنشاء إشعار دائن (مرتجع مبيعات)"
+
+#: .\purchase\templates\purchase\_return_selector.html:13
+#: .\purchase\templates\purchase\purchase_view.html:15
+#: .\purchase\templates\purchase\return_add.html:25
+msgid "Select Supplier:"
+msgstr "بحث المورد"
+
+#: .\purchase\templates\purchase\_return_selector.html:15
+#: .\purchase\templates\purchase\purchase_view.html:17
+#: .\purchase\templates\purchase\return_add.html:27
+msgid "-- Select Supplier --"
+msgstr "-- اختر حساب المورد --"
+
+#: .\purchase\templates\purchase\_return_selector.html:26
+#: .\purchase\templates\purchase\purchase_view.html:30
+msgid "Select Invoice:"
+msgstr "اختر فاتورة المبيعات:"
+
+#: .\purchase\templates\purchase\_return_selector.html:28
+#: .\purchase\templates\purchase\_return_selector.html:85
+#: .\purchase\templates\purchase\purchase_view.html:32
+#: .\purchase\templates\purchase\purchase_view.html:82
+#: .\purchase\templates\purchase\return_add.html:53
+msgid "-- Select Invoice --"
+msgstr "-- اختر الفاتورة --"
+
+#: .\purchase\templates\purchase\_return_selector.html:39
+#: .\purchase\templates\purchase\purchase_print.html:25
+#: .\purchase\templates\purchase\purchase_view.html:43
+#: .\purchase\templates\purchase\purchase_view_pdf.html:114
+msgid "Invoice Number:"
+msgstr "رقم الفاتورة"
+
+#: .\purchase\templates\purchase\_return_selector.html:43
+#: .\purchase\templates\purchase\purchase_print.html:34
+#: .\purchase\templates\purchase\purchase_view.html:47
+#: .\purchase\templates\purchase\purchase_view_pdf.html:123
+#: .\sales\templates\sales\invoice_add.html:107
+#: .\sales\templates\sales\invoice_pdf.html:41
+#: .\sales\templates\sales\invoice_print.html:21
+#: .\sales\templates\sales\invoice_view.html:120
+#: .\sales\templates\sales\pdf_template.html:50
+#: .\suppliers\templates\suppliers\supplier_pdf.html:67
+#: .\suppliers\templates\suppliers\supplier_print.html:17
+#: .\suppliers\templates\suppliers\supplier_view.html:47
+msgid "Invoice Date:"
+msgstr "تاريخ الفاتورة:"
+
+#: .\purchase\templates\purchase\_return_selector.html:54
+#: .\purchase\templates\purchase\invoice_add.html:150
+#: .\purchase\templates\purchase\po_add.html:121
+#: .\purchase\templates\purchase\po_view.html:33
+#: .\purchase\templates\purchase\purchase_print.html:46
+#: .\purchase\templates\purchase\purchase_return_view.html:36
+#: .\purchase\templates\purchase\purchase_view.html:58
+#: .\purchase\templates\purchase\return_from_invoice.html:111
+#: .\quotations\templates\quotations\quotation_add.html:130
+#: .\quotations\templates\quotations\quotation_form.html:60
+#: .\quotations\templates\quotations\quotation_view.html:34
+#: .\sales\templates\sales\create_return.html:97
+#: .\sales\templates\sales\invoice_add.html:162
+#: .\sales\templates\sales\invoice_pdf.html:54
+#: .\sales\templates\sales\invoice_print.html:35
+#: .\sales\templates\sales\invoice_view.html:133
+#: .\sales\templates\sales\pdf_template.html:62
+#: .\suppliers\templates\suppliers\supplier_pdf.html:95
+#: .\suppliers\templates\suppliers\supplier_print.html:44
+#: .\suppliers\templates\suppliers\supplier_view.html:94
+#, python-format
+msgid "Tax %%"
+msgstr "الضريبة %%"
+
+#: .\purchase\templates\purchase\_return_selector.html:55
+#: .\purchase\templates\purchase\invoice_add.html:149
+#: .\purchase\templates\purchase\po_add.html:120
+#: .\purchase\templates\purchase\po_view.html:32
+#: .\purchase\templates\purchase\purchase_print.html:45
+#: .\purchase\templates\purchase\purchase_return_view.html:35
+#: .\purchase\templates\purchase\purchase_view.html:59
+#: .\purchase\templates\purchase\return_from_invoice.html:110
+#: .\quotations\templates\quotations\quotation_add.html:129
+#: .\quotations\templates\quotations\quotation_form.html:59
+#: .\quotations\templates\quotations\quotation_view.html:33
+#: .\sales\templates\sales\create_return.html:96
+#: .\sales\templates\sales\invoice_add.html:161
+#: .\sales\templates\sales\invoice_pdf.html:53
+#: .\sales\templates\sales\invoice_print.html:34
+#: .\sales\templates\sales\invoice_view.html:132
+#: .\sales\templates\sales\pdf_template.html:61
+#: .\suppliers\templates\suppliers\supplier_pdf.html:94
+#: .\suppliers\templates\suppliers\supplier_print.html:43
+#: .\suppliers\templates\suppliers\supplier_view.html:93
+msgid "Discount"
+msgstr "الخصم"
+
+#: .\purchase\templates\purchase\_return_selector.html:67
+#: .\purchase\templates\purchase\purchase_view.html:71
+#: .\purchase\templates\purchase\return_add.html:44
+#: .\sales\templates\sales\return_add.html:44
+msgid "Continue Creating Return"
+msgstr "متابعة إنشاء المرتجع"
+
+#: .\purchase\templates\purchase\_return_selector.html:98
+#: .\purchase\templates\purchase\invoices_list.html:94
+#: .\purchase\templates\purchase\purchase_view.html:83
+#: .\purchase\templates\purchase\return_add.html:56
+#: .\sales\templates\sales\create_return.html:72
+#: .\sales\templates\sales\invoices_list.html:115
+msgid "Invoice No"
+msgstr "رقم الفاتورة"
+
+#: .\purchase\templates\purchase\invoice_add.html:73
+msgid "Create Purchase Invoice"
+msgstr "إنشاء فاتورة مشتريات"
+
+#: .\purchase\templates\purchase\invoice_add.html:84
+#: .\purchase\templates\purchase\return_from_invoice.html:83
+msgid "Invoice Number"
+msgstr "رقم الفاتورة"
+
+# CLEANED: normalized duplicate translation variant
+#: .\purchase\templates\purchase\invoice_add.html:89
+#: .\purchase\templates\purchase\return_from_invoice.html:79
+#: .\sales\templates\sales\create_return.html:68
+msgid "Invoice Date"
+msgstr "تاريخ الفاتورة"
+
+#: .\purchase\templates\purchase\invoice_add.html:94
+msgid "Issue Date"
+msgstr "تاريخ الإصدار"
+
+#: .\purchase\templates\purchase\invoice_add.html:99
+msgid "Delivery Date"
+msgstr "تاريخ التسليم"
+
+#: .\purchase\templates\purchase\invoice_add.html:107
+#: .\purchase\templates\purchase\invoices_list.html:95
+#: .\purchase\templates\purchase\po_list.html:21
+#: .\purchase\templates\purchase\po_list.html:31
+#: .\purchase\templates\purchase\purchase_dashboard.html:18
+#: .\purchase\templates\purchase\returns_list.html:58
+#: .\suppliers\templates\suppliers\suppliers_list.html:34
+msgid "Supplier"
+msgstr "المورد"
+
+#: .\purchase\templates\purchase\invoice_add.html:110
+#: .\purchase\templates\purchase\invoice_add.html:243
+msgid "Search for a supplier."
+msgstr "ابحث عن مورد..."
+
+#: .\purchase\templates\purchase\invoice_add.html:120
+#: .\purchase\templates\purchase\po_add.html:92
+#: .\suppliers\templates\suppliers\supplier_add.html:5
+#: .\suppliers\templates\suppliers\supplier_add.html:9
+#: .\suppliers\templates\suppliers\suppliers_list.html:14
+msgid "Add Supplier"
+msgstr "إضافة مورد"
+
+#: .\purchase\templates\purchase\invoice_add.html:162
+#: .\purchase\templates\purchase\invoice_add.html:242
+msgid "Search for a product."
+msgstr "ابحث عن منتج..."
+
+#: .\purchase\templates\purchase\invoice_add.html:176
+#: .\purchase\templates\purchase\invoice_add.html:244
+#: .\sales\templates\sales\invoice_add.html:186
+#, fuzzy, python-format
+#| msgid "Example: 10 or 10%%"
+msgid "Example: 10 or 10%%"
+msgstr "مثال: 10 أو 10%"
+
+#: .\purchase\templates\purchase\invoice_add.html:184
+#: .\purchase\templates\purchase\invoice_add.html:239
+#: .\sales\templates\sales\invoice_add.html:193
+msgid "Select Cost Center"
+msgstr "اختر مركز التكلفة"
+
+#: .\purchase\templates\purchase\invoice_add.html:209
+msgid "Total Before Tax"
+msgstr "الإجمالي قبل الضريبة"
+
+#: .\purchase\templates\purchase\invoice_add.html:213
+msgid "Total Discount"
+msgstr "إجمالي الخصم"
+
+#: .\purchase\templates\purchase\invoice_add.html:217
+msgid "Total Tax"
+msgstr "إجمالي الضريبة"
+
+# CLEANED: normalized duplicate translation variant
+#: .\purchase\templates\purchase\invoice_add.html:221
+#: .\purchase\templates\purchase\return_from_invoice.html:112
+#: .\sales\templates\sales\create_return.html:98
+msgid "Total After Tax"
+msgstr "الإجمالي بعد الضريبة"
+
+#: .\purchase\templates\purchase\invoice_add.html:228
+#: .\sales\templates\sales\invoice_add.html:254
+msgid "Save Invoice"
+msgstr "حفظ الفاتورة"
+
+#: .\purchase\templates\purchase\invoice_add.html:241
+msgid "Failed to load data"
+msgstr "فشل تحميل البيانات"
+
+#: .\purchase\templates\purchase\invoices_list.html:4
+#: .\purchase\templates\purchase\invoices_list.html:72
+msgid "Purchase Invoices List"
+msgstr "قائمة فواتير المشتريات"
+
+#: .\purchase\templates\purchase\invoices_list.html:75
+#: .\purchase\templates\purchase\purchase_dashboard.html:10
+msgid "Add Purchase Invoice"
+msgstr "إضافة فاتورة مشتريات"
+
+#: .\purchase\templates\purchase\invoices_list.html:83
+#: .\sales\templates\sales\invoices_list.html:104
+msgid "Search ID"
+msgstr "بحث الرقم"
+
+#: .\purchase\templates\purchase\invoices_list.html:84
+#: .\sales\templates\sales\invoices_list.html:105
+msgid "Search Invoice No"
+msgstr "بحث رقم الفاتورة"
+
+#: .\purchase\templates\purchase\invoices_list.html:85
+#: .\purchase\templates\purchase\returns_list.html:35
+#: .\suppliers\templates\suppliers\suppliers_list.html:24
+msgid "Search Supplier"
+msgstr "بحث المورد"
+
+#: .\purchase\templates\purchase\invoices_list.html:86
+#: .\purchase\templates\purchase\returns_list.html:41
+#: .\quotations\templates\quotations\quotation_list.html:26
+#: .\sales\templates\sales\invoices_list.html:107
+#: .\sales\templates\sales\returns_list.html:23
+msgid "Search Date"
+msgstr "بحث التاريخ"
+
+#: .\purchase\templates\purchase\invoices_list.html:87
+#: .\purchase\templates\purchase\returns_list.html:47
+#: .\quotations\templates\quotations\quotation_list.html:27
+#: .\sales\templates\sales\invoices_list.html:108
+#: .\sales\templates\sales\returns_list.html:24
+msgid "Search Total"
+msgstr "بحث الإجمالي"
+
+#: .\purchase\templates\purchase\invoices_list.html:93
+msgid "No."
+msgstr "رقم"
+
+#: .\purchase\templates\purchase\invoices_list.html:119
+#: .\sales\templates\sales\invoices_list.html:143
+msgid "Paid"
+msgstr "مدفوعة"
+
+#: .\purchase\templates\purchase\invoices_list.html:123
+#: .\sales\templates\sales\invoice_view.html:97
+#: .\sales\templates\sales\invoices_list.html:141
+msgid "Unpaid"
+msgstr "غير مدفوعة"
+
+#: .\purchase\templates\purchase\invoices_list.html:143
+#: .\sales\templates\sales\invoice_view.html:79
+#: .\sales\templates\sales\invoices_list.html:166
+#: .\sales\templates\sales\returns_list.html:77
+msgid "Download PDF"
+msgstr "تحميل PDF"
+
+#: .\purchase\templates\purchase\invoices_list.html:149
+#: .\purchase\templates\purchase\po_list.html:57
+#: .\purchase\templates\purchase\po_view.html:91
+#: .\quotations\templates\quotations\quotation_list.html:72
+#: .\sales\templates\sales\invoice_view.html:75
+#: .\suppliers\templates\suppliers\supplier_view.html:28
+msgid "Print"
+msgstr "طباعة"
+
+#: .\purchase\templates\purchase\invoices_list.html:156
+msgid "Create Debit Note"
+msgstr "إنشاء إشعار دائن (مرتجع مبيعات)"
+
+#: .\purchase\templates\purchase\invoices_list.html:165
+msgid "No purchase invoices found"
+msgstr "لا توجد فواتير مشتريات"
+
+#: .\purchase\templates\purchase\po_add.html:38
+#, fuzzy, python-format
+#| msgid "Edit Purchase Order No %(po.po_no)s"
+msgid "Edit Purchase Order No %(po.po_no)s"
+msgstr "أوامر الشراء"
+
+#: .\purchase\templates\purchase\po_add.html:40
+#: .\purchase\templates\purchase\po_list.html:10
+msgid "Create Purchase Order"
+msgstr "إنشاء أمر شراء"
+
+#: .\purchase\templates\purchase\po_add.html:55
+#: .\purchase\templates\purchase\po_view.html:13
+msgid "Purchase Order No:"
+msgstr "رقم أمر الشراء:"
+
+#: .\purchase\templates\purchase\po_add.html:61
+#: .\purchase\templates\purchase\purchase_print.html:35
+#: .\purchase\templates\purchase\purchase_view_pdf.html:124
+#: .\sales\templates\sales\invoice_add.html:112
+#: .\sales\templates\sales\invoice_pdf.html:42
+#: .\sales\templates\sales\invoice_print.html:22
+#: .\sales\templates\sales\invoice_view.html:121
+#: .\sales\templates\sales\pdf_template.html:51
+#: .\suppliers\templates\suppliers\supplier_pdf.html:68
+#: .\suppliers\templates\suppliers\supplier_print.html:18
+#: .\suppliers\templates\suppliers\supplier_view.html:51
+msgid "Issue Date:"
+msgstr "تاريخ الإصدار:"
+
+#: .\purchase\templates\purchase\po_add.html:67
+#: .\purchase\templates\purchase\po_view.html:18
+msgid "Delivery Date:"
+msgstr "تاريخ التسليم"
+
+#: .\purchase\templates\purchase\po_add.html:78
+#: .\purchase\templates\purchase\po_view.html:14
+#: .\purchase\templates\purchase\purchase_print.html:26
+#: .\purchase\templates\purchase\purchase_return_view.html:24
+#: .\purchase\templates\purchase\purchase_view_pdf.html:115
+#: .\suppliers\templates\suppliers\supplier_print.html:22
+msgid "Supplier:"
+msgstr "المورد:"
+
+#: .\purchase\templates\purchase\po_add.html:81
+#: .\purchase\templates\purchase\po_add.html:243
+msgid "Search for a supplier..."
+msgstr "ابحث عن مورد..."
+
+#: .\purchase\templates\purchase\po_add.html:100
+#: .\purchase\templates\purchase\purchase_print.html:29
+#: .\purchase\templates\purchase\purchase_view_pdf.html:118
+#: .\quotations\templates\quotations\quotation_add.html:111
+#: .\quotations\templates\quotations\quotation_form.html:47
+#: .\quotations\templates\quotations\quotation_view.html:16
+#: .\sales\templates\sales\invoice_add.html:140
+#: .\sales\templates\sales\invoice_pdf.html:38
+#: .\sales\templates\sales\invoice_print.html:17
+#: .\sales\templates\sales\invoice_view.html:115
+#: .\sales\templates\sales\pdf_template.html:52
+#: .\suppliers\templates\suppliers\supplier_pdf.html:80
+#: .\suppliers\templates\suppliers\supplier_print.html:30
+#: .\suppliers\templates\suppliers\supplier_view.html:78
+msgid "Description:"
+msgstr "الوصف:"
+
+#: .\purchase\templates\purchase\po_add.html:134
+#: .\purchase\templates\purchase\po_add.html:241
+msgid "Search for a product..."
+msgstr "ابحث عن منتج..."
+
+#: .\purchase\templates\purchase\po_add.html:182
+#: .\purchase\templates\purchase\po_view.html:66
+#: .\purchase\templates\purchase\purchase_print.html:92
+#: .\purchase\templates\purchase\purchase_view_pdf.html:175
+#: .\purchase\templates\purchase\return_from_invoice.html:155
+#: .\quotations\templates\quotations\quotation_add.html:200
+#: .\quotations\templates\quotations\quotation_form.html:117
+#: .\quotations\templates\quotations\quotation_view.html:80
+#: .\sales\templates\sales\create_return.html:132
+#: .\sales\templates\sales\invoice_add.html:224
+#: .\sales\templates\sales\invoice_pdf.html:92
+#: .\sales\templates\sales\invoice_print.html:88
+#: .\sales\templates\sales\invoice_view.html:163
+#: .\sales\templates\sales\pdf_template.html:83
+msgid "Total Before Tax:"
+msgstr "الإجمالي قبل الضريبة:"
+
+#: .\purchase\templates\purchase\po_add.html:190
+#: .\quotations\templates\quotations\quotation_view.html:88
+#: .\suppliers\templates\suppliers\supplier_pdf.html:119
+#: .\suppliers\templates\suppliers\supplier_print.html:73
+#: .\suppliers\templates\suppliers\supplier_view.html:125
+msgid "Total Discount:"
+msgstr "إجمالي الخصم:"
+
+#: .\purchase\templates\purchase\po_add.html:198
+#: .\purchase\templates\purchase\po_view.html:76
+#: .\purchase\templates\purchase\purchase_print.html:108
+#: .\purchase\templates\purchase\purchase_view_pdf.html:187
+#: .\quotations\templates\quotations\quotation_add.html:214
+#: .\quotations\templates\quotations\quotation_form.html:133
+#: .\quotations\templates\quotations\quotation_view.html:104
+#: .\sales\templates\sales\invoice_add.html:238
+#: .\sales\templates\sales\invoice_pdf.html:106
+#: .\sales\templates\sales\invoice_print.html:104
+#: .\sales\templates\sales\invoice_view.html:165
+#: .\sales\templates\sales\pdf_template.html:91
+msgid "Total Tax:"
+msgstr "إجمالي الضريبة"
+
+#: .\purchase\templates\purchase\po_add.html:206
+#: .\purchase\templates\purchase\po_view.html:81
+#: .\suppliers\templates\suppliers\supplier_pdf.html:124
+#: .\suppliers\templates\suppliers\supplier_print.html:86
+msgid "Final Total:"
+msgstr "الإجمالي النهائي:"
+
+#: .\purchase\templates\purchase\po_add.html:220
+msgid "Save Purchase Order"
+msgstr "أوامر الشراء"
+
+#: .\purchase\templates\purchase\po_list.html:9
+msgid "Purchase Orders Management"
+msgstr "إدارة أوامر الشراء"
+
+#: .\purchase\templates\purchase\po_list.html:20
+#: .\purchase\templates\purchase\po_list.html:30
+msgid "Purchase Order No"
+msgstr "رقم أمر الشراء"
+
+#: .\purchase\templates\purchase\po_list.html:66
+msgid "No purchase orders found"
+msgstr "لا توجد أوامر شراء"
+
+#: .\purchase\templates\purchase\po_view.html:7
+msgid "Purchase Order"
+msgstr "أوامر الشراء"
+
+#: .\purchase\templates\purchase\po_view.html:52
+#: .\purchase\templates\purchase\purchase_return_view.html:53
+msgid "No items found"
+msgstr "لا توجد أصناف"
+
+#: .\purchase\templates\purchase\po_view.html:71
+#: .\purchase\templates\purchase\purchase_print.html:97
+#: .\purchase\templates\purchase\purchase_view_pdf.html:180
+#: .\purchase\templates\purchase\return_from_invoice.html:159
+#: .\quotations\templates\quotations\quotation_add.html:207
+#: .\quotations\templates\quotations\quotation_form.html:125
+#: .\quotations\templates\quotations\quotation_view.html:96
+#: .\sales\templates\sales\create_return.html:133
+#: .\sales\templates\sales\invoice_add.html:231
+#: .\sales\templates\sales\invoice_pdf.html:96
+#: .\sales\templates\sales\invoice_print.html:93
+#: .\sales\templates\sales\invoice_view.html:164
+#: .\sales\templates\sales\pdf_template.html:87
+msgid "Total After Discount:"
+msgstr "الإجمالي بعد الخصم:"
+
+#: .\purchase\templates\purchase\po_view.html:92
+msgid "Back to List"
+msgstr ""
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:9
+msgid "Purchase Management"
+msgstr "إدارة المشتريات"
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:19
+msgid "Invoices Count"
+msgstr "عدد الفواتير"
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:49
+#: .\suppliers\templates\suppliers\supplier_edit.html:5
+#: .\suppliers\templates\suppliers\supplier_edit.html:37
+msgid "Edit Supplier"
+msgstr "تعديل المورد"
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:54
+msgid "View Supplier Invoices"
+msgstr "عرض فاتورة المشتريات"
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:63
+msgid "No suppliers found"
+msgstr "لا يوجد موردون"
+
+#: .\purchase\templates\purchase\purchase_invoice_base_a4.html:7
+#: .\purchase\templates\purchase\purchase_print.html:21
+#: .\purchase\templates\purchase\purchase_view_pdf.html:109
+#: .\suppliers\templates\suppliers\supplier_pdf.html:63
+#: .\suppliers\templates\suppliers\supplier_print.html:11
+msgid "Purchase Invoice"
+msgstr "فاتورة المشتريات"
+
+#: .\purchase\templates\purchase\purchase_print.html:15
+msgid "Print Invoice"
+msgstr "إنشاء فاتورة"
+
+#: .\purchase\templates\purchase\purchase_print.html:113
+#: .\purchase\templates\purchase\purchase_view_pdf.html:192
+#: .\purchase\templates\purchase\return_from_invoice.html:167
+#: .\quotations\templates\quotations\quotation_add.html:221
+#: .\quotations\templates\quotations\quotation_form.html:141
+#: .\quotations\templates\quotations\quotation_view.html:113
+#: .\sales\templates\sales\create_return.html:136
+#: .\sales\templates\sales\invoice_add.html:245
+#: .\sales\templates\sales\invoice_pdf.html:110
+#: .\sales\templates\sales\invoice_print.html:109
+#: .\sales\templates\sales\invoice_view.html:168
+#: .\sales\templates\sales\pdf_template.html:95
+#: .\suppliers\templates\suppliers\supplier_view.html:140
+msgid "Total After Tax:"
+msgstr "الإجمالي بعد الضريبة:"
+
+#: .\purchase\templates\purchase\purchase_return_create.html:5
+#: .\purchase\templates\purchase\return_add.html:21
+msgid "Create Debit Note (Purchase Return)"
+msgstr "إنشاء إشعار مدين (مرتجع مشتريات)"
+
+#: .\purchase\templates\purchase\purchase_return_view.html:8
+msgid "Debit Note Details (Return)"
+msgstr "إنشاء إشعار دائن (مرتجع مبيعات)"
+
+#: .\purchase\templates\purchase\purchase_return_view.html:14
+msgid "Return Number:"
+msgstr "رقم المرتجع:"
+
+#: .\purchase\templates\purchase\purchase_return_view.html:18
+msgid "Return Date:"
+msgstr "تاريخ المرتجع"
+
+#: .\purchase\templates\purchase\purchase_view.html:84
+msgid "Please select an invoice first"
+msgstr "افتح فاتورة أولاً"
+
+#: .\purchase\templates\purchase\return_add.html:34
+msgid "Select Purchase Invoice:"
+msgstr "إنشاء فاتورة مشتريات"
+
+#: .\purchase\templates\purchase\return_add.html:36
+#: .\purchase\templates\purchase\return_add.html:52
+msgid "-- Select supplier first --"
+msgstr "-- اختر العميل أولاً --"
+
+#: .\purchase\templates\purchase\return_add.html:51
+#: .\sales\templates\sales\return_add.html:60
+msgid "Loading..."
+msgstr "جاري التحميل..."
+
+#: .\purchase\templates\purchase\return_add.html:54
+msgid "No invoices found for this supplier"
+msgstr "لا توجد فواتير"
+
+#: .\purchase\templates\purchase\return_add.html:55
+msgid "Error loading invoices"
+msgstr "لا توجد فواتير"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:69
+msgid "Debit Note (Purchase Return)"
+msgstr "إشعار مدين (مرتجع مشتريات)"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:75
+msgid "Supplier Name"
+msgstr "اسم المورد"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:91
+#: .\sales\templates\sales\create_return.html:79
+msgid "Return Reason"
+msgstr "سبب المرتجع"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:98
+#: .\purchase\templates\purchase\return_from_invoice.html:182
+msgid "Cannot return quantity greater than available quantity in the invoice"
+msgstr ""
+
+#: .\purchase\templates\purchase\return_from_invoice.html:102
+#: .\sales\templates\sales\create_return.html:88
+#: .\suppliers\templates\suppliers\supplier_view.html:84
+msgid "Items"
+msgstr "الصنف"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:108
+msgid "Available Qty"
+msgstr "الكمية"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:113
+msgid "Return Qty"
+msgstr "الكمية"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:151
+#: .\sales\templates\sales\create_return.html:129
+#: .\suppliers\templates\suppliers\supplier_pdf.html:116
+msgid "Totals"
+msgstr "الإجمالي"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:163
+msgid "Tax Amount"
+msgstr "قيمة الضريبة"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:174
+#: .\sales\templates\sales\create_return.html:142
+msgid "Save Return"
+msgstr "حفظ المرتجع"
+
+#: .\purchase\templates\purchase\returns_list.html:8
+#: .\templates\layout\base.html:500
+msgid "Purchase Returns"
+msgstr "مرتجعات المشتريات"
+
+#: .\purchase\templates\purchase\returns_list.html:23
+#: .\sales\templates\sales\returns_list.html:20
+msgid "Search Original Invoice"
+msgstr "بحث الفاتورة الأصلية"
+
+#: .\purchase\templates\purchase\returns_list.html:29
+msgid "Search Debit Note"
+msgstr "بحث سند مدين"
+
+#: .\purchase\templates\purchase\returns_list.html:56
+#: .\sales\templates\sales\returns_list.html:31
+msgid "Original Invoice No."
+msgstr "رقم الفاتورة الأصلية"
+
+#: .\purchase\templates\purchase\returns_list.html:57
+msgid "Debit Note No."
+msgstr "رقم سند المدين"
+
+#: .\purchase\templates\purchase\returns_list.html:59
+#: .\sales\templates\sales\returns_list.html:34
+msgid "Return Date"
+msgstr "تاريخ المرتجع"
+
+#: .\purchase\templates\purchase\returns_list.html:88
+msgid "Open Return"
+msgstr "فتح المرتجع"
+
+#: .\purchase\templates\purchase\returns_list.html:94
+msgid "PDF (Later)"
+msgstr "PDF (لاحقاً)"
+
+#: .\purchase\templates\purchase\returns_list.html:100
+msgid "Print (Later)"
+msgstr "طباعة (لاحقاً)"
+
+#: .\purchase\templates\purchase\returns_list.html:115
+msgid "No purchase returns yet."
+msgstr "لا توجد مرتجعات بعد"
+
+#: .\quotations\templates\quotations\quotation_add.html:65
+#: .\quotations\templates\quotations\quotation_form.html:5
+#: .\quotations\templates\quotations\quotation_list.html:12
+msgid "Create Quotation"
+msgstr "إنشاء عرض سعر"
+
+#: .\quotations\templates\quotations\quotation_add.html:75
+#: .\quotations\templates\quotations\quotation_form.html:19
+#: .\quotations\templates\quotations\quotation_view.html:12
+msgid "Quotation No:"
+msgstr "رقم عرض السعر:"
+
+#: .\quotations\templates\quotations\quotation_add.html:81
+#: .\quotations\templates\quotations\quotation_form.html:25
+#: .\quotations\templates\quotations\quotation_view.html:21
+msgid "Quotation Date:"
+msgstr "تاريخ عرض السعر:"
+
+#: .\quotations\templates\quotations\quotation_add.html:90
+#: .\quotations\templates\quotations\quotation_form.html:35
+#: .\quotations\templates\quotations\quotation_view.html:13
+#: .\sales\templates\sales\invoice_add.html:120
+#: .\sales\templates\sales\invoice_pdf.html:35
+#: .\sales\templates\sales\invoice_print.html:13
+#: .\sales\templates\sales\invoice_view.html:112
+#: .\sales\templates\sales\pdf_template.html:49
+msgid "Customer:"
+msgstr "العميل:"
+
+#: .\quotations\templates\quotations\quotation_add.html:94
+#: .\sales\templates\sales\invoice_add.html:123
+msgid "Search customer..."
+msgstr "بحث عن عميل"
+
+#: .\quotations\templates\quotations\quotation_add.html:231
+#: .\quotations\templates\quotations\quotation_form.html:152
+msgid "Save Quotation"
+msgstr "حفظ عرض السعر"
+
+#: .\quotations\templates\quotations\quotation_form.html:108
+msgid "Add Item"
+msgstr "إضافة صنف"
+
+#: .\quotations\templates\quotations\quotation_list.html:8
+msgid "Quotation Management"
+msgstr "إدارة عروض الأسعار"
+
+#: .\quotations\templates\quotations\quotation_list.html:24
+msgid "Search Quotation No"
+msgstr "بحث رقم عرض السعر"
+
+#: .\quotations\templates\quotations\quotation_list.html:34
+msgid "Quotation No"
+msgstr "رقم عرض السعر"
+
+#: .\quotations\templates\quotations\quotation_list.html:73
+msgid "Download"
+msgstr "تحميل"
+
+#: .\quotations\templates\quotations\quotation_list.html:88
+msgid "No quotations available yet."
+msgstr "لا توجد عروض أسعار بعد."
+
+#: .\quotations\templates\quotations\quotation_view.html:7
+msgid "Quotation"
+msgstr "عرض سعر"
+
+#: .\sales\templates\sales\create_return.html:59
+msgid "Credit Note (Sales Return)"
+msgstr "إنشاء إشعار دائن (مرتجع مبيعات)"
+
+#: .\sales\templates\sales\create_return.html:64
+msgid "Customer Name"
+msgstr "اسم العميل"
+
+#: .\sales\templates\sales\create_return.html:84
+msgid "Cannot return a quantity greater than available"
+msgstr "لا يمكن إرجاع كمية أكبر من المتاح"
+
+#: .\sales\templates\sales\create_return.html:99
+msgid "Return Quantity"
+msgstr "الكمية"
+
+#: .\sales\templates\sales\create_return.html:134
+#: .\suppliers\templates\suppliers\supplier_pdf.html:121
+#: .\suppliers\templates\suppliers\supplier_print.html:81
+msgid "Tax Value:"
+msgstr "قيمة الضريبة:"
+
+#: .\sales\templates\sales\invoice_add.html:91
+msgid "Create Invoice"
+msgstr "إنشاء فاتورة"
+
+#: .\sales\templates\sales\invoice_add.html:102
+#: .\sales\templates\sales\invoice_pdf.html:34
+#: .\sales\templates\sales\invoice_print.html:12
+#: .\sales\templates\sales\invoice_view.html:111
+#: .\sales\templates\sales\pdf_template.html:48
+#: .\suppliers\templates\suppliers\supplier_pdf.html:66
+#: .\suppliers\templates\suppliers\supplier_print.html:16
+#: .\suppliers\templates\suppliers\supplier_view.html:43
+msgid "Invoice No:"
+msgstr "رقم الفاتورة"
+
+#: .\sales\templates\sales\invoice_pdf.html:29
+#: .\sales\templates\sales\invoice_print.html:7
+#: .\sales\templates\sales\invoice_view.html:107
+#: .\sales\templates\sales\pdf_template.html:46
+msgid "Sales Invoice"
+msgstr "فواتير المبيعات"
+
+#: .\sales\templates\sales\invoice_view.html:83
+#: .\sales\templates\sales\invoices_list.html:173
+msgid "Invoice Return"
+msgstr "مرتجع الفاتورة"
+
+#: .\sales\templates\sales\invoice_view.html:88
+msgid "Pay"
+msgstr "دفع"
+
+#: .\sales\templates\sales\invoice_view.html:99
+msgid "Partially Paid"
+msgstr "مدفوعة جزئياً"
+
+#: .\sales\templates\sales\invoice_view.html:101
+msgid "Fully Paid"
+msgstr "مدفوعة بالكامل"
+
+#: .\sales\templates\sales\invoice_view.html:172
+msgid "Remaining Balance:"
+msgstr "الرصيد المتبقي:"
+
+#: .\sales\templates\sales\invoice_view.html:181
+msgid "Receipts / Payments"
+msgstr "المدفوعات / السندات"
+
+#: .\sales\templates\sales\invoice_view.html:189
+msgid "Voucher No"
+msgstr "رقم السند"
+
+#: .\sales\templates\sales\invoice_view.html:191
+#: .\sales\templates\sales\invoice_view.html:222
+msgid "Amount"
+msgstr "المبلغ"
+
+#: .\sales\templates\sales\invoice_view.html:208
+msgid "No payments linked to this invoice"
+msgstr "لا توجد مدفوعات مرتبطة بهذه الفاتورة"
+
+#: .\sales\templates\sales\invoice_view.html:217
+msgid "Pay Invoice No"
+msgstr "دفع الفاتورة رقم"
+
+#: .\sales\templates\sales\invoice_view.html:226
+msgid "Account (Cash / Bank)"
+msgstr "الحساب (نقدي / بنك)"
+
+#: .\sales\templates\sales\invoice_view.html:235
+msgid "Payment for Invoice"
+msgstr "دفعة مقابل فاتورة"
+
+#: .\sales\templates\sales\invoice_view.html:238
+msgid "Save Payment"
+msgstr "حفظ الدفع"
+
+#: .\sales\templates\sales\invoices_list.html:4
+#: .\sales\templates\sales\invoices_list.html:92
+msgid "Invoice List"
+msgstr "قائمة الفواتير"
+
+#: .\sales\templates\sales\invoices_list.html:87
+msgid "Showing invoices from"
+msgstr "لا توجد فواتير"
+
+#: .\sales\templates\sales\invoices_list.html:87
+msgid "to"
+msgstr "إلى"
+
+#: .\sales\templates\sales\invoices_list.html:97
+msgid "Add Invoice"
+msgstr "إضافة فاتورة"
+
+#: .\sales\templates\sales\invoices_list.html:133
+msgid "Cash"
+msgstr "نقدي"
+
+#: .\sales\templates\sales\invoices_list.html:179
+msgid "View from POS only"
+msgstr "عرض من نقاط البيع فقط"
+
+#: .\sales\templates\sales\invoices_list.html:190
+msgid "No invoices found"
+msgstr "لا توجد فواتير"
+
+#: .\sales\templates\sales\return_add.html:21
+msgid "Create Credit Note (Sales Return)"
+msgstr "إنشاء إشعار دائن (مرتجع مبيعات)"
+
+#: .\sales\templates\sales\return_add.html:25
+msgid "Select Customer:"
+msgstr "اختر العميل:"
+
+#: .\sales\templates\sales\return_add.html:27
+msgid "-- Select Customer --"
+msgstr "-- اختر العميل --"
+
+#: .\sales\templates\sales\return_add.html:34
+msgid "Select Sales Invoice:"
+msgstr "اختر فاتورة المبيعات:"
+
+#: .\sales\templates\sales\return_add.html:36
+#: .\sales\templates\sales\return_add.html:63
+msgid "-- Select customer first --"
+msgstr "-- اختر العميل أولاً --"
+
+#: .\sales\templates\sales\return_add.html:71
+msgid "-- Select invoice --"
+msgstr "-- اختر الفاتورة --"
+
+#: .\sales\templates\sales\return_add.html:77
+msgid "Invoice No."
+msgstr "رقم الفاتورة."
+
+#: .\sales\templates\sales\returns_list.html:8
+msgid "Invoice Returns"
+msgstr "مرتجعات الفواتير"
+
+#: .\sales\templates\sales\returns_list.html:21
+msgid "Search Return"
+msgstr "بحث المرتجع"
+
+#: .\sales\templates\sales\returns_list.html:32
+msgid "Return Invoice No."
+msgstr "رقم فاتورة المرتجع"
+
+#: .\sales\templates\sales\returns_list.html:63
+msgid "Create Return"
+msgstr "إنشاء مرتجع"
+
+#: .\sales\templates\sales\returns_list.html:70
+msgid "View Original Invoice"
+msgstr "عرض الفاتورة الأصلية"
+
+#: .\sales\templates\sales\returns_list.html:94
+msgid "No returns yet."
+msgstr "لا توجد مرتجعات بعد"
+
+#: .\suppliers\templates\suppliers\supplier_add.html:23
+#: .\suppliers\templates\suppliers\supplier_edit.html:49
+#: .\suppliers\templates\suppliers\supplier_pdf.html:73
+#: .\suppliers\templates\suppliers\supplier_view.html:59
+msgid "Supplier Information"
+msgstr "بيانات المورد"
+
+#: .\suppliers\templates\suppliers\supplier_edit.html:151
+msgid "Account Information"
+msgstr "معلومات الحساب"
+
+#: .\suppliers\templates\suppliers\supplier_edit.html:155
+msgid "Supplier Account (Payables)"
+msgstr "حساب المورد (الدائنون)"
+
+#: .\suppliers\templates\suppliers\supplier_edit.html:160
+#: .\suppliers\templates\suppliers\supplier_edit.html:225
+msgid "-- Select Supplier Account --"
+msgstr "-- اختر حساب المورد --"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:8
+msgid "Purchase Invoice PDF"
+msgstr "PDF فاتورة المشتريات"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:74
+#: .\suppliers\templates\suppliers\supplier_view.html:62
+msgid "Commercial Name:"
+msgstr "الاسم التجاري:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:75
+#: .\suppliers\templates\suppliers\supplier_print.html:23
+#: .\suppliers\templates\suppliers\supplier_view.html:66
+msgid "Tax Number:"
+msgstr "الرقم الضريبي:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:76
+#: .\suppliers\templates\suppliers\supplier_print.html:24
+msgid "CR Number:"
+msgstr "رقم السجل التجاري:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:85
+msgid "Items:"
+msgstr "الأصناف:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:118
+#: .\suppliers\templates\suppliers\supplier_print.html:69
+#: .\suppliers\templates\suppliers\supplier_view.html:120
+msgid "Total Before Discount:"
+msgstr "الإجمالي قبل الخصم:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:120
+#: .\suppliers\templates\suppliers\supplier_print.html:77
+#: .\suppliers\templates\suppliers\supplier_view.html:130
+msgid "After Discount:"
+msgstr "بعد الخصم:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:131
+msgid "QR Code for invoice verification"
+msgstr "رمز QR للتحقق من الفاتورة"
+
+#: .\suppliers\templates\suppliers\supplier_print.html:96
+msgid "Scan QR code to verify the invoice"
+msgstr "امسح رمز QR للتحقق من الفاتورة"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:11
+msgid "View Purchase Invoice"
+msgstr "عرض فاتورة المشتريات"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:22
+msgid "Do you want to permanently delete the invoice?"
+msgstr "هل تريد حذف الفاتورة نهائيًا؟"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:70
+msgid "Commercial Registration No:"
+msgstr "رقم السجل التجاري:"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:135
+msgid "Tax:"
+msgstr "الضريبة:"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:150
+msgid "QR Code"
+msgstr "رمز الاستجابة السريعة"
+
+#: .\suppliers\templates\suppliers\suppliers_list.html:8
+msgid "Supplier List"
+msgstr "قائمة الموردين"
+
+#: .\suppliers\templates\suppliers\suppliers_list.html:25
+msgid "Search Invoices"
+msgstr "بحث الفواتير"
+
+#: .\templates\layout\base.html:7
+msgid "Accounting System ERP"
+msgstr "النظام المحاسبي ERP"
+
+# ====== Layout ======
+#: .\templates\layout\base.html:371
+msgid "Accounting System"
+msgstr "النظام المحاسبي"
+
+#: .\templates\layout\base.html:372
+msgid "ERP"
+msgstr "ERP"
+
+#: .\templates\layout\base.html:381
+msgid "Human Resources"
+msgstr "الموارد البشرية"
+
+#: .\templates\layout\base.html:387
+msgid "Employee Management"
+msgstr "إدارة الموظفين"
+
+#: .\templates\layout\base.html:399
+msgid "Employee Schedule Management"
+msgstr "إدارة جدول الموظفين"
+
+#: .\templates\layout\base.html:405
+msgid "Attendance and Departure Log"
+msgstr "سجل الحضور والانصراف"
+
+#: .\templates\layout\base.html:423
+msgid "Evaluation Management"
+msgstr "إدارة التقييم"
+
+#: .\templates\layout\base.html:429
+msgid "Evaluation Records Management"
+msgstr "إدارة سجل التقييمات"
+
+#: .\templates\layout\base.html:434
+msgid "Permissions"
+msgstr "الصلاحيات"
+
+#: .\templates\layout\base.html:463
+msgid "Customers"
+msgstr "العملاء"
+
+#: .\templates\layout\base.html:468
+msgid "Sales Invoices"
+msgstr "فواتير المبيعات"
+
+#: .\templates\layout\base.html:473
+msgid "Sales Returns"
+msgstr "مرتجعات المبيعات"
+
+#: .\templates\layout\base.html:478
+msgid "Quotations"
+msgstr "عروض الأسعار"
+
+#: .\templates\layout\base.html:485
+msgid "Purchases"
+msgstr "المشتريات"
+
+#: .\templates\layout\base.html:490
+msgid "Suppliers"
+msgstr "الموردون"
+
+#: .\templates\layout\base.html:495
+msgid "Purchase Invoices"
+msgstr "فواتير المشتريات"
+
+#: .\templates\layout\base.html:505
+msgid "Purchase Orders"
+msgstr "أوامر الشراء"
+
+#: .\templates\layout\base.html:517
+msgid "Product List"
+msgstr "قائمة المنتجات"
+
+#: .\templates\layout\base.html:522
+msgid "Product Categories"
+msgstr "تصنيفات المنتجات"
+
+#: .\templates\layout\base.html:532
+msgid "Stock Movement Log"
+msgstr "سجل حركة المخزون"
+
+#: .\templates\layout\base.html:536
+msgid "Stock Count Sheet"
+msgstr "ورقة جرد المخزون"
+
+#: .\templates\layout\base.html:541
+msgid "Inventory Management"
+msgstr "إدارة المخزون"
+
+#: .\templates\layout\base.html:547
+msgid "Accounting"
+msgstr "المحاسبة"
+
+#: .\templates\layout\base.html:552
+msgid "Journal Entries"
+msgstr "القيود اليومية"
+
+#: .\templates\layout\base.html:561
+msgid "Cost Centers"
+msgstr "شجرة مراكز التكلفة"
+
+#: .\templates\layout\base.html:566
+msgid "Cost Center Tree"
+msgstr "شجرة مراكز التكلفة"
+
+#: .\templates\layout\base.html:577
+msgid "Receipt Vouchers"
+msgstr "سندات القبض"
+
+#: .\templates\layout\base.html:582
+msgid "Payment Vouchers"
+msgstr "سندات الصرف"
+
+#: .\templates\layout\base.html:594
+msgid "Company Settings"
+msgstr "إعدادات الشركة"
+
+#: .\templates\layout\base.html:647 .\templates\layout\base.html:653
 msgid "Profile"
 msgstr "الملف الشخصي"
+
+#: .\templates\layout\base.html:668
+msgid "Not Specified"
+msgstr "غير محدد"
+
+#: .\templates\layout\base.html:695 .\templates\layout\base.html:697
+msgid "Edit Image"
+msgstr "تعديل الصورة"
+
+#: .\templates\layout\base.html:707
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+#: .\templates\layout\base.html:714
+msgid "Help"
+msgstr "المساعدة"
+
+#: .\templates\layout\test_page.html:3
+msgid "Hello World"
+msgstr "مرحبا بالعالم"
+
+#: .\venv\Lib\site-packages\django\contrib\messages\apps.py:16
+msgid "Messages"
+msgstr "الرسائل"
+
+#: .\venv\Lib\site-packages\django\contrib\sitemaps\apps.py:8
+msgid "Site Maps"
+msgstr "خرائط الموقع"
+
+#: .\venv\Lib\site-packages\django\contrib\staticfiles\apps.py:9
+msgid "Static Files"
+msgstr "الملفات الثابتة"
+
+#: .\venv\Lib\site-packages\django\contrib\syndication\apps.py:7
+msgid "Syndication"
+msgstr "التغذية/النشر"
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: .\venv\Lib\site-packages\django\core\paginator.py:30
+msgid "…"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:32
+msgid "That page number is not an integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:33
+msgid "That page number is less than 1"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:34
+msgid "That page contains no results"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:22
+msgid "Enter a valid value."
+msgstr "أدخل قيمة صحيحة"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:70
+msgid "Enter a valid domain name."
+msgstr "أدخل اسم التقييم"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:153
+#: .\venv\Lib\site-packages\django\forms\fields.py:775
+msgid "Enter a valid URL."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:200
+msgid "Enter a valid integer."
+msgstr "أدخل اسم التقييم"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:211
+msgid "Enter a valid email address."
+msgstr ""
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: .\venv\Lib\site-packages\django\core\validators.py:289
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:297
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:309
+#: .\venv\Lib\site-packages\django\core\validators.py:318
+#: .\venv\Lib\site-packages\django\core\validators.py:332
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2220
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:311
+msgid "IPv4"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:320
+#: .\venv\Lib\site-packages\django\utils\ipv6.py:43
+msgid "IPv6"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:334
+msgid "IPv4 or IPv6"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:375
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:381
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:416
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:425
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:434
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:441
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:473
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:491
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:514
+#: .\venv\Lib\site-packages\django\forms\fields.py:366
+#: .\venv\Lib\site-packages\django\forms\fields.py:405
+msgid "Enter a number."
+msgstr "أدخل اسم المعيار"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:516
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:521
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:526
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:597
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:659
+msgid "Null characters are not allowed."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\base.py:1600
+#: .\venv\Lib\site-packages\django\forms\models.py:908
+msgid "and"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\base.py:1602
+#, fuzzy, python-format
+#| msgid "%(model_name)s with this %(field_labels)s already exists."
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr "يوجد مستخدم آخر بهذا البريد الإلكتروني."
+
+#: .\venv\Lib\site-packages\django\db\models\constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:135
+msgid "This field cannot be null."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:136
+msgid "This field cannot be blank."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:137
+#, fuzzy, python-format
+#| msgid "%(model_name)s with this %(field_label)s already exists."
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr "يوجد مستخدم آخر بهذا البريد الإلكتروني."
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1162
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1163
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1165
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1215
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1217
+msgid "String (unlimited)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1326
+msgid "Comma-separated integers"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1427
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1431
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1566
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1435
+msgid "Date (without time)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1562
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1570
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1575
+msgid "Date (with time)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1702
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1704
+msgid "Decimal number"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1864
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1868
+msgid "Duration"
+msgstr "المدة"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1920
+msgid "Email address"
+msgstr "البريد الإلكتروني"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1945
+msgid "File path"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2023
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2025
+msgid "Floating point number"
+msgstr "عدد عشري"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2065
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2067
+msgid "Integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2163
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2180
+msgid "Small integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2188
+msgid "IPv4 address"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2219
+msgid "IP address"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2310
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2311
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2313
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2364
+msgid "Positive big integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2379
+msgid "Positive integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2394
+msgid "Positive small integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2410
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2446
+msgid "Some text"
+msgstr "ترجمة"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2526
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr "تنسيق الوقت غير صالح"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2530
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr "الوقت غير صالح رغم صحة التنسيق"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2534
+msgid "Time"
+msgstr "وقت "
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2642
+msgid "URL"
+msgstr "الرابط"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2666
+msgid "Raw binary data"
+msgstr "بيانات ثنائية خام"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2731
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr "“%(value)s” ليس UUID صالح"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2733
+msgid "Universally unique identifier"
+msgstr "معرّف فريد عالمي"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\files.py:244
+msgid "File"
+msgstr "ملف"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\json.py:24
+msgid "A JSON object"
+msgstr "بيانات بصيغة JSON"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\json.py:26
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:979
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:982
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1276
+msgid "One-to-one relationship"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1333
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1335
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1383
+msgid "Many-to-many relationship"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: .\venv\Lib\site-packages\django\forms\boundfield.py:185
+msgid ":?.!"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:95
+msgid "This field is required."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:315
+msgid "Enter a whole number."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:486
+#: .\venv\Lib\site-packages\django\forms\fields.py:1267
+msgid "Enter a valid date."
+msgstr "أدخل تاريخ صحيح"
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:509
+#: .\venv\Lib\site-packages\django\forms\fields.py:1268
+msgid "Enter a valid time."
+msgstr "أدخل اسم التقييم"
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:536
+msgid "Enter a valid date/time."
+msgstr "أدخل اسم التقييم"
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:570
+msgid "Enter a valid duration."
+msgstr "أدخل اسم التقييم"
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:571
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:640
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:641
+msgid "No file was submitted."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:642
+msgid "The submitted file is empty."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:644
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:649
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:717
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:889
+#: .\venv\Lib\site-packages\django\forms\fields.py:975
+#: .\venv\Lib\site-packages\django\forms\models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:977
+#: .\venv\Lib\site-packages\django\forms\fields.py:1096
+#: .\venv\Lib\site-packages\django\forms\models.py:1590
+msgid "Enter a list of values."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1097
+msgid "Enter a complete value."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1339
+msgid "Enter a valid UUID."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1369
+msgid "Enter a valid JSON."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: .\venv\Lib\site-packages\django\forms\forms.py:97
+msgid ":"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\forms.py:239
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:922
+msgid "Please correct the duplicate values below."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\utils.py:229
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:527
+msgid "Clear"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:528
+msgid "Currently"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:866
+msgid "Unknown"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:867
+msgid "Yes"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:868
+msgid "No"
+msgstr ""
+
+#. Translators: Please do not add spaces around commas.
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:903
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:74
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:75
+ 
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:80
+msgid "PM"
+msgstr "مساءاً"
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:81
+msgid "AM"
+msgstr "صباحاً"
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:153
+msgid "midnight"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:155
+msgid "noon"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:13
+msgid "Sunday"
+msgstr "الأحد"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:16
+msgid "Mon"
+msgstr "الاثنين"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:17
+msgid "Tue"
+msgstr "الثلاثاء"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:18
+msgid "Wed"
+msgstr "الاربعاء"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:19
+msgid "Thu"
+msgstr "الخميس"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:20
+msgid "Fri"
+msgstr "الجمعة"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:21
+msgid "Sat"
+msgstr "السبت"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:22
+msgid "Sun"
+msgstr "الأحد"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:25
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:26
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:27
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:28
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:29
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:30
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:31
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:32
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:33
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:34
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:35
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:36
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:39
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:40
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:41
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:42
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:43
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:44
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:45
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:46
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:47
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:48
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:49
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:50
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr "يناير"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr "فبراير"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "مارس"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr "ابريل"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr "مايو"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr "يونيو"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr "يوليو"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr "أغسطس"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr "سبتمبر"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr "أكتوبر"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr "نوفمبر"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr "ديسمبر"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:67
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:68
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:69
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:70
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:71
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:72
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:73
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:74
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:75
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:76
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:77
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:78
+
+#: .\venv\Lib\site-packages\django\utils\ipv6.py:20
+msgid "This is not a valid IPv6 address."
+msgstr "هذا ليس عنوان IPv6 صالح"
+
+#: .\venv\Lib\site-packages\django\utils\text.py:76
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr "%(truncated_text)s…"
+
+#: .\venv\Lib\site-packages\django\utils\text.py:287
+msgid "or"
+msgstr "أو"
+
+#. Translators: This string is used as a separator between list elements
+#: .\venv\Lib\site-packages\django\utils\text.py:306
+#: .\venv\Lib\site-packages\django\utils\timesince.py:135
+msgid ", "
+msgstr "، "
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:29
+msgid "Forbidden"
+msgstr "ممنوع الدخول"
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr "تعذر التحقق من الطلب لأسباب أمنية"
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr "تم اعتراضه من جهات خارجية"
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr "طلبات من نفس المصدر"
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:44
+msgid "No year specified"
+msgstr "لم يتم تحديد سنة"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:64
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:115
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:214
+msgid "Date out of range"
+msgstr "التاريخ خارج النطاق المسموح"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:94
+msgid "No month specified"
+msgstr "لم يتم تحديد شهر"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:147
+msgid "No day specified"
+msgstr "لم يتم تحديد يوم"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:194
+msgid "No week specified"
+msgstr "لم يتم تحديد أسبوع"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:353
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:384
+#, fuzzy, python-format
+#| msgid "No %(verbose_name_plural)s available"
+msgid "No %(verbose_name_plural)s available"
+msgstr "لا توجد تقييمات"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:680
+msgid "Future %(verbose_name_plural)s not available because %(class_name)s.allow_future is False."
+msgstr "لا يمكن عرض البيانات المستقبلية"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:720
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr "تنسيق التاريخ غير صالح"
+
+#: .\venv\Lib\site-packages\django\views\generic\detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr "لا توجد نتائج مطابقة"
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr "الصفحة غير صالحة"
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr "صفحة غير صالحة (%(page_number)s): %(message)s"
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:173
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\static.py:68
+#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:8
+#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:7
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:217
+msgid "Django Documentation"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:227
+msgid "Get started with Django"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:235
+msgid "Django Community"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr ""
+
+#~ msgid "Auto (Invoice)"
+#~ msgstr "آلي (فاتورة)"
+
+#~ msgid "Create Backup"
+#~ msgstr "إنشاء نسخة احتياطية"
+
+#~ msgid "Restore Backup"
+#~ msgstr "استعادة نسخة احتياطية"
+
+#~ msgid "Restore Data"
+#~ msgstr "استعادة البيانات"
+
+#~ msgid "Version: 1.0.0"
+#~ msgstr "رقم الإصدار: 1.0.0"
+
+#~ msgid "Advanced options will be added later."
+#~ msgstr "خيارات متقدمة سيتم إضافتها لاحقاً."
+
+#~ msgid "System Settings"
+#~ msgstr "إعدادات النظام"
+
+#~ msgid "General Settings"
+#~ msgstr "الإعدادات العامة"
+
+#~ msgid "Print Settings"
+#~ msgstr "إعدادات الطباعة"
+
+#~ msgid "Backup"
+#~ msgstr "النسخ الاحتياطي"
+
+#~ msgid "Advanced Settings"
+#~ msgstr "إعدادات متقدمة"
+
+#~ msgid "Default System Language"
+#~ msgstr "اللغة الافتراضية للنظام"
+
+#~ msgid "Date Format"
+#~ msgstr "تنسيق التاريخ"
+
+#~ msgid "Color Theme"
+#~ msgstr "نمط الألوان"
+
+#~ msgid "Light Mode"
+#~ msgstr "الوضع الفاتح"
+
+#~ msgid "Save Settings"
+#~ msgstr "حفظ الإعدادات"
+
+#~ msgid "You can configure printing settings here."
+#~ msgstr "هنا يمكنك ضبط إعدادات الطباعة."
+
+#~ msgid "You can set automatic backup here."
+#~ msgstr "هنا يمكنك إعداد النسخ الاحتياطي التلقائي."
+
+#~ msgid "Advanced system configuration options."
+#~ msgstr "خيارات متقدمة لإعداد النظام."
+
+#~ msgid "Dark Mode"
+#~ msgstr "الوضع الداكن"
+
+#~ msgid "Page Size"
+#~ msgstr "مقاس الصفحة"
+
+#~ msgid "Thermal 80mm"
+#~ msgstr "حراري 80mm"
+
+#~ msgid "Page Orientation"
+#~ msgstr "اتجاه الصفحة"
+
+#~ msgid "Vertical"
+#~ msgstr "عمودي"
+
+#~ msgid "Horizontal"
+#~ msgstr "أفقي"
+
+msgid "Payment Voucher"
+msgstr "سند صرف"
+
+msgid "Receipt Voucher"
+msgstr "سند قبض"
+
+msgid "Voucher Number"
+msgstr "رقم السند"
+
+msgid "Party"
+msgstr "الطرف"
+
+msgid "Created By"
+msgstr "أنشئ بواسطة"
+
+msgid "Cancelled"
+msgstr "ملغى"
+
+msgid "Save & Post"
+msgstr "حفظ وترحيل"
+
+msgid "Cash / Bank Account"
+msgstr "الحساب (صندوق / بنك)"
+
+msgid "No receipt vouchers found"
+msgstr "لا توجد سندات قبض"
+
+msgid "No payment vouchers found"
+msgstr "لا توجد سندات صرف"
+
+msgid "Paid Amount"
+msgstr "المبلغ المدفوع"
+
+msgid "Remaining"
+msgstr "المتبقي"
+
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+msgid "Percentage %"
+msgstr "نسبة %"
+
+msgid "Value"
+msgstr "قيمة"
+
+msgid "Invoice Payment"
+msgstr "سداد الفاتورة"

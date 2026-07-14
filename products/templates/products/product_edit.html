@@ -1,82 +1,88 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}تعديل منتج{% endblock %}
+{% block title %}{% trans "Edit Product" %}{% endblock %}
 
 {% block content %}
 
-<!-- ================= Select2 ================= -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<h3 class="mb-4 text-end">تعديل منتج</h3>
+<h3 class="mb-4 text-end">{% trans "Edit Product" %}</h3>
 
 <div class="card p-4">
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <!-- النوع -->
+        <!-- Type -->
         <div class="mb-3 text-end">
-            <label class="form-label">نوع المنتج</label>
+            <label class="form-label">{% trans "Product Type" %}</label>
             <select class="form-select" name="type" id="type">
-                <option value="normal" {% if product.type == 'normal' %}selected{% endif %}>منتج عادي</option>
-                <option value="bundle" {% if product.type == 'bundle' %}selected{% endif %}>منتج مركب</option>
-                <option value="service" {% if product.type == 'service' %}selected{% endif %}>خدمة</option>
+                <option value="normal" {% if product.type == 'normal' %}selected{% endif %}>
+                    {% trans "Normal Product" %}
+                </option>
+                <option value="bundle" {% if product.type == 'bundle' %}selected{% endif %}>
+                    {% trans "Bundle Product" %}
+                </option>
+                <option value="service" {% if product.type == 'service' %}selected{% endif %}>
+                    {% trans "Service" %}
+                </option>
             </select>
         </div>
 
-        <!-- الاسم + SKU -->
+        <!-- Name + SKU -->
         <div class="row mb-3">
             <div class="col-md-6 text-end">
-                <label class="form-label">اسم المنتج</label>
+                <label class="form-label">{% trans "Product Name" %}</label>
                 <input type="text" name="name" class="form-control" required value="{{ product.name }}">
             </div>
 
             <div class="col-md-6 text-end">
-                <label class="form-label">الكود (SKU)</label>
+                <label class="form-label">{% trans "SKU" %}</label>
                 <input type="text" name="sku" class="form-control" value="{{ product.sku }}">
             </div>
         </div>
 
-        <!-- الأسعار -->
+        <!-- Prices -->
         <div class="row mb-3">
             <div class="col-md-6 text-end">
-                <label class="form-label">سعر الشراء</label>
+                <label class="form-label">{% trans "Purchase Price" %}</label>
                 <input type="number" name="purchase_price" step="0.01"
                        class="form-control" value="{{ product.purchase_price }}">
             </div>
 
             <div class="col-md-6 text-end">
-                <label class="form-label">سعر البيع</label>
+                <label class="form-label">{% trans "Sale Price" %}</label>
                 <input type="number" name="sale_price" step="0.01"
                        class="form-control" value="{{ product.sale_price }}">
             </div>
         </div>
 
-        <!-- المخزون -->
+        <!-- Stock -->
         <div class="row mb-3">
             <div class="col-md-6 text-end">
-                <label class="form-label">حد أدنى للمخزون</label>
+                <label class="form-label">{% trans "Minimum Stock" %}</label>
                 <input type="number" name="min_stock"
                        class="form-control" value="{{ product.min_stock }}">
             </div>
 
             <div class="col-md-6 text-end">
-                <label class="form-label">تنبيه عند النفاد</label>
+                <label class="form-label">{% trans "Low Stock Alert" %}</label>
                 <input type="number" name="alert_stock"
                        class="form-control" value="{{ product.alert_stock }}">
             </div>
         </div>
 
-        <!-- ⭐ الحسابات المحاسبية (مع البحث) -->
+        <!-- Accounts -->
         <div class="row mb-4">
 
             <div class="col-md-4 text-end">
-                <label class="form-label fw-bold">حساب المخزون</label>
+                <label class="form-label fw-bold">{% trans "Inventory Account" %}</label>
                 <select name="inventory_account" class="form-select account-select">
-                    <option value="">-- اختر الحساب --</option>
+                    <option value="">{% trans "Select Account" %}</option>
                     {% for acc in accounts %}
                         <option value="{{ acc.id }}"
                             {% if product.inventory_account_id == acc.id %}selected{% endif %}>
@@ -87,9 +93,9 @@
             </div>
 
             <div class="col-md-4 text-end">
-                <label class="form-label fw-bold">حساب تكلفة المبيعات</label>
+                <label class="form-label fw-bold">{% trans "Cost of Sales Account" %}</label>
                 <select name="cost_account" class="form-select account-select">
-                    <option value="">-- اختر الحساب --</option>
+                    <option value="">{% trans "Select Account" %}</option>
                     {% for acc in accounts %}
                         <option value="{{ acc.id }}"
                             {% if product.cost_account_id == acc.id %}selected{% endif %}>
@@ -100,9 +106,9 @@
             </div>
 
             <div class="col-md-4 text-end">
-                <label class="form-label fw-bold">حساب الإيرادات</label>
+                <label class="form-label fw-bold">{% trans "Revenue Account" %}</label>
                 <select name="revenue_account" class="form-select account-select">
-                    <option value="">-- اختر الحساب --</option>
+                    <option value="">{% trans "Select Account" %}</option>
                     {% for acc in accounts %}
                         <option value="{{ acc.id }}"
                             {% if product.revenue_account_id == acc.id %}selected{% endif %}>
@@ -114,25 +120,25 @@
 
         </div>
 
-        <!-- الوصف -->
+        <!-- Description -->
         <div class="mb-3 text-end">
-            <label class="form-label">الوصف</label>
+            <label class="form-label">{% trans "Description" %}</label>
             <textarea name="description" class="form-control" rows="3">{{ product.description }}</textarea>
         </div>
 
-        <!-- الصورة -->
+        <!-- Image -->
         <div class="mb-3 text-end">
-            <label class="form-label">صورة</label>
+            <label class="form-label">{% trans "Image" %}</label>
             <input type="file" name="image" class="form-control">
             {% if product.image %}
                 <img src="{{ product.image.url }}" style="height:70px;margin-top:10px;">
             {% endif %}
         </div>
 
-        <!-- المكوّنات -->
+        <!-- Bundle -->
         <div id="bundle_area" style="{% if product.type != 'bundle' %}display:none{% endif %}">
             <hr>
-            <h5 class="mb-3 text-end">مكونات المنتج</h5>
+            <h5 class="mb-3 text-end">{% trans "Product Components" %}</h5>
 
             <div id="bundle_container">
                 {% for c in components %}
@@ -155,14 +161,16 @@
 
                     <div class="col-md-2">
                         <button type="button" class="btn btn-danger w-100"
-                                onclick="this.parentNode.parentNode.remove()">حذف</button>
+                                onclick="this.parentNode.parentNode.remove()">
+                                {% trans "Delete" %}
+                        </button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
 
             <button type="button" class="btn btn-secondary mt-2" id="add_component">
-                + إضافة مكون
+                + {% trans "Add Component" %}
             </button>
 
             <input type="hidden" name="bundle_count" id="bundle_count"
@@ -170,18 +178,19 @@
         </div>
 
         <div class="text-end mt-4">
-            <button class="btn btn-primary px-5" type="submit">حفظ المنتج</button>
+            <button class="btn btn-primary px-5" type="submit">
+                {% trans "Save Product" %}
+            </button>
         </div>
 
     </form>
 
 </div>
 
-<!-- تفعيل البحث -->
 <script>
 $(document).ready(function () {
     $('.account-select').select2({
-        placeholder: "ابحث عن الحساب...",
+        placeholder: "{% trans 'Search account...' %}",
         allowClear: true,
         width: '100%'
     });
@@ -216,7 +225,9 @@ document.getElementById("add_component")?.addEventListener("click", function () 
         </div>
         <div class="col-md-2">
             <button type="button" class="btn btn-danger w-100"
-                    onclick="this.parentNode.parentNode.remove()">حذف</button>
+                    onclick="this.parentNode.parentNode.remove()">
+                    {% trans "Delete" %}
+            </button>
         </div>
     `;
     document.getElementById("bundle_container").appendChild(row);

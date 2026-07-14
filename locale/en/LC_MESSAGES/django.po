@@ -1,0 +1,5710 @@
+msgid ""
+msgstr ""
+"Project-Id-Version:  accounting_web\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-25 16:22+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: .\accounting\templates\accounting\account_view.html:15
+#, fuzzy
+#| msgid "Chart of Accounts"
+msgid "Back to Chart of Accounts"
+msgstr "Chart of Accounts"
+
+#: .\accounting\templates\accounting\account_view.html:25
+#, fuzzy
+#| msgid "QR Code"
+msgid "Code"
+msgstr "QR Code"
+
+#: .\accounting\templates\accounting\account_view.html:26
+#: .\accounting\templates\accounting\add_child_account.html:182
+#, fuzzy
+#| msgid "Product Name"
+msgid "Account Name"
+msgstr "Product Name"
+
+#: .\accounting\templates\accounting\account_view.html:27
+#: .\customers\templates\customers\customers_list.html:48
+#: .\customers\templates\customers\list.html:21
+#: .\hr\templates\hr\add_shift.html:28 .\hr\templates\hr\add_shift.html:56
+#: .\hr\templates\hr\departments_list.html:19
+#: .\hr\templates\hr\evaluation_detail.html:81
+#: .\hr\templates\hr\evaluation_list.html:32
+#: .\hr\templates\hr\hr_reports.html:138 .\hr\templates\hr\shifts_list.html:28
+#: .\hr\templates\hr\shifts_list.html:51
+#: .\products\templates\products\products_list.html:152
+#: .\products\templates\products\stock_ledger.html:26
+#: .\products\templates\products\stock_ledger.html:46
+#: .\purchase\templates\purchase\invoices_list.html:99
+#: .\purchase\templates\purchase\po_list.html:34
+#: .\purchase\templates\purchase\purchase_dashboard.html:22
+#: .\purchase\templates\purchase\returns_list.html:61
+#: .\quotations\templates\quotations\quotation_list.html:39
+#: .\sales\templates\sales\invoices_list.html:120
+#: .\sales\templates\sales\returns_list.html:36
+#: .\suppliers\templates\suppliers\suppliers_list.html:38
+msgid "Actions"
+msgstr "Actions"
+
+#: .\accounting\templates\accounting\account_view.html:41
+#: .\accounting\templates\accounting\chart\chart_tree.html:104
+#: .\accounting\templates\accounting\chart_of_accounts.html:69
+#: .\accounting\templates\accounting\journals.html:73
+#: .\customers\templates\customers\customers_list.html:81
+#: .\customers\templates\customers\list.html:51
+#: .\hr\templates\hr\evaluation_list.html:86
+#: .\hr\templates\hr\hr_reports.html:191
+#: .\products\templates\products\products_list.html:200
+#: .\products\templates\products\stock_ledger.html:51
+#: .\products\templates\products\stock_take_list.html:16
+#: .\products\templates\products\stock_take_list.html:40
+#: .\purchase\templates\purchase\invoices_list.html:137
+#: .\purchase\templates\purchase\po_list.html:56
+#: .\quotations\templates\quotations\quotation_list.html:71
+#: .\sales\templates\sales\invoices_list.html:159
+msgid "View"
+msgstr "View"
+
+#: .\accounting\templates\accounting\account_view.html:52
+#, fuzzy
+#| msgid "No results found"
+msgid "No sub accounts found"
+msgstr "No results found"
+
+#: .\accounting\templates\accounting\accounts\add_child.html:5
+msgid "إضافة فرع حساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:15
+#, python-format
+msgid "إضافة فرع تحت الحساب: %(parent.name)s"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:23
+#: .\accounting\templates\accounting\accounts\edit.html:13
+msgid "اسم الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:35
+#: .\accounting\templates\accounting\accounts\edit.html:18
+#: .\accounting\templates\accounting\accounts\view.html:17
+msgid "الرمز"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:48
+msgid "إضافة"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\add_child.html:53
+#: .\accounting\templates\accounting\accounts\edit.html:25
+msgid "إلغاء"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\edit.html:7
+msgid "تعديل الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\edit.html:22
+msgid "حفظ"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:12
+msgid "حركة الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:17
+msgid "رجوع للحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:31
+#, fuzzy
+#| msgid "تنسيق التاريخ"
+msgid "التاريخ"
+msgstr "Date format"
+
+#: .\accounting\templates\accounting\accounts\ledger.html:32
+msgid "رقم القيد"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:33
+msgid "البيان"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:34
+msgid "مدين"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:35
+msgid "دائن"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:36
+msgid "الرصيد"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:65
+msgid "الرصيد النهائي"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\ledger.html:80
+msgid "لا توجد حركة على هذا الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:7
+msgid "عرض الحساب"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:12
+msgid "الاسم"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:22
+msgid "النوع"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:27
+msgid "الطبيعة"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:34
+msgid "رجوع للشجرة"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:39
+#, fuzzy
+#| msgid "الإعدادات العامة"
+msgid "الحسابات الفرعية"
+msgstr "General Settings"
+
+#: .\accounting\templates\accounting\accounts\view.html:52
+msgid "عرض"
+msgstr ""
+
+#: .\accounting\templates\accounting\accounts\view.html:60
+msgid "لا توجد حسابات فرعية"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:8
+#: .\accounting\templates\accounting\add_child_account.html:154
+msgid "Add Sub Account"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:167
+#, fuzzy
+#| msgid "Chart of Accounts"
+msgid "Parent Account"
+msgstr "Chart of Accounts"
+
+#: .\accounting\templates\accounting\add_child_account.html:177
+#, fuzzy
+#| msgid "Accounting"
+msgid "Account Code"
+msgstr "Accounting"
+
+#: .\accounting\templates\accounting\add_child_account.html:187
+#, fuzzy
+#| msgid "Accounting System"
+msgid "Account Type"
+msgstr "Accounting System"
+
+#: .\accounting\templates\accounting\add_child_account.html:189
+msgid "Assets"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:190
+msgid "Liabilities"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:191
+msgid "Equity"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:192
+msgid "Revenue"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:193
+msgid "Expenses"
+msgstr ""
+
+#: .\accounting\templates\accounting\add_child_account.html:198
+#, fuzzy
+#| msgid "Chart of Accounts"
+msgid "Save Sub Account"
+msgstr "Chart of Accounts"
+
+#: .\accounting\templates\accounting\add_child_account.html:199
+#: .\accounting\templates\accounting\journal_add.html:66
+#: .\accounting\templates\accounting\journal_view.html:15
+#: .\hr\templates\hr\evaluation_fill.html:87
+#: .\hr\templates\hr\evaluation_record_start.html:66
+#: .\hr\templates\hr\hr_permissions.html:125
+#: .\hr\templates\hr\hr_permissions_users.html:49
+#: .\hr\templates\hr\hr_report_detail_items.html:18
+#: .\products\templates\products\product_view.html:46
+#: .\products\templates\products\stock_adjust_view.html:32
+#: .\suppliers\templates\suppliers\supplier_view.html:14
+msgid "Back"
+msgstr "Back"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:62
+msgid "Chart of Accounts Tree"
+msgstr "Chart of Accounts Tree"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:108
+#: .\accounting\templates\accounting\chart_of_accounts.html:76
+#: .\customers\templates\customers\customers_list.html:82
+#: .\customers\templates\customers\list.html:52
+#: .\hr\templates\hr\add_shift.html:61
+#: .\hr\templates\hr\departments_list.html:29
+#: .\hr\templates\hr\evaluation_list.html:92
+#: .\hr\templates\hr\shifts_list.html:56
+#: .\products\templates\products\product_view.html:144
+#: .\products\templates\products\products_list.html:201
+#: .\products\templates\products\stock_ledger.html:49
+#: .\purchase\templates\purchase\po_view.html:90
+#: .\quotations\templates\quotations\quotation_list.html:74
+#: .\suppliers\templates\suppliers\supplier_view.html:17
+#: .\suppliers\templates\suppliers\suppliers_list.html:72
+msgid "Edit"
+msgstr "Edit"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:112
+#: .\accounting\templates\accounting\chart_of_accounts.html:71
+msgid "Add Child"
+msgstr ""
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:118
+#: .\accounting\templates\accounting\chart_of_accounts.html:80
+#: .\customers\templates\customers\customers_list.html:83
+#: .\customers\templates\customers\list.html:53
+#: .\hr\templates\hr\add_evaluation.html:154
+#: .\hr\templates\hr\add_evaluation.html:298
+#: .\hr\templates\hr\add_shift.html:68
+#: .\hr\templates\hr\departments_list.html:33
+#: .\hr\templates\hr\shifts_list.html:63 .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\product_edit.html:165
+#: .\products\templates\products\product_edit.html:229
+#: .\products\templates\products\product_form.html:205
+#: .\products\templates\products\product_view.html:147
+#: .\products\templates\products\products_list.html:202
+#: .\products\templates\products\stock_ledger.html:50
+#: .\purchase\templates\purchase\invoice_add.html:153
+#: .\purchase\templates\purchase\invoice_add.html:191
+#: .\purchase\templates\purchase\invoice_add.html:245
+#: .\purchase\templates\purchase\po_add.html:123
+#: .\purchase\templates\purchase\po_add.html:162
+#: .\purchase\templates\purchase\po_add.html:385
+#: .\purchase\templates\purchase\po_list.html:58
+#: .\quotations\templates\quotations\quotation_add.html:132
+#: .\quotations\templates\quotations\quotation_add.html:181
+#: .\quotations\templates\quotations\quotation_form.html:62
+#: .\quotations\templates\quotations\quotation_form.html:98
+#: .\quotations\templates\quotations\quotation_list.html:75
+#: .\sales\templates\sales\invoice_add.html:165
+#: .\sales\templates\sales\invoice_add.html:202
+#: .\suppliers\templates\suppliers\supplier_view.html:23
+#: .\suppliers\templates\suppliers\suppliers_list.html:78
+#: .\venv\Lib\site-packages\django\forms\formsets.py:499
+msgid "Delete"
+msgstr "Delete"
+
+#: .\accounting\templates\accounting\chart\chart_tree.html:119
+msgid "Confirm delete?"
+msgstr ""
+
+#: .\accounting\templates\accounting\chart_of_accounts.html:32
+#: .\templates\layout\base.html:557
+msgid "Chart of Accounts"
+msgstr "Chart of Accounts"
+
+#: .\accounting\templates\accounting\chart_of_accounts.html:81
+msgid "Confirm deletion?"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_add.html:63
+#, fuzzy
+#| msgid "Journal Entries"
+msgid "Add Manual Journal Entry"
+msgstr "Journal Entries"
+
+#: .\accounting\templates\accounting\journal_add.html:78
+#: .\accounting\templates\accounting\journal_view.html:25
+#: .\accounting\templates\accounting\journals.html:34
+#: .\dashboard\templates\dashboard\index.html:87 .\hr\models.py:397
+#: .\hr\templates\hr\add_employee_schedule.html:70
+#: .\hr\templates\hr\attendance_page.html:47
+#: .\hr\templates\hr\employee_schedule_calendar.html:59
+#: .\products\templates\products\stock_ledger.html:24
+#: .\purchase\templates\purchase\invoices_list.html:96
+#: .\purchase\templates\purchase\po_list.html:22
+#: .\purchase\templates\purchase\po_list.html:32
+#: .\quotations\templates\quotations\quotation_list.html:36
+#: .\sales\templates\sales\invoice_view.html:190
+#: .\sales\templates\sales\invoices_list.html:117
+msgid "Date"
+msgstr "Date"
+
+#: .\accounting\templates\accounting\journal_add.html:87
+#: .\accounting\templates\accounting\journal_view.html:46
+#: .\accounting\templates\accounting\journals.html:35
+#: .\products\templates\products\product_edit.html:125
+#: .\products\templates\products\product_form.html:167
+#: .\products\templates\products\product_form_base.html:40
+#: .\products\templates\products\product_view.html:111
+#: .\purchase\templates\purchase\invoice_add.html:127
+#: .\purchase\templates\purchase\invoice_add.html:146
+#: .\purchase\templates\purchase\po_add.html:117
+#: .\purchase\templates\purchase\po_view.html:29
+#: .\quotations\templates\quotations\quotation_add.html:126
+#: .\quotations\templates\quotations\quotation_form.html:56
+#: .\quotations\templates\quotations\quotation_view.html:30
+#: .\sales\templates\sales\invoice_add.html:158
+#: .\sales\templates\sales\invoice_pdf.html:50
+#: .\sales\templates\sales\invoice_print.html:31
+#: .\sales\templates\sales\invoice_view.html:129
+#: .\sales\templates\sales\invoice_view.html:233
+#: .\sales\templates\sales\pdf_template.html:58
+#: .\suppliers\templates\suppliers\supplier_pdf.html:91
+#: .\suppliers\templates\suppliers\supplier_print.html:40
+#: .\suppliers\templates\suppliers\supplier_view.html:90
+msgid "Description"
+msgstr "Description"
+
+#: .\accounting\templates\accounting\journal_add.html:91
+#, fuzzy
+#| msgid "Description"
+msgid "Enter description"
+msgstr "Description"
+
+#: .\accounting\templates\accounting\journal_add.html:105
+#: .\accounting\templates\accounting\journal_view.html:61
+#, fuzzy
+#| msgid "Accounting"
+msgid "Account"
+msgstr "Accounting"
+
+#: .\accounting\templates\accounting\journal_add.html:106
+#: .\accounting\templates\accounting\journal_view.html:62
+#: .\accounting\templates\accounting\journals.html:36
+msgid "Debit"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_add.html:107
+#: .\accounting\templates\accounting\journal_view.html:63
+#: .\accounting\templates\accounting\journals.html:37
+#, fuzzy
+#| msgid "Creditor"
+msgid "Credit"
+msgstr "Creditor"
+
+#: .\accounting\templates\accounting\journal_add.html:117
+#: .\accounting\templates\accounting\journal_add.html:136
+#: .\accounting\templates\accounting\journal_add.html:197
+#: .\products\templates\products\product_edit.html:85
+#: .\products\templates\products\product_edit.html:98
+#: .\products\templates\products\product_edit.html:111
+#: .\products\templates\products\product_form.html:128
+#: .\products\templates\products\product_form.html:141
+#: .\products\templates\products\product_form.html:154
+#, fuzzy
+#| msgid "Select Product"
+msgid "Select Account"
+msgstr "Select Product"
+
+#: .\accounting\templates\accounting\journal_add.html:153
+#: .\accounting\templates\accounting\journal_view.html:88
+#: .\pos\templates\pos\pos.html:112
+#: .\purchase\templates\purchase\_return_selector.html:56
+#: .\purchase\templates\purchase\invoice_add.html:151
+#: .\purchase\templates\purchase\invoices_list.html:97
+#: .\purchase\templates\purchase\po_add.html:122
+#: .\purchase\templates\purchase\po_list.html:23
+#: .\purchase\templates\purchase\po_list.html:33
+#: .\purchase\templates\purchase\po_view.html:34
+#: .\purchase\templates\purchase\purchase_print.html:47
+#: .\purchase\templates\purchase\purchase_return_view.html:37
+#: .\purchase\templates\purchase\purchase_view.html:60
+#: .\purchase\templates\purchase\purchase_view_pdf.html:135
+#: .\purchase\templates\purchase\returns_list.html:60
+#: .\quotations\templates\quotations\quotation_add.html:131
+#: .\quotations\templates\quotations\quotation_form.html:61
+#: .\quotations\templates\quotations\quotation_list.html:37
+#: .\quotations\templates\quotations\quotation_view.html:35
+#: .\sales\templates\sales\invoice_add.html:163
+#: .\sales\templates\sales\invoice_pdf.html:55
+#: .\sales\templates\sales\invoice_print.html:36
+#: .\sales\templates\sales\invoice_view.html:134
+#: .\sales\templates\sales\invoices_list.html:118
+#: .\sales\templates\sales\pdf_template.html:63
+#: .\sales\templates\sales\returns_list.html:35
+#: .\suppliers\templates\suppliers\supplier_pdf.html:96
+#: .\suppliers\templates\suppliers\supplier_print.html:45
+#: .\suppliers\templates\suppliers\supplier_view.html:95
+msgid "Total"
+msgstr "Total"
+
+#: .\accounting\templates\accounting\journal_add.html:167
+#: .\purchase\templates\purchase\invoice_add.html:200
+#: .\purchase\templates\purchase\po_add.html:172
+#: .\quotations\templates\quotations\quotation_add.html:191
+#: .\sales\templates\sales\invoice_add.html:215
+msgid "Add Row"
+msgstr "Add Row"
+
+#: .\accounting\templates\accounting\journal_add.html:173
+#, fuzzy
+#| msgid "Save Return"
+msgid "Save Entry"
+msgstr "Save Return"
+
+#: .\accounting\templates\accounting\journal_add.html:231
+#: .\accounting\templates\accounting\journal_view.html:95
+#, fuzzy
+#| msgid "Balanced"
+msgid "Not Balanced"
+msgstr "Balanced"
+
+#: .\accounting\templates\accounting\journal_add.html:235
+#, fuzzy
+#| msgid "Balanced"
+msgid "Balanced Entry"
+msgstr "Balanced"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:10
+msgid "Confirm Delete Entry"
+msgstr ""
+
+# | msgid "Are you sure you want to delete this shift?"
+#: .\accounting\templates\accounting\journal_delete_confirm.html:13
+#, fuzzy
+#| msgid "Are you sure you want to delete?"
+msgid "Are you sure you want to delete entry number"
+msgstr "Are you sure you want to delete?"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:21
+#, fuzzy
+#| msgid "Delete"
+msgid "Yes, Delete"
+msgstr "Delete"
+
+#: .\accounting\templates\accounting\journal_delete_confirm.html:26
+#: .\customers\templates\customers\customer_form.html:152
+#: .\hr\templates\hr\add_department.html:28
+#: .\hr\templates\hr\add_employee_schedule.html:130
+#: .\hr\templates\hr\add_evaluation.html:214
+#: .\hr\templates\hr\add_leave.html:81
+#: .\products\templates\products\category_add.html:36
+#: .\products\templates\products\stock_adjust.html:122
+#: .\products\templates\products\stock_adjust_edit.html:36
+#: .\sales\templates\sales\invoice_view.html:240
+#: .\suppliers\templates\suppliers\supplier_add.html:153
+#: .\suppliers\templates\suppliers\supplier_edit.html:207
+msgid "Cancel"
+msgstr "Cancel"
+
+#: .\accounting\templates\accounting\journal_view.html:10
+msgid "View Entry No"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:28
+#: .\accounting\templates\accounting\journals.html:38
+#: .\customers\templates\customers\customers_list.html:47
+#: .\customers\templates\customers\list.html:20
+#: .\dashboard\templates\dashboard\index.html:89 .\hr\forms.py:331
+#: .\hr\models.py:402 .\hr\templates\hr\add_evaluation.html:53
+#: .\hr\templates\hr\employee_list.html:149
+#: .\hr\templates\hr\evaluation_list.html:31
+#: .\hr\templates\hr\hr_reports.html:137 .\hr\templates\hr\leaves_list.html:17
+#: .\products\templates\products\category_list.html:22
+#: .\products\templates\products\products_list.html:151
+#: .\products\templates\products\stock_take_list.html:15
+#: .\purchase\templates\purchase\invoices_list.html:98
+#: .\purchase\templates\purchase\purchase_dashboard.html:21
+#: .\quotations\templates\quotations\quotation_list.html:38
+#: .\sales\templates\sales\invoices_list.html:119
+#: .\suppliers\templates\suppliers\suppliers_list.html:37
+msgid "Status"
+msgstr "Status"
+
+#: .\accounting\templates\accounting\journal_view.html:30
+#: .\accounting\templates\accounting\journals.html:53
+msgid "Posted"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:32
+#: .\accounting\templates\accounting\journals.html:55 .\hr\models.py:364
+#: .\hr\templates\hr\evaluation_list.html:66
+#: .\quotations\templates\quotations\quotation_list.html:62
+msgid "Draft"
+msgstr "Draft"
+
+#: .\accounting\templates\accounting\journal_view.html:36
+msgid "Source"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:38
+msgid "Auto"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:38
+#: .\pos\templates\pos\pos.html:87
+msgid "Invoice"
+msgstr "Invoice"
+
+#: .\accounting\templates\accounting\journal_view.html:40
+#, fuzzy
+#| msgid "January"
+msgid "Manual"
+msgstr "January"
+
+#: .\accounting\templates\accounting\journal_view.html:64
+#: .\purchase\templates\purchase\invoice_add.html:152
+#: .\sales\templates\sales\invoice_add.html:164
+msgid "Cost Center"
+msgstr "Cost Center"
+
+#: .\accounting\templates\accounting\journal_view.html:80
+msgid "None"
+msgstr ""
+
+#: .\accounting\templates\accounting\journal_view.html:93
+#: .\customers\templates\customers\customers_list.html:70
+#: .\customers\templates\customers\list.html:41
+#: .\suppliers\templates\suppliers\suppliers_list.html:56
+msgid "Balanced"
+msgstr "Balanced"
+
+#: .\accounting\templates\accounting\journals.html:20
+#, fuzzy
+#| msgid "Journal Entries"
+msgid "Journal Entries Management"
+msgstr "Journal Entries"
+
+#: .\accounting\templates\accounting\journals.html:22
+msgid "Add Entry"
+msgstr ""
+
+#: .\accounting\templates\accounting\journals.html:33
+msgid "Entry No"
+msgstr ""
+
+# | msgid "Actions"
+#: .\accounting\templates\accounting\journals.html:39
+#: .\accounting\templates\accounting\journals.html:64
+#: .\customers\templates\customers\customers_list.html:77
+#: .\hr\templates\hr\evaluation_list.html:80
+#: .\products\templates\products\products_list.html:198
+#: .\purchase\templates\purchase\invoices_list.html:131
+#: .\purchase\templates\purchase\po_list.html:52
+#: .\purchase\templates\purchase\returns_list.html:80
+#: .\quotations\templates\quotations\quotation_list.html:68
+#: .\sales\templates\sales\invoices_list.html:150
+#: .\sales\templates\sales\returns_list.html:55
+#: .\suppliers\templates\suppliers\suppliers_list.html:67
+msgid "Options"
+msgstr "Options"
+
+#: .\accounting\templates\accounting\journals.html:84
+#, fuzzy
+#| msgid "Are you sure you want to delete this shift?"
+msgid "Are you sure you want to post this entry?"
+msgstr "Are you sure you want to delete this shift?"
+
+#: .\accounting\templates\accounting\journals.html:85
+msgid "Post"
+msgstr ""
+
+#: .\accounting\templates\accounting\journals.html:94
+#, fuzzy
+#| msgid "Total Invoice"
+msgid "Auto Entry (Invoice)"
+msgstr "Total Invoice"
+
+#: .\accounting\templates\accounting\journals.html:110
+#, fuzzy
+#| msgid "Journal Entries"
+msgid "No journal entries yet"
+msgstr "Journal Entries"
+
+#: .\accounting_web_project\settings.py:162
+msgid "Arabic"
+msgstr "Arabic"
+
+#: .\accounting_web_project\settings.py:163
+msgid "English"
+msgstr "English"
+
+#: .\app_settings\templates\settings_app\settings_home.html:4
+#: .\app_settings\templates\settings_app\settings_home.html:8
+#: .\app_settings\templates\settings_app\system_settings.html:52
+msgid "إعدادات النظام"
+msgstr "System Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:12
+#: .\app_settings\templates\settings_app\system_settings.html:61
+#: .\app_settings\templates\settings_app\system_settings.html:91
+msgid "الإعدادات العامة"
+msgstr "General Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:15
+#: .\app_settings\templates\settings_app\system_settings.html:67
+#: .\app_settings\templates\settings_app\system_settings.html:146
+msgid "إعدادات الطباعة"
+msgstr "Print Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:18
+#: .\app_settings\templates\settings_app\system_settings.html:73
+#: .\app_settings\templates\settings_app\system_settings.html:188
+msgid "النسخ الاحتياطي"
+msgstr "Backup"
+
+#: .\app_settings\templates\settings_app\settings_home.html:21
+#: .\app_settings\templates\settings_app\system_settings.html:79
+#: .\app_settings\templates\settings_app\system_settings.html:215
+msgid "إعدادات متقدمة"
+msgstr "Advanced Settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:28
+#: .\app_settings\templates\settings_app\system_settings.html:98
+msgid "اللغة الافتراضية للنظام"
+msgstr "Default system language"
+
+#: .\app_settings\templates\settings_app\settings_home.html:32
+#: .\app_settings\templates\settings_app\system_settings.html:109
+msgid "تنسيق التاريخ"
+msgstr "Date format"
+
+#: .\app_settings\templates\settings_app\settings_home.html:36
+#: .\app_settings\templates\settings_app\system_settings.html:122
+msgid "نمط الألوان"
+msgstr "Color theme"
+
+#: .\app_settings\templates\settings_app\settings_home.html:37
+#: .\app_settings\templates\settings_app\system_settings.html:125
+msgid "الوضع الفاتح"
+msgstr "Light mode"
+
+#: .\app_settings\templates\settings_app\settings_home.html:39
+#: .\app_settings\templates\settings_app\system_settings.html:136
+#: .\app_settings\templates\settings_app\system_settings.html:177
+msgid "حفظ الإعدادات"
+msgstr "Save settings"
+
+#: .\app_settings\templates\settings_app\settings_home.html:43
+msgid "هنا يمكنك ضبط إعدادات الطباعة."
+msgstr "Here you can configure print settings."
+
+#: .\app_settings\templates\settings_app\settings_home.html:47
+msgid "هنا يمكنك إعداد النسخ الاحتياطي التلقائي."
+msgstr "Here you can configure automatic backup."
+
+#: .\app_settings\templates\settings_app\settings_home.html:51
+msgid "خيارات متقدمة لإعداد النظام."
+msgstr "Advanced options for system configuration."
+
+#: .\app_settings\templates\settings_app\system_settings.html:112
+msgid "YYYY-MM-DD"
+msgstr "YYYY-MM-DD"
+
+#: .\app_settings\templates\settings_app\system_settings.html:116
+msgid "DD/MM/YYYY"
+msgstr "DD/MM/YYYY"
+
+#: .\app_settings\templates\settings_app\system_settings.html:129
+msgid "الوضع الداكن"
+msgstr "Dark Mode"
+
+#: .\app_settings\templates\settings_app\system_settings.html:152
+msgid "مقاس الصفحة"
+msgstr "Page size"
+
+#: .\app_settings\templates\settings_app\system_settings.html:157
+msgid "حراري 80mm"
+msgstr "Thermal 80mm"
+
+#: .\app_settings\templates\settings_app\system_settings.html:163
+msgid "اتجاه الصفحة"
+msgstr "Page orientation"
+
+#: .\app_settings\templates\settings_app\system_settings.html:166
+msgid "عمودي"
+msgstr "Portrait"
+
+#: .\app_settings\templates\settings_app\system_settings.html:170
+msgid "أفقي"
+msgstr "Landscape"
+
+#: .\app_settings\templates\settings_app\system_settings.html:194
+msgid "إنشاء نسخة احتياطية"
+msgstr "Create Backup"
+
+#: .\app_settings\templates\settings_app\system_settings.html:198
+msgid "استعادة نسخة احتياطية"
+msgstr "Restore Backup"
+
+#: .\app_settings\templates\settings_app\system_settings.html:204
+msgid "استعادة البيانات"
+msgstr "Restore Data"
+
+#: .\app_settings\templates\settings_app\system_settings.html:217
+msgid "رقم الإصدار: 1.0.0"
+msgstr "Version number: 1.0.0"
+
+#: .\app_settings\templates\settings_app\system_settings.html:218
+msgid "خيارات متقدمة سيتم إضافتها لاحقاً."
+msgstr "Advanced options will be added later."
+
+#: .\customers\templates\customers\customer_form.html:5
+#: .\customers\templates\customers\customer_form.html:9
+#: .\customers\templates\customers\customers_list.html:24
+#: .\customers\templates\customers\list.html:10
+#: .\quotations\templates\quotations\quotation_add.html:105
+#: .\sales\templates\sales\invoice_add.html:133
+msgid "Add Customer"
+msgstr "Add Customer"
+
+#: .\customers\templates\customers\customer_form.html:23
+msgid "Customer Information"
+msgstr "Customer Information"
+
+# | msgid "Criteria Type"
+#: .\customers\templates\customers\customer_form.html:25
+msgid "Customer Type"
+msgstr "Customer Type"
+
+#: .\customers\templates\customers\customer_form.html:29
+msgid "Individual"
+msgstr "Individual"
+
+#: .\customers\templates\customers\customer_form.html:35
+msgid "Business"
+msgstr "Business"
+
+# | msgid "Criteria Name"
+#: .\customers\templates\customers\customer_form.html:39
+#: .\suppliers\templates\suppliers\supplier_add.html:26
+#: .\suppliers\templates\suppliers\supplier_edit.html:52
+msgid "Commercial Name"
+msgstr "Commercial Name"
+
+# | msgid "Shift Name"
+#: .\customers\templates\customers\customer_form.html:45
+#: .\suppliers\templates\suppliers\supplier_add.html:34
+#: .\suppliers\templates\suppliers\supplier_edit.html:61
+msgid "First Name"
+msgstr "First Name"
+
+# | msgid "Shift Name"
+#: .\customers\templates\customers\customer_form.html:49
+#: .\suppliers\templates\suppliers\supplier_add.html:39
+#: .\suppliers\templates\suppliers\supplier_edit.html:67
+msgid "Last Name"
+msgstr "Last Name"
+
+#: .\customers\templates\customers\customer_form.html:56
+#: .\suppliers\templates\suppliers\supplier_add.html:47
+#: .\suppliers\templates\suppliers\supplier_edit.html:76
+msgid "Phone"
+msgstr "Phone"
+
+#: .\customers\templates\customers\customer_form.html:60
+#: .\suppliers\templates\suppliers\supplier_add.html:52
+#: .\suppliers\templates\suppliers\supplier_edit.html:82
+msgid "Mobile"
+msgstr "Mobile"
+
+#: .\customers\templates\customers\customer_form.html:66
+#: .\suppliers\templates\suppliers\supplier_add.html:59
+#: .\suppliers\templates\suppliers\supplier_edit.html:90
+msgid "Street Address 1"
+msgstr "Street Address 1"
+
+#: .\customers\templates\customers\customer_form.html:71
+#: .\suppliers\templates\suppliers\supplier_add.html:65
+#: .\suppliers\templates\suppliers\supplier_edit.html:97
+msgid "Street Address 2"
+msgstr "Street Address 2"
+
+#: .\customers\templates\customers\customer_form.html:77
+#: .\suppliers\templates\suppliers\supplier_add.html:72
+#: .\suppliers\templates\suppliers\supplier_edit.html:105
+msgid "City"
+msgstr "City"
+
+#: .\customers\templates\customers\customer_form.html:81
+#: .\suppliers\templates\suppliers\supplier_add.html:77
+#: .\suppliers\templates\suppliers\supplier_edit.html:111
+msgid "Region"
+msgstr "Region"
+
+#: .\customers\templates\customers\customer_form.html:85
+#: .\suppliers\templates\suppliers\supplier_add.html:82
+#: .\suppliers\templates\suppliers\supplier_edit.html:117
+msgid "Postal Code"
+msgstr "Postal Code"
+
+#: .\customers\templates\customers\customer_form.html:91
+#: .\suppliers\templates\suppliers\supplier_add.html:89
+#: .\suppliers\templates\suppliers\supplier_edit.html:125
+msgid "Country"
+msgstr "Country"
+
+#: .\customers\templates\customers\customer_form.html:93
+#: .\suppliers\templates\suppliers\supplier_add.html:91
+msgid "Saudi Arabia (SA)"
+msgstr "Saudi Arabia (SA)"
+
+#: .\customers\templates\customers\customer_form.html:100
+#: .\suppliers\templates\suppliers\supplier_add.html:97
+#: .\suppliers\templates\suppliers\supplier_edit.html:133
+msgid "Tax Number (Optional)"
+msgstr "Tax Number (Optional)"
+
+#: .\customers\templates\customers\customer_form.html:104
+#: .\suppliers\templates\suppliers\supplier_add.html:102
+#: .\suppliers\templates\suppliers\supplier_edit.html:139
+msgid "CR Number (Optional)"
+msgstr "CR Number (Optional)"
+
+#: .\customers\templates\customers\customer_form.html:115
+#: .\suppliers\templates\suppliers\supplier_add.html:113
+msgid "Additional Information"
+msgstr "Additional Information"
+
+#: .\customers\templates\customers\customer_form.html:117 .\hr\forms.py:113
+#: .\hr\forms.py:159 .\hr\templates\hr\hr_permissions_users.html:17
+#: .\suppliers\templates\suppliers\supplier_add.html:115
+#: .\suppliers\templates\suppliers\supplier_edit.html:171
+msgid "Email"
+msgstr "Email"
+
+#: .\customers\templates\customers\customer_form.html:121
+#: .\suppliers\templates\suppliers\supplier_add.html:120
+#: .\suppliers\templates\suppliers\supplier_edit.html:177
+msgid "Opening Balance"
+msgstr "Opening Balance"
+
+#: .\customers\templates\customers\customer_form.html:128
+#: .\dashboard\templates\dashboard\index.html:91 .\hr\forms.py:374
+#: .\hr\models.py:256 .\hr\templates\hr\add_evaluation.html:204
+#: .\hr\templates\hr\add_shift.html:27 .\hr\templates\hr\shifts_list.html:27
+#: .\products\templates\products\stock_adjust.html:97
+#: .\suppliers\templates\suppliers\supplier_add.html:128
+#: .\suppliers\templates\suppliers\supplier_edit.html:183
+msgid "Notes"
+msgstr "Notes"
+
+#: .\customers\templates\customers\customer_form.html:135
+#: .\suppliers\templates\suppliers\supplier_add.html:135
+#: .\suppliers\templates\suppliers\supplier_edit.html:190
+msgid "Attachments"
+msgstr "Attachments"
+
+# ===== Core =====
+#: .\customers\templates\customers\customer_form.html:149
+#: .\hr\templates\hr\add_department.html:24
+#: .\hr\templates\hr\add_employee.html:234
+#: .\hr\templates\hr\add_employee_schedule.html:126
+#: .\hr\templates\hr\add_evaluation_type.html:27
+#: .\hr\templates\hr\add_leave.html:78
+#: .\hr\templates\hr\employee_schedule_calendar.html:49
+#: .\hr\templates\hr\evaluation_fill.html:84
+#: .\products\templates\products\category_add.html:39
+#: .\products\templates\products\stock_adjust.html:125
+#: .\suppliers\templates\suppliers\supplier_add.html:149
+msgid "Save"
+msgstr "Save"
+
+#: .\customers\templates\customers\customers_list.html:21
+#: .\customers\templates\customers\list.html:9
+msgid "Customer List"
+msgstr "Customer List"
+
+# | msgid "Search"
+#: .\customers\templates\customers\customers_list.html:33
+#: .\quotations\templates\quotations\quotation_list.html:23
+#: .\sales\templates\sales\returns_list.html:19
+#: .\suppliers\templates\suppliers\suppliers_list.html:23
+msgid "Search No."
+msgstr "Search No."
+
+#: .\customers\templates\customers\customers_list.html:34
+#: .\quotations\templates\quotations\quotation_list.html:25
+#: .\sales\templates\sales\invoices_list.html:106
+#: .\sales\templates\sales\returns_list.html:22
+msgid "Search Customer"
+msgstr "Search Customer"
+
+#: .\customers\templates\customers\customers_list.html:35
+msgid "Search Invoice Count"
+msgstr "Search Invoice Count"
+
+# | msgid "Search"
+#: .\customers\templates\customers\customers_list.html:36
+#: .\suppliers\templates\suppliers\suppliers_list.html:26
+msgid "Search Balance"
+msgstr "Search Balance"
+
+# | msgid "Search"
+#: .\customers\templates\customers\customers_list.html:37
+#: .\purchase\templates\purchase\invoices_list.html:88
+#: .\sales\templates\sales\invoices_list.html:109
+#: .\suppliers\templates\suppliers\suppliers_list.html:27
+msgid "Search Status"
+msgstr "Search Status"
+
+#: .\customers\templates\customers\customers_list.html:44
+#: .\customers\templates\customers\list.html:17
+#: .\quotations\templates\quotations\quotation_list.html:35
+#: .\sales\templates\sales\invoices_list.html:116
+#: .\sales\templates\sales\returns_list.html:33
+msgid "Customer"
+msgstr "Customer"
+
+#: .\customers\templates\customers\customers_list.html:45
+#: .\customers\templates\customers\list.html:18
+#: .\suppliers\templates\suppliers\suppliers_list.html:35
+msgid "Invoice Count"
+msgstr "Invoice Count"
+
+# | msgid "Cancel"
+#: .\customers\templates\customers\customers_list.html:46
+#: .\customers\templates\customers\list.html:19
+#: .\purchase\templates\purchase\purchase_dashboard.html:20
+#: .\suppliers\templates\suppliers\suppliers_list.html:36
+msgid "Balance"
+msgstr "Balance"
+
+#: .\customers\templates\customers\customers_list.html:66
+#: .\customers\templates\customers\list.html:37
+#: .\suppliers\templates\suppliers\suppliers_list.html:52
+msgid "Debtor"
+msgstr "Debtor"
+
+#: .\customers\templates\customers\customers_list.html:68
+#: .\customers\templates\customers\list.html:39
+#: .\suppliers\templates\suppliers\suppliers_list.html:54
+msgid "Creditor"
+msgstr "Creditor"
+
+#: .\dashboard\templates\dashboard\index.html:4
+#: .\templates\layout\base.html:375
+msgid "Dashboard"
+msgstr "Dashboard"
+
+# ===== Employees =====
+#: .\dashboard\templates\dashboard\index.html:40
+#: .\hr\templates\hr\employee_list.html:5
+#: .\hr\templates\hr\employee_list.html:121
+#: .\hr\templates\hr\hr_permissions.html:17
+msgid "Employees"
+msgstr "Employees"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\dashboard\templates\dashboard\index.html:44
+msgid "Today's Attendance"
+msgstr "Today's Attendance"
+
+#: .\dashboard\templates\dashboard\index.html:48
+msgid "Invoices"
+msgstr "Invoices"
+
+# | msgid "Leave Type"
+#: .\dashboard\templates\dashboard\index.html:52
+#: .\hr\templates\hr\add_employee.html:192
+#: .\hr\templates\hr\hr_permissions.html:63
+msgid "Leaves"
+msgstr "Leaves"
+
+#: .\dashboard\templates\dashboard\index.html:60
+msgid "Monthly Sales Invoices"
+msgstr "Monthly Sales Invoices"
+
+#: .\dashboard\templates\dashboard\index.html:67
+msgid "Monthly Purchase Invoices"
+msgstr "Monthly Purchase Invoices"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\dashboard\templates\dashboard\index.html:77
+msgid "Daily Attendance Table"
+msgstr "Daily Attendance Table"
+
+# | msgid "Employee No."
+#: .\dashboard\templates\dashboard\index.html:83 .\hr\forms.py:25
+#: .\hr\templates\hr\add_employee.html:76
+msgid "Employee Number"
+msgstr "Employee Number"
+
+#: .\dashboard\templates\dashboard\index.html:85 .\hr\forms.py:326
+#: .\hr\models.py:396 .\hr\templates\hr\add_employee_schedule.html:45
+#: .\hr\templates\hr\add_evaluation.html:123
+#: .\hr\templates\hr\attendance_page.html:46
+#: .\hr\templates\hr\employee_schedule_calendar.html:33
+#: .\hr\templates\hr\evaluation_detail.html:79
+#: .\hr\templates\hr\hr_permissions_users.html:16
+#: .\hr\templates\hr\hr_report_detail_items.html:26
+#: .\hr\templates\hr\hr_reports.html:28 .\hr\templates\hr\hr_reports.html:76
+#: .\hr\templates\hr\hr_reports.html:129 .\hr\templates\hr\leaves_list.html:12
+msgid "Employee"
+msgstr "Employee"
+
+#: .\dashboard\templates\dashboard\index.html:111 .\hr\models.py:393
+msgid "Absent"
+msgstr "Absent"
+
+#: .\dashboard\templates\dashboard\index.html:113 .\hr\models.py:391
+msgid "Present"
+msgstr "Present"
+
+#: .\dashboard\templates\dashboard\index.html:122
+msgid "No attendance data today"
+msgstr "No attendance data today"
+
+#: .\dashboard\templates\dashboard\index.html:136
+msgid "Top Selling Products"
+msgstr "Top Selling Products"
+
+#: .\dashboard\templates\dashboard\index.html:141
+#: .\dashboard\templates\dashboard\index.html:173
+#: .\products\templates\products\product_edit.html:39
+#: .\products\templates\products\product_form.html:62
+#: .\products\templates\products\product_form_base.html:5
+msgid "Product Name"
+msgstr "Product Name"
+
+#: .\dashboard\templates\dashboard\index.html:143
+#: .\templates\layout\base.html:458
+msgid "Sales"
+msgstr "Sales"
+
+#: .\dashboard\templates\dashboard\index.html:156
+msgid "No sales data"
+msgstr "No sales data"
+
+#: .\dashboard\templates\dashboard\index.html:168
+msgid "Low Stock"
+msgstr "Low Stock"
+
+#: .\dashboard\templates\dashboard\index.html:174
+#: .\pos\templates\pos\pos.html:60
+msgid "Stock"
+msgstr "Stock"
+
+#: .\dashboard\templates\dashboard\index.html:186
+msgid "No stock data"
+msgstr "No stock data"
+
+#: .\dashboard\templates\dashboard\index.html:209
+#: .\dashboard\templates\dashboard\index.html:224
+msgid "Total Invoice"
+msgstr "Total Invoice"
+
+#: .\dashboard\templates\dashboard\index.html:210
+#: .\dashboard\templates\dashboard\index.html:225
+#: .\templates\layout\base.html:572
+msgid "Payments"
+msgstr "Payments"
+
+#: .\hr\forms.py:30
+msgid "Employee number will be generated automatically"
+msgstr "Employee number will be generated automatically"
+
+#: .\hr\forms.py:35 .\hr\models.py:125
+msgid "This employee uses a login account"
+msgstr "This employee uses a login account"
+
+#: .\hr\forms.py:43 .\hr\templates\hr\hr_permissions_users.html:15
+#: .\templates\layout\base.html:662
+msgid "Username"
+msgstr "Username"
+
+# | msgid "Username"
+#: .\hr\forms.py:47
+msgid "Enter username"
+msgstr "Enter username"
+
+#: .\hr\forms.py:53
+msgid "Password"
+msgstr "Password"
+
+# | msgid "Enter Scores"
+#: .\hr\forms.py:57
+msgid "Enter password"
+msgstr "Enter password"
+
+#: .\hr\forms.py:63
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+#: .\hr\forms.py:67
+msgid "Re-enter password"
+msgstr "Re-enter password"
+
+#: .\hr\forms.py:108
+msgid "First Name (Arabic)"
+msgstr "First Name (Arabic)"
+
+#: .\hr\forms.py:109
+msgid "Last Name (Arabic)"
+msgstr "Last Name (Arabic)"
+
+#: .\hr\forms.py:110
+msgid "First Name (English)"
+msgstr "First Name (English)"
+
+#: .\hr\forms.py:111
+msgid "Last Name (English)"
+msgstr "Last Name (English)"
+
+#: .\hr\forms.py:112
+msgid "Gender"
+msgstr "Gender"
+
+#: .\hr\forms.py:114 .\hr\forms.py:163
+msgid "Phone Number"
+msgstr "Phone Number"
+
+#: .\hr\forms.py:115 .\hr\forms.py:167 .\hr\models.py:92
+msgid "National ID"
+msgstr "National ID"
+
+#: .\hr\forms.py:116 .\hr\templates\hr\employee_list.html:148
+msgid "Hire Date"
+msgstr "Hire Date"
+
+#: .\hr\forms.py:117
+msgid "Probation Period (Days)"
+msgstr "Probation Period (Days)"
+
+# | msgid "Action"
+#: .\hr\forms.py:118 .\hr\models.py:364
+#: .\hr\templates\hr\add_evaluation.html:55
+#: .\hr\templates\hr\employee_list.html:151
+#: .\hr\templates\hr\evaluation_list.html:68
+#: .\hr\templates\hr\hr_reports.html:183
+#: .\products\templates\products\category_list.html:34
+#: .\products\templates\products\products_list.html:190
+msgid "Active"
+msgstr "Active"
+
+#: .\hr\forms.py:119 .\hr\templates\hr\add_evaluation.html:87
+#: .\hr\templates\hr\employee_list.html:145
+#: .\hr\templates\hr\evaluation_detail.html:80
+#: .\hr\templates\hr\evaluation_list.html:29
+#: .\hr\templates\hr\hr_report_detail_items.html:35
+#: .\hr\templates\hr\hr_reports.html:77 .\hr\templates\hr\hr_reports.html:130
+msgid "Department"
+msgstr "Department"
+
+#: .\hr\forms.py:120 .\hr\templates\hr\employee_list.html:146
+msgid "Branch"
+msgstr "Branch"
+
+#: .\hr\forms.py:121
+msgid "Job Title"
+msgstr "Job Title"
+
+# | msgid "Employee"
+#: .\hr\forms.py:122
+msgid "Employee Type"
+msgstr "Employee Type"
+
+#: .\hr\forms.py:123
+msgid "Direct Supervisor"
+msgstr "Direct Supervisor"
+
+#: .\hr\forms.py:124
+msgid "Base Salary"
+msgstr "Base Salary"
+
+#: .\hr\forms.py:125
+msgid "Housing Allowance"
+msgstr "Housing Allowance"
+
+#: .\hr\forms.py:126
+msgid "Transport Allowance"
+msgstr "Transport Allowance"
+
+#: .\hr\forms.py:127
+msgid "Clothing Allowance"
+msgstr "Clothing Allowance"
+
+#: .\hr\forms.py:128
+msgid "Other Allowances"
+msgstr "Other Allowances"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\hr\forms.py:129 .\hr\models.py:144
+msgid "Annual Leave Entitlement"
+msgstr "Annual Leave Entitlement"
+
+#: .\hr\forms.py:130 .\hr\models.py:145
+msgid "Current Annual Leave"
+msgstr "Current Annual Leave"
+
+#: .\hr\forms.py:131 .\hr\forms.py:300 .\hr\models.py:146 .\hr\models.py:214
+msgid "Compensatory Leave"
+msgstr "Compensatory Leave"
+
+#: .\hr\forms.py:132 .\hr\models.py:149
+#: .\hr\templates\hr\employee_list.html:131
+#: .\hr\templates\hr\employee_list.html:133
+msgid "Employee Photo"
+msgstr "Employee Photo"
+
+#: .\hr\forms.py:133 .\hr\models.py:150
+msgid "National ID File"
+msgstr "National ID File"
+
+#: .\hr\forms.py:134 .\hr\models.py:155
+msgid "Passport Number"
+msgstr "Passport Number"
+
+#: .\hr\forms.py:135 .\hr\models.py:157
+msgid "Passport File"
+msgstr "Passport File"
+
+#: .\hr\forms.py:136 .\hr\models.py:158
+msgid "Contract File"
+msgstr "Contract File"
+
+#: .\hr\forms.py:137 .\hr\models.py:159
+msgid "Other Files"
+msgstr "Other Files"
+
+#: .\hr\forms.py:142
+msgid "Enter first name in Arabic"
+msgstr "Enter first name in Arabic"
+
+#: .\hr\forms.py:146
+msgid "Enter last name in Arabic"
+msgstr "Enter last name in Arabic"
+
+#: .\hr\forms.py:150
+msgid "Enter first name in English"
+msgstr "Enter first name in English"
+
+#: .\hr\forms.py:154
+msgid "Enter last name in English"
+msgstr "Enter last name in English"
+
+#: .\hr\forms.py:175
+msgid "Probation period in days"
+msgstr "Probation period in days"
+
+#: .\hr\forms.py:182
+msgid "Job title"
+msgstr "Job title"
+
+# | msgid "Employee"
+#: .\hr\forms.py:186
+msgid "Employee type"
+msgstr "Employee type"
+
+#: .\hr\forms.py:191
+msgid "Base salary"
+msgstr "Base salary"
+
+#: .\hr\forms.py:195
+msgid "Housing allowance"
+msgstr "Housing allowance"
+
+#: .\hr\forms.py:199
+msgid "Transport allowance"
+msgstr "Transport allowance"
+
+#: .\hr\forms.py:203
+msgid "Clothing allowance"
+msgstr "Clothing allowance"
+
+#: .\hr\forms.py:207
+msgid "Other allowances"
+msgstr "Other allowances"
+
+#: .\hr\forms.py:216
+msgid "Passport number"
+msgstr "Passport number"
+
+#: .\hr\forms.py:241
+msgid "Email is required if the employee will use a login account."
+msgstr "Email is required if the employee will use a login account."
+
+#: .\hr\forms.py:250
+msgid "Another user with this email already exists."
+msgstr "Another user with this email already exists."
+
+#: .\hr\forms.py:259
+msgid "Username is required when enabling a login account."
+msgstr "Username is required when enabling a login account."
+
+#: .\hr\forms.py:268
+msgid "This username is already in use."
+msgstr "This username is already in use."
+
+#: .\hr\forms.py:282
+msgid "Password is required when creating a login account."
+msgstr "Password is required when creating a login account."
+
+#: .\hr\forms.py:284
+msgid "Password confirmation is required."
+msgstr "Password confirmation is required."
+
+#: .\hr\forms.py:288
+msgid "The two passwords do not match."
+msgstr "The two passwords do not match."
+
+#: .\hr\forms.py:298 .\hr\models.py:212
+msgid "Annual Leave"
+msgstr "Annual Leave"
+
+#: .\hr\forms.py:299 .\hr\models.py:213
+msgid "Sick Leave"
+msgstr "Sick Leave"
+
+#: .\hr\forms.py:301 .\hr\models.py:215
+#: .\products\templates\products\stock_adjust.html:82
+msgid "Other"
+msgstr "Other"
+
+# | msgid "Leave Type"
+#: .\hr\forms.py:305
+msgid "Select Leave Type"
+msgstr "Select Leave Type"
+
+#: .\hr\forms.py:306 .\hr\forms.py:327 .\hr\templates\hr\leaves_list.html:13
+msgid "Leave Type"
+msgstr "Leave Type"
+
+# | msgid "Start Time"
+#: .\hr\forms.py:311 .\hr\templates\hr\add_evaluation.html:65
+msgid "Start Date"
+msgstr "Start Date"
+
+# | msgid "End Time"
+#: .\hr\forms.py:317 .\hr\templates\hr\add_evaluation.html:76
+msgid "End Date"
+msgstr "End Date"
+
+#: .\hr\forms.py:328 .\hr\templates\hr\hr_reports.html:40
+msgid "From Date"
+msgstr "From Date"
+
+#: .\hr\forms.py:329 .\hr\templates\hr\hr_reports.html:45
+msgid "To Date"
+msgstr "To Date"
+
+#: .\hr\forms.py:330 .\hr\templates\hr\leaves_list.html:16
+msgid "Reason"
+msgstr "Reason"
+
+#: .\hr\forms.py:338
+msgid "Write the leave reason here"
+msgstr "Write the leave reason here"
+
+# | msgid "Evaluation Name"
+#: .\hr\forms.py:363
+msgid "Evaluation name"
+msgstr "Evaluation name"
+
+# | msgid "Criteria Name"
+#: .\hr\forms.py:395
+msgid "Enter criteria name"
+msgstr "Enter criteria name"
+
+#: .\hr\forms.py:400
+msgid "Weight as percentage"
+msgstr "Weight as percentage"
+
+#: .\hr\forms.py:413 .\hr\templates\hr\add_evaluation.html:35
+#: .\hr\templates\hr\add_evaluation_type.html:21
+#: .\hr\templates\hr\hr_reports.html:132
+msgid "Evaluation Type"
+msgstr "Evaluation Type"
+
+# | msgid "Evaluation Type"
+#: .\hr\forms.py:418 .\hr\templates\hr\add_evaluation_type.html:22
+msgid "Enter evaluation type"
+msgstr "Enter evaluation type"
+
+#: .\hr\forms.py:431 .\hr\templates\hr\departments_list.html:18
+msgid "Department Name"
+msgstr "Department Name"
+
+# | msgid "Department Name"
+#: .\hr\forms.py:436
+msgid "Enter department name"
+msgstr "Enter department name"
+
+#: .\hr\models.py:19 .\hr\models.py:41 .\hr\models.py:64 .\hr\models.py:206
+#: .\hr\models.py:245 .\hr\models.py:274 .\hr\models.py:305 .\hr\models.py:327
+#: .\hr\models.py:349 .\hr\models.py:385 .\hr\models.py:439 .\hr\models.py:455
+#: .\hr\models.py:482 .\templates\layout\base.html:664
+msgid "Company"
+msgstr "Company"
+
+#: .\hr\models.py:82
+msgid "Male"
+msgstr "Male"
+
+#: .\hr\models.py:82
+msgid "Female"
+msgstr "Female"
+
+# | msgid "All Employees"
+#: .\hr\models.py:114
+msgid "Full-time Employee"
+msgstr "Full-time Employee"
+
+# | msgid "Pending"
+#: .\hr\models.py:219
+msgid "Pending Review"
+msgstr "Pending Review"
+
+#: .\hr\models.py:220 .\hr\templates\hr\leaves_list.html:33
+#: .\quotations\templates\quotations\quotation_list.html:60
+msgid "Approved"
+msgstr "Approved"
+
+#: .\hr\models.py:221 .\hr\templates\hr\leaves_list.html:35
+msgid "Rejected"
+msgstr "Rejected"
+
+# | msgid "To:"
+#: .\hr\models.py:236 .\hr\templates\hr\evaluation_list.html:52
+#: .\hr\templates\hr\hr_reports.html:161 .\hr\templates\hr\leaves_list.html:15
+msgid "To"
+msgstr "To"
+
+#: .\hr\models.py:250 .\hr\templates\hr\add_shift.html:22
+#: .\hr\templates\hr\shifts_list.html:22
+msgid "Shift Name"
+msgstr "Shift Name"
+
+#: .\hr\models.py:251 .\hr\templates\hr\add_shift.html:21
+#: .\hr\templates\hr\shifts_list.html:21
+msgid "Shift Order"
+msgstr "Shift Order"
+
+#: .\hr\models.py:252 .\hr\templates\hr\add_shift.html:23
+#: .\hr\templates\hr\shifts_list.html:23
+msgid "Start Time"
+msgstr "Start Time"
+
+#: .\hr\models.py:253 .\hr\templates\hr\add_shift.html:24
+#: .\hr\templates\hr\shifts_list.html:24
+msgid "End Time"
+msgstr "End Time"
+
+# | msgid "Start Time"
+#: .\hr\models.py:254
+msgid "Break Start Time"
+msgstr "Break Start Time"
+
+# | msgid "End Time"
+#: .\hr\models.py:255
+msgid "Break End Time"
+msgstr "Break End Time"
+
+#: .\hr\models.py:292 .\hr\templates\hr\add_employee_schedule.html:101
+#: .\hr\templates\hr\add_employee_schedule.html:111
+#: .\hr\templates\hr\add_employee_schedule.html:152
+#: .\hr\templates\hr\add_employee_schedule.html:153
+#: .\hr\templates\hr\add_employee_schedule.html:158
+#: .\hr\templates\hr\add_employee_schedule.html:160
+#: .\hr\templates\hr\add_shift.html:37
+#: .\hr\templates\hr\shifts_calendar.html:13
+msgid "Off Day"
+msgstr "Off Day"
+
+# | msgid "Close"
+#: .\hr\models.py:364 .\hr\templates\hr\add_evaluation.html:58
+#: .\hr\templates\hr\evaluation_list.html:70
+#: .\hr\templates\hr\hr_reports.html:185
+msgid "Closed"
+msgstr "Closed"
+
+#: .\hr\models.py:392
+msgid "Late"
+msgstr "Late"
+
+# | msgid "Shift Name"
+#: .\hr\models.py:398
+msgid "Shift"
+msgstr "Shift"
+
+#: .\hr\models.py:399 .\hr\templates\hr\attendance_page.html:48
+msgid "Check In Time"
+msgstr "Check In Time"
+
+#: .\hr\models.py:400 .\hr\templates\hr\attendance_page.html:49
+msgid "Check Out Time"
+msgstr "Check Out Time"
+
+#: .\hr\models.py:401
+msgid "Late Minutes"
+msgstr "Late Minutes"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\hr\models.py:405
+msgid "Attendance Record"
+msgstr "Attendance Record"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\hr\models.py:406
+msgid "Attendance Records"
+msgstr "Attendance Records"
+
+#: .\hr\models.py:500 .\hr\templates\hr\evaluation_records_list.html:53
+msgid "Peer"
+msgstr "Peer"
+
+#: .\hr\models.py:500 .\hr\templates\hr\evaluation_records_list.html:55
+msgid "Manager"
+msgstr "Manager"
+
+# ===== Employees =====
+# | msgid "Employees"
+#: .\hr\models.py:522
+msgid "View Employees"
+msgstr "View Employees"
+
+#: .\hr\models.py:523 .\hr\templates\hr\add_employee.html:4
+#: .\hr\templates\hr\employee_list.html:124
+msgid "Add Employee"
+msgstr "Add Employee"
+
+# | msgid "Add Employee"
+#: .\hr\models.py:524 .\hr\templates\hr\add_employee.html:32
+msgid "Edit Employee"
+msgstr "Edit Employee"
+
+# | msgid "Target Employee"
+#: .\hr\models.py:525
+msgid "Delete Employee"
+msgstr "Delete Employee"
+
+# | msgid "Target Employees"
+#: .\hr\models.py:526
+msgid "Export Employees"
+msgstr "Export Employees"
+
+#: .\hr\models.py:527
+msgid "View All Departments or Own Department Only"
+msgstr "View All Departments or Own Department Only"
+
+# | msgid "Department"
+#: .\hr\models.py:530
+msgid "View Departments"
+msgstr "View Departments"
+
+# | msgid "Add New Department"
+#: .\hr\models.py:531 .\hr\templates\hr\add_department.html:4
+msgid "Add Department"
+msgstr "Add Department"
+
+# | msgid "Department"
+#: .\hr\models.py:532
+msgid "Edit Department"
+msgstr "Edit Department"
+
+# | msgid "Department"
+#: .\hr\models.py:533
+msgid "Delete Department"
+msgstr "Delete Department"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\hr\models.py:536
+msgid "View Attendance"
+msgstr "View Attendance"
+
+# | msgid "Check In"
+#: .\hr\models.py:537
+msgid "Check In/Out"
+msgstr "Check In/Out"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\hr\models.py:538
+msgid "Edit Attendance"
+msgstr "Edit Attendance"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\hr\models.py:539
+msgid "Approve Attendance"
+msgstr "Approve Attendance"
+
+#: .\hr\models.py:540
+msgid "View Attendance for Own Department or All"
+msgstr "View Attendance for Own Department or All"
+
+# | msgid "View Mode"
+#: .\hr\models.py:543
+msgid "View Leaves"
+msgstr "View Leaves"
+
+#: .\hr\models.py:544
+msgid "Submit Leave"
+msgstr "Submit Leave"
+
+# | msgid "Approved"
+#: .\hr\models.py:545
+msgid "Approve Leave"
+msgstr "Approve Leave"
+
+# | msgid "Rejected"
+#: .\hr\models.py:546
+msgid "Reject Leave"
+msgstr "Reject Leave"
+
+#: .\hr\models.py:547
+msgid "View Leaves for Own Department or All"
+msgstr "View Leaves for Own Department or All"
+
+# | msgid "Peer Evaluation"
+#: .\hr\models.py:550
+msgid "View Evaluations"
+msgstr "View Evaluations"
+
+# | msgid "Peer Evaluation"
+#: .\hr\models.py:551
+msgid "Create Evaluation"
+msgstr "Create Evaluation"
+
+# | msgid "Add Evaluation"
+#: .\hr\models.py:552 .\hr\templates\hr\add_evaluation.html:4
+#: .\hr\templates\hr\add_evaluation.html:10
+msgid "Edit Evaluation"
+msgstr "Edit Evaluation"
+
+# | msgid "Peer Evaluation"
+#: .\hr\models.py:553
+msgid "Delete Evaluation"
+msgstr "Delete Evaluation"
+
+# | msgid "Evaluation Name"
+#: .\hr\models.py:554
+msgid "Evaluate as Peer"
+msgstr "Evaluate as Peer"
+
+# ===== Evaluation =====
+# | msgid "Evaluations Management"
+#: .\hr\models.py:555
+msgid "Evaluate as Manager"
+msgstr "Evaluate as Manager"
+
+# | msgid "Approved"
+#: .\hr\models.py:556
+msgid "Approve Results"
+msgstr "Approve Results"
+
+# ===== Reports =====
+# | msgid "Evaluation Reports"
+#: .\hr\models.py:557
+msgid "View Evaluation Reports"
+msgstr "View Evaluation Reports"
+
+#: .\hr\models.py:560
+msgid "View Payroll"
+msgstr "View Payroll"
+
+#: .\hr\models.py:561
+msgid "Create Payroll"
+msgstr "Create Payroll"
+
+#: .\hr\models.py:562
+msgid "Edit Payroll"
+msgstr "Edit Payroll"
+
+# | msgid "Delete"
+#: .\hr\models.py:563
+msgid "Delete Payroll"
+msgstr "Delete Payroll"
+
+#: .\hr\models.py:564
+msgid "Approve Salary Payment"
+msgstr "Approve Salary Payment"
+
+# ===== Reports =====
+# | msgid "Evaluation Reports"
+#: .\hr\models.py:567
+msgid "View Reports"
+msgstr "View Reports"
+
+#: .\hr\models.py:568
+msgid "Export PDF / Excel"
+msgstr "Export PDF / Excel"
+
+#: .\hr\models.py:569
+msgid "View Reports for Own Department or Entire Company"
+msgstr "View Reports for Own Department or Entire Company"
+
+# | msgid "Edit Permissions"
+#: .\hr\models.py:575
+msgid "HR Permission"
+msgstr "HR Permission"
+
+# | msgid "Edit Permissions"
+#: .\hr\models.py:576 .\hr\models.py:582
+msgid "HR Permissions"
+msgstr "HR Permissions"
+
+#: .\hr\templates\hr\add_department.html:8
+#: .\hr\templates\hr\add_evaluation.html:90
+#: .\hr\templates\hr\departments_list.html:11
+msgid "Add New Department"
+msgstr "Add New Department"
+
+# | msgid "Add Employee"
+#: .\hr\templates\hr\add_employee.html:34
+msgid "Add New Employee"
+msgstr "Add New Employee"
+
+#: .\hr\templates\hr\add_employee.html:67
+msgid "Basic Information"
+msgstr "Basic Information"
+
+#: .\hr\templates\hr\add_employee.html:139
+msgid ""
+"When enabled, a login account will be created or updated for this employee."
+msgstr ""
+"When enabled, a login account will be created or updated for this employee."
+
+#: .\hr\templates\hr\add_employee.html:150
+msgid "Salary & Allowances"
+msgstr "Salary & Allowances"
+
+# | msgid "Evaluation Details"
+#: .\hr\templates\hr\add_employee.html:171
+msgid "Work Details"
+msgstr "Work Details"
+
+#: .\hr\templates\hr\add_employee.html:213
+msgid "Documents"
+msgstr "Documents"
+
+# | msgid "Monthly Summary per Employee"
+#: .\hr\templates\hr\add_employee_schedule.html:4
+msgid "Monthly Employee Schedule"
+msgstr "Monthly Employee Schedule"
+
+# | msgid "Create Record"
+#: .\hr\templates\hr\add_employee_schedule.html:10
+msgid "Create New Schedule"
+msgstr "Create New Schedule"
+
+# | msgid "Employee Photo"
+#: .\hr\templates\hr\add_employee_schedule.html:12
+#: .\hr\templates\hr\employee_schedule_calendar.html:4
+#: .\hr\templates\hr\employee_schedule_calendar.html:8
+msgid "Employee Schedule"
+msgstr "Employee Schedule"
+
+#: .\hr\templates\hr\add_employee_schedule.html:22
+#: .\hr\templates\hr\employee_schedule_calendar.html:13
+#: .\hr\templates\hr\hr_reports.html:78
+msgid "Month"
+msgstr "Month"
+
+#: .\hr\templates\hr\add_employee_schedule.html:33
+#: .\hr\templates\hr\employee_schedule_calendar.html:23
+msgid "Year"
+msgstr "Year"
+
+#: .\hr\templates\hr\add_employee_schedule.html:48
+#: .\hr\templates\hr\employee_schedule_calendar.html:36
+#: .\pos\templates\pos\pos.html:21
+msgid "All"
+msgstr "All"
+
+# | msgid "Off Day"
+#: .\hr\templates\hr\add_employee_schedule.html:69
+#: .\hr\templates\hr\employee_schedule_calendar.html:58
+msgid "Day"
+msgstr "Day"
+
+#: .\hr\templates\hr\add_employee_schedule.html:106
+#: .\hr\templates\hr\add_employee_schedule.html:145
+#: .\hr\templates\hr\employee_schedule_calendar.html:94
+msgid "Select Shift"
+msgstr "Select Shift"
+
+#: .\hr\templates\hr\add_employee_schedule.html:231
+msgid "Saved successfully"
+msgstr "Saved successfully"
+
+#: .\hr\templates\hr\add_employee_schedule.html:233
+#: .\hr\templates\hr\employee_schedule_calendar.html:225
+msgid "Error"
+msgstr "Error"
+
+#: .\hr\templates\hr\add_employee_schedule.html:238
+#: .\hr\templates\hr\employee_schedule_calendar.html:230
+msgid "Unexpected error"
+msgstr "Unexpected error"
+
+# | msgid "Peer Evaluation"
+#: .\hr\templates\hr\add_evaluation.html:4
+#: .\hr\templates\hr\add_evaluation.html:10
+msgid "Create New Evaluation"
+msgstr "Create New Evaluation"
+
+# ===== Reports =====
+# | msgid "Evaluation Reports"
+#: .\hr\templates\hr\add_evaluation.html:18
+msgid "Evaluation Information"
+msgstr "Evaluation Information"
+
+#: .\hr\templates\hr\add_evaluation.html:24
+#: .\hr\templates\hr\evaluation_list.html:26
+msgid "Evaluation Name"
+msgstr "Evaluation Name"
+
+# | msgid "Evaluation Name"
+#: .\hr\templates\hr\add_evaluation.html:28
+msgid "Enter evaluation name"
+msgstr "Enter evaluation name"
+
+# | msgid "Evaluation Type"
+#: .\hr\templates\hr\add_evaluation.html:39
+msgid "Select evaluation type"
+msgstr "Select evaluation type"
+
+# | msgid "Evaluation Type"
+#: .\hr\templates\hr\add_evaluation.html:40
+#: .\hr\templates\hr\add_evaluation_type.html:3
+#: .\hr\templates\hr\add_evaluation_type.html:12
+msgid "Add New Evaluation Type"
+msgstr "Add New Evaluation Type"
+
+#: .\hr\templates\hr\add_evaluation.html:56
+#: .\hr\templates\hr\employee_list.html:151
+#: .\products\templates\products\category_list.html:36
+#: .\products\templates\products\products_list.html:192
+msgid "Inactive"
+msgstr "Inactive"
+
+# | msgid "Department"
+#: .\hr\templates\hr\add_evaluation.html:89
+msgid "Select Department"
+msgstr "Select Department"
+
+# | msgid "Target ID"
+#: .\hr\templates\hr\add_evaluation.html:106
+msgid "Target Group"
+msgstr "Target Group"
+
+# ===== Records =====
+# | msgid "Evaluation Records"
+#: .\hr\templates\hr\add_evaluation.html:111
+msgid "Evaluation Method"
+msgstr "Evaluation Method"
+
+# | msgid "Employee"
+#: .\hr\templates\hr\add_evaluation.html:114
+msgid "Specific Employee"
+msgstr "Specific Employee"
+
+# | msgid "Department"
+#: .\hr\templates\hr\add_evaluation.html:117
+msgid "Full Department"
+msgstr "Full Department"
+
+# | msgid "Target Employee"
+#: .\hr\templates\hr\add_evaluation.html:126
+#: .\hr\templates\hr\evaluation_record_start.html:31
+msgid "Select Employee"
+msgstr "Select Employee"
+
+#: .\hr\templates\hr\add_evaluation.html:142
+#: .\hr\templates\hr\evaluation_detail.html:38
+msgid "Evaluation Criteria"
+msgstr "Evaluation Criteria"
+
+# | msgid "Criteria"
+#: .\hr\templates\hr\add_evaluation.html:144
+msgid "Add Criteria"
+msgstr "Add Criteria"
+
+#: .\hr\templates\hr\add_evaluation.html:151
+#: .\hr\templates\hr\evaluation_detail.html:45
+msgid "Criteria Name"
+msgstr "Criteria Name"
+
+#: .\hr\templates\hr\add_evaluation.html:152
+#: .\hr\templates\hr\hr_report_detail_items.html:90
+msgid "Criteria Type"
+msgstr "Criteria Type"
+
+# | msgid "Weight"
+#: .\hr\templates\hr\add_evaluation.html:153
+#, python-format
+msgid "Weight (%%)"
+msgstr "Weight (%%)"
+
+# | msgid "Score"
+#: .\hr\templates\hr\add_evaluation.html:167
+#: .\hr\templates\hr\add_evaluation.html:185
+#: .\hr\templates\hr\add_evaluation.html:254
+msgid "Score (1-5)"
+msgstr "Score (1-5)"
+
+#: .\hr\templates\hr\add_evaluation.html:168
+#: .\hr\templates\hr\add_evaluation.html:186
+#: .\hr\templates\hr\add_evaluation.html:255
+msgid "Yes / No"
+msgstr "Yes / No"
+
+#: .\hr\templates\hr\add_evaluation.html:169
+#: .\hr\templates\hr\add_evaluation.html:187
+#: .\hr\templates\hr\add_evaluation.html:256
+msgid "Percentage"
+msgstr "Percentage"
+
+# | msgid "Enter Scores"
+#: .\hr\templates\hr\add_evaluation.html:206
+msgid "Enter notes"
+msgstr "Enter notes"
+
+# | msgid "Peer Evaluation"
+#: .\hr\templates\hr\add_evaluation.html:213
+msgid "Save Evaluation"
+msgstr "Save Evaluation"
+
+# | msgid "Manager Evaluation"
+#: .\hr\templates\hr\add_evaluation_type.html:31
+msgid "Back to Create Evaluation"
+msgstr "Back to Create Evaluation"
+
+# | msgid "Evaluation Details"
+#: .\hr\templates\hr\add_evaluation_type.html:35
+msgid "Back to Evaluation List"
+msgstr "Back to Evaluation List"
+
+#: .\hr\templates\hr\add_leave.html:4 .\hr\templates\hr\add_leave.html:8
+msgid "Add Leave"
+msgstr "Add Leave"
+
+# ===== Shifts =====
+#: .\hr\templates\hr\add_shift.html:4 .\hr\templates\hr\add_shift.html:8
+#: .\hr\templates\hr\shifts_list.html:4 .\hr\templates\hr\shifts_list.html:8
+#: .\templates\layout\base.html:393
+msgid "Shift Management"
+msgstr "Shift Management"
+
+#: .\hr\templates\hr\add_shift.html:13 .\hr\templates\hr\shifts_list.html:13
+msgid "Add New Shift"
+msgstr "Add New Shift"
+
+#: .\hr\templates\hr\add_shift.html:25 .\hr\templates\hr\shifts_list.html:25
+msgid "Break From"
+msgstr "Break From"
+
+#: .\hr\templates\hr\add_shift.html:26 .\hr\templates\hr\shifts_list.html:26
+msgid "Break To"
+msgstr "Break To"
+
+#: .\hr\templates\hr\add_shift.html:67 .\hr\templates\hr\shifts_list.html:62
+msgid "Are you sure you want to delete this shift?"
+msgstr "Are you sure you want to delete this shift?"
+
+#: .\hr\templates\hr\add_shift.html:78 .\hr\templates\hr\shifts_list.html:73
+#: .\products\templates\products\stock_ledger.html:61
+msgid "No data available"
+msgstr "No data available"
+
+#: .\hr\templates\hr\attendance_check.html:4
+#: .\hr\templates\hr\attendance_check.html:9
+msgid "Quick Check In and Check Out"
+msgstr "Quick Check In and Check Out"
+
+#: .\hr\templates\hr\attendance_check.html:14
+msgid "Employee is not linked to the user account."
+msgstr "Employee is not linked to the user account."
+
+#: .\hr\templates\hr\attendance_check.html:31 .\hr\views.py:998
+#: .\hr\views.py:1023
+msgid "Check In"
+msgstr "Check In"
+
+#: .\hr\templates\hr\attendance_check.html:38
+msgid "Last record:"
+msgstr "Last record:"
+
+#: .\hr\templates\hr\attendance_check.html:40
+msgid "Checked out at"
+msgstr "Checked out at"
+
+#: .\hr\templates\hr\attendance_check.html:42
+msgid "Checked in at"
+msgstr "Checked in at"
+
+#: .\hr\templates\hr\attendance_check.html:90 .\hr\views.py:1021
+msgid "Please wait before making a new record!"
+msgstr "Please wait before making a new record!"
+
+# ===== Attendance =====
+#: .\hr\templates\hr\attendance_page.html:6
+#: .\hr\templates\hr\attendance_page.html:11
+msgid "Attendance Log"
+msgstr "Attendance Log"
+
+# | msgid "Employee"
+#: .\hr\templates\hr\attendance_page.html:15
+msgid "Employee:"
+msgstr "Employee:"
+
+#: .\hr\templates\hr\attendance_page.html:18
+msgid "Show All"
+msgstr "Show All"
+
+#: .\hr\templates\hr\attendance_page.html:27
+msgid "From:"
+msgstr "From:"
+
+#: .\hr\templates\hr\attendance_page.html:30
+msgid "To:"
+msgstr "To:"
+
+#: .\hr\templates\hr\attendance_page.html:34
+#: .\products\templates\products\stock_ledger.html:13
+msgid "Search"
+msgstr "Search"
+
+#: .\hr\templates\hr\attendance_page.html:38
+#: .\hr\templates\hr\hr_reports.html:56
+msgid "Reset"
+msgstr "Reset"
+
+# ===== Departments =====
+#: .\hr\templates\hr\departments_list.html:4
+#: .\hr\templates\hr\departments_list.html:8
+msgid "Departments List"
+msgstr "Departments List"
+
+# | msgid "Are you sure you want to delete this shift?"
+#: .\hr\templates\hr\departments_list.html:32
+#: .\suppliers\templates\suppliers\suppliers_list.html:77
+msgid "Are you sure you want to delete?"
+msgstr "Are you sure you want to delete?"
+
+#: .\hr\templates\hr\departments_list.html:40
+msgid "No departments found"
+msgstr "No departments found"
+
+#: .\hr\templates\hr\employee_list.html:144
+msgid "Employee No."
+msgstr "Employee No."
+
+#: .\hr\templates\hr\employee_list.html:147
+msgid "Salary"
+msgstr "Salary"
+
+#: .\hr\templates\hr\employee_list.html:159
+msgid "No employees found"
+msgstr "No employees found"
+
+#: .\hr\templates\hr\employee_schedule_calendar.html:162
+msgid "Cannot edit past days."
+msgstr "Cannot edit past days."
+
+#: .\hr\templates\hr\evaluation_detail.html:4
+msgid "Evaluation Details"
+msgstr "Evaluation Details"
+
+#: .\hr\templates\hr\evaluation_detail.html:10
+msgid "Evaluation Details:"
+msgstr "Evaluation Details:"
+
+#: .\hr\templates\hr\evaluation_detail.html:17
+#: .\products\templates\products\product_view.html:68
+msgid "Type:"
+msgstr "Type:"
+
+#: .\hr\templates\hr\evaluation_detail.html:21
+#: .\hr\templates\hr\evaluation_fill.html:33
+msgid "Period:"
+msgstr "Period:"
+
+#: .\hr\templates\hr\evaluation_detail.html:25
+#: .\hr\templates\hr\evaluation_fill.html:25
+msgid "Department:"
+msgstr "Department:"
+
+#: .\hr\templates\hr\evaluation_detail.html:29
+msgid "Status:"
+msgstr "Status:"
+
+#: .\hr\templates\hr\evaluation_detail.html:46
+#: .\hr\templates\hr\evaluation_list.html:27
+#: .\products\templates\products\products_list.html:150
+#: .\products\templates\products\stock_adjust.html:76
+#: .\products\templates\products\stock_ledger.html:21
+msgid "Type"
+msgstr "Type"
+
+#: .\hr\templates\hr\evaluation_detail.html:47
+#: .\hr\templates\hr\evaluation_fill.html:52
+msgid "Weight"
+msgstr "Weight"
+
+#: .\hr\templates\hr\evaluation_detail.html:60
+msgid "No criteria found"
+msgstr "No criteria found"
+
+#: .\hr\templates\hr\evaluation_detail.html:71
+msgid "Target Employees"
+msgstr "Target Employees"
+
+#: .\hr\templates\hr\evaluation_detail.html:78
+msgid "Target ID"
+msgstr "Target ID"
+
+#: .\hr\templates\hr\evaluation_detail.html:107
+#: .\hr\templates\hr\evaluation_record_start.html:54
+msgid "Peer Evaluation"
+msgstr "Peer Evaluation"
+
+#: .\hr\templates\hr\evaluation_detail.html:112
+#: .\hr\templates\hr\evaluation_record_start.html:55
+msgid "Manager Evaluation"
+msgstr "Manager Evaluation"
+
+#: .\hr\templates\hr\evaluation_detail.html:121
+msgid "No targets found"
+msgstr "No targets found"
+
+#: .\hr\templates\hr\evaluation_fill.html:17
+msgid "Target Employee:"
+msgstr "Target Employee:"
+
+#: .\hr\templates\hr\evaluation_fill.html:43
+msgid "Enter Scores"
+msgstr "Enter Scores"
+
+#: .\hr\templates\hr\evaluation_fill.html:51
+#: .\hr\templates\hr\evaluation_records_list.html:24
+#: .\hr\templates\hr\hr_report_detail_items.html:89
+msgid "Criteria"
+msgstr "Criteria"
+
+#: .\hr\templates\hr\evaluation_fill.html:53
+#: .\hr\templates\hr\evaluation_records_list.html:25
+#: .\hr\templates\hr\hr_report_detail_items.html:93
+msgid "Score"
+msgstr "Score"
+
+#: .\hr\templates\hr\evaluation_fill.html:71
+msgid "0 - 100"
+msgstr "0 - 100"
+
+#: .\hr\templates\hr\evaluation_fill.html:76
+msgid "No criteria for this evaluation"
+msgstr "No criteria for this evaluation"
+
+# ===== Evaluation =====
+#: .\hr\templates\hr\evaluation_list.html:4
+#: .\hr\templates\hr\evaluation_list.html:11
+msgid "Evaluations Management"
+msgstr "Evaluations Management"
+
+#: .\hr\templates\hr\evaluation_list.html:14
+msgid "Add Evaluation"
+msgstr "Add Evaluation"
+
+#: .\hr\templates\hr\evaluation_list.html:28
+#: .\hr\templates\hr\hr_reports.html:133
+msgid "Period"
+msgstr "Period"
+
+# | msgid "Employee Photo"
+#: .\hr\templates\hr\evaluation_list.html:30
+msgid "Employees Count"
+msgstr "Employees Count"
+
+# | msgid "From:"
+#: .\hr\templates\hr\evaluation_list.html:49
+#: .\hr\templates\hr\leaves_list.html:14
+msgid "From"
+msgstr "From"
+
+# | msgid "Are you sure you want to delete this shift?"
+#: .\hr\templates\hr\evaluation_list.html:101
+msgid "Are you sure you want to close the evaluation?"
+msgstr "Are you sure you want to close the evaluation?"
+
+#: .\hr\templates\hr\evaluation_list.html:102
+msgid "Close"
+msgstr "Close"
+
+# | msgid "No data available"
+#: .\hr\templates\hr\evaluation_list.html:113
+msgid "No evaluations available"
+msgstr "No evaluations available"
+
+# ===== Records =====
+# | msgid "Evaluation Records"
+#: .\hr\templates\hr\evaluation_record_start.html:4
+#: .\hr\templates\hr\evaluation_record_start.html:9
+msgid "Create Evaluation Record"
+msgstr "Create Evaluation Record"
+
+# | msgid "Peer Evaluation"
+#: .\hr\templates\hr\evaluation_record_start.html:18
+msgid "Select Evaluation"
+msgstr "Select Evaluation"
+
+#: .\hr\templates\hr\evaluation_record_start.html:21
+#: .\hr\templates\hr\evaluation_record_start.html:34
+msgid "— Select —"
+msgstr "— Select —"
+
+# | msgid "No criteria for this evaluation"
+#: .\hr\templates\hr\evaluation_record_start.html:41
+msgid "No employees available for this evaluation"
+msgstr "No employees available for this evaluation"
+
+# | msgid "No criteria for this evaluation"
+#: .\hr\templates\hr\evaluation_record_start.html:46
+msgid "There are no criteria for this evaluation."
+msgstr "There are no criteria for this evaluation."
+
+# | msgid "Evaluation Type"
+#: .\hr\templates\hr\evaluation_record_start.html:51
+msgid "Evaluator Type"
+msgstr "Evaluator Type"
+
+# | msgid "Enter Scores"
+#: .\hr\templates\hr\evaluation_record_start.html:64
+msgid "Start Entering Scores"
+msgstr "Start Entering Scores"
+
+# ===== Records =====
+#: .\hr\templates\hr\evaluation_records_list.html:4
+#: .\hr\templates\hr\evaluation_records_list.html:10
+msgid "Evaluation Records"
+msgstr "Evaluation Records"
+
+#: .\hr\templates\hr\evaluation_records_list.html:12
+msgid "Create Record"
+msgstr "Create Record"
+
+#: .\hr\templates\hr\evaluation_records_list.html:22
+#: .\hr\templates\hr\hr_reports.html:131
+msgid "Evaluation"
+msgstr "Evaluation"
+
+#: .\hr\templates\hr\evaluation_records_list.html:23
+msgid "Target Employee"
+msgstr "Target Employee"
+
+#: .\hr\templates\hr\evaluation_records_list.html:26
+#: .\hr\templates\hr\hr_report_detail_items.html:92
+msgid "Evaluator"
+msgstr "Evaluator"
+
+#: .\hr\templates\hr\evaluation_records_list.html:27
+#: .\hr\templates\hr\hr_report_detail_items.html:91
+msgid "Role"
+msgstr "Role"
+
+#: .\hr\templates\hr\evaluation_records_list.html:64
+msgid "No evaluation records yet"
+msgstr "No evaluation records yet"
+
+#: .\hr\templates\hr\hr_permissions.html:4
+#: .\hr\templates\hr\hr_permissions_users.html:35
+msgid "Edit Permissions"
+msgstr "Edit Permissions"
+
+# | msgid "Edit Permissions"
+#: .\hr\templates\hr\hr_permissions.html:10
+msgid "Edit Permissions:"
+msgstr "Edit Permissions:"
+
+# | msgid "Department"
+#: .\hr\templates\hr\hr_permissions.html:31
+msgid "Departments"
+msgstr "Departments"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\hr\templates\hr\hr_permissions.html:45
+msgid "Attendance"
+msgstr "Attendance"
+
+# | msgid "Evaluation"
+#: .\hr\templates\hr\hr_permissions.html:77
+msgid "Evaluations"
+msgstr "Evaluations"
+
+#: .\hr\templates\hr\hr_permissions.html:91 .\templates\layout\base.html:417
+msgid "Payroll"
+msgstr "Payroll"
+
+#: .\hr\templates\hr\hr_permissions.html:109 .\templates\layout\base.html:440
+#: .\templates\layout\base.html:589
+msgid "Reports"
+msgstr "Reports"
+
+#: .\hr\templates\hr\hr_permissions.html:124
+#: .\products\templates\products\stock_adjust_edit.html:35
+#: .\suppliers\templates\suppliers\supplier_edit.html:204
+msgid "Save Changes"
+msgstr "Save Changes"
+
+# ===== Permissions =====
+#: .\hr\templates\hr\hr_permissions_users.html:4
+msgid "Permissions Management"
+msgstr "Permissions Management"
+
+#: .\hr\templates\hr\hr_permissions_users.html:10
+msgid "User Permissions Management"
+msgstr "User Permissions Management"
+
+#: .\hr\templates\hr\hr_permissions_users.html:18
+msgid "Manage"
+msgstr "Manage"
+
+#: .\hr\templates\hr\hr_permissions_users.html:42
+msgid "No users found"
+msgstr "No users found"
+
+# | msgid "Evaluation Details"
+#: .\hr\templates\hr\hr_report_detail_items.html:4
+#: .\hr\templates\hr\hr_report_detail_items.html:11
+msgid "Evaluation Item Details"
+msgstr "Evaluation Item Details"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:44
+msgid "Records Count"
+msgstr "Records Count"
+
+# | msgid "Score"
+#: .\hr\templates\hr\hr_report_detail_items.html:53
+msgid "Final Score"
+msgstr "Final Score"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:62
+#: .\hr\templates\hr\hr_reports.html:81 .\hr\templates\hr\hr_reports.html:136
+msgid "Grade"
+msgstr "Grade"
+
+# ===== Grades =====
+#: .\hr\templates\hr\hr_report_detail_items.html:65
+#: .\hr\templates\hr\hr_reports.html:99 .\hr\templates\hr\hr_reports.html:171
+msgid "Excellent"
+msgstr "Excellent"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:67
+#: .\hr\templates\hr\hr_reports.html:101 .\hr\templates\hr\hr_reports.html:173
+msgid "Very Good"
+msgstr "Very Good"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:69
+#: .\hr\templates\hr\hr_reports.html:103 .\hr\templates\hr\hr_reports.html:175
+msgid "Good"
+msgstr "Good"
+
+#: .\hr\templates\hr\hr_report_detail_items.html:71
+#: .\hr\templates\hr\hr_reports.html:105 .\hr\templates\hr\hr_reports.html:177
+msgid "Needs Improvement"
+msgstr "Needs Improvement"
+
+# | msgid "Add Evaluation"
+#: .\hr\templates\hr\hr_report_detail_items.html:81
+msgid "Recorded Evaluation Items"
+msgstr "Recorded Evaluation Items"
+
+# | msgid "No evaluation records yet"
+#: .\hr\templates\hr\hr_report_detail_items.html:119
+msgid "No evaluation items recorded"
+msgstr "No evaluation items recorded"
+
+# ===== Reports =====
+#: .\hr\templates\hr\hr_reports.html:4
+msgid "Evaluation Reports"
+msgstr "Evaluation Reports"
+
+# ===== Reports =====
+# | msgid "Evaluation Reports"
+#: .\hr\templates\hr\hr_reports.html:9
+msgid "Evaluation Reports & Performance Analysis"
+msgstr "Evaluation Reports & Performance Analysis"
+
+#: .\hr\templates\hr\hr_reports.html:16
+msgid "View Mode"
+msgstr "View Mode"
+
+#: .\hr\templates\hr\hr_reports.html:19
+msgid "Monthly Summary"
+msgstr "Monthly Summary"
+
+#: .\hr\templates\hr\hr_reports.html:22
+msgid "Details by Evaluation Type"
+msgstr "Details by Evaluation Type"
+
+#: .\hr\templates\hr\hr_reports.html:30
+msgid "All Employees"
+msgstr "All Employees"
+
+#: .\hr\templates\hr\hr_reports.html:51
+msgid "Show"
+msgstr "Show"
+
+#: .\hr\templates\hr\hr_reports.html:68
+msgid "Monthly Summary per Employee"
+msgstr "Monthly Summary per Employee"
+
+#: .\hr\templates\hr\hr_reports.html:79 .\hr\templates\hr\hr_reports.html:134
+msgid "Evaluations Count"
+msgstr "Evaluations Count"
+
+# | msgid "Monthly Average %"
+#: .\hr\templates\hr\hr_reports.html:80
+#, python-format
+msgid "Monthly Average %%"
+msgstr "Monthly Average %%"
+
+#: .\hr\templates\hr\hr_reports.html:111
+msgid "No monthly results"
+msgstr "No monthly results"
+
+# | msgid "Evaluation Details"
+#: .\hr\templates\hr\hr_reports.html:121
+msgid "Evaluation Details by Type"
+msgstr "Evaluation Details by Type"
+
+# | msgid "Score"
+#: .\hr\templates\hr\hr_reports.html:135
+#, python-format
+msgid "Score %%"
+msgstr "Score %%"
+
+#: .\hr\templates\hr\hr_reports.html:198
+#: .\purchase\templates\purchase\invoice_add.html:240
+#: .\purchase\templates\purchase\po_add.html:240
+msgid "No results found"
+msgstr "No results found"
+
+# ===== Leaves =====
+#: .\hr\templates\hr\leaves_list.html:4 .\hr\templates\hr\leaves_list.html:7
+#: .\templates\layout\base.html:411
+msgid "Leave Management"
+msgstr "Leave Management"
+
+#: .\hr\templates\hr\leaves_list.html:18
+msgid "Action"
+msgstr "Action"
+
+#: .\hr\templates\hr\leaves_list.html:31
+msgid "Pending"
+msgstr "Pending"
+
+#: .\hr\templates\hr\leaves_list.html:49
+msgid "No leaves found"
+msgstr "No leaves found"
+
+#: .\hr\views.py:627
+msgid "Not Scheduled"
+msgstr "Not Scheduled"
+
+#: .\hr\views.py:730
+msgid "Employee is not linked to the user account or not in the same company."
+msgstr "Employee is not linked to the user account or not in the same company."
+
+# | msgid "Check Out Time"
+#: .\hr\views.py:1023
+msgid "Check Out"
+msgstr "Check Out"
+
+# | msgid "Checked out at"
+#: .\hr\views.py:1030
+msgid "Checked out successfully."
+msgstr "Checked out successfully."
+
+#: .\pos\templates\pos\pos.html:4 .\templates\layout\base.html:446
+#: .\templates\layout\base.html:451
+msgid "Point of Sale"
+msgstr "Point of Sale"
+
+#: .\pos\templates\pos\pos.html:11
+#: .\products\templates\products\products_list.html:140
+#: .\quotations\templates\quotations\quotation_add.html:146
+#: .\sales\templates\sales\invoice_add.html:176
+msgid "Search product..."
+msgstr "Search product..."
+
+#: .\pos\templates\pos\pos.html:12
+msgid "Search invoice..."
+msgstr "Search invoice..."
+
+#: .\pos\templates\pos\pos.html:13
+msgid "New Invoice"
+msgstr "New Invoice"
+
+#: .\pos\templates\pos\pos.html:19
+msgid "Categories"
+msgstr "Categories"
+
+#: .\pos\templates\pos\pos.html:57
+#: .\products\templates\products\product_view.html:85
+#: .\products\templates\products\product_view.html:90
+#: .\products\templates\products\products_list.html:171
+#: .\purchase\templates\purchase\po_add.html:242
+#: .\purchase\templates\purchase\return_add.html:57
+#: .\sales\templates\sales\return_add.html:78
+msgid "SAR"
+msgstr "SAR"
+
+#: .\pos\templates\pos\pos.html:102
+#: .\quotations\templates\quotations\quotation_form.html:37
+msgid "Select Customer"
+msgstr "Select Customer"
+
+#: .\pos\templates\pos\pos.html:104
+msgid "Cash Customer"
+msgstr "Cash Customer"
+
+#: .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\stock_adjust_edit.html:16
+#: .\products\templates\products\stock_adjust_view.html:13
+#: .\quotations\templates\quotations\quotation_add.html:125
+#: .\quotations\templates\quotations\quotation_form.html:55
+#: .\quotations\templates\quotations\quotation_view.html:29
+#: .\sales\templates\sales\create_return.html:93
+#: .\sales\templates\sales\invoice_add.html:157
+#: .\sales\templates\sales\invoice_pdf.html:49
+#: .\sales\templates\sales\invoice_print.html:30
+#: .\sales\templates\sales\invoice_view.html:128
+#: .\sales\templates\sales\pdf_template.html:57
+#: .\suppliers\templates\suppliers\supplier_pdf.html:90
+#: .\suppliers\templates\suppliers\supplier_print.html:39
+#: .\suppliers\templates\suppliers\supplier_view.html:89
+msgid "Item"
+msgstr "Item"
+
+#: .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\product_view.html:124
+#: .\purchase\templates\purchase\_return_selector.html:52
+#: .\purchase\templates\purchase\invoice_add.html:147
+#: .\purchase\templates\purchase\po_add.html:118
+#: .\purchase\templates\purchase\po_view.html:30
+#: .\purchase\templates\purchase\purchase_print.html:43
+#: .\purchase\templates\purchase\purchase_return_view.html:33
+#: .\purchase\templates\purchase\purchase_view.html:56
+#: .\purchase\templates\purchase\purchase_view_pdf.html:133
+#: .\quotations\templates\quotations\quotation_add.html:127
+#: .\quotations\templates\quotations\quotation_form.html:57
+#: .\quotations\templates\quotations\quotation_view.html:31
+#: .\sales\templates\sales\invoice_add.html:159
+#: .\sales\templates\sales\invoice_pdf.html:51
+#: .\sales\templates\sales\invoice_print.html:32
+#: .\sales\templates\sales\invoice_view.html:130
+#: .\sales\templates\sales\pdf_template.html:59
+#: .\suppliers\templates\suppliers\supplier_pdf.html:92
+#: .\suppliers\templates\suppliers\supplier_print.html:41
+#: .\suppliers\templates\suppliers\supplier_view.html:91
+msgid "Quantity"
+msgstr "Quantity"
+
+#: .\pos\templates\pos\pos.html:112
+#: .\products\templates\products\products_list.html:148
+#: .\purchase\templates\purchase\_return_selector.html:53
+#: .\purchase\templates\purchase\invoice_add.html:148
+#: .\purchase\templates\purchase\po_add.html:119
+#: .\purchase\templates\purchase\po_view.html:31
+#: .\purchase\templates\purchase\purchase_print.html:44
+#: .\purchase\templates\purchase\purchase_return_view.html:34
+#: .\purchase\templates\purchase\purchase_view.html:57
+#: .\purchase\templates\purchase\purchase_view_pdf.html:134
+#: .\purchase\templates\purchase\return_from_invoice.html:109
+#: .\quotations\templates\quotations\quotation_add.html:128
+#: .\quotations\templates\quotations\quotation_form.html:58
+#: .\quotations\templates\quotations\quotation_view.html:32
+#: .\sales\templates\sales\create_return.html:95
+#: .\sales\templates\sales\invoice_add.html:160
+#: .\sales\templates\sales\invoice_pdf.html:52
+#: .\sales\templates\sales\invoice_print.html:33
+#: .\sales\templates\sales\invoice_view.html:131
+#: .\sales\templates\sales\pdf_template.html:60
+#: .\suppliers\templates\suppliers\supplier_pdf.html:93
+#: .\suppliers\templates\suppliers\supplier_print.html:42
+#: .\suppliers\templates\suppliers\supplier_view.html:92
+msgid "Price"
+msgstr "Price"
+
+#: .\pos\templates\pos\pos.html:116
+msgid "Grand Total"
+msgstr "Grand Total"
+
+#: .\pos\templates\pos\pos.html:119
+msgid "Save & Proceed to Payment"
+msgstr "Save & Proceed to Payment"
+
+#: .\pos\templates\pos\pos.html:162
+msgid "Open an invoice first!"
+msgstr "Open an invoice first!"
+
+#: .\pos\templates\pos\pos.html:172 .\pos\templates\pos\pos.html:180
+msgid "Stock is lower than the requested quantity for product"
+msgstr "Stock is lower than the requested quantity for product"
+
+#: .\pos\templates\pos\pos.html:172 .\pos\templates\pos\pos.html:180
+msgid "Allow negative stock?"
+msgstr "Allow negative stock?"
+
+#: .\pos\templates\pos\pos.html:230
+msgid "Add products first!"
+msgstr "Add products first!"
+
+#: .\products\templates\products\category_add.html:4
+#: .\products\templates\products\category_add.html:13
+#: .\products\templates\products\category_list.html:11
+#, fuzzy
+#| msgid "Add Customer"
+msgid "Add Category"
+msgstr "Add Customer"
+
+#: .\products\templates\products\category_add.html:20
+#, fuzzy
+#| msgid "Categories"
+msgid "Category Name"
+msgstr "Categories"
+
+# | msgid "Shift Order"
+#: .\products\templates\products\category_add.html:25
+#: .\products\templates\products\category_list.html:21
+#: .\venv\Lib\site-packages\django\forms\formsets.py:484
+#: .\venv\Lib\site-packages\django\forms\formsets.py:491
+msgid "Order"
+msgstr "Order"
+
+#: .\products\templates\products\category_add.html:30
+#: .\products\templates\products\product_edit.html:131
+#: .\products\templates\products\product_form.html:174
+#: .\products\templates\products\product_form_base.html:45
+#: .\venv\Lib\site-packages\django\db\models\fields\files.py:420
+msgid "Image"
+msgstr "Image"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\products\templates\products\category_list.html:4
+#: .\products\templates\products\category_list.html:10
+#, fuzzy
+#| msgid "Inventory Management"
+msgid "Category Management"
+msgstr "Inventory Management"
+
+# | msgid "Shift Name"
+#: .\products\templates\products\category_list.html:20
+#, fuzzy
+#| msgid "Last Name"
+msgid "Name"
+msgstr "Last Name"
+
+#: .\products\templates\products\category_list.html:23
+#: .\templates\layout\base.html:512
+msgid "Products"
+msgstr "Products"
+
+#: .\products\templates\products\category_list.html:47
+#, fuzzy
+#| msgid "Products"
+msgid "No products"
+msgstr "Products"
+
+#: .\products\templates\products\category_list.html:53
+#, fuzzy
+#| msgid "No criteria found"
+msgid "No categories found"
+msgstr "No criteria found"
+
+#: .\products\templates\products\product_edit.html:5
+#: .\products\templates\products\product_edit.html:13
+#: .\products\templates\products\product_form.html:6
+#: .\products\templates\products\product_form.html:35
+#, fuzzy
+#| msgid "Add Product"
+msgid "Edit Product"
+msgstr "Add Product"
+
+#: .\products\templates\products\product_edit.html:22
+#, fuzzy
+#| msgid "Product Name"
+msgid "Product Type"
+msgstr "Product Name"
+
+#: .\products\templates\products\product_edit.html:25
+#: .\products\templates\products\product_form.html:43
+#: .\products\templates\products\product_view.html:70
+#: .\products\templates\products\products_list.html:177
+#, fuzzy
+#| msgid "Product"
+msgid "Normal Product"
+msgstr "Product"
+
+#: .\products\templates\products\product_edit.html:28
+#: .\products\templates\products\product_form.html:46
+#: .\products\templates\products\product_view.html:74
+#: .\products\templates\products\products_list.html:181
+#, fuzzy
+#| msgid "Add Product"
+msgid "Bundle Product"
+msgstr "Add Product"
+
+#: .\products\templates\products\product_edit.html:31
+#: .\products\templates\products\product_form.html:49
+#: .\products\templates\products\product_view.html:72
+#: .\products\templates\products\products_list.html:179
+msgid "Service"
+msgstr ""
+
+#: .\products\templates\products\product_edit.html:44
+#: .\products\templates\products\product_form.html:69
+#: .\products\templates\products\product_form_base.html:10
+msgid "SKU"
+msgstr ""
+
+#: .\products\templates\products\product_edit.html:52
+#: .\products\templates\products\product_form.html:92
+#: .\products\templates\products\product_form_base.html:17
+#, fuzzy
+#| msgid "Purchase Invoice"
+msgid "Purchase Price"
+msgstr "Purchase Invoice"
+
+#: .\products\templates\products\product_edit.html:58
+#: .\products\templates\products\product_form.html:99
+#: .\products\templates\products\product_form_base.html:22
+#, fuzzy
+#| msgid "Sales Invoice"
+msgid "Sale Price"
+msgstr "Sales Invoice"
+
+#: .\products\templates\products\product_edit.html:67
+#: .\products\templates\products\product_form.html:109
+#: .\products\templates\products\product_form_base.html:29
+msgid "Minimum Stock"
+msgstr ""
+
+#: .\products\templates\products\product_edit.html:73
+#: .\products\templates\products\product_form.html:116
+#: .\products\templates\products\product_form_base.html:34
+#, fuzzy
+#| msgid "Low Stock"
+msgid "Low Stock Alert"
+msgstr "Low Stock"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\products\templates\products\product_edit.html:83
+#: .\products\templates\products\product_form.html:126
+#, fuzzy
+#| msgid "Inventory Management"
+msgid "Inventory Account"
+msgstr "Inventory Management"
+
+#: .\products\templates\products\product_edit.html:96
+#: .\products\templates\products\product_form.html:139
+#, fuzzy
+#| msgid "Chart of Accounts"
+msgid "Cost of Sales Account"
+msgstr "Chart of Accounts"
+
+#: .\products\templates\products\product_edit.html:109
+#: .\products\templates\products\product_form.html:152
+msgid "Revenue Account"
+msgstr ""
+
+#: .\products\templates\products\product_edit.html:141
+#: .\products\templates\products\product_form.html:184
+#: .\products\templates\products\product_view.html:118
+#, fuzzy
+#| msgid "Product Categories"
+msgid "Product Components"
+msgstr "Product Categories"
+
+#: .\products\templates\products\product_edit.html:173
+#: .\products\templates\products\product_form.html:213
+#, fuzzy
+#| msgid "Add Customer"
+msgid "Add Component"
+msgstr "Add Customer"
+
+#: .\products\templates\products\product_edit.html:182
+#: .\products\templates\products\product_form.html:221
+#, fuzzy
+#| msgid "Select Product"
+msgid "Save Product"
+msgstr "Select Product"
+
+#: .\products\templates\products\product_edit.html:193
+#, fuzzy
+#| msgid "Search product..."
+msgid "Search account..."
+msgstr "Search product..."
+
+#: .\products\templates\products\product_form.html:6
+#: .\products\templates\products\product_form.html:35
+#: .\products\templates\products\products_list.html:135
+#: .\purchase\templates\purchase\invoice_add.html:136
+#: .\purchase\templates\purchase\po_add.html:108
+#: .\quotations\templates\quotations\quotation_add.html:118
+#: .\sales\templates\sales\invoice_add.html:149
+msgid "Add Product"
+msgstr "Add Product"
+
+#: .\products\templates\products\product_form.html:76
+#: .\products\templates\products\stock_take_sheet.html:25
+#: .\products\templates\products\stock_take_sheet.html:48
+#, fuzzy
+#| msgid "Categories"
+msgid "Category"
+msgstr "Categories"
+
+#: .\products\templates\products\product_form.html:78
+#, fuzzy
+#| msgid "Select Customer"
+msgid "Select Category"
+msgstr "Select Customer"
+
+#: .\products\templates\products\product_form.html:231
+#: .\products\templates\products\stock_ledger.html:12
+#, fuzzy
+#| msgid "Search"
+msgid "Search..."
+msgstr "Search"
+
+#: .\products\templates\products\product_view.html:6
+#, fuzzy
+#| msgid "Product Name"
+msgid "Product View"
+msgstr "Product Name"
+
+#: .\products\templates\products\product_view.html:45
+#, fuzzy
+#| msgid "Product List"
+msgid "Product Details"
+msgstr "Product List"
+
+#: .\products\templates\products\product_view.html:58
+#, fuzzy
+#| msgid "No data available"
+msgid "No Image Available"
+msgstr "No data available"
+
+#: .\products\templates\products\product_view.html:79
+msgid "SKU:"
+msgstr ""
+
+#: .\products\templates\products\product_view.html:84
+#, fuzzy
+#| msgid "Purchase Invoice"
+msgid "Purchase Price:"
+msgstr "Purchase Invoice"
+
+#: .\products\templates\products\product_view.html:89
+#, fuzzy
+#| msgid "Sales Invoice"
+msgid "Sale Price:"
+msgstr "Sales Invoice"
+
+#: .\products\templates\products\product_view.html:95
+msgid "Minimum Stock:"
+msgstr ""
+
+#: .\products\templates\products\product_view.html:100
+#, fuzzy
+#| msgid "Low Stock"
+msgid "Low Stock Alert:"
+msgstr "Low Stock"
+
+# | msgid "No data available"
+#: .\products\templates\products\product_view.html:113
+#, fuzzy
+#| msgid "No evaluations available"
+msgid "No description available"
+msgstr "No evaluations available"
+
+#: .\products\templates\products\product_view.html:123
+#: .\products\templates\products\products_list.html:147
+#: .\products\templates\products\stock_adjust.html:39
+#: .\products\templates\products\stock_ledger.html:20
+#: .\products\templates\products\stock_take_sheet.html:47
+#: .\purchase\templates\purchase\_return_selector.html:51
+#: .\purchase\templates\purchase\invoice_add.html:145
+#: .\purchase\templates\purchase\po_add.html:116
+#: .\purchase\templates\purchase\po_view.html:28
+#: .\purchase\templates\purchase\purchase_print.html:42
+#: .\purchase\templates\purchase\purchase_return_view.html:32
+#: .\purchase\templates\purchase\purchase_view.html:55
+#: .\purchase\templates\purchase\purchase_view_pdf.html:132
+#: .\purchase\templates\purchase\return_from_invoice.html:107
+msgid "Product"
+msgstr "Product"
+
+#: .\products\templates\products\product_view.html:136
+#, fuzzy
+#| msgid "No employees found"
+msgid "No components found"
+msgstr "No employees found"
+
+#: .\products\templates\products\product_view.html:146
+#, fuzzy
+#| msgid "Are you sure you want to delete this shift?"
+msgid "Are you sure you want to delete this product?"
+msgstr "Are you sure you want to delete this shift?"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\products\templates\products\products_list.html:5
+#: .\products\templates\products\products_list.html:133
+#, fuzzy
+#| msgid "Purchase Management"
+msgid "Product Management"
+msgstr "Purchase Management"
+
+#: .\products\templates\products\products_list.html:149
+#: .\sales\templates\sales\create_return.html:94
+msgid "Available Quantity"
+msgstr "Available Quantity"
+
+#: .\products\templates\products\products_list.html:183
+msgid "Undefined"
+msgstr ""
+
+#: .\products\templates\products\products_list.html:210
+#: .\products\templates\products\stock_take_sheet.html:74
+#, fuzzy
+#| msgid "No results found"
+msgid "No products found"
+msgstr "No results found"
+
+#: .\products\templates\products\stock_adjust.html:4
+#: .\products\templates\products\stock_adjust.html:32
+#: .\templates\layout\base.html:527
+msgid "Manual Stock Adjustment"
+msgstr "Manual Stock Adjustment"
+
+#: .\products\templates\products\stock_adjust.html:41
+#: .\products\templates\products\stock_adjust.html:142
+#: .\quotations\templates\quotations\quotation_form.html:71
+msgid "Select Product"
+msgstr "Select Product"
+
+#: .\products\templates\products\stock_adjust.html:52
+#: .\products\templates\products\stock_take_sheet.html:49
+#, fuzzy
+#| msgid "Currently"
+msgid "Current Stock"
+msgstr "Currently"
+
+#: .\products\templates\products\stock_adjust.html:58
+msgid "Adjustment (+ / -)"
+msgstr ""
+
+#: .\products\templates\products\stock_adjust.html:70
+#, fuzzy
+#| msgid "Available Quantity"
+msgid "Final Quantity"
+msgstr "Available Quantity"
+
+#: .\products\templates\products\stock_adjust.html:78
+#, fuzzy
+#| msgid "Select Shift"
+msgid "Select"
+msgstr "Select Shift"
+
+#: .\products\templates\products\stock_adjust.html:88
+#: .\products\templates\products\stock_adjust.html:117
+#, fuzzy
+#| msgid "Leave Type"
+msgid "New Type"
+msgstr "Leave Type"
+
+# | msgid "Add Employee"
+#: .\products\templates\products\stock_adjust.html:91
+#: .\products\templates\products\stock_adjust.html:113
+#, fuzzy
+#| msgid "Add New Employee"
+msgid "Add New Type"
+msgstr "Add New Employee"
+
+#: .\products\templates\products\stock_adjust.html:103
+msgid "Execute"
+msgstr ""
+
+# | msgid "Enter Scores"
+#: .\products\templates\products\stock_adjust.html:178
+#, fuzzy
+#| msgid "Enter notes"
+msgid "Enter new type first"
+msgstr "Enter notes"
+
+# | msgid "Enter Scores"
+#: .\products\templates\products\stock_adjust.html:187
+#, fuzzy
+#| msgid "Enter notes"
+msgid "Enter new type"
+msgstr "Enter notes"
+
+#: .\products\templates\products\stock_adjust_edit.html:4
+msgid "Edit Stock Take"
+msgstr ""
+
+#: .\products\templates\products\stock_adjust_edit.html:8
+#, fuzzy
+#| msgid "Stock Count Sheet"
+msgid "Edit Stock Take Sheet"
+msgstr "Stock Count Sheet"
+
+#: .\products\templates\products\stock_adjust_edit.html:17
+#: .\products\templates\products\stock_adjust_view.html:15
+#, fuzzy
+#| msgid "Available Quantity"
+msgid "Physical Quantity"
+msgstr "Available Quantity"
+
+#: .\products\templates\products\stock_adjust_view.html:4
+msgid "Stock Take View"
+msgstr ""
+
+#: .\products\templates\products\stock_adjust_view.html:8
+#, fuzzy
+#| msgid "Stock Count Sheet"
+msgid "Stock Take Sheet View"
+msgstr "Stock Count Sheet"
+
+#: .\products\templates\products\stock_adjust_view.html:14
+#, fuzzy
+#| msgid "Quantity"
+msgid "System Quantity"
+msgstr "Quantity"
+
+#: .\products\templates\products\stock_adjust_view.html:16
+msgid "Difference"
+msgstr ""
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\products\templates\products\stock_ledger.html:4
+#: .\products\templates\products\stock_ledger.html:7
+#, fuzzy
+#| msgid "Inventory Management"
+msgid "Inventory Transactions Log"
+msgstr "Inventory Management"
+
+#: .\products\templates\products\stock_ledger.html:10
+msgid "Adjust Inventory"
+msgstr ""
+
+# | msgid "Save Changes"
+#: .\products\templates\products\stock_ledger.html:22
+#: .\venv\Lib\site-packages\django\forms\widgets.py:529
+msgid "Change"
+msgstr "Change"
+
+#: .\products\templates\products\stock_ledger.html:23
+#, fuzzy
+#| msgid "Manual Stock Adjustment"
+msgid "Stock After Adjustment"
+msgstr "Manual Stock Adjustment"
+
+#: .\products\templates\products\stock_ledger.html:25
+#, fuzzy
+#| msgid "Notes"
+msgid "Note"
+msgstr "Notes"
+
+#: .\products\templates\products\stock_ledger.html:50
+#, fuzzy
+#| msgid "Are you sure you want to delete this shift?"
+msgid "Are you sure you want to delete this transaction?"
+msgstr "Are you sure you want to delete this shift?"
+
+#: .\products\templates\products\stock_ledger.html:55
+#, fuzzy
+#| msgid "View from POS only"
+msgid "View Only"
+msgstr "View from POS only"
+
+# ===== Leaves =====
+#: .\products\templates\products\stock_take_list.html:4
+#: .\products\templates\products\stock_take_list.html:7
+#, fuzzy
+#| msgid "Leave Management"
+msgid "Stock Take Management"
+msgstr "Leave Management"
+
+# | msgid "Start Time"
+#: .\products\templates\products\stock_take_list.html:13
+#, fuzzy
+#| msgid "Start Date"
+msgid "Stock Take Date"
+msgstr "Start Date"
+
+# | msgid "Username"
+#: .\products\templates\products\stock_take_list.html:14
+#: .\sales\templates\sales\invoice_view.html:192
+msgid "User"
+msgstr "User"
+
+#: .\products\templates\products\stock_take_list.html:28
+#: .\products\templates\products\stock_take_sheet.html:105
+msgid "Matched"
+msgstr ""
+
+#: .\products\templates\products\stock_take_list.html:31
+#, fuzzy
+#| msgid "Partially Paid"
+msgid "Partially Matched"
+msgstr "Partially Paid"
+
+#: .\products\templates\products\stock_take_list.html:34
+#, fuzzy
+#| msgid "Not Scheduled"
+msgid "Not Matched"
+msgstr "Not Scheduled"
+
+# | msgid "No users found"
+#: .\products\templates\products\stock_take_list.html:46
+#, fuzzy
+#| msgid "No purchase orders found"
+msgid "No stock take records found"
+msgstr "No purchase orders found"
+
+#: .\products\templates\products\stock_take_sheet.html:4
+#: .\products\templates\products\stock_take_sheet.html:21
+#, fuzzy
+#| msgid "Stock Count Sheet"
+msgid "Stock Take Sheet"
+msgstr "Stock Count Sheet"
+
+#: .\products\templates\products\stock_take_sheet.html:27
+#, fuzzy
+#| msgid "Categories"
+msgid "All Categories"
+msgstr "Categories"
+
+#: .\products\templates\products\stock_take_sheet.html:37
+#, fuzzy
+#| msgid "Saved successfully"
+msgid "Stock saved successfully!"
+msgstr "Saved successfully"
+
+#: .\products\templates\products\stock_take_sheet.html:50
+msgid "Physical Count"
+msgstr ""
+
+#: .\products\templates\products\stock_take_sheet.html:51
+msgid "Difference / Comment"
+msgstr ""
+
+#: .\products\templates\products\stock_take_sheet.html:65
+#, fuzzy
+#| msgid "Return Quantity"
+msgid "Enter quantity"
+msgstr "Return Quantity"
+
+#: .\products\templates\products\stock_take_sheet.html:83
+#, fuzzy
+#| msgid "Stock"
+msgid "Save Stock"
+msgstr "Stock"
+
+#: .\products\templates\products\stock_take_sheet.html:106
+msgid "Over by"
+msgstr ""
+
+#: .\products\templates\products\stock_take_sheet.html:107
+msgid "Short by"
+msgstr ""
+
+#: .\products\templates\products\stock_take_sheet.html:128
+#: .\products\templates\products\stock_take_sheet.html:132
+msgid "Error while saving"
+msgstr ""
+
+#: .\purchase\templates\purchase\_return_selector.html:6
+#: .\purchase\templates\purchase\purchase_view.html:8
+msgid "Create Debit Note (Return)"
+msgstr "Create Debit Note (Return)"
+
+#: .\purchase\templates\purchase\_return_selector.html:13
+#: .\purchase\templates\purchase\purchase_view.html:15
+#: .\purchase\templates\purchase\return_add.html:25
+msgid "Select Supplier:"
+msgstr "Select Supplier:"
+
+#: .\purchase\templates\purchase\_return_selector.html:15
+#: .\purchase\templates\purchase\purchase_view.html:17
+#: .\purchase\templates\purchase\return_add.html:27
+msgid "-- Select Supplier --"
+msgstr "-- Select Supplier --"
+
+#: .\purchase\templates\purchase\_return_selector.html:26
+#: .\purchase\templates\purchase\purchase_view.html:30
+msgid "Select Invoice:"
+msgstr "Select Invoice:"
+
+#: .\purchase\templates\purchase\_return_selector.html:28
+#: .\purchase\templates\purchase\_return_selector.html:85
+#: .\purchase\templates\purchase\purchase_view.html:32
+#: .\purchase\templates\purchase\purchase_view.html:82
+#: .\purchase\templates\purchase\return_add.html:53
+msgid "-- Select Invoice --"
+msgstr "-- Select Invoice --"
+
+#: .\purchase\templates\purchase\_return_selector.html:39
+#: .\purchase\templates\purchase\purchase_print.html:25
+#: .\purchase\templates\purchase\purchase_view.html:43
+#: .\purchase\templates\purchase\purchase_view_pdf.html:114
+msgid "Invoice Number:"
+msgstr "Invoice Number:"
+
+#: .\purchase\templates\purchase\_return_selector.html:43
+#: .\purchase\templates\purchase\purchase_print.html:34
+#: .\purchase\templates\purchase\purchase_view.html:47
+#: .\purchase\templates\purchase\purchase_view_pdf.html:123
+#: .\sales\templates\sales\invoice_add.html:107
+#: .\sales\templates\sales\invoice_pdf.html:41
+#: .\sales\templates\sales\invoice_print.html:21
+#: .\sales\templates\sales\invoice_view.html:120
+#: .\sales\templates\sales\pdf_template.html:50
+#: .\suppliers\templates\suppliers\supplier_pdf.html:67
+#: .\suppliers\templates\suppliers\supplier_print.html:17
+#: .\suppliers\templates\suppliers\supplier_view.html:47
+msgid "Invoice Date:"
+msgstr "Invoice Date:"
+
+#: .\purchase\templates\purchase\_return_selector.html:54
+#: .\purchase\templates\purchase\invoice_add.html:150
+#: .\purchase\templates\purchase\po_add.html:121
+#: .\purchase\templates\purchase\po_view.html:33
+#: .\purchase\templates\purchase\purchase_print.html:46
+#: .\purchase\templates\purchase\purchase_return_view.html:36
+#: .\purchase\templates\purchase\purchase_view.html:58
+#: .\purchase\templates\purchase\return_from_invoice.html:111
+#: .\quotations\templates\quotations\quotation_add.html:130
+#: .\quotations\templates\quotations\quotation_form.html:60
+#: .\quotations\templates\quotations\quotation_view.html:34
+#: .\sales\templates\sales\create_return.html:97
+#: .\sales\templates\sales\invoice_add.html:162
+#: .\sales\templates\sales\invoice_pdf.html:54
+#: .\sales\templates\sales\invoice_print.html:35
+#: .\sales\templates\sales\invoice_view.html:133
+#: .\sales\templates\sales\pdf_template.html:62
+#: .\suppliers\templates\suppliers\supplier_pdf.html:95
+#: .\suppliers\templates\suppliers\supplier_print.html:44
+#: .\suppliers\templates\suppliers\supplier_view.html:94
+#, python-format
+msgid "Tax %%"
+msgstr "Tax %%"
+
+#: .\purchase\templates\purchase\_return_selector.html:55
+#: .\purchase\templates\purchase\invoice_add.html:149
+#: .\purchase\templates\purchase\po_add.html:120
+#: .\purchase\templates\purchase\po_view.html:32
+#: .\purchase\templates\purchase\purchase_print.html:45
+#: .\purchase\templates\purchase\purchase_return_view.html:35
+#: .\purchase\templates\purchase\purchase_view.html:59
+#: .\purchase\templates\purchase\return_from_invoice.html:110
+#: .\quotations\templates\quotations\quotation_add.html:129
+#: .\quotations\templates\quotations\quotation_form.html:59
+#: .\quotations\templates\quotations\quotation_view.html:33
+#: .\sales\templates\sales\create_return.html:96
+#: .\sales\templates\sales\invoice_add.html:161
+#: .\sales\templates\sales\invoice_pdf.html:53
+#: .\sales\templates\sales\invoice_print.html:34
+#: .\sales\templates\sales\invoice_view.html:132
+#: .\sales\templates\sales\pdf_template.html:61
+#: .\suppliers\templates\suppliers\supplier_pdf.html:94
+#: .\suppliers\templates\suppliers\supplier_print.html:43
+#: .\suppliers\templates\suppliers\supplier_view.html:93
+msgid "Discount"
+msgstr "Discount"
+
+#: .\purchase\templates\purchase\_return_selector.html:67
+#: .\purchase\templates\purchase\purchase_view.html:71
+#: .\purchase\templates\purchase\return_add.html:44
+#: .\sales\templates\sales\return_add.html:44
+msgid "Continue Creating Return"
+msgstr "Continue Creating Return"
+
+#: .\purchase\templates\purchase\_return_selector.html:98
+#: .\purchase\templates\purchase\invoices_list.html:94
+#: .\purchase\templates\purchase\purchase_view.html:83
+#: .\purchase\templates\purchase\return_add.html:56
+#: .\sales\templates\sales\create_return.html:72
+#: .\sales\templates\sales\invoices_list.html:115
+msgid "Invoice No"
+msgstr "Invoice No"
+
+#: .\purchase\templates\purchase\invoice_add.html:73
+msgid "Create Purchase Invoice"
+msgstr "Create Purchase Invoice"
+
+#: .\purchase\templates\purchase\invoice_add.html:84
+#: .\purchase\templates\purchase\return_from_invoice.html:83
+msgid "Invoice Number"
+msgstr "Invoice Number"
+
+#: .\purchase\templates\purchase\invoice_add.html:89
+#: .\purchase\templates\purchase\return_from_invoice.html:79
+#: .\sales\templates\sales\create_return.html:68
+msgid "Invoice Date"
+msgstr "Invoice Date"
+
+#: .\purchase\templates\purchase\invoice_add.html:94
+msgid "Issue Date"
+msgstr "Issue Date"
+
+#: .\purchase\templates\purchase\invoice_add.html:99
+msgid "Delivery Date"
+msgstr "Delivery Date"
+
+#: .\purchase\templates\purchase\invoice_add.html:107
+#: .\purchase\templates\purchase\invoices_list.html:95
+#: .\purchase\templates\purchase\po_list.html:21
+#: .\purchase\templates\purchase\po_list.html:31
+#: .\purchase\templates\purchase\purchase_dashboard.html:18
+#: .\purchase\templates\purchase\returns_list.html:58
+#: .\suppliers\templates\suppliers\suppliers_list.html:34
+msgid "Supplier"
+msgstr "Supplier"
+
+#: .\purchase\templates\purchase\invoice_add.html:110
+#: .\purchase\templates\purchase\invoice_add.html:243
+#, fuzzy
+#| msgid "Search for a supplier..."
+msgid "Search for a supplier."
+msgstr "Search for a supplier..."
+
+#: .\purchase\templates\purchase\invoice_add.html:120
+#: .\purchase\templates\purchase\po_add.html:92
+#: .\suppliers\templates\suppliers\supplier_add.html:5
+#: .\suppliers\templates\suppliers\supplier_add.html:9
+#: .\suppliers\templates\suppliers\suppliers_list.html:14
+msgid "Add Supplier"
+msgstr "Add Supplier"
+
+#: .\purchase\templates\purchase\invoice_add.html:162
+#: .\purchase\templates\purchase\invoice_add.html:242
+#, fuzzy
+#| msgid "Search for a product..."
+msgid "Search for a product."
+msgstr "Search for a product..."
+
+#: .\purchase\templates\purchase\invoice_add.html:176
+#: .\purchase\templates\purchase\invoice_add.html:244
+#: .\sales\templates\sales\invoice_add.html:186
+#, python-format
+msgid "Example: 10 or 10%%"
+msgstr "Example: 10 or 10%%"
+
+#: .\purchase\templates\purchase\invoice_add.html:184
+#: .\purchase\templates\purchase\invoice_add.html:239
+#: .\sales\templates\sales\invoice_add.html:193
+msgid "Select Cost Center"
+msgstr "Select Cost Center"
+
+#: .\purchase\templates\purchase\invoice_add.html:209
+msgid "Total Before Tax"
+msgstr "Total Before Tax"
+
+#: .\purchase\templates\purchase\invoice_add.html:213
+msgid "Total Discount"
+msgstr "Total Discount"
+
+#: .\purchase\templates\purchase\invoice_add.html:217
+msgid "Total Tax"
+msgstr "Total Tax"
+
+#: .\purchase\templates\purchase\invoice_add.html:221
+#: .\purchase\templates\purchase\return_from_invoice.html:112
+#: .\sales\templates\sales\create_return.html:98
+msgid "Total After Tax"
+msgstr "Total After Tax"
+
+#: .\purchase\templates\purchase\invoice_add.html:228
+#: .\sales\templates\sales\invoice_add.html:254
+msgid "Save Invoice"
+msgstr "Save Invoice"
+
+#: .\purchase\templates\purchase\invoice_add.html:241
+msgid "Failed to load data"
+msgstr "Failed to load data"
+
+#: .\purchase\templates\purchase\invoices_list.html:4
+#: .\purchase\templates\purchase\invoices_list.html:72
+msgid "Purchase Invoices List"
+msgstr "Purchase Invoices List"
+
+# | msgid "Purchase Invoices List"
+#: .\purchase\templates\purchase\invoices_list.html:75
+#: .\purchase\templates\purchase\purchase_dashboard.html:10
+msgid "Add Purchase Invoice"
+msgstr "Add Purchase Invoice"
+
+# | msgid "Search"
+#: .\purchase\templates\purchase\invoices_list.html:83
+#: .\sales\templates\sales\invoices_list.html:104
+msgid "Search ID"
+msgstr "Search ID"
+
+#: .\purchase\templates\purchase\invoices_list.html:84
+#: .\sales\templates\sales\invoices_list.html:105
+msgid "Search Invoice No"
+msgstr "Search Invoice No"
+
+#: .\purchase\templates\purchase\invoices_list.html:85
+#: .\purchase\templates\purchase\returns_list.html:35
+#: .\suppliers\templates\suppliers\suppliers_list.html:24
+msgid "Search Supplier"
+msgstr "Search Supplier"
+
+# | msgid "Search"
+#: .\purchase\templates\purchase\invoices_list.html:86
+#: .\purchase\templates\purchase\returns_list.html:41
+#: .\quotations\templates\quotations\quotation_list.html:26
+#: .\sales\templates\sales\invoices_list.html:107
+#: .\sales\templates\sales\returns_list.html:23
+msgid "Search Date"
+msgstr "Search Date"
+
+# | msgid "Search"
+#: .\purchase\templates\purchase\invoices_list.html:87
+#: .\purchase\templates\purchase\returns_list.html:47
+#: .\quotations\templates\quotations\quotation_list.html:27
+#: .\sales\templates\sales\invoices_list.html:108
+#: .\sales\templates\sales\returns_list.html:24
+msgid "Search Total"
+msgstr "Search Total"
+
+#: .\purchase\templates\purchase\invoices_list.html:93
+#, fuzzy
+#| msgctxt "abbrev. month"
+#| msgid "Nov."
+msgid "No."
+msgstr "Nov."
+
+#: .\purchase\templates\purchase\invoices_list.html:119
+#: .\sales\templates\sales\invoices_list.html:143
+msgid "Paid"
+msgstr "Paid"
+
+#: .\purchase\templates\purchase\invoices_list.html:123
+#: .\sales\templates\sales\invoice_view.html:97
+#: .\sales\templates\sales\invoices_list.html:141
+msgid "Unpaid"
+msgstr "Unpaid"
+
+#: .\purchase\templates\purchase\invoices_list.html:143
+#: .\sales\templates\sales\invoice_view.html:79
+#: .\sales\templates\sales\invoices_list.html:166
+#: .\sales\templates\sales\returns_list.html:77
+msgid "Download PDF"
+msgstr "Download PDF"
+
+#: .\purchase\templates\purchase\invoices_list.html:149
+#: .\purchase\templates\purchase\po_list.html:57
+#: .\purchase\templates\purchase\po_view.html:91
+#: .\quotations\templates\quotations\quotation_list.html:72
+#: .\sales\templates\sales\invoice_view.html:75
+#: .\suppliers\templates\suppliers\supplier_view.html:28
+msgid "Print"
+msgstr "Print"
+
+# | msgid "Create Record"
+#: .\purchase\templates\purchase\invoices_list.html:156
+msgid "Create Debit Note"
+msgstr "Create Debit Note"
+
+# | msgid "No users found"
+#: .\purchase\templates\purchase\invoices_list.html:165
+msgid "No purchase invoices found"
+msgstr "No purchase invoices found"
+
+#: .\purchase\templates\purchase\po_add.html:38
+#, python-format
+msgid "Edit Purchase Order No %(po.po_no)s"
+msgstr "Edit Purchase Order No %(po.po_no)s"
+
+# | msgid "Create Record"
+#: .\purchase\templates\purchase\po_add.html:40
+#: .\purchase\templates\purchase\po_list.html:10
+msgid "Create Purchase Order"
+msgstr "Create Purchase Order"
+
+#: .\purchase\templates\purchase\po_add.html:55
+#: .\purchase\templates\purchase\po_view.html:13
+msgid "Purchase Order No:"
+msgstr "Purchase Order No:"
+
+#: .\purchase\templates\purchase\po_add.html:61
+#: .\purchase\templates\purchase\purchase_print.html:35
+#: .\purchase\templates\purchase\purchase_view_pdf.html:124
+#: .\sales\templates\sales\invoice_add.html:112
+#: .\sales\templates\sales\invoice_pdf.html:42
+#: .\sales\templates\sales\invoice_print.html:22
+#: .\sales\templates\sales\invoice_view.html:121
+#: .\sales\templates\sales\pdf_template.html:51
+#: .\suppliers\templates\suppliers\supplier_pdf.html:68
+#: .\suppliers\templates\suppliers\supplier_print.html:18
+#: .\suppliers\templates\suppliers\supplier_view.html:51
+msgid "Issue Date:"
+msgstr "Issue Date:"
+
+#: .\purchase\templates\purchase\po_add.html:67
+#: .\purchase\templates\purchase\po_view.html:18
+msgid "Delivery Date:"
+msgstr "Delivery Date:"
+
+#: .\purchase\templates\purchase\po_add.html:78
+#: .\purchase\templates\purchase\po_view.html:14
+#: .\purchase\templates\purchase\purchase_print.html:26
+#: .\purchase\templates\purchase\purchase_return_view.html:24
+#: .\purchase\templates\purchase\purchase_view_pdf.html:115
+#: .\suppliers\templates\suppliers\supplier_print.html:22
+msgid "Supplier:"
+msgstr "Supplier:"
+
+#: .\purchase\templates\purchase\po_add.html:81
+#: .\purchase\templates\purchase\po_add.html:243
+msgid "Search for a supplier..."
+msgstr "Search for a supplier..."
+
+#: .\purchase\templates\purchase\po_add.html:100
+#: .\purchase\templates\purchase\purchase_print.html:29
+#: .\purchase\templates\purchase\purchase_view_pdf.html:118
+#: .\quotations\templates\quotations\quotation_add.html:111
+#: .\quotations\templates\quotations\quotation_form.html:47
+#: .\quotations\templates\quotations\quotation_view.html:16
+#: .\sales\templates\sales\invoice_add.html:140
+#: .\sales\templates\sales\invoice_pdf.html:38
+#: .\sales\templates\sales\invoice_print.html:17
+#: .\sales\templates\sales\invoice_view.html:115
+#: .\sales\templates\sales\pdf_template.html:52
+#: .\suppliers\templates\suppliers\supplier_pdf.html:80
+#: .\suppliers\templates\suppliers\supplier_print.html:30
+#: .\suppliers\templates\suppliers\supplier_view.html:78
+msgid "Description:"
+msgstr "Description:"
+
+#: .\purchase\templates\purchase\po_add.html:134
+#: .\purchase\templates\purchase\po_add.html:241
+msgid "Search for a product..."
+msgstr "Search for a product..."
+
+#: .\purchase\templates\purchase\po_add.html:182
+#: .\purchase\templates\purchase\po_view.html:66
+#: .\purchase\templates\purchase\purchase_print.html:92
+#: .\purchase\templates\purchase\purchase_view_pdf.html:175
+#: .\purchase\templates\purchase\return_from_invoice.html:155
+#: .\quotations\templates\quotations\quotation_add.html:200
+#: .\quotations\templates\quotations\quotation_form.html:117
+#: .\quotations\templates\quotations\quotation_view.html:80
+#: .\sales\templates\sales\create_return.html:132
+#: .\sales\templates\sales\invoice_add.html:224
+#: .\sales\templates\sales\invoice_pdf.html:92
+#: .\sales\templates\sales\invoice_print.html:88
+#: .\sales\templates\sales\invoice_view.html:163
+#: .\sales\templates\sales\pdf_template.html:83
+msgid "Total Before Tax:"
+msgstr "Total Before Tax:"
+
+#: .\purchase\templates\purchase\po_add.html:190
+#: .\quotations\templates\quotations\quotation_view.html:88
+#: .\suppliers\templates\suppliers\supplier_pdf.html:119
+#: .\suppliers\templates\suppliers\supplier_print.html:73
+#: .\suppliers\templates\suppliers\supplier_view.html:125
+msgid "Total Discount:"
+msgstr "Total Discount:"
+
+#: .\purchase\templates\purchase\po_add.html:198
+#: .\purchase\templates\purchase\po_view.html:76
+#: .\purchase\templates\purchase\purchase_print.html:108
+#: .\purchase\templates\purchase\purchase_view_pdf.html:187
+#: .\quotations\templates\quotations\quotation_add.html:214
+#: .\quotations\templates\quotations\quotation_form.html:133
+#: .\quotations\templates\quotations\quotation_view.html:104
+#: .\sales\templates\sales\invoice_add.html:238
+#: .\sales\templates\sales\invoice_pdf.html:106
+#: .\sales\templates\sales\invoice_print.html:104
+#: .\sales\templates\sales\invoice_view.html:165
+#: .\sales\templates\sales\pdf_template.html:91
+msgid "Total Tax:"
+msgstr "Total Tax:"
+
+#: .\purchase\templates\purchase\po_add.html:206
+#: .\purchase\templates\purchase\po_view.html:81
+#: .\suppliers\templates\suppliers\supplier_pdf.html:124
+#: .\suppliers\templates\suppliers\supplier_print.html:86
+msgid "Final Total:"
+msgstr "Final Total:"
+
+#: .\purchase\templates\purchase\po_add.html:220
+msgid "Save Purchase Order"
+msgstr "Save Purchase Order"
+
+# | msgid "User Permissions Management"
+#: .\purchase\templates\purchase\po_list.html:9
+msgid "Purchase Orders Management"
+msgstr "Purchase Orders Management"
+
+#: .\purchase\templates\purchase\po_list.html:20
+#: .\purchase\templates\purchase\po_list.html:30
+msgid "Purchase Order No"
+msgstr "Purchase Order No"
+
+# | msgid "No users found"
+#: .\purchase\templates\purchase\po_list.html:66
+msgid "No purchase orders found"
+msgstr "No purchase orders found"
+
+#: .\purchase\templates\purchase\po_view.html:7
+msgid "Purchase Order"
+msgstr "Purchase Order"
+
+# | msgid "No targets found"
+#: .\purchase\templates\purchase\po_view.html:52
+#: .\purchase\templates\purchase\purchase_return_view.html:53
+msgid "No items found"
+msgstr "No items found"
+
+#: .\purchase\templates\purchase\po_view.html:71
+#: .\purchase\templates\purchase\purchase_print.html:97
+#: .\purchase\templates\purchase\purchase_view_pdf.html:180
+#: .\purchase\templates\purchase\return_from_invoice.html:159
+#: .\quotations\templates\quotations\quotation_add.html:207
+#: .\quotations\templates\quotations\quotation_form.html:125
+#: .\quotations\templates\quotations\quotation_view.html:96
+#: .\sales\templates\sales\create_return.html:133
+#: .\sales\templates\sales\invoice_add.html:231
+#: .\sales\templates\sales\invoice_pdf.html:96
+#: .\sales\templates\sales\invoice_print.html:93
+#: .\sales\templates\sales\invoice_view.html:164
+#: .\sales\templates\sales\pdf_template.html:87
+msgid "Total After Discount:"
+msgstr "Total After Discount:"
+
+# | msgid "Evaluation Details"
+#: .\purchase\templates\purchase\po_view.html:92
+msgid "Back to List"
+msgstr "Back to List"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\purchase\templates\purchase\purchase_dashboard.html:9
+msgid "Purchase Management"
+msgstr "Purchase Management"
+
+# | msgid "No leaves found"
+#: .\purchase\templates\purchase\purchase_dashboard.html:19
+msgid "Invoices Count"
+msgstr "Invoices Count"
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:49
+#: .\suppliers\templates\suppliers\supplier_edit.html:5
+#: .\suppliers\templates\suppliers\supplier_edit.html:37
+msgid "Edit Supplier"
+msgstr "Edit Supplier"
+
+#: .\purchase\templates\purchase\purchase_dashboard.html:54
+msgid "View Supplier Invoices"
+msgstr "View Supplier Invoices"
+
+# | msgid "No users found"
+#: .\purchase\templates\purchase\purchase_dashboard.html:63
+msgid "No suppliers found"
+msgstr "No suppliers found"
+
+#: .\purchase\templates\purchase\purchase_invoice_base_a4.html:7
+#: .\purchase\templates\purchase\purchase_print.html:21
+#: .\purchase\templates\purchase\purchase_view_pdf.html:109
+#: .\suppliers\templates\suppliers\supplier_pdf.html:63
+#: .\suppliers\templates\suppliers\supplier_print.html:11
+msgid "Purchase Invoice"
+msgstr "Purchase Invoice"
+
+# | msgid "Add Invoice"
+#: .\purchase\templates\purchase\purchase_print.html:15
+msgid "Print Invoice"
+msgstr "Print Invoice"
+
+#: .\purchase\templates\purchase\purchase_print.html:113
+#: .\purchase\templates\purchase\purchase_view_pdf.html:192
+#: .\purchase\templates\purchase\return_from_invoice.html:167
+#: .\quotations\templates\quotations\quotation_add.html:221
+#: .\quotations\templates\quotations\quotation_form.html:141
+#: .\quotations\templates\quotations\quotation_view.html:113
+#: .\sales\templates\sales\create_return.html:136
+#: .\sales\templates\sales\invoice_add.html:245
+#: .\sales\templates\sales\invoice_pdf.html:110
+#: .\sales\templates\sales\invoice_print.html:109
+#: .\sales\templates\sales\invoice_view.html:168
+#: .\sales\templates\sales\pdf_template.html:95
+#: .\suppliers\templates\suppliers\supplier_view.html:140
+msgid "Total After Tax:"
+msgstr "Total After Tax:"
+
+# | msgid "Create Record"
+#: .\purchase\templates\purchase\purchase_return_create.html:5
+#: .\purchase\templates\purchase\return_add.html:21
+msgid "Create Debit Note (Purchase Return)"
+msgstr "Create Debit Note (Purchase Return)"
+
+#: .\purchase\templates\purchase\purchase_return_view.html:8
+msgid "Debit Note Details (Return)"
+msgstr "Debit Note Details (Return)"
+
+#: .\purchase\templates\purchase\purchase_return_view.html:14
+msgid "Return Number:"
+msgstr "Return Number:"
+
+# | msgid "Reason"
+#: .\purchase\templates\purchase\purchase_return_view.html:18
+msgid "Return Date:"
+msgstr "Return Date:"
+
+#: .\purchase\templates\purchase\purchase_view.html:84
+msgid "Please select an invoice first"
+msgstr "Please select an invoice first"
+
+# | msgid "Purchase Invoices List"
+#: .\purchase\templates\purchase\return_add.html:34
+msgid "Select Purchase Invoice:"
+msgstr "Select Purchase Invoice:"
+
+#: .\purchase\templates\purchase\return_add.html:36
+#: .\purchase\templates\purchase\return_add.html:52
+msgid "-- Select supplier first --"
+msgstr "-- Select supplier first --"
+
+#: .\purchase\templates\purchase\return_add.html:51
+#: .\sales\templates\sales\return_add.html:60
+msgid "Loading..."
+msgstr "Loading..."
+
+# | msgid "No leaves found"
+#: .\purchase\templates\purchase\return_add.html:54
+msgid "No invoices found for this supplier"
+msgstr "No invoices found for this supplier"
+
+#: .\purchase\templates\purchase\return_add.html:55
+msgid "Error loading invoices"
+msgstr "Error loading invoices"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:69
+msgid "Debit Note (Purchase Return)"
+msgstr "Debit Note (Purchase Return)"
+
+# | msgid "Criteria Name"
+#: .\purchase\templates\purchase\return_from_invoice.html:75
+msgid "Supplier Name"
+msgstr "Supplier Name"
+
+# | msgid "Reason"
+#: .\purchase\templates\purchase\return_from_invoice.html:91
+#: .\sales\templates\sales\create_return.html:79
+msgid "Return Reason"
+msgstr "Return Reason"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:98
+#: .\purchase\templates\purchase\return_from_invoice.html:182
+msgid "Cannot return quantity greater than available quantity in the invoice"
+msgstr "Cannot return quantity greater than available quantity in the invoice"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:102
+#: .\sales\templates\sales\create_return.html:88
+#: .\suppliers\templates\suppliers\supplier_view.html:84
+msgid "Items"
+msgstr "Items"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:108
+msgid "Available Qty"
+msgstr "Available Qty"
+
+# | msgid "Reason"
+#: .\purchase\templates\purchase\return_from_invoice.html:113
+msgid "Return Qty"
+msgstr "Return Qty"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:151
+#: .\sales\templates\sales\create_return.html:129
+#: .\suppliers\templates\suppliers\supplier_pdf.html:116
+msgid "Totals"
+msgstr "Totals"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:163
+msgid "Tax Amount"
+msgstr "Tax Amount"
+
+#: .\purchase\templates\purchase\return_from_invoice.html:174
+#: .\sales\templates\sales\create_return.html:142
+msgid "Save Return"
+msgstr "Save Return"
+
+#: .\purchase\templates\purchase\returns_list.html:8
+#: .\templates\layout\base.html:500
+msgid "Purchase Returns"
+msgstr "Purchase Returns"
+
+#: .\purchase\templates\purchase\returns_list.html:23
+#: .\sales\templates\sales\returns_list.html:20
+msgid "Search Original Invoice"
+msgstr "Search Original Invoice"
+
+# | msgid "Create Record"
+#: .\purchase\templates\purchase\returns_list.html:29
+msgid "Search Debit Note"
+msgstr "Search Debit Note"
+
+#: .\purchase\templates\purchase\returns_list.html:56
+#: .\sales\templates\sales\returns_list.html:31
+msgid "Original Invoice No."
+msgstr "Original Invoice No."
+
+# | msgid "Create Record"
+#: .\purchase\templates\purchase\returns_list.html:57
+msgid "Debit Note No."
+msgstr "Debit Note No."
+
+#: .\purchase\templates\purchase\returns_list.html:59
+#: .\sales\templates\sales\returns_list.html:34
+msgid "Return Date"
+msgstr "Return Date"
+
+# | msgid "Search"
+#: .\purchase\templates\purchase\returns_list.html:88
+msgid "Open Return"
+msgstr "Open Return"
+
+#: .\purchase\templates\purchase\returns_list.html:94
+msgid "PDF (Later)"
+msgstr "PDF (Later)"
+
+#: .\purchase\templates\purchase\returns_list.html:100
+msgid "Print (Later)"
+msgstr "Print (Later)"
+
+# | msgid "No users found"
+#: .\purchase\templates\purchase\returns_list.html:115
+msgid "No purchase returns yet."
+msgstr "No purchase returns yet."
+
+#: .\quotations\templates\quotations\quotation_add.html:65
+#: .\quotations\templates\quotations\quotation_form.html:5
+#: .\quotations\templates\quotations\quotation_list.html:12
+msgid "Create Quotation"
+msgstr "Create Quotation"
+
+#: .\quotations\templates\quotations\quotation_add.html:75
+#: .\quotations\templates\quotations\quotation_form.html:19
+#: .\quotations\templates\quotations\quotation_view.html:12
+msgid "Quotation No:"
+msgstr "Quotation No:"
+
+# | msgid "Evaluation Name"
+#: .\quotations\templates\quotations\quotation_add.html:81
+#: .\quotations\templates\quotations\quotation_form.html:25
+#: .\quotations\templates\quotations\quotation_view.html:21
+msgid "Quotation Date:"
+msgstr "Quotation Date:"
+
+#: .\quotations\templates\quotations\quotation_add.html:90
+#: .\quotations\templates\quotations\quotation_form.html:35
+#: .\quotations\templates\quotations\quotation_view.html:13
+#: .\sales\templates\sales\invoice_add.html:120
+#: .\sales\templates\sales\invoice_pdf.html:35
+#: .\sales\templates\sales\invoice_print.html:13
+#: .\sales\templates\sales\invoice_view.html:112
+#: .\sales\templates\sales\pdf_template.html:49
+msgid "Customer:"
+msgstr "Customer:"
+
+#: .\quotations\templates\quotations\quotation_add.html:94
+#: .\sales\templates\sales\invoice_add.html:123
+msgid "Search customer..."
+msgstr "Search customer..."
+
+#: .\quotations\templates\quotations\quotation_add.html:231
+#: .\quotations\templates\quotations\quotation_form.html:152
+msgid "Save Quotation"
+msgstr "Save Quotation"
+
+#: .\quotations\templates\quotations\quotation_form.html:108
+msgid "Add Item"
+msgstr "Add Item"
+
+# ===== Evaluation =====
+# | msgid "Evaluations Management"
+#: .\quotations\templates\quotations\quotation_list.html:8
+msgid "Quotation Management"
+msgstr "Quotation Management"
+
+#: .\quotations\templates\quotations\quotation_list.html:24
+msgid "Search Quotation No"
+msgstr "Search Quotation No"
+
+#: .\quotations\templates\quotations\quotation_list.html:34
+msgid "Quotation No"
+msgstr "Quotation No"
+
+#: .\quotations\templates\quotations\quotation_list.html:73
+msgid "Download"
+msgstr "Download"
+
+# | msgid "No data available"
+#: .\quotations\templates\quotations\quotation_list.html:88
+msgid "No quotations available yet."
+msgstr "No quotations available yet."
+
+# | msgid "Evaluation"
+#: .\quotations\templates\quotations\quotation_view.html:7
+msgid "Quotation"
+msgstr "Quotation"
+
+#: .\sales\templates\sales\create_return.html:59
+msgid "Credit Note (Sales Return)"
+msgstr "Credit Note (Sales Return)"
+
+# | msgid "Criteria Name"
+#: .\sales\templates\sales\create_return.html:64
+msgid "Customer Name"
+msgstr "Customer Name"
+
+#: .\sales\templates\sales\create_return.html:84
+msgid "Cannot return a quantity greater than available"
+msgstr "Cannot return a quantity greater than available"
+
+#: .\sales\templates\sales\create_return.html:99
+msgid "Return Quantity"
+msgstr "Return Quantity"
+
+#: .\sales\templates\sales\create_return.html:134
+#: .\suppliers\templates\suppliers\supplier_pdf.html:121
+#: .\suppliers\templates\suppliers\supplier_print.html:81
+msgid "Tax Value:"
+msgstr "Tax Value:"
+
+#: .\sales\templates\sales\invoice_add.html:91
+msgid "Create Invoice"
+msgstr "Create Invoice"
+
+#: .\sales\templates\sales\invoice_add.html:102
+#: .\sales\templates\sales\invoice_pdf.html:34
+#: .\sales\templates\sales\invoice_print.html:12
+#: .\sales\templates\sales\invoice_view.html:111
+#: .\sales\templates\sales\pdf_template.html:48
+#: .\suppliers\templates\suppliers\supplier_pdf.html:66
+#: .\suppliers\templates\suppliers\supplier_print.html:16
+#: .\suppliers\templates\suppliers\supplier_view.html:43
+msgid "Invoice No:"
+msgstr "Invoice No:"
+
+#: .\sales\templates\sales\invoice_pdf.html:29
+#: .\sales\templates\sales\invoice_print.html:7
+#: .\sales\templates\sales\invoice_view.html:107
+#: .\sales\templates\sales\pdf_template.html:46
+msgid "Sales Invoice"
+msgstr "Sales Invoice"
+
+#: .\sales\templates\sales\invoice_view.html:83
+#: .\sales\templates\sales\invoices_list.html:173
+msgid "Invoice Return"
+msgstr "Invoice Return"
+
+#: .\sales\templates\sales\invoice_view.html:88
+msgid "Pay"
+msgstr "Pay"
+
+#: .\sales\templates\sales\invoice_view.html:99
+msgid "Partially Paid"
+msgstr "Partially Paid"
+
+#: .\sales\templates\sales\invoice_view.html:101
+msgid "Fully Paid"
+msgstr "Fully Paid"
+
+#: .\sales\templates\sales\invoice_view.html:172
+msgid "Remaining Balance:"
+msgstr "Remaining Balance:"
+
+#: .\sales\templates\sales\invoice_view.html:181
+msgid "Receipts / Payments"
+msgstr "Receipts / Payments"
+
+#: .\sales\templates\sales\invoice_view.html:189
+msgid "Voucher No"
+msgstr "Voucher No"
+
+#: .\sales\templates\sales\invoice_view.html:191
+#: .\sales\templates\sales\invoice_view.html:222
+msgid "Amount"
+msgstr "Amount"
+
+#: .\sales\templates\sales\invoice_view.html:208
+msgid "No payments linked to this invoice"
+msgstr "No payments linked to this invoice"
+
+#: .\sales\templates\sales\invoice_view.html:217
+msgid "Pay Invoice No"
+msgstr "Pay Invoice No"
+
+#: .\sales\templates\sales\invoice_view.html:226
+msgid "Account (Cash / Bank)"
+msgstr "Account (Cash / Bank)"
+
+#: .\sales\templates\sales\invoice_view.html:235
+msgid "Payment for Invoice"
+msgstr "Payment for Invoice"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\sales\templates\sales\invoice_view.html:238
+msgid "Save Payment"
+msgstr "Save Payment"
+
+#: .\sales\templates\sales\invoices_list.html:4
+#: .\sales\templates\sales\invoices_list.html:92
+msgid "Invoice List"
+msgstr "Invoice List"
+
+#: .\sales\templates\sales\invoices_list.html:87
+msgid "Showing invoices from"
+msgstr "Showing invoices from"
+
+#: .\sales\templates\sales\invoices_list.html:87
+msgid "to"
+msgstr "to"
+
+#: .\sales\templates\sales\invoices_list.html:97
+msgid "Add Invoice"
+msgstr "Add Invoice"
+
+#: .\sales\templates\sales\invoices_list.html:133
+msgid "Cash"
+msgstr "Cash"
+
+#: .\sales\templates\sales\invoices_list.html:179
+msgid "View from POS only"
+msgstr "View from POS only"
+
+# | msgid "No leaves found"
+#: .\sales\templates\sales\invoices_list.html:190
+msgid "No invoices found"
+msgstr "No invoices found"
+
+#: .\sales\templates\sales\return_add.html:21
+msgid "Create Credit Note (Sales Return)"
+msgstr "Create Credit Note (Sales Return)"
+
+#: .\sales\templates\sales\return_add.html:25
+msgid "Select Customer:"
+msgstr "Select Customer:"
+
+#: .\sales\templates\sales\return_add.html:27
+msgid "-- Select Customer --"
+msgstr "-- Select Customer --"
+
+#: .\sales\templates\sales\return_add.html:34
+msgid "Select Sales Invoice:"
+msgstr "Select Sales Invoice:"
+
+#: .\sales\templates\sales\return_add.html:36
+#: .\sales\templates\sales\return_add.html:63
+msgid "-- Select customer first --"
+msgstr "-- Select customer first --"
+
+#: .\sales\templates\sales\return_add.html:71
+msgid "-- Select invoice --"
+msgstr "-- Select invoice --"
+
+#: .\sales\templates\sales\return_add.html:77
+msgid "Invoice No."
+msgstr "Invoice No."
+
+#: .\sales\templates\sales\returns_list.html:8
+msgid "Invoice Returns"
+msgstr "Invoice Returns"
+
+# | msgid "Search"
+#: .\sales\templates\sales\returns_list.html:21
+msgid "Search Return"
+msgstr "Search Return"
+
+#: .\sales\templates\sales\returns_list.html:32
+msgid "Return Invoice No."
+msgstr "Return Invoice No."
+
+# | msgid "Create Record"
+#: .\sales\templates\sales\returns_list.html:63
+msgid "Create Return"
+msgstr "Create Return"
+
+#: .\sales\templates\sales\returns_list.html:70
+msgid "View Original Invoice"
+msgstr "View Original Invoice"
+
+#: .\sales\templates\sales\returns_list.html:94
+msgid "No returns yet."
+msgstr "No returns yet."
+
+#: .\suppliers\templates\suppliers\supplier_add.html:23
+#: .\suppliers\templates\suppliers\supplier_edit.html:49
+#: .\suppliers\templates\suppliers\supplier_pdf.html:73
+#: .\suppliers\templates\suppliers\supplier_view.html:59
+msgid "Supplier Information"
+msgstr "Supplier Information"
+
+#: .\suppliers\templates\suppliers\supplier_edit.html:151
+msgid "Account Information"
+msgstr "Account Information"
+
+#: .\suppliers\templates\suppliers\supplier_edit.html:155
+msgid "Supplier Account (Payables)"
+msgstr "Supplier Account (Payables)"
+
+#: .\suppliers\templates\suppliers\supplier_edit.html:160
+#: .\suppliers\templates\suppliers\supplier_edit.html:225
+msgid "-- Select Supplier Account --"
+msgstr "-- Select Supplier Account --"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:8
+msgid "Purchase Invoice PDF"
+msgstr "Purchase Invoice PDF"
+
+# | msgid "Criteria Name"
+#: .\suppliers\templates\suppliers\supplier_pdf.html:74
+#: .\suppliers\templates\suppliers\supplier_view.html:62
+msgid "Commercial Name:"
+msgstr "Commercial Name:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:75
+#: .\suppliers\templates\suppliers\supplier_print.html:23
+#: .\suppliers\templates\suppliers\supplier_view.html:66
+msgid "Tax Number:"
+msgstr "Tax Number:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:76
+#: .\suppliers\templates\suppliers\supplier_print.html:24
+msgid "CR Number:"
+msgstr "CR Number:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:85
+msgid "Items:"
+msgstr "Items:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:118
+#: .\suppliers\templates\suppliers\supplier_print.html:69
+#: .\suppliers\templates\suppliers\supplier_view.html:120
+msgid "Total Before Discount:"
+msgstr "Total Before Discount:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:120
+#: .\suppliers\templates\suppliers\supplier_print.html:77
+#: .\suppliers\templates\suppliers\supplier_view.html:130
+msgid "After Discount:"
+msgstr "After Discount:"
+
+#: .\suppliers\templates\suppliers\supplier_pdf.html:131
+msgid "QR Code for invoice verification"
+msgstr "QR Code for invoice verification"
+
+#: .\suppliers\templates\suppliers\supplier_print.html:96
+msgid "Scan QR code to verify the invoice"
+msgstr "Scan QR code to verify the invoice"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:11
+msgid "View Purchase Invoice"
+msgstr "View Purchase Invoice"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:22
+msgid "Do you want to permanently delete the invoice?"
+msgstr "Do you want to permanently delete the invoice?"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:70
+msgid "Commercial Registration No:"
+msgstr "Commercial Registration No:"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:135
+msgid "Tax:"
+msgstr "Tax:"
+
+#: .\suppliers\templates\suppliers\supplier_view.html:150
+msgid "QR Code"
+msgstr "QR Code"
+
+#: .\suppliers\templates\suppliers\suppliers_list.html:8
+msgid "Supplier List"
+msgstr "Supplier List"
+
+#: .\suppliers\templates\suppliers\suppliers_list.html:25
+msgid "Search Invoices"
+msgstr "Search Invoices"
+
+#: .\templates\layout\base.html:7
+msgid "Accounting System ERP"
+msgstr "Accounting System ERP"
+
+#: .\templates\layout\base.html:371
+msgid "Accounting System"
+msgstr "Accounting System"
+
+#: .\templates\layout\base.html:372
+msgid "ERP"
+msgstr "ERP"
+
+#: .\templates\layout\base.html:381
+msgid "Human Resources"
+msgstr "Human Resources"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\templates\layout\base.html:387
+msgid "Employee Management"
+msgstr "Employee Management"
+
+#: .\templates\layout\base.html:399
+msgid "Employee Schedule Management"
+msgstr "Employee Schedule Management"
+
+# ===== Attendance =====
+# | msgid "Attendance Log"
+#: .\templates\layout\base.html:405
+msgid "Attendance and Departure Log"
+msgstr "Attendance and Departure Log"
+
+# ===== Evaluation =====
+# | msgid "Evaluations Management"
+#: .\templates\layout\base.html:423
+msgid "Evaluation Management"
+msgstr "Evaluation Management"
+
+# ===== Evaluation =====
+# | msgid "Evaluations Management"
+#: .\templates\layout\base.html:429
+msgid "Evaluation Records Management"
+msgstr "Evaluation Records Management"
+
+# | msgid "Edit Permissions"
+#: .\templates\layout\base.html:434
+msgid "Permissions"
+msgstr "Permissions"
+
+#: .\templates\layout\base.html:463
+msgid "Customers"
+msgstr "Customers"
+
+#: .\templates\layout\base.html:468
+msgid "Sales Invoices"
+msgstr "Sales Invoices"
+
+#: .\templates\layout\base.html:473
+msgid "Sales Returns"
+msgstr "Sales Returns"
+
+# | msgid "Evaluation"
+#: .\templates\layout\base.html:478
+msgid "Quotations"
+msgstr "Quotations"
+
+#: .\templates\layout\base.html:485
+msgid "Purchases"
+msgstr "Purchases"
+
+#: .\templates\layout\base.html:490
+msgid "Suppliers"
+msgstr "Suppliers"
+
+#: .\templates\layout\base.html:495
+msgid "Purchase Invoices"
+msgstr "Purchase Invoices"
+
+#: .\templates\layout\base.html:505
+msgid "Purchase Orders"
+msgstr "Purchase Orders"
+
+#: .\templates\layout\base.html:517
+msgid "Product List"
+msgstr "Product List"
+
+#: .\templates\layout\base.html:522
+msgid "Product Categories"
+msgstr "Product Categories"
+
+#: .\templates\layout\base.html:532
+msgid "Stock Movement Log"
+msgstr "Stock Movement Log"
+
+#: .\templates\layout\base.html:536
+msgid "Stock Count Sheet"
+msgstr "Stock Count Sheet"
+
+# ===== Leaves =====
+# | msgid "Leave Management"
+#: .\templates\layout\base.html:541
+msgid "Inventory Management"
+msgstr "Inventory Management"
+
+#: .\templates\layout\base.html:547
+msgid "Accounting"
+msgstr "Accounting"
+
+#: .\templates\layout\base.html:552
+msgid "Journal Entries"
+msgstr "Journal Entries"
+
+#: .\templates\layout\base.html:561
+msgid "Cost Centers"
+msgstr "Cost Centers"
+
+#: .\templates\layout\base.html:566
+msgid "Cost Center Tree"
+msgstr "Cost Center Tree"
+
+#: .\templates\layout\base.html:577
+msgid "Receipt Vouchers"
+msgstr "Receipt Vouchers"
+
+#: .\templates\layout\base.html:582
+msgid "Payment Vouchers"
+msgstr "Payment Vouchers"
+
+#: .\templates\layout\base.html:594
+msgid "Company Settings"
+msgstr "Company Settings"
+
+#: .\templates\layout\base.html:647 .\templates\layout\base.html:653
+msgid "Profile"
+msgstr "Profile"
+
+#: .\templates\layout\base.html:668
+msgid "Not Specified"
+msgstr "Not Specified"
+
+#: .\templates\layout\base.html:695 .\templates\layout\base.html:697
+msgid "Edit Image"
+msgstr "Edit Image"
+
+#: .\templates\layout\base.html:707
+msgid "Logout"
+msgstr "Logout"
+
+#: .\templates\layout\base.html:714
+msgid "Help"
+msgstr "Help"
+
+#: .\templates\layout\test_page.html:3
+msgid "مرحبا بالعالم"
+msgstr "Hello world"
+
+#: .\venv\Lib\site-packages\django\contrib\messages\apps.py:16
+msgid "Messages"
+msgstr "Messages"
+
+#: .\venv\Lib\site-packages\django\contrib\sitemaps\apps.py:8
+msgid "Site Maps"
+msgstr "Site Maps"
+
+#: .\venv\Lib\site-packages\django\contrib\staticfiles\apps.py:9
+msgid "Static Files"
+msgstr "Static Files"
+
+#: .\venv\Lib\site-packages\django\contrib\syndication\apps.py:7
+msgid "Syndication"
+msgstr "Syndication"
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: .\venv\Lib\site-packages\django\core\paginator.py:30
+msgid "…"
+msgstr "…"
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:32
+msgid "That page number is not an integer"
+msgstr "That page number is not an integer"
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:33
+msgid "That page number is less than 1"
+msgstr "That page number is less than 1"
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:34
+msgid "That page contains no results"
+msgstr "That page contains no results"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:22
+msgid "Enter a valid value."
+msgstr "Enter a valid value."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:70
+msgid "Enter a valid domain name."
+msgstr "Enter a valid domain name."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:153
+#: .\venv\Lib\site-packages\django\forms\fields.py:775
+msgid "Enter a valid URL."
+msgstr "Enter a valid URL."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:200
+msgid "Enter a valid integer."
+msgstr "Enter a valid integer."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:211
+msgid "Enter a valid email address."
+msgstr "Enter a valid email address."
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: .\venv\Lib\site-packages\django\core\validators.py:289
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:297
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:309
+#: .\venv\Lib\site-packages\django\core\validators.py:318
+#: .\venv\Lib\site-packages\django\core\validators.py:332
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2220
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr "Enter a valid %(protocol)s address."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:311
+msgid "IPv4"
+msgstr "IPv4"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:320
+#: .\venv\Lib\site-packages\django\utils\ipv6.py:43
+msgid "IPv6"
+msgstr "IPv6"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:334
+msgid "IPv4 or IPv6"
+msgstr "IPv4 or IPv6"
+
+#: .\venv\Lib\site-packages\django\core\validators.py:375
+msgid "Enter only digits separated by commas."
+msgstr "Enter only digits separated by commas."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:381
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:416
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr "Ensure this value is less than or equal to %(limit_value)s."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:425
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr "Ensure this value is greater than or equal to %(limit_value)s."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:434
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr "Ensure this value is a multiple of step size %(limit_value)s."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:441
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:473
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgstr[1] ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:491
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgstr[1] ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:514
+#: .\venv\Lib\site-packages\django\forms\fields.py:366
+#: .\venv\Lib\site-packages\django\forms\fields.py:405
+msgid "Enter a number."
+msgstr "Enter a number."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:516
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] "Ensure that there are no more than %(max)s digit in total."
+msgstr[1] "Ensure that there are no more than %(max)s digits in total."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:521
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] "Ensure that there are no more than %(max)s decimal place."
+msgstr[1] "Ensure that there are no more than %(max)s decimal places."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:526
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgstr[1] ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:597
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+
+#: .\venv\Lib\site-packages\django\core\validators.py:659
+msgid "Null characters are not allowed."
+msgstr "Null characters are not allowed."
+
+#: .\venv\Lib\site-packages\django\db\models\base.py:1600
+#: .\venv\Lib\site-packages\django\forms\models.py:908
+msgid "and"
+msgstr "and"
+
+#: .\venv\Lib\site-packages\django\db\models\base.py:1602
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr "%(model_name)s with this %(field_labels)s already exists."
+
+#: .\venv\Lib\site-packages\django\db\models\constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr "Constraint “%(name)s” is violated."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr "Value %(value)r is not a valid choice."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:135
+msgid "This field cannot be null."
+msgstr "This field cannot be null."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:136
+msgid "This field cannot be blank."
+msgstr "This field cannot be blank."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:137
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr "%(model_name)s with this %(field_label)s already exists."
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr "Field of type: %(field_type)s"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1162
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr "“%(value)s” value must be either True or False."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1163
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr "“%(value)s” value must be either True, False, or None."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1165
+msgid "Boolean (Either True or False)"
+msgstr "Boolean (Either True or False)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1215
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr "String (up to %(max_length)s)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1217
+msgid "String (unlimited)"
+msgstr "String (unlimited)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1326
+msgid "Comma-separated integers"
+msgstr "Comma-separated integers"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1427
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1431
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1566
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1435
+msgid "Date (without time)"
+msgstr "Date (without time)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1562
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+msgstr ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1570
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1575
+msgid "Date (with time)"
+msgstr "Date (with time)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1702
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr "“%(value)s” value must be a decimal number."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1704
+msgid "Decimal number"
+msgstr "Decimal number"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1864
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+msgstr ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+
+# | msgid "Evaluation"
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1868
+msgid "Duration"
+msgstr "Duration"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1920
+msgid "Email address"
+msgstr "Email address"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1945
+msgid "File path"
+msgstr "File path"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2023
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr "“%(value)s” value must be a float."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2025
+msgid "Floating point number"
+msgstr "Floating point number"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2065
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr "“%(value)s” value must be an integer."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2067
+msgid "Integer"
+msgstr "Integer"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2163
+msgid "Big (8 byte) integer"
+msgstr "Big (8 byte) integer"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2180
+msgid "Small integer"
+msgstr "Small integer"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2188
+msgid "IPv4 address"
+msgstr "IPv4 address"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2219
+msgid "IP address"
+msgstr "IP address"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2310
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2311
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr "“%(value)s” value must be either None, True or False."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2313
+msgid "Boolean (Either True, False or None)"
+msgstr "Boolean (Either True, False or None)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2364
+msgid "Positive big integer"
+msgstr "Positive big integer"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2379
+msgid "Positive integer"
+msgstr "Positive integer"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2394
+msgid "Positive small integer"
+msgstr "Positive small integer"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2410
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr "Slug (up to %(max_length)s)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2446
+msgid "Text"
+msgstr "Text"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2526
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2530
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+
+# | msgid "End Time"
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2534
+msgid "Time"
+msgstr "Time"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2642
+msgid "URL"
+msgstr "URL"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2666
+msgid "Raw binary data"
+msgstr "Raw binary data"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2731
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr "“%(value)s” is not a valid UUID."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2733
+msgid "Universally unique identifier"
+msgstr "Universally unique identifier"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\files.py:244
+msgid "File"
+msgstr "File"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\json.py:24
+msgid "A JSON object"
+msgstr "A JSON object"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\json.py:26
+msgid "Value must be valid JSON."
+msgstr "Value must be valid JSON."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:979
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
+msgstr "%(model)s instance with %(field)s %(value)r is not a valid choice."
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:982
+msgid "Foreign Key (type determined by related field)"
+msgstr "Foreign Key (type determined by related field)"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1276
+msgid "One-to-one relationship"
+msgstr "One-to-one relationship"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1333
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr "%(from)s-%(to)s relationship"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1335
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr "%(from)s-%(to)s relationships"
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1383
+msgid "Many-to-many relationship"
+msgstr "Many-to-many relationship"
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: .\venv\Lib\site-packages\django\forms\boundfield.py:185
+msgid ":?.!"
+msgstr ":?.!"
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:95
+msgid "This field is required."
+msgstr "This field is required."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:315
+msgid "Enter a whole number."
+msgstr "Enter a whole number."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:486
+#: .\venv\Lib\site-packages\django\forms\fields.py:1267
+msgid "Enter a valid date."
+msgstr "Enter a valid date."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:509
+#: .\venv\Lib\site-packages\django\forms\fields.py:1268
+msgid "Enter a valid time."
+msgstr "Enter a valid time."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:536
+msgid "Enter a valid date/time."
+msgstr "Enter a valid date/time."
+
+# | msgid "Manager Evaluation"
+#: .\venv\Lib\site-packages\django\forms\fields.py:570
+msgid "Enter a valid duration."
+msgstr "Enter a valid duration."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:571
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "The number of days must be between {min_days} and {max_days}."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:640
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr "No file was submitted. Check the encoding type on the form."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:641
+msgid "No file was submitted."
+msgstr "No file was submitted."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:642
+msgid "The submitted file is empty."
+msgstr "The submitted file is empty."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:644
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+"Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgstr[1] ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:649
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr "Please either submit a file or check the clear checkbox, not both."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:717
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:889
+#: .\venv\Lib\site-packages\django\forms\fields.py:975
+#: .\venv\Lib\site-packages\django\forms\models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr "Select a valid choice. %(value)s is not one of the available choices."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:977
+#: .\venv\Lib\site-packages\django\forms\fields.py:1096
+#: .\venv\Lib\site-packages\django\forms\models.py:1590
+msgid "Enter a list of values."
+msgstr "Enter a list of values."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1097
+msgid "Enter a complete value."
+msgstr "Enter a complete value."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1339
+msgid "Enter a valid UUID."
+msgstr "Enter a valid UUID."
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1369
+msgid "Enter a valid JSON."
+msgstr "Enter a valid JSON."
+
+#. Translators: This is the default suffix added to form field labels
+#: .\venv\Lib\site-packages\django\forms\forms.py:97
+msgid ":"
+msgstr ":"
+
+#: .\venv\Lib\site-packages\django\forms\forms.py:239
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr "(Hidden field %(name)s) %(error)s"
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] "Please submit at most %(num)d form."
+msgstr[1] "Please submit at most %(num)d forms."
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] "Please submit at least %(num)d form."
+msgstr[1] "Please submit at least %(num)d forms."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr "Please correct the duplicate data for %(field)s."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr "Please correct the duplicate data for %(field)s, which must be unique."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:922
+msgid "Please correct the duplicate values below."
+msgstr "Please correct the duplicate values below."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr "The inline value did not match the parent instance."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+"Select a valid choice. That choice is not one of the available choices."
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr "“%(pk)s” is not a valid value."
+
+#: .\venv\Lib\site-packages\django\forms\utils.py:229
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:527
+msgid "Clear"
+msgstr "Clear"
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:528
+msgid "Currently"
+msgstr "Currently"
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:866
+msgid "Unknown"
+msgstr "Unknown"
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:867
+msgid "Yes"
+msgstr "Yes"
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:868
+msgid "No"
+msgstr "No"
+
+#. Translators: Please do not add spaces around commas.
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr "yes,no,maybe"
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:903
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] "%(size)d byte"
+msgstr[1] "%(size)d bytes"
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr "%s KB"
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr "%s MB"
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr "%s GB"
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr "%s TB"
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr "%s PB"
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:74
+msgid "p.m."
+msgstr "p.m."
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:75
+msgid "a.m."
+msgstr "a.m."
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:80
+msgid "PM"
+msgstr "PM"
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:81
+msgid "AM"
+msgstr "AM"
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:153
+msgid "midnight"
+msgstr "midnight"
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:155
+msgid "noon"
+msgstr "noon"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:7
+msgid "Monday"
+msgstr "Monday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:8
+msgid "Tuesday"
+msgstr "Tuesday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:9
+msgid "Wednesday"
+msgstr "Wednesday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:10
+msgid "Thursday"
+msgstr "Thursday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:11
+msgid "Friday"
+msgstr "Friday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:12
+msgid "Saturday"
+msgstr "Saturday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:13
+msgid "Sunday"
+msgstr "Sunday"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:16
+msgid "Mon"
+msgstr "Mon"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:17
+msgid "Tue"
+msgstr "Tue"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:18
+msgid "Wed"
+msgstr "Wed"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:19
+msgid "Thu"
+msgstr "Thu"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:20
+msgid "Fri"
+msgstr "Fri"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:21
+msgid "Sat"
+msgstr "Sat"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:22
+msgid "Sun"
+msgstr "Sun"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:25
+msgid "January"
+msgstr "January"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:26
+msgid "February"
+msgstr "February"
+
+# | msgid "Search"
+#: .\venv\Lib\site-packages\django\utils\dates.py:27
+msgid "March"
+msgstr "March"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:28
+msgid "April"
+msgstr "April"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:29
+msgid "May"
+msgstr "May"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:30
+msgid "June"
+msgstr "June"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:31
+msgid "July"
+msgstr "July"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:32
+msgid "August"
+msgstr "August"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:33
+msgid "September"
+msgstr "September"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:34
+msgid "October"
+msgstr "October"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:35
+msgid "November"
+msgstr "November"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:36
+msgid "December"
+msgstr "December"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:39
+msgid "jan"
+msgstr "jan"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:40
+msgid "feb"
+msgstr "feb"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:41
+msgid "mar"
+msgstr "mar"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:42
+msgid "apr"
+msgstr "apr"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:43
+msgid "may"
+msgstr "may"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:44
+msgid "jun"
+msgstr "jun"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:45
+msgid "jul"
+msgstr "jul"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:46
+msgid "aug"
+msgstr "aug"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:47
+msgid "sep"
+msgstr "sep"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:48
+msgid "oct"
+msgstr "oct"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:49
+msgid "nov"
+msgstr "nov"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:50
+msgid "dec"
+msgstr "dec"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr "Jan."
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr "Feb."
+
+# | msgid "Search"
+#: .\venv\Lib\site-packages\django\utils\dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr "March"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr "April"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr "May"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr "June"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr "July"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr "Aug."
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr "Sept."
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr "Oct."
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr "Nov."
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr "Dec."
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr "January"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr "February"
+
+# | msgid "Search"
+#: .\venv\Lib\site-packages\django\utils\dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr "March"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr "April"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr "May"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr "June"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr "July"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr "August"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr "September"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr "October"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr "November"
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr "December"
+
+#: .\venv\Lib\site-packages\django\utils\ipv6.py:20
+msgid "This is not a valid IPv6 address."
+msgstr "This is not a valid IPv6 address."
+
+#: .\venv\Lib\site-packages\django\utils\text.py:76
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr "%(truncated_text)s…"
+
+#: .\venv\Lib\site-packages\django\utils\text.py:287
+msgid "or"
+msgstr "or"
+
+#. Translators: This string is used as a separator between list elements
+#: .\venv\Lib\site-packages\django\utils\text.py:306
+#: .\venv\Lib\site-packages\django\utils\timesince.py:135
+msgid ", "
+msgstr ", "
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] "%(num)d year"
+msgstr[1] "%(num)d years"
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] "%(num)d month"
+msgstr[1] "%(num)d months"
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] "%(num)d week"
+msgstr[1] "%(num)d weeks"
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] "%(num)d day"
+msgstr[1] "%(num)d days"
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] "%(num)d hour"
+msgstr[1] "%(num)d hours"
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] "%(num)d minute"
+msgstr[1] "%(num)d minutes"
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:29
+msgid "Forbidden"
+msgstr "Forbidden"
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr "CSRF verification failed. Request aborted."
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr "More information is available with DEBUG=True."
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:44
+msgid "No year specified"
+msgstr "No year specified"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:64
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:115
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:214
+msgid "Date out of range"
+msgstr "Date out of range"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:94
+msgid "No month specified"
+msgstr "No month specified"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:147
+msgid "No day specified"
+msgstr "No day specified"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:194
+msgid "No week specified"
+msgstr "No week specified"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:353
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:384
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr "No %(verbose_name_plural)s available"
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:680
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because "
+"%(class_name)s.allow_future is False."
+msgstr ""
+"Future %(verbose_name_plural)s not available because "
+"%(class_name)s.allow_future is False."
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:720
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr "Invalid date string “%(datestr)s” given format “%(format)s”"
+
+#: .\venv\Lib\site-packages\django\views\generic\detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr "No %(verbose_name)s found matching the query"
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr "Page is not “last”, nor can it be converted to an int."
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr "Invalid page (%(page_number)s): %(message)s"
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:173
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr "Empty list and “%(class_name)s.allow_empty” is False."
+
+#: .\venv\Lib\site-packages\django\views\static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr "Directory indexes are not allowed here."
+
+#: .\venv\Lib\site-packages\django\views\static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr "“%(path)s” does not exist"
+
+#: .\venv\Lib\site-packages\django\views\static.py:68
+#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:8
+#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr "Index of %(directory)s"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:7
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr "The install worked successfully! Congratulations!"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:217
+msgid "Django Documentation"
+msgstr "Django Documentation"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr "Topics, references, &amp; how-to’s"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr "Tutorial: A Polling App"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:227
+msgid "Get started with Django"
+msgstr "Get started with Django"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:235
+msgid "Django Community"
+msgstr "Django Community"
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr "Connect, get help, or contribute"
+
+#, fuzzy
+#~| msgid "استعادة البيانات"
+#~ msgid "شجرة الحسابات"
+#~ msgstr "Restore Data"
+
+#, fuzzy
+#~| msgid "Add Invoice"
+#~ msgid "Auto (Invoice)"
+#~ msgstr "Add Invoice"

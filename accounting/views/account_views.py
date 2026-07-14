@@ -8,12 +8,75 @@ from ..models import Account
 from accounting.models import JournalEntry, JournalLine
 
 
+def get_request_company(request):
+    company = getattr(request, "company", None)
+    if company:
+        return company
+
+    user = getattr(request, "user", None)
+    if not user or not user.is_authenticated:
+        return None
+
+    profile = getattr(user, "profile", None)
+    if profile and getattr(profile, "company_id", None):
+        return profile.company
+
+    return None
+
+
+def generate_next_child_code(parent, company):
+    siblings = Account.objects.filter(
+        company=company,
+        parent=parent
+    ).exclude(code__isnull=True).exclude(code="")
+
+    numeric_codes = []
+    for acc in siblings:
+        code = str(acc.code).strip()
+        if code.isdigit():
+            numeric_codes.append(int(code))
+
+    parent_code = str(parent.code).strip() if parent.code else ""
+
+    if numeric_codes:
+        return str(max(numeric_codes) + 1)
+
+    if parent.parent_id is None:
+        if parent_code.isdigit():
+            return str(int(parent_code) + 1)
+        return f"{parent_code}1"
+
+    if parent_code.isdigit():
+        return f"{parent_code}01"
+
+    return f"{parent_code}1"
+
+
 # ======================================
 # 📘 عرض القيود اليومية
 # ======================================
 def journals_list(request):
+    company = get_request_company(request)
+
+    print("DEBUG USER =", request.user.username)
+    print(
+        "DEBUG REQUEST.COMPANY =",
+        getattr(request, "company", None),
+        getattr(getattr(request, "company", None), "id", None)
+    )
+    print("DEBUG FINAL COMPANY =", company, getattr(company, "id", None))
+
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return render(
+            request,
+            "accounting/journals.html",
+            {"entries": JournalEntry.objects.none()}
+        )
+
     entries = (
         JournalEntry.objects
+        .filter(company=company)
         .annotate(
             total_debit=Coalesce(Sum("lines__debit"), Decimal("0.00")),
             total_credit=Coalesce(Sum("lines__credit"), Decimal("0.00")),
@@ -34,7 +97,15 @@ def journals_list(request):
 # ➕ إضافة قيد يومي يدوي
 # ======================================
 def journal_add(request):
-    accounts = Account.objects.filter(is_active=True).order_by("code")
+    company = get_request_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("accounting:journals_list")
+
+    accounts = Account.objects.filter(
+        company=company,
+        is_active=True
+    ).order_by("code")
 
     if request.method == "POST":
         date = request.POST.get("date")
@@ -48,9 +119,6 @@ def journal_add(request):
                 {"accounts": accounts}
             )
 
-        # ==================================================
-        # ✅ التعديل الوحيد (منع تقليد القيود الآلية)
-        # ==================================================
         if description.startswith("قيد فاتورة") or description.startswith("قيد إشعار"):
             messages.error(
                 request,
@@ -61,14 +129,13 @@ def journal_add(request):
                 "accounting/journal_add.html",
                 {"accounts": accounts}
             )
-        # ==================================================
 
-        last_no = JournalEntry.objects.aggregate(
+        last_no = JournalEntry.objects.filter(company=company).aggregate(
             m=Max("entry_no")
         )["m"] or 0
 
-        # ✅ القيد اليدوي
         entry = JournalEntry.objects.create(
+            company=company,
             entry_no=last_no + 1,
             date=date,
             description=description,
@@ -88,9 +155,23 @@ def journal_add(request):
             if not account_id:
                 continue
 
+            try:
+                account = Account.objects.get(
+                    id=account_id,
+                    company=company
+                )
+            except Account.DoesNotExist:
+                entry.delete()
+                messages.error(request, "❌ تم اختيار حساب غير تابع للشركة الحالية")
+                return render(
+                    request,
+                    "accounting/journal_add.html",
+                    {"accounts": accounts}
+                )
+
             JournalLine.objects.create(
                 entry=entry,
-                account_id=account_id,
+                account=account,
                 debit=debit,
                 credit=credit
             )
@@ -133,7 +214,12 @@ def journal_add(request):
 # 👁️ عرض قيد يومي
 # ======================================
 def journal_view(request, pk):
-    entry = get_object_or_404(JournalEntry, pk=pk)
+    company = get_request_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("accounting:journals_list")
+
+    entry = get_object_or_404(JournalEntry, pk=pk, company=company)
 
     lines = (
         entry.lines
@@ -155,7 +241,12 @@ def journal_view(request, pk):
 # 🚀 ترحيل القيد
 # ======================================
 def journal_post(request, pk):
-    entry = get_object_or_404(JournalEntry, pk=pk)
+    company = get_request_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("accounting:journals_list")
+
+    entry = get_object_or_404(JournalEntry, pk=pk, company=company)
 
     if entry.posted:
         messages.warning(request, "⚠️ القيد مرحّل مسبقًا")
@@ -181,9 +272,15 @@ def journal_post(request, pk):
 # 👁️ عرض حساب
 # ======================================
 def account_view(request, pk):
-    account = get_object_or_404(Account, pk=pk)
+    company = get_request_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("accounting:journals_list")
+
+    account = get_object_or_404(Account, pk=pk, company=company)
 
     children = Account.objects.filter(
+        company=company,
         parent=account,
         is_active=True
     ).order_by("code")
@@ -202,7 +299,12 @@ def account_view(request, pk):
 # 📊 حركة الحساب (Ledger)
 # ======================================
 def account_ledger(request, pk):
-    account = get_object_or_404(Account, pk=pk)
+    company = get_request_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("accounting:journals_list")
+
+    account = get_object_or_404(Account, pk=pk, company=company)
 
     source = request.GET.get("source")
     date_from = request.GET.get("date_from")
@@ -213,7 +315,8 @@ def account_ledger(request, pk):
         .select_related("entry")
         .filter(
             account=account,
-            entry__posted=True
+            entry__posted=True,
+            entry__company=company
         )
     )
 
@@ -251,5 +354,66 @@ def account_ledger(request, pk):
             "source": source,
             "date_from": date_from,
             "date_to": date_to,
+        }
+    )
+
+
+# ======================================
+# ➕ إضافة حساب فرعي
+# ======================================
+def add_child_account(request, pk):
+    company = get_request_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("accounting:journals_list")
+
+    parent = get_object_or_404(Account, pk=pk, company=company)
+    suggested_code = generate_next_child_code(parent, company)
+
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        account_type = request.POST.get("account_type", "").strip() or parent.account_type
+        code = generate_next_child_code(parent, company)
+
+        if not name:
+            messages.error(request, "❌ يجب إدخال اسم الحساب")
+            return render(
+                request,
+                "accounting/add_child_account.html",
+                {
+                    "parent": parent,
+                    "suggested_code": suggested_code
+                }
+            )
+
+        if Account.objects.filter(company=company, code=code).exists():
+            messages.error(request, "❌ تعذر توليد كود جديد تلقائيًا، حاول مرة أخرى")
+            return render(
+                request,
+                "accounting/add_child_account.html",
+                {
+                    "parent": parent,
+                    "suggested_code": generate_next_child_code(parent, company)
+                }
+            )
+
+        Account.objects.create(
+            company=company,
+            parent=parent,
+            code=code,
+            name=name,
+            account_type=account_type,
+            is_active=True
+        )
+
+        messages.success(request, f"✅ تم إنشاء الحساب الفرعي بنجاح بالكود {code}")
+        return redirect("accounting:account_view", pk=parent.pk)
+
+    return render(
+        request,
+        "accounting/add_child_account.html",
+        {
+            "parent": parent,
+            "suggested_code": suggested_code
         }
     )

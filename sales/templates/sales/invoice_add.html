@@ -1,8 +1,8 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 
-<!-- ================= Select2 ================= -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -16,16 +16,14 @@
 
     .dropdown-list {
         position: absolute;
-        top: 40px;
+        top: 100%;
         right: 0;
-        width: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid #ced4da;
         max-height: 220px;
         overflow-y: auto;
-        background: white;
-        border: 2px solid #0d6efd;
-        border-top: none;
-        z-index: 9999;
-        border-radius: 0 0 8px 8px;
+        z-index: 999999 !important;
         display: none;
     }
 
@@ -33,6 +31,10 @@
         padding: 8px 12px;
         cursor: pointer;
         border-bottom: 1px solid #eee;
+    }
+
+    .dropdown-item:hover{
+        background: #e7f1ff;
     }
 
     .btn-main {
@@ -47,9 +49,6 @@
         border-radius: 6px;
     }
 
-    /* 👇👇👇 هنا بالضبط أضف الكود الجديد */
-    
-    /* ===== أزرار صغيرة موحدة (مثل الصورة) ===== */
     .btn-sm-fixed{
         height: 38px;
         padding: 0 40px;
@@ -63,453 +62,374 @@
         white-space: nowrap;
     }
 
-
-    /* Select2 RTL */
     .select2-container--default .select2-selection--single{
-        height:38px;
-        border-radius:6px;
-    }
-    .select2-selection__rendered{
-        line-height:36px!important;
-        text-align:right;
+        height: 38px;
+        padding: 4px 6px;
+        border: 1px solid #ced4da;
+        border-radius: .375rem;
     }
 
-    /* ====== ✅ Fix: dropdown on top of everything (when moved to body) ====== */
-.dropdown-list.floating-dropdown{
-    position: fixed !important;
-    z-index: 2147483647 !important;
-    display: none;
-    background: #fff;
-    max-height: 220px;
-    overflow-y: auto;
-    border: 2px solid #0d6efd;
-    border-top: none;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 8px 25px rgba(0,0,0,.08);
-    direction: rtl;            /* ✅ RTL */
-    text-align: right;
-}
+    .select2-selection__rendered{
+        line-height: 28px!important;
+        text-align: right;
+    }
+    .select2-selection__arrow{
+        height: 36px!important;
+    }
 </style>
 
 <div class="container mt-4">
 
-<h3 class="mb-4 text-end">إنشاء فاتورة</h3>
+<h3 class="mb-4 text-end">{% trans "Create Invoice" %}</h3>
 
 <form method="post" id="invoice_form">
 {% csrf_token %}
+
 <input type="hidden" id="total_rows" name="total_rows" value="1">
 
 <div class="card p-4">
 
-<!-- ================= رأس الفاتورة ================= -->
 <div class="row mb-3">
     <div class="col-md-4">
-        <label>رقم الفاتورة:</label>
-        <input type="number" class="form-control" name="invoice_no" value="{{ next_number }}">
+        <label>{% trans "Invoice No:" %}</label>
+        <input type="number" class="form-control" name="invoice_no" value="{{ next_number }}" readonly>
     </div>
 
     <div class="col-md-4">
-        <label>تاريخ الفاتورة:</label>
-        <input type="date" id="date_invoice" name="date_invoice" class="form-control">
+        <label>{% trans "Invoice Date:" %}</label>
+        <input type="date" id="date_invoice" name="date_invoice" class="form-control" value="{{ today }}">
     </div>
 
     <div class="col-md-4">
-        <label>تاريخ الإصدار:</label>
-        <input type="date" id="date_issue" name="date_issue" class="form-control">
+        <label>{% trans "Issue Date:" %}</label>
+        <input type="date" id="date_issue" name="date_issue" class="form-control" value="{{ today }}">
     </div>
 </div>
 
-<!-- ================= العميل ================= -->
 <div class="row mb-3">
     <div class="col-md-10">
-        <label>العميل:</label>
+        <label>{% trans "Customer:" %}</label>
         <div class="dropdown-box">
-            <input type="text" id="customer_search" class="form-control"
-                   placeholder="بحث عن عميل..." autocomplete="off">
+            <input type="text" id="customer_search" class="form-control" placeholder="{% trans 'Search customer...' %}" autocomplete="off">
             <input type="hidden" id="customer_id" name="customer">
             <div id="customer_list" class="dropdown-list"></div>
         </div>
     </div>
 
-<div class="col-md-2 d-flex align-items-end">
-<button type="button"
-        class="btn btn-main btn-sm-fixed w-100"
-        onclick="saveInvoiceDraft(); window.location.href='{% url "customer_create" %}?return=invoice'">
-    + إضافة عميل
-</button>
-</div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="button" class="btn btn-main btn-sm-fixed w-100" onclick="saveInvoiceDraft(); window.location.href='{% url "customer_create" %}?return=invoice'">
+            + {% trans "Add Customer" %}
+        </button>
+    </div>
 </div>
 
-<!-- ================= الوصف ================= -->
 <div class="mb-3">
-    <label>الوصف:</label>
+    <label>{% trans "Description:" %}</label>
     <textarea name="description" class="form-control"></textarea>
 </div>
 
-<!-- ================= إضافة منتج ================= -->
 <div class="text-end mt-2 mb-2">
-<button type="button"
-        class="btn btn-main btn-sm-fixed"
-        onclick="saveInvoiceDraft(); window.location.href='{% url "products:product_add" %}?return=invoice'
-">
-    + إضافة منتج
-</button>
+    <button type="button" class="btn btn-main btn-sm-fixed" onclick="saveInvoiceDraft(); window.location.href='{% url "products:product_add" %}?return=invoice'">
+        + {% trans "Add Product" %}
+    </button>
 </div>
 
-<!-- ================= جدول الأصناف ================= -->
-<table class="table table-bordered text-center align-middle">
+<table class="table table-bordered text-center align-middle" style="overflow:visible !important;">
 <thead class="table-light">
-<tr>
-    <th>الصنف</th>
-    <th>الوصف</th>
-    <th>الكمية</th>
-    <th>السعر</th>
-    <th>الخصم</th>
-    <th>الضريبة%</th>
-    <th>الإجمالي</th>
-    <th>مركز التكلفة</th>
-    <th>حذف</th>
-</tr>
+    <tr>
+        <th>{% trans "Item" %}</th>
+        <th>{% trans "Description" %}</th>
+        <th>{% trans "Quantity" %}</th>
+        <th>{% trans "Price" %}</th>
+        <th>{% trans "الإجمالي" %}</th> <!-- تأكد من وجود هذا -->
+        <th>{% trans "Discount" %}</th>
+        <th>{% trans "Tax %" %}</th>
+        <th>{% trans "Total" %}</th>
+        <th>{% trans "Cost Center" %}</th>
+        <th>{% trans "Delete" %}</th>
+    </tr>
 </thead>
 
 <tbody id="items_table">
-
 <tr id="row_1" class="item-row">
+    <td>
+        <div class="dropdown-box">
+            <input type="text" class="form-control product-input" autocomplete="off">
+            <input type="hidden" class="product-id" name="row_1_product_id">
+            <div class="dropdown-list"></div>
+        </div>
+    </td>
+    <td><input type="text" name="row_1_desc" class="form-control"></td>
+    <td><input type="number" name="row_1_qty" value="1" step="any" class="form-control qty-input"></td>
+    <td><input type="number" name="row_1_price" value="0" step="any" class="form-control price-input"></td>
+    <td><input type="number" name="row_1_subtotal" class="form-control subtotal-input" readonly></td>
+<td style="min-width:160px;">
+    <div class="input-group">
+        <input type="number"
+               name="row_1_discount"
+               value="0"
+               step="any"
+               class="form-control discount-input"
+               style="width:70px;">
 
-<td>
-    <div class="dropdown-box">
-        <input type="text" class="form-control product-input"
-               placeholder="بحث عن منتج..." autocomplete="off">
-        <input type="hidden" class="product-id" name="row_1_product_id">
-        <div class="dropdown-list"></div>
+        <select name="row_1_discount_type"
+                class="form-select discount-type-select"
+                style="width:72px;max-width:72px;">
+            <option value="amount">ر.س</option>
+            <option value="percent">%</option>
+        </select>
     </div>
 </td>
-
-<td><input type="text" name="row_1_desc" class="form-control"></td>
-<td><input type="number" name="row_1_qty" value="1" class="form-control row-qty" oninput="calculateRow(1)"></td>
-<td><input type="number" name="row_1_price" value="0" class="form-control row-price" oninput="calculateRow(1)"></td>
-
-<!-- ✅ الخصم: يقبل 10 أو 10% (هذا التغيير الوحيد في الحقل) -->
-<td><input type="text" name="row_1_discount" value="0" class="form-control row-discount" placeholder="مثال: 10 أو 10%" oninput="calculateRow(1)"></td>
-
-<td><input type="number" name="row_1_tax" value="15" class="form-control row-tax" oninput="calculateRow(1)"></td>
-<td><input type="number" name="row_1_total" class="form-control row-total" readonly></td>
-
-<td>
-    <select name="row_1_cost_center" class="form-select cost-center-select">
-        <option value="">اختر مركز تكلفة</option>
-        {% for cc in cost_centers %}
-            <option value="{{ cc.id }}">{{ cc.name }}</option>
-        {% endfor %}
-    </select>
-</td>
-
-<td>
-    <button type="button" class="btn btn-delete" onclick="deleteRow(1)">X</button>
-</td>
-
+        <small class="text-muted" id="discount_label_1"></small>
+    </td>
+    <td><input type="number" name="row_1_tax" value="15" step="any" class="form-control tax-input"></td>
+    <td><input type="number" name="row_1_total" class="form-control row-total" readonly></td>
+    <td>
+        <select name="row_1_cost_center" id="base_cost_center" class="form-select cost-center-select">
+            <option value="">{% trans "Select Cost Center" %}</option>
+            {% for cc in cost_centers %}
+                <option value="{{ cc.id }}">{{ cc.name }}</option>
+            {% endfor %}
+        </select>
+    </td>
+    <td>
+        <button type="button" class="btn btn-delete btn-row-delete">{% trans "Delete" %}</button>
+    </td>
 </tr>
-
 </tbody>
 </table>
 
 <div class="text-end mt-2">
-<button type="button"
-        class="btn btn-main btn-sm-fixed"
-        onclick="addRow()">
-    + إضافة صف
-</button>
+    <button type="button" id="add_row_btn" class="btn btn-main btn-sm-fixed">
+        + {% trans "Add Row" %}
+    </button>
 </div>
 
 </div>
 
-<!-- ================= المجاميع ================= -->
 <div class="mt-4">
     <div class="row mb-2">
-        <label class="col-md-3 text-end fw-bold">الإجمالي قبل الضريبة:</label>
-        <div class="col-md-4">
-            <input type="number" id="total_before" class="form-control" readonly>
-        </div>
+        <label class="col-md-3 text-end fw-bold">{% trans "Total Before Tax:" %}</label>
+        <div class="col-md-4"><input type="number" id="total_before" class="form-control" readonly></div>
     </div>
-
     <div class="row mb-2">
-        <label class="col-md-3 text-end fw-bold">الإجمالي بعد الخصم:</label>
-        <div class="col-md-4">
-            <input type="number" id="total_after_discount" class="form-control" readonly>
-        </div>
+        <label class="col-md-3 text-end fw-bold">{% trans "Total After Discount:" %}</label>
+        <div class="col-md-4"><input type="number" id="total_after_discount" class="form-control" readonly></div>
     </div>
-
     <div class="row mb-2">
-        <label class="col-md-3 text-end fw-bold">إجمالي الضريبة:</label>
-        <div class="col-md-4">
-            <input type="number" id="total_tax" class="form-control" readonly>
-        </div>
+        <label class="col-md-3 text-end fw-bold">{% trans "Total Tax:" %}</label>
+        <div class="col-md-4"><input type="number" id="total_tax" class="form-control" readonly></div>
     </div>
-
     <div class="row mb-2">
-        <label class="col-md-3 text-end fw-bold">الإجمالي بعد الضريبة:</label>
-        <div class="col-md-4">
-            <input type="number" id="final_total" class="form-control" readonly>
-        </div>
+        <label class="col-md-3 text-end fw-bold">{% trans "Total After Tax:" %}</label>
+        <div class="col-md-4"><input type="number" id="final_total" class="form-control" readonly></div>
     </div>
 </div>
 
 <div class="text-end mt-4 mb-5">
-    <button type="submit" class="btn btn-main btn-lg px-5">
-        حفظ الفاتورة
-    </button>
+    <button type="submit" class="btn btn-main btn-lg px-5">{% trans "Save Invoice" %}</button>
 </div>
 
 </form>
 </div>
 
 <script>
-/* التاريخ */
-document.getElementById("date_invoice").value = new Date().toISOString().split('T')[0];
-document.getElementById("date_issue").value   = new Date().toISOString().split('T')[0];
+document.addEventListener("DOMContentLoaded", function () {
 
-/* تفعيل Select2 لمراكز التكلفة */
-$(document).ready(function(){
+    // 1. تعريف النصوص المترجمة والتهيئة الأساسية من دجانغو
+    const SELECT_COST_CENTER_TEXT = "{% trans 'Select Cost Center' %}";
+    const NO_RESULTS_FOUND_TEXT = "{% trans 'No results found' %}";
+    const FAILED_TO_LOAD_DATA_TEXT = "{% trans 'Failed to load data' %}";
+    const SEARCH_PRODUCT_PLACEHOLDER = "{% trans 'Search product...' %}";
+    const SEARCH_CUSTOMER_PLACEHOLDER = "{% trans 'Search customer...' %}";
+    const EXAMPLE_DISCOUNT_PLACEHOLDER = "{% trans 'Example: 10 or 10%' %}";
+    const DELETE_TEXT = "{% trans 'Delete' %}";
+    const IS_RTL = document.documentElement.dir === "rtl";
+
+    // تفعيل الـ placeholders الابتدائية
+    const customerSearchInput = document.getElementById("customer_search");
+    if (customerSearchInput) customerSearchInput.placeholder = SEARCH_CUSTOMER_PLACEHOLDER;
+
+    document.querySelectorAll(".product-input").forEach(el => el.placeholder = SEARCH_PRODUCT_PLACEHOLDER);
+    document.querySelectorAll(".discount-input").forEach(el => el.placeholder = EXAMPLE_DISCOUNT_PLACEHOLDER);
+
+    // تفعيل التواريخ التلقائية إن لم تكن قادمة من الخلفية
+    const today = new Date().toISOString().split("T")[0];
+    const dateInvoice = document.getElementById("date_invoice");
+    const dateIssue = document.getElementById("date_issue");
+    if (dateInvoice && !dateInvoice.value) dateInvoice.value = today;
+    if (dateIssue && !dateIssue.value) dateIssue.value = today;
+
+    // تشغيل Select2 للسطر الأول
     $('.cost-center-select').select2({
-        dir: "rtl",
+        dir: IS_RTL ? "rtl" : "ltr",
         width: "100%",
-        placeholder: "اختر مركز تكلفة",
+        placeholder: SELECT_COST_CENTER_TEXT,
         allowClear: true
     });
-});
-function saveInvoiceDraft(){
-    const data = {
-    date_invoice: document.getElementById("date_invoice")?.value || "",
-    date_issue:   document.getElementById("date_issue")?.value || "",
-    customer_id:  document.getElementById("customer_id")?.value || "",
-    customer_txt: document.getElementById("customer_search")?.value || "",
-    description:  document.querySelector("textarea[name='description']")?.value || "",
-    rows: []
-};
 
+    // ===================== عمليات الحسابات البرمجية =====================
+    function toNum(v) {
+        const n = parseFloat(v);
+        return isNaN(n) ? 0 : n;
+    }
 
-    document.querySelectorAll("#items_table .item-row").forEach(row => {
-        data.rows.push({
-            product: row.querySelector(".product-input")?.value || "",
-            qty: row.querySelector(".row-qty")?.value || 1,
-            price: row.querySelector(".row-price")?.value || 0,
-            discount: row.querySelector(".row-discount")?.value || 0,
-            tax: row.querySelector(".row-tax")?.value || 15
+    function parseDiscount(rawValue, baseAmount) {
+        const s = (rawValue || "").toString().trim();
+        if (!s) return 0;
+        if (s.includes("%")) {
+            const pct = toNum(s.replace("%", ""));
+            return (baseAmount * pct) / 100.0;
+        }
+        return toNum(s);
+    }
+
+function calcRow(row) {
+    const qty = toNum(row.querySelector(".qty-input")?.value);
+    const price = toNum(row.querySelector(".price-input")?.value);
+    
+    // حساب الإجمالي قبل الخصم
+    const subtotal = qty * price; 
+    row.querySelector(".subtotal-input").value = subtotal.toFixed(2); 
+
+    const discountVal = toNum(row.querySelector(".discount-input")?.value);
+    const discountType = row.querySelector(".discount-type-select")?.value;
+    
+    // حساب الخصم بناءً على الـ Subtotal
+    const discount = (discountType === "percent") ? (subtotal * discountVal) / 100.0 : discountVal;
+
+    const beforeTax = subtotal - discount;
+    const taxRate = toNum(row.querySelector(".tax-input")?.value);
+    const tax = (beforeTax * taxRate) / 100.0;
+    const afterTax = beforeTax + tax;
+
+    row.querySelector(".row-total").value = afterTax.toFixed(2);
+
+    return { base: subtotal, beforeTax, discount, tax, afterTax };
+}
+    function calcAll() {
+        let sumBefore = 0, sumDisc = 0, sumTax = 0, sumAfter = 0;
+
+        document.querySelectorAll("#items_table .item-row").forEach(row => {
+            const r = calcRow(row);
+            sumBefore += r.base;      
+            sumDisc += r.discount;    
+            sumTax += r.tax;          
+            sumAfter += r.afterTax;   
+        });
+
+        document.getElementById("total_before").value = sumBefore.toFixed(2);
+        document.getElementById("total_tax").value = sumTax.toFixed(2);
+        document.getElementById("final_total").value = sumAfter.toFixed(2);
+        document.getElementById("total_after_discount").value = (sumBefore - sumDisc).toFixed(2);
+    }
+
+function bindCalcListeners(row) {
+    ["input", "change"].forEach(evt => {
+        // أضفنا discount-type-select هنا
+        row.querySelectorAll(".qty-input, .price-input, .discount-input, .tax-input, .discount-type-select").forEach(el => {
+            el.addEventListener(evt, calcAll);
         });
     });
-
-    sessionStorage.setItem("invoice_draft", JSON.stringify(data));
 }
-
-/* ===================== Helpers ===================== */
-function _toNum(v){
-    const n = parseFloat(v);
-    return isNaN(n) ? 0 : n;
-}
-
-/* ✅ الخصم: "10%" كنسبة و"10" كقيمة (نفس المشتريات) */
-function parseDiscount(rawValue, baseAmount){
-    const s = (rawValue || "").toString().trim();
-    if(!s) return 0;
-
-    if(s.includes("%")){
-        const pct = _toNum(s.replace("%",""));
-        return (baseAmount * pct) / 100.0;
-    }
-    return _toNum(s);
-}
-
-/* ===================== الحسابات (صف + مجاميع) ===================== */
-function calculateRow(rowNo){
-    const row = document.getElementById("row_" + rowNo);
-    if(!row) return;
-
-    const qtyEl   = row.querySelector(".row-qty");
-    const priceEl = row.querySelector(".row-price");
-    const discEl  = row.querySelector(".row-discount");
-    const taxEl   = row.querySelector(".row-tax");
-    const totalEl = row.querySelector(".row-total");
-
-    const qty   = _toNum(qtyEl ? qtyEl.value : 0);
-    const price = _toNum(priceEl ? priceEl.value : 0);
-    const taxR  = _toNum(taxEl ? taxEl.value : 0);
-
-    const base = qty * price;
-    const discount = parseDiscount(discEl ? discEl.value : "0", base);
-
-    const afterDiscount = base - discount;
-    const tax = (afterDiscount * taxR) / 100.0;
-    const finalRowTotal = afterDiscount + tax;
-
-    if(totalEl) totalEl.value = finalRowTotal.toFixed(2);
-
-    calculateTotals();
-}
-
-function calculateTotals(){
-    let sumBase = 0;
-    let sumAfterDisc = 0;
-    let sumTax = 0;
-    let sumFinal = 0;
-
-    document.querySelectorAll("#items_table .item-row").forEach(row => {
-        const qty   = _toNum(row.querySelector(".row-qty")?.value);
-        const price = _toNum(row.querySelector(".row-price")?.value);
-        const taxR  = _toNum(row.querySelector(".row-tax")?.value);
-
-        const base = qty * price;
-        const discount = parseDiscount(row.querySelector(".row-discount")?.value, base);
-
-        const afterDiscount = base - discount;
-        const tax = (afterDiscount * taxR) / 100.0;
-        const finalRowTotal = afterDiscount + tax;
-
-        sumBase += base;
-        sumAfterDisc += afterDiscount;
-        sumTax += tax;
-        sumFinal += finalRowTotal;
-    });
-
-    document.getElementById("total_before").value = sumBase.toFixed(2);
-    document.getElementById("total_after_discount").value = sumAfterDisc.toFixed(2);
-    document.getElementById("total_tax").value = sumTax.toFixed(2);
-    document.getElementById("final_total").value = sumFinal.toFixed(2);
-}
-
-/* ===================== Autocomplete (عميل / منتج) ===================== */
-/* ✅ إصلاح جذري: نقل القائمة إلى body وتحديد مكانها تحت الحقل (لا تتأثر بـ overflow) */
-function bindAutocomplete(input, list, hidden, url, onPicked){
-
-    if(!input || !list || !hidden) return;
-
-    /* اجعل القائمة Floating */
-    function ensureFloating(){
-        if(!list.classList.contains("floating-dropdown")){
-            list.classList.add("floating-dropdown");
-        }
-        if(list.parentElement !== document.body){
-            document.body.appendChild(list);
-        }
-    }
-
-function placeUnderInput(){
-    const r = input.getBoundingClientRect();
-
-    list.style.width = r.width + "px";
-
-    /* ✅ ربط القائمة بالحقل RTL */
-    list.style.top = r.bottom + "px";
-    list.style.right = (window.innerWidth - r.right) + "px";
-    list.style.left = "auto";
-}
-
-    function getLabel(obj){
-        return (obj.name || obj.commercial_name || obj.text || obj.title || "").toString();
-    }
-
-    function render(data){
-        ensureFloating();
-        placeUnderInput();
-
-        list.innerHTML = "";
-        list.style.display = "block";
-
-        if(!data || !data.length){
-            list.innerHTML = '<div class="dropdown-item text-muted">لا نتائج</div>';
-            return;
+    // ===================== دالة الإكمال التلقائي الموحدة =====================
+    function bindAutocomplete(input, list, hidden, url, onPicked) {
+        function getLabel(obj) {
+            return (obj.name || obj.commercial_name || obj.text || obj.title || "").toString();
         }
 
-        data.forEach(obj => {
-            const div = document.createElement("div");
-            div.className = "dropdown-item";
-            div.textContent = getLabel(obj);
+        function render(data) {
+            list.innerHTML = "";
+            list.style.display = "block";
 
-            div.onclick = () => {
-                input.value = div.textContent;
-                hidden.value = obj.id;
-                list.style.display = "none";
-                if(onPicked) onPicked(obj);
-            };
-            list.appendChild(div);
-        });
-    }
+            if (!data || !data.length) {
+                list.innerHTML = `<div class="dropdown-item text-muted">${NO_RESULTS_FOUND_TEXT}</div>`;
+                return;
+            }
 
-    function load(q){
-        fetch(url + "?q=" + encodeURIComponent(q || ""))
-            .then(r => r.json())
-            .then(render)
-            .catch(() => {
-                ensureFloating();
-                placeUnderInput();
-                list.innerHTML = '<div class="dropdown-item text-danger">تعذر تحميل البيانات</div>';
-                list.style.display = "block";
+            data.forEach(obj => {
+                const label = getLabel(obj);
+                const d = document.createElement("div");
+                d.className = "dropdown-item";
+                d.textContent = label || "—";
+                d.onclick = () => {
+                    input.value = label;
+                    hidden.value = obj.id;
+                    list.style.display = "none";
+                    if (typeof onPicked === "function") onPicked(obj);
+                };
+                list.appendChild(d);
             });
+        }
+
+        function load(q) {
+            fetch(url + "?q=" + encodeURIComponent(q || ""))
+                .then(r => r.json())
+                .then(render)
+                .catch(() => {
+                    list.innerHTML = `<div class="dropdown-item text-danger">${FAILED_TO_LOAD_DATA_TEXT}</div>`;
+                    list.style.display = "block";
+                });
+        }
+
+        let timer = null;
+        input.addEventListener("focus", () => load(""));
+        input.addEventListener("keyup", () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => load(input.value), 200);
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!input.closest(".dropdown-box").contains(e.target)) {
+                list.style.display = "none";
+            }
+        });
     }
 
-    input.addEventListener("focus", () => load(""));
-	    input.addEventListener("keyup", () => load(input.value));
-
-    window.addEventListener("scroll", () => {
-        if(list.style.display === "block"){
-            placeUnderInput();
-        }
-    }, true);
-
-    window.addEventListener("resize", () => {
-        if(list.style.display === "block"){
-            placeUnderInput();
-        }
-    });
-
-    document.addEventListener("click", e => {
-        if(e.target !== input && !list.contains(e.target)){
-            list.style.display = "none";
-        }
-    });
-}
-
-/* ===================== العميل ===================== */
-bindAutocomplete(
-    document.getElementById("customer_search"),
-    document.getElementById("customer_list"),
-    document.getElementById("customer_id"),
-    "/sales/search_customer/"
-);
-
-/* ===================== المنتج + السعر ===================== */
-function bindProductRow(row){
-    const input  = row.querySelector(".product-input");
-    const list   = row.querySelector(".dropdown-list");
-    const hidden = row.querySelector(".product-id");
-    const price  = row.querySelector(".row-price");
-
-    if(!input || !list || !hidden || !price) return;
-
-bindAutocomplete(
-    input,
-    list,
-    hidden,
-    "/products/search/",
-    function(obj){
-        // ✅ السعر موجود أصلاً في نتيجة البحث
-        price.value = obj.price || 0;
-
-        calculateRow(
-            parseInt(row.id.split("_")[1], 10)
-        );
+    // ================= البحث عن العملاء =================
+    const customerInput = document.getElementById("customer_search");
+    const customerList = document.getElementById("customer_list");
+    const customerId = document.getElementById("customer_id");
+    if (customerInput && customerList && customerId) {
+        bindAutocomplete(customerInput, customerList, customerId, "/sales/api/search-customer/");
     }
-);
-}
 
-/* تفعيل الصف الأول */
-bindProductRow(document.getElementById("row_1"));
-calculateRow(1);
+    // ================= ربط سطر منتج والبحث التلقائي عن السعر =================
+    function bindProductRow(row) {
+        const input = row.querySelector(".product-input");
+        const list = row.querySelector(".dropdown-list");
+        const hidden = row.querySelector(".product-id");
+        const priceInput = row.querySelector(".price-input");
 
-/* ===================== إضافة / حذف صفوف ===================== */
-function addRow(){
+        if (!input || !list || !hidden || !priceInput) return;
+
+        bindAutocomplete(input, list, hidden, "/products/search/", function (obj) {
+            fetch("/sales/api/get-product-price/?product_id=" + obj.id)
+                .then(r => r.json())
+                .then(res => {
+                    priceInput.value = res.price || obj.price || 0;
+                    calcAll();
+                })
+                .catch(() => {
+                    if(obj.price) {
+                        priceInput.value = obj.price;
+                        calcAll();
+                    }
+                });
+        });
+
+        bindCalcListeners(row);
+    }
+
+    document.querySelectorAll(".item-row").forEach(r => bindProductRow(r));
+
+    // ================= إضافة الأسطر ديناميكياً =================
+    const addBtn = document.getElementById("add_row_btn");
     const tbody = document.getElementById("items_table");
     const totalRowsInput = document.getElementById("total_rows");
+    const baseCostCenter = document.getElementById("base_cost_center");
 
+addBtn.addEventListener("click", function () {
     let current = parseInt(totalRowsInput.value || "1", 10);
     let next = current + 1;
 
@@ -520,133 +440,77 @@ function addRow(){
     tr.innerHTML = `
         <td>
             <div class="dropdown-box">
-                <input type="text" class="form-control product-input"
-                       placeholder="بحث عن منتج..." autocomplete="off">
-                <input type="hidden" class="product-id" name="row_${next}_product_id">
+                <input type="text" class="form-control product-input" placeholder="${SEARCH_PRODUCT_PLACEHOLDER}" autocomplete="off">
+                <input type="hidden" name="row_${next}_product_id" class="product-id">
                 <div class="dropdown-list"></div>
             </div>
         </td>
-
         <td><input type="text" name="row_${next}_desc" class="form-control"></td>
-        <td><input type="number" name="row_${next}_qty" value="1" class="form-control row-qty" oninput="calculateRow(${next})"></td>
-        <td><input type="number" name="row_${next}_price" value="0" class="form-control row-price" oninput="calculateRow(${next})"></td>
-
-        <td><input type="text" name="row_${next}_discount" value="0" class="form-control row-discount" placeholder="مثال: 10 أو 10%" oninput="calculateRow(${next})"></td>
-
-        <td><input type="number" name="row_${next}_tax" value="15" class="form-control row-tax" oninput="calculateRow(${next})"></td>
+        <td><input type="number" name="row_${next}_qty" value="1" step="any" class="form-control qty-input"></td>
+        <td><input type="number" name="row_${next}_price" value="0" step="any" class="form-control price-input"></td>
+<td><input type="number" name="row_${next}_subtotal" class="form-control subtotal-input" readonly></td>
+<td>
+    <div class="input-group">
+        <input type="number" name="row_${next}_discount" value="0" step="any" class="form-control discount-input">
+        <select name="row_${next}_discount_type" class="form-select discount-type-select" style="max-width: 80px;">
+            <option value="amount">ر.س</option>
+            <option value="percent">%</option>
+        </select>
+    </div>
+</td>        <td><input type="number" name="row_${next}_tax" value="15" step="any" class="form-control tax-input"></td>
         <td><input type="number" name="row_${next}_total" class="form-control row-total" readonly></td>
-
         <td>
-            <select name="row_${next}_cost_center" class="form-select cost-center-select">
-                <option value="">اختر مركز تكلفة</option>
-                {% for cc in cost_centers %}
-                    <option value="{{ cc.id }}">{{ cc.name }}</option>
-                {% endfor %}
-            </select>
+            <select name="row_${next}_cost_center" class="form-select cost-center-select"></select>
         </td>
-
         <td>
-            <button type="button" class="btn btn-delete" onclick="deleteRow(${next})">X</button>
+            <button type="button" class="btn btn-delete btn-row-delete">${DELETE_TEXT}</button>
         </td>
     `;
+
+    // نسخ محتويات مركز التكلفة
+    const newSelect = tr.querySelector(".cost-center-select");
+    if (baseCostCenter && newSelect) {
+        newSelect.innerHTML = baseCostCenter.innerHTML;
+    }
 
     tbody.appendChild(tr);
     totalRowsInput.value = next;
 
+    // تفعيل Select2 للسطر الجديد
     $(tr).find('.cost-center-select').select2({
-        dir: "rtl",
+        dir: IS_RTL ? "rtl" : "ltr",
         width: "100%",
-        placeholder: "اختر مركز تكلفة",
+        placeholder: SELECT_COST_CENTER_TEXT,
         allowClear: true
     });
 
     bindProductRow(tr);
-    calculateRow(next);
-}
-
-function deleteRow(rowNo){
-    const row = document.getElementById("row_" + rowNo);
-    if(!row) return;
-
-    if(rowNo === 1) return;
-
-    const sel = row.querySelector(".cost-center-select");
-    if(sel){
-        try{ $(sel).select2('destroy'); }catch(e){}
-    }
-
-    row.remove();
-    calculateTotals();
-}
-/* ===================== استرجاع البيانات + العميل + المنتج ===================== */
-document.addEventListener("DOMContentLoaded", function(){
-
-    /* ===================== 0) استرجاع المسودة ===================== */
-    const draft = sessionStorage.getItem("invoice_draft");
-    const data = draft ? JSON.parse(draft) : null;
-
-    /* ===================== 1) استرجاع رأس الفاتورة ===================== */
-    if(data){
-        if(data.date_invoice)
-            document.getElementById("date_invoice").value = data.date_invoice;
-
-        if(data.date_issue)
-            document.getElementById("date_issue").value = data.date_issue;
-
-        if(data.customer_id){
-            document.getElementById("customer_id").value = data.customer_id;
-            document.getElementById("customer_search").value = data.customer_txt;
-        }
-
-        if(data.description){
-            document.querySelector("textarea[name='description']").value = data.description;
-        }
-    }
-
-    /* ===================== 2) عميل جديد (أولوية أعلى) ===================== */
-    {% if selected_customer %}
-        document.getElementById("customer_search").value = "{{ selected_customer.name }}";
-        document.getElementById("customer_id").value = "{{ selected_customer.id }}";
-    {% endif %}
-
-    /* ===================== 3) منتج جديد ===================== */
-    {% if selected_product %}
-        const firstRow = document.getElementById("row_1");
-        if(firstRow){
-            const input  = firstRow.querySelector(".product-input");
-            const hidden = firstRow.querySelector(".product-id");
-            const price  = firstRow.querySelector(".row-price");
-
-            input.value  = "{{ selected_product.name }}";
-            hidden.value = "{{ selected_product.id }}";
-
-            fetch("/sales/api/get-product-price/?product_id={{ selected_product.id }}")
-                .then(r => r.json())
-                .then(res => {
-                    price.value = res.price || 0;
-                    calculateRow(1);
-                });
-        }
-    {% endif %}
-
-    /* ===================== 4) استرجاع الصفوف ===================== */
-    if(!data || !data.rows) return;
-
-    data.rows.forEach((r, index) => {
-        if(index > 0) addRow();
-
-        const row = document.getElementById("row_" + (index + 1));
-        if(!row) return;
-
-        row.querySelector(".product-input").value = r.product;
-        row.querySelector(".row-qty").value = r.qty;
-        row.querySelector(".row-price").value = r.price;
-        row.querySelector(".row-discount").value = r.discount;
-        row.querySelector(".row-tax").value = r.tax;
-
-        calculateRow(index + 1);
-    });
+    calcAll();
 });
+
+    // ================= حذف الأسطر =================
+    document.addEventListener("click", function (e) {
+        if (!e.target.classList.contains("btn-row-delete")) return;
+
+        const row = e.target.closest("tr");
+        if (!row) return;
+
+        if (row.id === "row_1") return;
+
+        $(row).find('.cost-center-select').select2('destroy');
+        row.remove();
+        calcAll();
+    });
+
+    calcAll();
+});
+
+function saveInvoiceDraft() {
+    const formElement = document.getElementById("invoice_form");
+    if(formElement) {
+        localStorage.setItem("invoice_draft", formElement.innerHTML);
+    }
+}
 </script>
 
 {% endblock %}

@@ -1,14 +1,25 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from .chart import Account
+from .account import Account
 from .cost_centers import CostCenter
+
+from accounts.models import Company
 
 
 class JournalEntry(models.Model):
     """
     Journal Entry - قيد يومية
     """
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.PROTECT,
+        related_name="accounting_journal_entries",
+        null=True,
+        blank=True,
+        verbose_name="الشركة"
+    )
 
     entry_no = models.PositiveIntegerField(
         unique=True,

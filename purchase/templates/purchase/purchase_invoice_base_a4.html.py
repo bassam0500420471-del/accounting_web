@@ -1,0 +1,92 @@
+BBBB BBBB
+XXXXXXXXX XXXXX
+XXXXX XXXXXXBBBBBBBBBBBBBBBBBBBB BB BBBBBBBBBBBBBX XXXXXBB BBBBBBBBBBBBB BB BBBBXXXBBBBXXXBBBBBXX
+
+XXXXXX
+    XXXXX XXXXXXXXXXXXXXXX
+    XXXXXXX gettext(u'Purchase Invoice') XXXXXXXX
+
+    XXXXXXX
+
+        XXXX X
+            XXXXXXXXXXXX XXXXXXXXX
+            XXXXXXXXXXX XXXXX
+            XXXXXXX XX
+            XXXXXXXX XX
+            XXXXXXXXXX BB BBBBBBBBBBBBB BB BBBBXXXBBBBXXXBBBBBX
+        X
+
+        XXXXXXXXXXXXXXXXXX X
+            XXXXXX XXXXXX
+            XXXXXXXXXXX XXXXXXX
+            XXXXXXX XXXXX
+            XXXXXXXXXXX XXXXX
+            XXXXXXXX XXXX XXXXX
+            XXXXXXXXXXX XXXXXXXXXXX
+        X
+
+        XXXXXXX X
+            XXXXXXXXXXX XXXXXXX
+            XXXXXXXXXXXXXX XXXXX
+        X
+
+        XXXXXXXXXXXX X
+            XXXXXXXXXXX XXXXXXX
+        X
+
+        XXXXXXXX X
+            XXXXXXXXXXXX XXXXX
+        X
+
+        XXXXX X
+            XXXXXX XXXXX
+            XXXXXXXXXXXXXXXX XXXXXXXXX
+            XXXXXXXXXXX XXXXX
+        X
+
+        XXXXX XXX XXXXX XX X
+            XXXXXXX XXX XXXXX XXXXX
+            XXXXXXXX XXXX
+            XXXXXXXXXXX XXXXXXX
+            XXXXXXXXXX XXXXX
+        X
+
+        XXXXX XX X
+            XXXXXXXXXXX XXXXXXXX
+        X
+
+        XX X
+            XXXXXXX XXXXX
+            XXXXXXXXXXX XXX XXXXX XXXXX
+            XXXXXXX XXXX XX
+        X
+
+        XXXXXX XXXXX X
+            XXXX X
+                XXXXXXXXXXX XXXXX
+            X
+
+            XXXXXXXXXXXXXXXXXX X
+                XXXXXXX XX
+                XXXXXX XXXXX
+                XXXXXXXXXXX XXXXX
+            X
+
+            XXXXX X
+                XXXXX XXX
+                XXXXXXX XX
+            X
+        X
+
+    XXXXXXXX
+XXXXXXX
+
+XXXXXX
+
+    BBBBB BBBBBBB
+    XXXX XXXXXXXXXXXXX XX XXXXXXXXXXXXXX XXXXXXX XXXX XXXX XXX
+    BBBBBBBB
+
+XXXXXXX
+
+XXXXXXX

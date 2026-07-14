@@ -1,27 +1,40 @@
 from django.db import models
 from accounting.models import Account
+from accounts.models import Company
 
 
 class Customer(models.Model):
 
+    # ✅ عزل العملاء بالشركة
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="customers",
+        null=True,
+        blank=True
+    )
+
     # =====================
-    # الحقول القديمة (كما هي)
+    # الحقول القديمة
     # =====================
     customer_type = models.CharField(
         max_length=50,
         blank=True,
         null=True
     )
+
     commercial_name = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     first_name = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     last_name = models.CharField(
         max_length=255,
         blank=True,
@@ -34,12 +47,28 @@ class Customer(models.Model):
     name = models.CharField(
         max_length=255
     )
+
+    # الاسم الإنجليزي
+    name_en = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
     phone = models.CharField(
         max_length=50,
         blank=True,
         null=True
     )
+
     address = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    # العنوان الإنجليزي
+    address_en = models.CharField(
         max_length=255,
         blank=True,
         null=True
@@ -53,59 +82,71 @@ class Customer(models.Model):
         blank=True,
         null=True
     )
+
     email = models.EmailField(
         blank=True,
         null=True
     )
+
     street1 = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     street2 = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     city = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     region = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     postal_code = models.CharField(
         max_length=20,
         blank=True,
         null=True
     )
+
     country = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
+
     tax_number = models.CharField(
         max_length=50,
         blank=True,
         null=True
     )
+
     cr_number = models.CharField(
         max_length=50,
         blank=True,
         null=True
     )
+
     category = models.CharField(
         max_length=50,
         blank=True,
         null=True
     )
+
     notes = models.TextField(
         blank=True,
         null=True
     )
+
     attachment = models.FileField(
         upload_to="attachments/",
         blank=True,

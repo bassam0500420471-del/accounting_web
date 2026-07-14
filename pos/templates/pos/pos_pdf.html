@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+<style>
+        body { margin: 0; padding: 20px; font-family: 'Arial', sans-serif; background: #eee; }
+        .receipt { width: 80mm; background: #fff; padding: 15px; margin: auto; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        .center { text-align: center; }
+        .logo { max-width: 80px; margin-bottom: 10px; }
+        .info { margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        
+        /* التنسيق الجديد للجدول المسطر */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; /* دمج الحدود */
+            margin: 10px 0; 
+        }
+        th, td { 
+            border: 1px solid #000; /* إضافة حدود سوداء */
+            padding: 4px; 
+            text-align: center; 
+            font-size: 11px; /* تصغير الخط قليلاً ليناسب الأعمدة الستة */
+        }
+        th {
+            background-color: #f2f2f2; /* تلوين رأس الجدول */
+        }
+        
+        .totals { border-top: 2px solid #000; margin-top: 10px; padding-top: 5px; font-weight: bold; }
+        .qr-section { margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="receipt">
+    <div class="center">
+        {% if invoice.company.logo %}
+            <img src="{{ invoice.company.logo.url }}" class="logo">
+        {% endif %}
+        <h2>{{ invoice.company.name }}</h2>
+        <p>الرقم الضريبي: {{ invoice.company.vat_no }}</p>
+    </div>
+
+<div class="center info">
+    <div><strong>رقم الفاتورة:</strong> {{ invoice.id }}</div>
+    <div><strong>التاريخ:</strong> {{ invoice.created_at|date:"Y-m-d H:i" }}</div>
+    
+<div style="margin-top: 10px; border-top: 1px dotted #000; padding-top: 5px;">
+    {% if invoice.customer %}
+        <div><strong>العميل:</strong> {{ invoice.customer.name }}</div>
+        
+        <div><strong>الرقم الضريبي:</strong> 
+            {{ invoice.customer.vat_no|default:invoice.customer.tax_number|default:"غير متوفر" }}
+        </div>
+        
+    {% else %}
+        <div><strong>العميل:</strong> عميل نقدي</div>
+    {% endif %}
+</div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>البند</th>
+            <th>كمية</th>
+            <th>سعر</th>
+            <th>خصم</th>
+            <th>ضريبة</th>
+            <th>المجموع</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in invoice.items.all %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price|floatformat:2 }}</td>
+            <td>{{ item.discount|floatformat:2 }}%</td> <td>{{ item.tax|floatformat:2 }}%</td>     <td>{{ item.total|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="totals" style="text-align: right; padding: 10px; border-top: 2px solid #000;">
+    <div style="display: flex; justify-content: space-between;">
+        <span>المجموع:</span> <span>{{ subtotal|floatformat:2 }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>الإجمالي (شامل الضريبة):</span> <span>{{ invoice.total|floatformat:2 }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <span>المدفوع:</span> <span>{{ invoice.paid_amount|floatformat:2 }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px solid #000;">
+        <span>الرصيد المستحق:</span> <span>{{ invoice.remaining_amount|floatformat:2 }}</span>
+    </div>
+</div>
+
+<div class="qr-section">
+    {% if qr_code %}
+        <img src="{{ qr_code }}" width="120" height="120">
+    {% else %}
+    {% endif %}
+    <p style="font-size: 10px; margin-top: 5px;">شكراً لزيارتكم</p>
+</div>
+
+</div>
+
+</body>
+<script>
+    // أمر التحميل التلقائي عند فتح الصفحة
+    window.onload = function() {
+        window.print(); // سيفتح نافذة الطباعة التي تتيح خيار "حفظ كـ PDF"
+    };
+</script>
+</html>

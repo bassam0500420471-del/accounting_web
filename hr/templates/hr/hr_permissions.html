@@ -1,0 +1,131 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Edit Permissions" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h3 class="mb-4">{% trans "Edit Permissions:" %} {{ selected_user.username }}</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Employees" %}</h5>
+                        {% for field in form %}
+                            {% if "employees_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Departments" %}</h5>
+                        {% for field in form %}
+                            {% if "departments_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Attendance" %}</h5>
+                        {% for field in form %}
+                            {% if "attendance_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Leaves" %}</h5>
+                        {% for field in form %}
+                            {% if "leaves_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Evaluations" %}</h5>
+                        {% for field in form %}
+                            {% if "evaluations_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Payroll" %}</h5>
+                        {% for field in form %}
+                            {% if "payroll_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="mb-3">{% trans "Reports" %}</h5>
+                        {% for field in form %}
+                            {% if "reports_" in field.name %}
+                            <div class="form-check mb-2">
+                                {{ field }}
+                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">💾 {% trans "Save Changes" %}</button>
+                    <a href="{% url 'hr:hr_permissions_users' %}" class="btn btn-secondary">{% trans "Back" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

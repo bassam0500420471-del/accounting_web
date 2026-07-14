@@ -11,6 +11,18 @@ from cost_centers.models import CostCenter
 CASH_ACCOUNT_CODES = ["10000101", "10000102"]
 
 
+def _has_field(model, field_name: str) -> bool:
+    try:
+        model._meta.get_field(field_name)
+        return True
+    except Exception:
+        return False
+
+
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def parse_date_safe(value, default):
     if not value:
         return default
@@ -21,22 +33,34 @@ def parse_date_safe(value, default):
         return default
 
 
-def get_codes(root_code):
-    root = Account.objects.filter(code=root_code).first()
+def get_codes(root_code, company=None):
+    root_qs = Account.objects.filter(code=root_code)
+
+    if company and _has_field(Account, "company"):
+        root_qs = root_qs.filter(company=company)
+
+    root = root_qs.first()
     if not root:
         return []
+
     codes = [root.code]
 
     def walk(p):
-        for c in Account.objects.filter(parent=p):
+        children = Account.objects.filter(parent=p)
+        if company and _has_field(Account, "company"):
+            children = children.filter(company=company)
+
+        for c in children:
             codes.append(c.code)
             walk(c)
+
     walk(root)
     return codes
 
 
 def cash_flow(request):
     today = date.today()
+    company = _get_request_company(request)
 
     date_from = parse_date_safe(request.GET.get("date_from"), today)
     date_to = parse_date_safe(request.GET.get("date_to"), today)
@@ -44,10 +68,24 @@ def cash_flow(request):
     view_mode = request.GET.get("view_mode", "summary").strip()
 
     base = JournalLine.objects.filter(entry__date__range=(date_from, date_to))
+
+    if company:
+        if _has_field(JournalLine, "company"):
+            base = base.filter(company=company)
+        else:
+            entry_model = JournalLine._meta.get_field("entry").remote_field.model
+            if _has_field(entry_model, "company"):
+                base = base.filter(entry__company=company)
+            elif _has_field(Account, "company"):
+                base = base.filter(account__company=company)
+
     if cost_center_id:
         base = base.filter(cost_center_id=cost_center_id)
 
     cash_accounts = Account.objects.filter(code__in=CASH_ACCOUNT_CODES)
+    if company and _has_field(Account, "company"):
+        cash_accounts = cash_accounts.filter(company=company)
+
     cash_lines = base.filter(account__in=cash_accounts)
 
     totals = cash_lines.aggregate(
@@ -60,6 +98,17 @@ def cash_flow(request):
         entry__date__lt=date_from,
         account__in=cash_accounts
     )
+
+    if company:
+        if _has_field(JournalLine, "company"):
+            opening = opening.filter(company=company)
+        else:
+            entry_model = JournalLine._meta.get_field("entry").remote_field.model
+            if _has_field(entry_model, "company"):
+                opening = opening.filter(entry__company=company)
+            elif _has_field(Account, "company"):
+                opening = opening.filter(account__company=company)
+
     if cost_center_id:
         opening = opening.filter(cost_center_id=cost_center_id)
 
@@ -78,7 +127,7 @@ def cash_flow(request):
             rows = []
             total = Decimal("0")
             for name, code in mapping.items():
-                qs = base.filter(account__code__in=get_codes(code))
+                qs = base.filter(account__code__in=get_codes(code, company=company))
                 s = qs.aggregate(
                     d=Coalesce(Sum("debit"), Decimal("0")),
                     c=Coalesce(Sum("credit"), Decimal("0")),
@@ -107,10 +156,14 @@ def cash_flow(request):
         sections = [operating, investing, financing]
         net_cash_flow = operating["total"] + investing["total"] + financing["total"]
 
+    cost_centers = CostCenter.objects.all()
+    if company and _has_field(CostCenter, "company"):
+        cost_centers = cost_centers.filter(company=company)
+
     context = {
         "date_from": date_from,
         "date_to": date_to,
-        "cost_centers": CostCenter.objects.all(),
+        "cost_centers": cost_centers,
         "selected_cost_center": cost_center_id,
         "view_mode": view_mode,
 

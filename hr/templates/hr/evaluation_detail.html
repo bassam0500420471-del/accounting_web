@@ -1,0 +1,130 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Evaluation Details" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <h3 class="fw-bold mb-3">
+        📋 {% trans "Evaluation Details:" %} {{ evaluation.name }}
+    </h3>
+
+    <!-- معلومات أساسية -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body row">
+            <div class="col-md-3">
+                <strong>{% trans "Type:" %}</strong><br>
+                {{ evaluation.evaluation_type }}
+            </div>
+            <div class="col-md-3">
+                <strong>{% trans "Period:" %}</strong><br>
+                {{ evaluation.start_date }} → {{ evaluation.end_date }}
+            </div>
+            <div class="col-md-3">
+                <strong>{% trans "Department:" %}</strong><br>
+                {{ evaluation.department|default:"—" }}
+            </div>
+            <div class="col-md-3">
+                <strong>{% trans "Status:" %}</strong><br>
+                {{ evaluation.status }}
+            </div>
+        </div>
+    </div>
+
+    <!-- المعايير -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-bold">
+            🧩 {% trans "Evaluation Criteria" %}
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>{% trans "Criteria Name" %}</th>
+                        <th>{% trans "Type" %}</th>
+                        <th>{% trans "Weight" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in criteria %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.criteria_type }}</td>
+                        <td>{{ c.weight }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">{% trans "No criteria found" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- الموظفون المستهدفون -->
+    <div class="card shadow-sm">
+        <div class="card-header fw-bold">
+            👥 {% trans "Target Employees" %}
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>{% trans "Target ID" %}</th>
+                        <th>{% trans "Employee" %}</th>
+                        <th>{% trans "Department" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in targets %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ t.id }}</td>
+                        <td>
+                            {% if t.employee %}
+                                {{ t.employee.first_name_ar }} {{ t.employee.last_name_ar }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if t.employee %}
+                                {{ t.employee.department }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if t.employee %}
+                                <a href="{% url 'hr:evaluation_fill_peer' evaluation.id t.id %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                   {% trans "Peer Evaluation" %}
+                                </a>
+
+                                <a href="{% url 'hr:evaluation_fill_manager' evaluation.id t.id %}"
+                                   class="btn btn-sm btn-outline-success">
+                                   {% trans "Manager Evaluation" %}
+                                </a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">{% trans "No targets found" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -7,10 +7,23 @@ from purchase.models import PurchaseInvoice, PurchaseReturn
 from accounting.models import JournalLine, Account
 
 
+def _has_field(model, field_name: str) -> bool:
+    try:
+        model._meta.get_field(field_name)
+        return True
+    except Exception:
+        return False
+
+
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def vat_report(request):
+    company = _get_request_company(request)
 
     date_from = request.GET.get("date_from")
-    date_to   = request.GET.get("date_to")
+    date_to = request.GET.get("date_to")
 
     context = {
         "date_from": date_from,
@@ -21,9 +34,41 @@ def vat_report(request):
         return render(request, "reports/vat_report.html", context)
 
     # =====================================================
-    # حسابات الضريبة
+    # تجهيز QuerySets الأساسية مع عزل الشركة
     # =====================================================
+    sales_invoices = SalesInvoice.objects.all()
+    sales_returns = ReturnInvoice.objects.all()
+    purchase_invoices = PurchaseInvoice.objects.all()
+    purchase_returns = PurchaseReturn.objects.all()
     vat_accounts = Account.objects.filter(name__icontains="ضريبة")
+    journal_lines = JournalLine.objects.all()
+
+    if company:
+        if _has_field(SalesInvoice, "company"):
+            sales_invoices = sales_invoices.filter(company=company)
+
+        if _has_field(ReturnInvoice, "company"):
+            sales_returns = sales_returns.filter(company=company)
+
+        if _has_field(PurchaseInvoice, "company"):
+            purchase_invoices = purchase_invoices.filter(company=company)
+
+        if _has_field(PurchaseReturn, "company"):
+            purchase_returns = purchase_returns.filter(company=company)
+
+        if _has_field(Account, "company"):
+            vat_accounts = vat_accounts.filter(company=company)
+
+        if _has_field(JournalLine, "company"):
+            journal_lines = journal_lines.filter(company=company)
+        else:
+            account_model = JournalLine._meta.get_field("account").remote_field.model
+            if _has_field(account_model, "company"):
+                journal_lines = journal_lines.filter(account__company=company)
+            else:
+                entry_model = JournalLine._meta.get_field("entry").remote_field.model
+                if _has_field(entry_model, "company"):
+                    journal_lines = journal_lines.filter(entry__company=company)
 
     # =====================================================
     # (1) المبيعات
@@ -31,33 +76,37 @@ def vat_report(request):
 
     # قبل الضريبة - فواتير المبيعات
     sales_before_tax = (
-        SalesInvoice.objects.filter(date_invoice__range=(date_from, date_to))
+        sales_invoices
+        .filter(date_invoice__range=(date_from, date_to))
         .aggregate(total=Sum("total_before_tax"))["total"] or Decimal("0.00")
     )
 
     # ضريبة فواتير المبيعات (آلي)
     sales_vat = (
-        SalesInvoice.objects.filter(date_invoice__range=(date_from, date_to))
+        sales_invoices
+        .filter(date_invoice__range=(date_from, date_to))
         .aggregate(total=Sum("tax_value"))["total"] or Decimal("0.00")
     )
 
     # قبل الضريبة - مرتجعات المبيعات
     sales_return_before_tax = (
-        ReturnInvoice.objects.filter(date_return__range=(date_from, date_to))
+        sales_returns
+        .filter(date_return__range=(date_from, date_to))
         .aggregate(total=Sum("total_before_tax"))["total"] or Decimal("0.00")
     )
 
     # ضريبة مرتجعات المبيعات (آلي)
     sales_return_vat = (
-        ReturnInvoice.objects.filter(date_return__range=(date_from, date_to))
+        sales_returns
+        .filter(date_return__range=(date_from, date_to))
         .aggregate(total=Sum("tax_value"))["total"] or Decimal("0.00")
     )
 
     # 🔴 ضريبة من قيود يومية (يدوي فقط)
     sales_manual_vat = (
-        JournalLine.objects.filter(
+        journal_lines.filter(
             entry__date__range=(date_from, date_to),
-            entry__source_type="manual",   # 👈 المهم
+            entry__source_type="manual",
             account__in=vat_accounts,
             credit__gt=0
         ).aggregate(total=Sum("credit"))["total"] or Decimal("0.00")
@@ -72,33 +121,37 @@ def vat_report(request):
 
     # قبل الضريبة - فواتير المشتريات
     purchase_before_tax = (
-        PurchaseInvoice.objects.filter(date_invoice__range=(date_from, date_to))
+        purchase_invoices
+        .filter(date_invoice__range=(date_from, date_to))
         .aggregate(total=Sum("total_before_tax"))["total"] or Decimal("0.00")
     )
 
     # ضريبة فواتير المشتريات (آلي)
     purchase_vat = (
-        PurchaseInvoice.objects.filter(date_invoice__range=(date_from, date_to))
+        purchase_invoices
+        .filter(date_invoice__range=(date_from, date_to))
         .aggregate(total=Sum("total_tax"))["total"] or Decimal("0.00")
     )
 
     # قبل الضريبة - مرتجعات المشتريات
     purchase_return_before_tax = (
-        PurchaseReturn.objects.filter(return_date__range=(date_from, date_to))
+        purchase_returns
+        .filter(return_date__range=(date_from, date_to))
         .aggregate(total=Sum("total_before_tax"))["total"] or Decimal("0.00")
     )
 
     # ضريبة مرتجعات المشتريات (آلي)
     purchase_return_vat = (
-        PurchaseReturn.objects.filter(return_date__range=(date_from, date_to))
+        purchase_returns
+        .filter(return_date__range=(date_from, date_to))
         .aggregate(total=Sum("tax_value"))["total"] or Decimal("0.00")
     )
 
     # 🔴 ضريبة من قيود يومية (يدوي فقط)
     purchase_manual_vat = (
-        JournalLine.objects.filter(
+        journal_lines.filter(
             entry__date__range=(date_from, date_to),
-            entry__source_type="manual",   # 👈 المهم
+            entry__source_type="manual",
             account__in=vat_accounts,
             debit__gt=0
         ).aggregate(total=Sum("debit"))["total"] or Decimal("0.00")
@@ -114,8 +167,8 @@ def vat_report(request):
     # صافي ضريبة الفترة الحالية
     vat_period = net_sales_vat - net_purchase_vat
 
-    # الرصيد المرحّل من الفترات السابقة (من القيود فقط)
-    carried = JournalLine.objects.filter(
+    # الرصيد المرحّل من الفترات السابقة
+    carried = journal_lines.filter(
         entry__date__lt=date_from,
         account__in=vat_accounts
     ).aggregate(

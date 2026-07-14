@@ -1,33 +1,45 @@
 {% extends "layout/base.html" %}
-{% block title %}عرض سند قبض{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "View Receipt Voucher" %}{% endblock %}
 
 {% block content %}
-<h4 class="mb-4">📄 سند قبض رقم {{ receipt.voucher_no|default:receipt.id }}</h4>
+
+<h4 class="mb-4">
+    📄 {% trans "Receipt Voucher No" %} {{ receipt.voucher_no|default:receipt.id }}
+</h4>
 
 <table class="table table-bordered">
+
   <tr>
-    <th>العميل</th>
+    <th>{% trans "Customer" %}</th>
     <td>{{ receipt.customer }}</td>
   </tr>
+
   <tr>
-    <th>التاريخ</th>
+    <th>{% trans "Date" %}</th>
     <td>{{ receipt.date }}</td>
   </tr>
+
   <tr>
-    <th>المبلغ</th>
+    <th>{% trans "Amount" %}</th>
     <td>{{ receipt.amount }}</td>
   </tr>
+
   <tr>
-    <th>الحالة</th>
+    <th>{% trans "Status" %}</th>
     <td>{{ receipt.get_status_display }}</td>
   </tr>
+
   <tr>
-    <th>أنشئ بواسطة</th>
+    <th>{% trans "Created By" %}</th>
     <td>{{ receipt.created_by }}</td>
   </tr>
+
 </table>
 
 <a href="{% url 'payments:receipt_list' %}" class="btn btn-secondary">
-  رجوع
+  ⬅ {% trans "Back" %}
 </a>
+
 {% endblock %}

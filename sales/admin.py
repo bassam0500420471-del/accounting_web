@@ -35,5 +35,6 @@ class ReturnInvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(ReturnItem)
 class ReturnItemAdmin(admin.ModelAdmin):
-    list_display = ("return_invoice", "original_item", "qty_return", "total")
-    search_fields = ("return_invoice__id", "original_item__product__name")
+    # تم إزالة 'original_item' من هنا لأنه لم يعد موجوداً في الموديل
+    list_display = ("return_invoice", "product", "qty_return", "total")
+    search_fields = ("return_invoice__id", "product__name")

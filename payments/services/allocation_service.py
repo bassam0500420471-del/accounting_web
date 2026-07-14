@@ -60,9 +60,6 @@ def allocate_receipt_to_sales_invoice(
 # 🧮 الرصيد الحقيقي لفاتورة المبيعات (المصدر الرسمي)
 # ==================================================
 def get_sales_invoice_balance(invoice: SalesInvoice) -> Decimal:
-    """
-    🔴 المصدر الوحيد والموثوق للرصيد
-    """
 
     allocated = (
         VoucherAllocation.objects
@@ -80,8 +77,15 @@ def get_sales_invoice_balance(invoice: SalesInvoice) -> Decimal:
         or Decimal("0.00")
     )
 
-    return invoice.total_after_tax - returns_total - allocated
+    print("========== BALANCE DEBUG ==========")
+    print("Invoice:", invoice.invoice_no)
+    print("Total After Tax:", invoice.total_after_tax)
+    print("Returns:", returns_total)
+    print("Allocated:", allocated)
+    print("Balance:", invoice.total_after_tax - returns_total - allocated)
+    print("===================================")
 
+    return invoice.total_after_tax - returns_total - allocated
 
 # ==================================================
 # 🟢 حالة الفاتورة (مشتقة من الرصيد فقط)

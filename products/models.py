@@ -1,14 +1,17 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from accounting.models import Account   # ⭐ ربط محاسبي
 from django.conf import settings
 
+from accounting.models import Account   # ⭐ ربط محاسبي
+from django.utils.translation import get_language
 
 # ======================================
 #   ✅ التصنيفات (Folders) لواجهة POS
 # ======================================
 class Category(models.Model):
-    name = models.CharField(max_length=150, unique=True)
+    company = models.ForeignKey("accounts.Company", on_delete=models.CASCADE, related_name="categories")
+
+    name = models.CharField(max_length=150)
     image = models.ImageField(upload_to="categories/", null=True, blank=True)
     sort_order = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
@@ -16,6 +19,9 @@ class Category(models.Model):
 
     class Meta:
         ordering = ["sort_order", "name"]
+        constraints = [
+            models.UniqueConstraint(fields=["company", "name"], name="uniq_category_name_per_company"),
+        ]
 
     def __str__(self):
         return self.name
@@ -25,11 +31,7 @@ class Category(models.Model):
 #   المنتج الرئيسي
 # ======================================
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    sku = models.CharField(max_length=50, blank=True, null=True)
-    # باقي الحقول...
-    type = models.CharField(max_length=20, default='normal')
-    active = models.BooleanField(default=True)  # ✅ هذا الحقل يتحكم بالتفعيل/التعطيل
+    company = models.ForeignKey("accounts.Company", on_delete=models.CASCADE, related_name="products")
 
     PRODUCT_TYPES = (
         ("normal", "منتج عادي"),
@@ -37,7 +39,9 @@ class Product(models.Model):
         ("service", "خدمة"),
     )
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True, null=True)  # القديم
+    name_ar = models.CharField(max_length=255, blank=True, null=True)
+    name_en = models.CharField(max_length=255, blank=True, null=True)
     sku = models.CharField(max_length=100, blank=True, null=True)
 
     type = models.CharField(
@@ -55,32 +59,12 @@ class Product(models.Model):
         verbose_name="التصنيف"
     )
 
-    purchase_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
-    sale_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
+    purchase_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    min_stock = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
-    alert_stock = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
-    current_stock = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0
-    )
+    min_stock = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    alert_stock = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    current_stock = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     inventory_account = models.ForeignKey(
         Account,
@@ -110,16 +94,20 @@ class Product(models.Model):
     )
 
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(
-        upload_to="products/",
-        blank=True,
-        null=True
-    )
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
 
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["name"]
+
     def clean(self):
+        if self.category_id and self.category.company_id != self.company_id:
+            raise ValidationError({
+                "category": "لا يمكن اختيار تصنيف تابع لشركة أخرى."
+            })
+
         if self.type == "service":
             if self.inventory_account:
                 raise ValidationError({
@@ -136,9 +124,15 @@ class Product(models.Model):
                     "cost_account": "يجب تحديد حساب تكلفة المبيعات"
                 })
 
-    def __str__(self):
-        return self.name
+    def get_name(self):
+        lang = get_language()
 
+        if lang == "ar":
+            return self.name_ar or self.name or ""
+        return self.name_en or self.name or ""
+
+    def __str__(self):
+        return self.get_name()
 
 # ======================================
 #   مكونات المنتج المركّب (Bundle)
@@ -157,11 +151,13 @@ class BundleComponent(models.Model):
         on_delete=models.CASCADE
     )
 
-    quantity = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=1
-    )
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+
+    def clean(self):
+        # ✅ تأكيد أن المنتج والمكوّن من نفس الشركة
+        if self.product_id and self.component_id:
+            if self.product.company_id != self.component.company_id:
+                raise ValidationError("لا يمكن ربط مكوّن من شركة أخرى داخل منتج مركّب.")
 
     def __str__(self):
         return f"{self.component.name} × {self.quantity}"
@@ -171,13 +167,18 @@ class BundleComponent(models.Model):
 # ✅ أسباب تعديل المخزون
 # ======================================
 class StockAdjustReason(models.Model):
-    name = models.CharField(max_length=150, unique=True)
+    company = models.ForeignKey("accounts.Company", on_delete=models.CASCADE, related_name="stock_adjust_reasons")
+
+    name = models.CharField(max_length=150)
     active = models.BooleanField(default=True)
     sort_order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["sort_order", "name"]
+        constraints = [
+            models.UniqueConstraint(fields=["company", "name"], name="uniq_stock_reason_name_per_company"),
+        ]
 
     def __str__(self):
         return self.name
@@ -187,6 +188,8 @@ class StockAdjustReason(models.Model):
 # ✅ سجل عمليات المخزون
 # ======================================
 class StockMovement(models.Model):
+    company = models.ForeignKey("accounts.Company", on_delete=models.CASCADE, related_name="stock_moves")
+
     MOVE_TYPES = (
         ("SALE", "بيع"),
         ("PURCHASE", "شراء"),
@@ -220,18 +223,29 @@ class StockMovement(models.Model):
     class Meta:
         ordering = ["-id"]
 
+    def clean(self):
+        # ✅ تأكيد ربط الحركة بنفس شركة المنتج
+        if self.product_id and self.company_id and self.product.company_id != self.company_id:
+            raise ValidationError("لا يمكن تسجيل حركة مخزون لمنتج تابع لشركة أخرى.")
+
+        # ✅ لو السبب موجود لازم يكون من نفس الشركة
+        if self.reason_id and self.company_id and self.reason.company_id != self.company_id:
+            raise ValidationError("لا يمكن اختيار سبب تعديل مخزون تابع لشركة أخرى.")
+
     def __str__(self):
         return f"{self.product} {self.qty_delta} ({self.move_type})"
 
 
 # =====================================================
-# 🧾🧾🧾  دعم الجرد (مضاف — بدون المساس بما سبق)
+# 🧾🧾🧾  دعم الجرد
 # =====================================================
 
 # ======================================
 # ✅ رأس عملية الجرد
 # ======================================
 class StockTake(models.Model):
+    company = models.ForeignKey("accounts.Company", on_delete=models.CASCADE, related_name="stock_takes")
+
     STATUS_CHOICES = (
         ("MATCH", "مطابق"),
         ("PARTIAL", "مطابق جزئياً"),
@@ -250,11 +264,7 @@ class StockTake(models.Model):
     matched_items = models.IntegerField(default=0)
     mismatched_items = models.IntegerField(default=0)
 
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="MATCH"
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="MATCH")
 
     class Meta:
         ordering = ["-id"]
@@ -280,26 +290,15 @@ class StockTakeItem(models.Model):
         related_name="stock_take_items"
     )
 
-    system_qty = models.DecimalField(
-        max_digits=14,
-        decimal_places=2
-    )
+    system_qty = models.DecimalField(max_digits=14, decimal_places=2)
+    physical_qty = models.DecimalField(max_digits=14, decimal_places=2)
+    diff_qty = models.DecimalField(max_digits=14, decimal_places=2)
 
-    physical_qty = models.DecimalField(
-        max_digits=14,
-        decimal_places=2
-    )
+    comment = models.CharField(max_length=255, blank=True, null=True)
 
-    diff_qty = models.DecimalField(
-        max_digits=14,
-        decimal_places=2
-    )
+    def clean(self):
+        # ✅ تأكيد أن المنتج تابع لنفس شركة الجرد
+        if self.stock_take_id and self.product_id:
+            if self.stock_take.company_id != self.product.company_id:
+                raise ValidationError("لا يمكن إضافة منتج من شركة أخرى داخل عملية جرد.")
 
-    comment = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True
-    )
-
-    def __str__(self):
-        return f"{self.product.name} ({self.diff_qty})"

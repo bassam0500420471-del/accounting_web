@@ -1,154 +1,93 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}إضافة شفت{% endblock %}
+{% block title %}
+    {% if edit_mode %}{% trans "تعديل شفت" %}{% else %}{% trans "إضافة شفت جديد" %}{% endif %}
+{% endblock %}
 
 {% block content %}
-<style>
-/* ================= تنسيق الفورم ================= */
-form label {
-    display: block !important;
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-
-form input,
-form select,
-form textarea {
-    display: block;
-    width: 100%;
-    height: 46px !important;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid #ced4da;
-    line-height: 1.2;
-    box-sizing: border-box;
-    transition: 0.3s;
-}
-
-form textarea {
-    height: auto !important;
-}
-
-form input:focus,
-form select:focus,
-form textarea:focus {
-    border-color: #6c757d; /* رمادي */
-    box-shadow: 0 0 5px rgba(108,117,125,0.3);
-    outline: none;
-}
-
-.btn-save {
-    border-radius: 12px;
-    padding: 10px 30px;
-    background-color: #6c757d; /* رمادي */
-    color: #fff;
-    font-weight: 500;
-    transition: 0.3s;
-}
-
-.btn-save:hover {
-    background-color: #5a6268;
-}
-
-/* تغيير لون أزرار الأكورديون إلى رمادي */
-.accordion-button {
-    background-color: #e9ecef; /* خلفية رمادية فاتحة */
-    color: #495057; /* نص رمادي غامق */
-    font-weight: 500;
-}
-.accordion-button:not(.collapsed) {
-    background-color: #dee2e6;
-    color: #212529;
-}
-
-/* إجبار الأرقام على الإنجليزية */
-input[type="number"],
-input[name="shift_order"] {
-    direction: ltr;
-    unicode-bidi: bidi-override;
-    text-align: left;
-    font-family: "Arial", "Helvetica", sans-serif;
-}
-</style>
-
-<div class="container mt-3">
-    <h3 class="mb-3">إضافة شفت جديد</h3>
-
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="accordion" id="shiftAccordion">
-
-            <!-- ================= بيانات الشفت ================= -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#shiftDetails">
-                        بيانات الشفت
-                    </button>
-                </h2>
-                <div id="shiftDetails" class="accordion-collapse collapse show">
-                    <div class="accordion-body row">
-                        <div class="col-md-4 mb-3">
-                            <label for="shift_name" class="form-label">اسم الشفت</label>
-                            <input type="text" name="shift_name" id="shift_name" class="form-control">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="shift_order" class="form-label">رقم الشفت</label>
-                            <input type="number" name="shift_order" id="shift_order" class="form-control">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="start_time" class="form-label">وقت البداية</label>
-                            <input type="time" name="start_time" id="start_time" class="form-control">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="end_time" class="form-label">وقت النهاية</label>
-                            <input type="time" name="end_time" id="end_time" class="form-control">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= استراحة ================= -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#breakDetails">
-                        استراحة
-                    </button>
-                </h2>
-                <div id="breakDetails" class="accordion-collapse collapse show">
-                    <div class="accordion-body row">
-                        <div class="col-md-6 mb-3">
-                            <label for="break_start" class="form-label">وقت بداية الاستراحة</label>
-                            <input type="time" name="break_start" id="break_start" class="form-control">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="break_end" class="form-label">وقت نهاية الاستراحة</label>
-                            <input type="time" name="break_end" id="break_end" class="form-control">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= ملاحظات ================= -->
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#notes">
-                        ملاحظات
-                    </button>
-                </h2>
-                <div id="notes" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        <textarea name="notes" id="notes" class="form-control" placeholder="اكتب ملاحظات إضافية هنا"></textarea>
-                    </div>
-                </div>
-            </div>
-
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <!-- الرأس باللون الرمادي -->
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">
+                {% if edit_mode %}
+                    <i class="bi bi-pencil-square"></i> {% trans "تعديل شفت" %}
+                {% else %}
+                    <i class="bi bi-plus-circle"></i> {% trans "إضافة شفت جديد" %}
+                {% endif %}
+            </h4>
         </div>
+        
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- اسم الشفت -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "اسم المناوبة" %}</label>
+                        <input type="text" name="shift_name" class="form-control" 
+                               value="{{ shift.shift_name|default:'' }}" required>
+                    </div>
 
-        <div class="mt-3">
-            <button type="submit" class="btn btn-save">حفظ</button>
+                    <!-- ترتيب الشفت -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "ترتيب المناوبة" %}</label>
+<input type="number" name="shift_order" class="form-control"
+       placeholder="تلقائي">
+                    </div>
+
+                    <!-- وقت البداية -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "وقت البداية" %}</label>
+                        <input type="time" name="start_time" class="form-control" 
+                               value="{{ shift.start_time|time:'H:i' }}" required>
+                    </div>
+
+                    <!-- وقت النهاية -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">{% trans "وقت النهاية" %}</label>
+                        <input type="time" name="end_time" class="form-control" 
+                               value="{{ shift.end_time|time:'H:i' }}" required>
+                    </div>
+
+                    <!-- بداية الاستراحة -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{% trans "بداية الاستراحة" %}</label>
+                        <input type="time" name="break_start" class="form-control" 
+                               value="{{ shift.break_start|time:'H:i' }}">
+                    </div>
+
+                    <!-- نهاية الاستراحة -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{% trans "نهاية الاستراحة" %}</label>
+                        <input type="time" name="break_end" class="form-control" 
+                               value="{{ shift.break_end|time:'H:i' }}">
+                    </div>
+
+                    <!-- ملاحظات -->
+                    <div class="col-12 mb-3">
+                        <label class="form-label">{% trans "ملاحظات" %}</label>
+                        <textarea name="notes" class="form-control" rows="3">{{ shift.notes|default:'' }}</textarea>
+                    </div>
+                </div>
+
+                <hr>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <!-- زر الحفظ باللون الرمادي الغامق -->
+                    <button type="submit" class="btn btn-secondary px-5">
+                        <i class="bi bi-save"></i> {% trans "حفظ الشفت" %}
+                    </button>
+                    
+                    <!-- زر الإلغاء باللون الرمادي الفاتح -->
+                    <a href="{% url 'hr:shifts' %}" class="btn btn-outline-secondary">
+                        {% trans "إلغاء" %}
+                    </a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
-
 {% endblock %}

@@ -1,341 +1,1047 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}نقطة البيع POS{% endblock %}
+{% block title %}
+{% trans "Point of Sale" %}
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-3">
 
-    <!-- ======== شريط التحكم العلوي: بحث + إضافة فاتورة ======== -->
+
+
+<div class="container-fluid mt-3">
+    <!-- Top Bar -->
     <div class="d-flex mb-3 align-items-center gap-2">
-        <input type="text" class="form-control" id="product-search" placeholder="بحث عن منتج...">
-        <input type="text" class="form-control" id="invoice-search" placeholder="بحث عن فاتورة...">
-        <button class="btn btn-primary" id="new-invoice-btn">➕ فاتورة جديدة</button>
+
+        <input type="text"
+               class="form-control"
+               id="product-search"
+               placeholder="{% trans 'Search product...' %}">
+
+        <input type="text"
+               class="form-control"
+               id="invoice-search"
+               placeholder="{% trans 'Search invoice...' %}">
+
+        <button class="btn btn-primary" id="new-invoice-btn">
+            ➕ {% trans "New Invoice" %}
+        </button>
+
+
+        <button class="btn btn-success" id="add-payment-method-btn">
+            ➕ إضافة طريقة دفع
+        </button>
+
+
     </div>
 
     <div style="display:flex; gap:20px;">
 
-        <!-- ======== قسم المنتجات ======== -->
+        <!-- Products -->
         <div style="flex:2;">
-            <h4>التصنيفات</h4>
+
+            <h4>{% trans "Categories" %}</h4>
+
             <div class="mb-3 d-flex flex-wrap gap-2">
-                <button class="btn btn-outline-primary category-btn" data-id="">الكل</button>
+
+                <button class="btn btn-outline-primary category-btn" data-id="">
+                    {% trans "All" %}
+                </button>
+
                 {% for cat in categories %}
-                <div class="category-card" data-id="{{ cat.id }}" 
-                     style="cursor:pointer; width:150px; height:220px; text-align:center; border:1px solid #ddd; border-radius:8px; background:#f8f8f8;">
+
+                <div class="category-card"
+                     data-id="{{ cat.id }}"
+                     style="cursor:pointer;
+                            width:150px;
+                            height:220px;
+                            text-align:center;
+                            border:1px solid #ddd;
+                            border-radius:8px;
+                            background:#f8f8f8;">
+
                     {% if cat.image %}
-                    <img src="{{ cat.image.url }}" style="width:100%; height:120px; object-fit:cover; border-radius:8px 8px 0 0;">
+                    <img src="{{ cat.image.url }}"
+                         style="width:100%;
+                                height:120px;
+                                object-fit:cover;
+                                border-radius:8px 8px 0 0;">
                     {% else %}
-                    <div style="width:100%; height:120px; background:#e0e0e0; border-radius:8px 8px 0 0;"></div>
+                    <div style="width:100%;
+                                height:120px;
+                                background:#e0e0e0;
+                                border-radius:8px 8px 0 0;"></div>
                     {% endif %}
+
                     <div style="padding:5px; background:#f0f0f0;">
                         <h6>{{ cat.name }}</h6>
                     </div>
+
                 </div>
+
                 {% endfor %}
+
             </div>
 
+            <!-- Products -->
             <div class="row" id="products-container">
+
                 {% for p in products %}
+
                 <div class="col-md-2 mb-2 product-card"
-                     data-id="{{ p.id }}" 
-                     data-name="{{ p.name }}" 
-                     data-price="{{ p.sale_price }}" 
+                     data-id="{{ p.id }}"
+                     data-name="{{ p.get_name }}"
+                     data-price="{{ p.sale_price }}"
                      data-stock="{{ p.current_stock }}"
-                     data-original-stock="{{ p.current_stock }}" 
                      data-category="{% if p.category %}{{ p.category.id }}{% endif %}">
-                    <div class="card text-center" style="cursor:pointer; height:150px; background:#f8f8f8; border-radius:8px;">
+
+                    <div class="card text-center"
+                         style="cursor:pointer;
+                                height:150px;
+                                background:#f8f8f8;
+                                border-radius:8px;">
+
                         {% if p.image %}
-                        <img src="{{ p.image.url }}" style="width:100%; height:80px; object-fit:cover; border-radius:8px 8px 0 0;">
+                        <img src="{{ p.image.url }}"
+                             style="width:100%;
+                                    height:80px;
+                                    object-fit:cover;
+                                    border-radius:8px 8px 0 0;">
                         {% else %}
-                        <div style="width:100%; height:120px; background:#e0e0e0; border-radius:8px 8px 0 0;"></div>
+                        <div style="width:100%;
+                                    height:80px;
+                                    background:#e0e0e0;
+                                    border-radius:8px 8px 0 0;"></div>
                         {% endif %}
-<div class="card-body p-1" style="background:#f0f0f0; margin-top:4px;">
-    <h6 class="card-title" style="font-size:13px; margin:2px 0;">
-        {{ p.name }}
-    </h6>
-    <p class="card-text" style="font-size:12px; margin:0;">
-        {{ p.sale_price }} ريال
-    </p>
-    <small class="stock-text" style="font-size:11px;">
-        المخزون: {{ p.current_stock }}
-    </small>
-</div>
+
+                        <div class="card-body p-1">
+
+                            <h6 class="card-title"
+                                style="font-size:13px; margin:2px 0;">
+                                {{ p.get_name }}
+                            </h6>
+
+                            <p class="card-text"
+                               style="font-size:12px; margin:0;">
+                                {{ p.sale_price }} {% trans "SAR" %}
+                            </p>
+
+                            <small class="stock-text">
+                                {% trans "Stock" %}: {{ p.current_stock }}
+                            </small>
+
+                        </div>
+
                     </div>
+
                 </div>
+
                 {% endfor %}
+
             </div>
+
         </div>
 
-        <!-- ======== لوحة الفواتير متعددة ======== -->
-        <div style="flex:1; border:1px solid #ddd; padding:10px; border-radius:5px;">
-            <div id="invoice-tabs" class="d-flex gap-1 mb-2 flex-wrap"></div>
+        <!-- Invoice Panel -->
+        <div style="flex:1;
+                    border:1px solid #ddd;
+                    padding:10px;
+                    border-radius:5px;">
+
+            <div id="invoice-tabs"
+                 class="d-flex gap-1 mb-2 flex-wrap"></div>
+
             <div id="invoice-contents"></div>
+
         </div>
 
     </div>
+
 </div>
 
 <script>
-// ===================== البيانات الأساسية =====================
-let invoices = {};
-let activeInvoiceId = null;
+console.log("JS START POS");
+
+
+
 let invoiceCounter = 1;
 
-// ===================== إنشاء فاتورة جديدة =====================
-function createInvoice(name = null) {
-    const id = invoiceCounter++;
-    const title = name || `فاتورة`;
-    invoices[id] = {items: {}, total: 0, customer_id: null, saved:false, negativeAlertShown: {}};
+let invoices = {};
 
+let activeInvoiceId = null;
+
+// ===================== Create Invoice =====================
+function createInvoice(name = null){
+
+    const id = invoiceCounter++;
+
+    invoices[id] = {
+        items: {},
+        total: 0,
+        customer_id: null,
+        negativeAlertShown: {}
+    };
+
+    const title = name || "{% trans 'Invoice' %}";
+
+    // Tab
     const tab = document.createElement("button");
+
     tab.className = "btn btn-outline-secondary invoice-tab";
-    tab.innerHTML = `${title} <span class="close-tab" style="margin-left:5px;cursor:pointer;">❌</span>`;
+
+    tab.innerHTML = `
+        ${title}
+        <span style="margin-left:5px; cursor:pointer;">❌</span>
+    `;
+
     tab.dataset.id = id;
+
     document.getElementById("invoice-tabs").appendChild(tab);
 
+    // Content
     const content = document.createElement("div");
+
     content.className = "invoice-content p-2 border rounded";
+
     content.dataset.id = id;
+
     content.style.display = "none";
+
     content.innerHTML = `
+
         <div class="mb-2">
-            <label>اختر العميل:</label>
+
+            <label>{% trans "Select Customer" %}</label>
+
             <select class="form-select customer-select">
-                <option value="">عميل نقدي</option>
+
+                <option value="">
+                    {% trans "Cash Customer" %}
+                </option>
+
                 {% for cust in customers %}
-                <option value="{{ cust.id }}">{{ cust.name }}</option>
+                <option value="{{ cust.id }}">
+                    {{ cust.name }}
+                </option>
                 {% endfor %}
+
             </select>
+
         </div>
+
         <table class="table table-bordered">
+
             <thead>
-                <tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr>
+                <tr>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Qty" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>
+
+                        {% trans "Discount" %} ▼
+
+                        <select id="discount-type"
+                                style="display:none;
+                                       position:absolute;
+                                       top:100%;
+                                       right:0;
+                                       width:80px;
+                                       z-index:9999;">
+
+                            <option value="percent">%</option>
+
+                            <option value="fixed">قيمة</option>
+
+                        </select>
+
+                    </th>
+                    <th>{% trans "Tax" %}</th>
+                    <th>{% trans "Total" %}</th>
+                    <th>X</th>
+                </tr>
             </thead>
+
             <tbody class="invoice-body"></tbody>
+
             <tfoot>
-                <tr><th colspan="3">الإجمالي الكلي</th><th class="total">0.00</th><th></th></tr>
+                <tr>
+                    <th colspan="3">
+                        {% trans "Grand Total" %}
+                    </th>
+
+                    <th class="total">0.00</th>
+
+                    <th></th>
+                </tr>
             </tfoot>
+
         </table>
-        <button class="btn btn-success w-100 save-invoice-btn mt-2">💳 حفظ والانتقال للسداد</button>
-    `;
+
+
+        <!-- Invoice Totals -->
+        <div class="invoice-totals mt-3">
+
+            <div class="row mb-2">
+
+                <div class="col-6">
+                    <input type="text"
+                           class="form-control text-end subtotal-before-tax"
+                           value="0.00"
+                           readonly>
+                </div>
+
+                <div class="col-6 text-end">
+                    <label>
+                        {% trans "الاجمالى قبل الضريبة" %}
+                    </label>
+                </div>
+
+            </div>
+
+
+
+            <div class="row mb-2">
+
+                <div class="col-6">
+                    <input type="text"
+                           class="form-control text-end discount-total"
+                           value="0.00"
+                           readonly>
+                </div>
+
+                <div class="col-6 text-end">
+                    <label>
+                        {% trans "Total Discount" %}
+                    </label>
+                </div>
+
+            </div>
+
+
+
+            <div class="row mb-2">
+
+                <div class="col-6">
+                    <input type="text"
+                           class="form-control text-end tax-total"
+                           value="0.00"
+                           readonly>
+                </div>
+
+                <div class="col-6 text-end">
+                    <label>
+                        {% trans "Total Tax" %}
+                    </label>
+                </div>
+
+            </div>
+
+
+
+            <div class="row mb-2">
+
+                <div class="col-6">
+                    <input type="text"
+                           class="form-control text-end grand-total"
+                           value="0.00"
+                           readonly>
+                </div>
+
+                <div class="col-6 text-end">
+                    <label>
+                        {% trans "Total After Tax" %}
+                    </label>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <button class="btn btn-success w-100 save-btn">
+            💳 {% trans "Save & Proceed to Payment" %}
+        </button>    `;
+
     document.getElementById("invoice-contents").appendChild(content);
 
-    setActiveInvoice(id);
-
-    content.querySelector(".customer-select").addEventListener("change", function() {
-        invoices[id].customer_id = this.value || null;
+    // Events
+    tab.addEventListener("click", function(){
+        setActiveInvoice(id);
     });
 
-    tab.querySelector(".close-tab").addEventListener("click", function(e){
+    tab.querySelector("span").addEventListener("click", function(e){
         e.stopPropagation();
         deleteInvoice(id);
     });
 
-    content.querySelector(".save-invoice-btn").addEventListener("click", function(){
+    content.querySelector(".save-btn").addEventListener("click", function(){
         saveInvoice(id);
     });
+
+    content.querySelector(".customer-select").addEventListener("change", function(){
+        invoices[id].customer_id = this.value || null;
+    });
+
+    setActiveInvoice(id);
 }
 
-// ===================== تعيين الفاتورة النشطة =====================
-function setActiveInvoice(id) {
+
+// ===================== Active Invoice =====================
+function setActiveInvoice(id){
+
     activeInvoiceId = id;
-    document.querySelectorAll(".invoice-tab").forEach(t => t.classList.remove("btn-primary"));
-    document.querySelectorAll(".invoice-content").forEach(c => c.style.display = "none");
-    document.querySelector(`.invoice-tab[data-id='${id}']`).classList.add("btn-primary");
-    document.querySelector(`.invoice-content[data-id='${id}']`).style.display = "block";
+
+    document.querySelectorAll(".invoice-tab").forEach(el => {
+        el.classList.remove("btn-primary");
+    });
+
+    document.querySelectorAll(".invoice-content").forEach(el => {
+        el.style.display = "none";
+    });
+
+    document.querySelector(`.invoice-tab[data-id='${id}']`)
+        .classList.add("btn-primary");
+
+    document.querySelector(`.invoice-content[data-id='${id}']`)
+        .style.display = "block";
 }
 
-// ===================== حذف فاتورة =====================
+
+// ===================== Delete Invoice =====================
 function deleteInvoice(id){
+
     delete invoices[id];
+
     const tab = document.querySelector(`.invoice-tab[data-id='${id}']`);
     const content = document.querySelector(`.invoice-content[data-id='${id}']`);
-    tab.remove(); content.remove();
-    const remainingIds = Object.keys(invoices);
-    if(remainingIds.length) setActiveInvoice(remainingIds[0]);
-    else activeInvoiceId = null;
-    renderAllInvoices();
+
+    if(tab) tab.remove();
+    if(content) content.remove();
+
+    const keys = Object.keys(invoices);
+
+    if(keys.length){
+        setActiveInvoice(keys[0]);
+    }else{
+        activeInvoiceId = null;
+    }
 }
 
-// ===================== إضافة منتج للفاتورة =====================
+
+// ===================== Add Product =====================
 function addProductToInvoice(product){
-    if(!activeInvoiceId) { alert("افتح فاتورة أولاً!"); return; }
+
+    if(!activeInvoiceId){
+
+        alert("{% trans 'Open invoice first' %}");
+
+        return;
+    }
+
     const inv = invoices[activeInvoiceId];
+
     const pid = product.dataset.id;
+
     const stock = parseInt(product.dataset.stock);
+
     const name = product.dataset.name;
+
     const price = parseFloat(product.dataset.price);
 
+    // New Item
     if(!inv.items[pid]){
+
         let allowNegative = false;
-        if(stock <= 0 && !inv.negativeAlertShown[pid]){
-            if(!confirm(`المخزون أقل من الكمية المطلوبة للمنتج "${name}". السماح بالسالب؟`)) return;
-            allowNegative = true;
-            inv.negativeAlertShown[pid] = true;
-        }
-        inv.items[pid] = {name, price, qty:1, allowNegative, warnedNegative: allowNegative};
-    } else {
-        const item = inv.items[pid];
-        if(!item.allowNegative && item.qty +1 > stock && !item.warnedNegative){
-            if(!confirm(`المخزون أقل من الكمية المطلوبة للمنتج "${name}". السماح بالسالب؟`)){
-                return;
+
+        // Empty Stock
+        if(stock <= 0){
+
+            if(!inv.negativeAlertShown[pid]){
+
+                const confirmNegative = confirm(
+                    `{% trans "Stock is lower than requested quantity for product" %} "${name}".\n{% trans "Allow negative stock?" %}`
+                );
+
+                if(!confirmNegative){
+                    return;
+                }
+
+                inv.negativeAlertShown[pid] = true;
+
+                allowNegative = true;
             }
-            item.allowNegative = true;
-            item.warnedNegative = true;
         }
-        inv.items[pid].qty++;
+
+        inv.items[pid] = {
+            name: name,
+            price: price,
+            qty: 1,
+            discount: 0,
+            discount_type: "percent",
+            tax: 15,
+            allowNegative: allowNegative
+        };
+
+    }else{
+
+        const item = inv.items[pid];
+
+        // Exceed Stock
+        if(item.qty + 1 > stock){
+
+            if(!item.allowNegative){
+
+                const confirmNegative = confirm(
+                    `{% trans "Stock is lower than requested quantity for product" %} "${name}".\n{% trans "Allow negative stock?" %}`
+                );
+
+                if(!confirmNegative){
+                    return;
+                }
+
+                item.allowNegative = true;
+            }
+        }
+
+        item.qty++;
     }
-    renderAllInvoices();
+
+    renderInvoice(activeInvoiceId);
 }
 
-// ===================== عرض جميع الفواتير =====================
-function renderAllInvoices(){
-    for(let id in invoices){
-        renderInvoice(id);
-    }
-}
 
-// ===================== عرض الفاتورة =====================
+// ===================== Render Invoice =====================
 function renderInvoice(id){
+
     const inv = invoices[id];
-    const tbody = document.querySelector(`.invoice-content[data-id='${id}'] .invoice-body`);
+
+    const tbody = document.querySelector(
+        `.invoice-content[data-id='${id}'] .invoice-body`
+    );
+
     tbody.innerHTML = "";
-    let total = 0;
+
+    let subtotalBeforeTax = 0;
+let totalDiscount = 0;
+let totalTax = 0;
+let total = 0;
 
     for(let pid in inv.items){
+
         const item = inv.items[pid];
-        const lineTotal = item.price * item.qty;
+
+        const subtotal = item.qty * item.price;
+subtotalBeforeTax += subtotal;
+
+        let discountAmount = 0;
+
+        if(item.discount_type === "percent"){
+
+            discountAmount = subtotal * (item.discount || 0) / 100;
+
+        }else{
+
+            discountAmount = item.discount || 0;
+
+        }
+
+        const afterDiscount = subtotal - discountAmount;
+totalDiscount += discountAmount;
+
+        const taxAmount = afterDiscount * (item.tax || 0) / 100;
+totalTax += taxAmount;
+
+        const lineTotal = afterDiscount + taxAmount;
+
         total += lineTotal;
+
         tbody.innerHTML += `
+
             <tr>
+
                 <td>${item.name}</td>
+
                 <td>
-                    <button class="btn btn-sm btn-secondary" onclick="changeQty(${id}, '${pid}', -1)">-</button>
+
+                    <button class="btn btn-sm btn-secondary"
+                            onclick="changeQty(${id}, '${pid}', -1)">
+                        -
+                    </button>
+
                     ${item.qty}
-                    <button class="btn btn-sm btn-secondary" onclick="changeQty(${id}, '${pid}', 1)">+</button>
+
+                    <button class="btn btn-sm btn-secondary"
+                            onclick="changeQty(${id}, '${pid}', 1)">
+                        +
+                    </button>
+
                 </td>
-                <td>${item.price.toFixed(2)}</td>
+
+                <td style="width:40px;text-align:center;">
+
+                    ${Number(item.price)}
+
+                </td>
+
+                <td>
+
+                    <div style="display:flex;
+                                align-items:center;
+                                gap:4px;">
+
+                        <input type="number"
+                               class="form-control form-control-sm"
+                               value="${item.discount}"
+                               style="width:70px;"
+                               onchange="updateDiscount(${id}, '${pid}', this.value)">
+
+                        <select class="form-select form-select-sm"
+                                style="width:60px;"
+                                onchange="updateDiscountType(${id}, '${pid}', this.value)">
+
+                            <option value="percent"
+                                ${item.discount_type === "percent" ? "selected" : ""}>
+                                %
+                            </option>
+
+                            <option value="fixed"
+                                ${item.discount_type === "fixed" ? "selected" : ""}>
+                                قيمة
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </td>
+                <td>
+
+                    <input type="number"
+                           class="form-control form-control-sm"
+                           value="${item.tax}"
+                           style="width:60px;"
+                           onchange="updateTax(${id}, '${pid}', this.value)">
+
+                </td>
                 <td>${lineTotal.toFixed(2)}</td>
-                <td><button class="btn btn-sm btn-danger" onclick="removeItem(${id}, '${pid}')">x</button></td>
+
+                <td>
+
+                    <button class="btn btn-sm btn-danger"
+                            onclick="removeItem(${id}, '${pid}')">
+                        x
+                    </button>
+
+                </td>
+
             </tr>
         `;
     }
+
     inv.total = total;
-    document.querySelector(`.invoice-content[data-id='${id}'] .total`).innerText = total.toFixed(2);
-    updateProductStocks();
+document.querySelector(
+    `.invoice-content[data-id='${id}'] .subtotal-before-tax`
+).value = subtotalBeforeTax.toFixed(2);
+
+
+document.querySelector(
+    `.invoice-content[data-id='${id}'] .discount-total`
+).value = totalDiscount.toFixed(2);
+
+
+document.querySelector(
+    `.invoice-content[data-id='${id}'] .tax-total`
+).value = totalTax.toFixed(2);
+
+
+document.querySelector(
+    `.invoice-content[data-id='${id}'] .grand-total`
+).value = total.toFixed(2);
+
+    document.querySelector(
+        `.invoice-content[data-id='${id}'] .total`
+    ).innerText = total.toFixed(2);
 }
 
-// ===================== تحديث المخزون الظاهر =====================
-function updateProductStocks(){
-    document.querySelectorAll(".product-card").forEach(prodCard=>{
-        const pid = prodCard.dataset.id;
-        const originalStock = parseInt(prodCard.dataset.originalStock);
-        let used = 0;
-        for(let invId in invoices){
-            if(invoices[invId].items[pid]) used += invoices[invId].items[pid].qty;
+
+// ===================== Change Qty =====================
+function changeQty(invoiceId, pid, delta){
+
+    const item = invoices[invoiceId].items[pid];
+
+    item.qty += delta;
+
+    if(item.qty <= 0){
+
+        delete invoices[invoiceId].items[pid];
+    }
+
+    renderInvoice(invoiceId);
+}
+
+
+// ===================== Update Discount =====================
+function updateDiscount(invoiceId, pid, value){
+
+    invoices[invoiceId].items[pid].discount = parseFloat(value) || 0;
+
+    renderInvoice(invoiceId);
+
+}
+
+
+// ===================== Change Discount Type =====================
+function updateDiscountType(invoiceId, pid, value){
+
+    invoices[invoiceId].items[pid].discount_type = value;
+
+    renderInvoice(invoiceId);
+
+}
+
+
+// ===================== Update Tax =====================
+function updateTax(invoiceId, pid, value){
+
+    invoices[invoiceId].items[pid].tax = parseFloat(value) || 0;
+
+    renderInvoice(invoiceId);
+
+}
+
+// ===================== Save Invoice =====================
+function saveInvoice(id){
+
+    const inv = invoices[id];
+
+    const items = [];
+
+    for(let pid in inv.items){
+
+items.push({
+
+    product_id: pid,
+
+    quantity: inv.items[pid].qty,
+
+    price: inv.items[pid].price,
+
+    discount: inv.items[pid].discount,
+
+    discount_type: inv.items[pid].discount_type,
+
+    tax: inv.items[pid].tax
+
+});
+    }
+
+    fetch("{% url 'pos:pos_save_invoice' %}", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+
+        body: JSON.stringify({
+            items: items,
+            customer_id: inv.customer_id,
+            final: true
+        })
+
+    })
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            window.location.href =
+                `/pos/payment/${data.invoice_id}/`;
+
+        }else{
+
+            alert(data.error || "Error");
         }
-        prodCard.dataset.stock = originalStock - used;
-        prodCard.querySelector(".stock-text").innerText = `المخزون: ${prodCard.dataset.stock}`;
+    })
+
+    .catch(err => {
+
+        console.error(err);
+
+        alert("Server Error");
     });
 }
 
-// ===================== تعديل الكمية =====================
-function changeQty(invId, pid, delta){
-    const item = invoices[invId].items[pid];
-    const stock = parseInt(document.querySelector(`.product-card[data-id='${pid}']`).dataset.stock);
-    if(delta>0 && !item.allowNegative && item.qty+delta>stock){
-        if(!item.warnedNegative){
-            if(confirm(`المخزون أقل من الكمية المطلوبة للمنتج "${item.name}". السماح بالسالب؟`)){
-                item.allowNegative = true;
-                item.warnedNegative = true;
-            } else return;
-        }
-    }
-    item.qty += delta;
-    if(item.qty<=0) delete invoices[invId].items[pid];
-    renderAllInvoices();
-}
 
-// ===================== حذف عنصر =====================
-function removeItem(invId, pid){
-    delete invoices[invId].items[pid];
-    renderAllInvoices();
-}
+// ===================== Categories Filter =====================
+document.querySelectorAll(".category-btn").forEach(btn => {
 
-// ===================== حفظ الفاتورة والتحويل للسداد =====================
-function saveInvoice(id){
-    const inv = invoices[id];
-    if(Object.keys(inv.items).length===0){ alert("أضف منتجات أولاً!"); return; }
+    btn.addEventListener("click", function(){
 
-    const items = [];
-    for(let pid in inv.items){
-        const p = inv.items[pid];
-        items.push({product_id: parseInt(pid), quantity: p.qty, price: p.price, allow_negative: p.allowNegative});
-    }
+        const categoryId = this.dataset.id;
 
-    const payload = {customer_id: inv.customer_id?parseInt(inv.customer_id):null, items: items};
+        document.querySelectorAll(".product-card").forEach(card => {
 
-    fetch("{% url 'pos:pos_save_invoice' %}",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","X-CSRFToken":"{{ csrf_token }}"},
-        body: JSON.stringify(payload)
-    }).then(res=>res.json())
-    .then(data=>{
-        if(data.success){
-            inv.saved = true;
-            // تحويل نفس الصفحة للسداد
-            window.location.href = `/pos/payment/${data.invoice_id}/`;
-        } else alert("حدث خطأ أثناء حفظ الفاتورة!\n"+data.error);
-    }).catch(err=>{console.error(err); alert("خطأ في الاتصال بالسيرفر!");});
-}
+            if(categoryId === ""){
 
-// ===================== تبويبات الفاتورة =====================
-document.getElementById("new-invoice-btn").addEventListener("click",()=>createInvoice());
-document.getElementById("invoice-tabs").addEventListener("click", e=>{
-    if(e.target.classList.contains("invoice-tab")) setActiveInvoice(e.target.dataset.id);
-});
+                card.style.display = "block";
 
-// ===================== فلترة التصنيفات =====================
-document.querySelectorAll(".category-card").forEach(card=>{
-    card.addEventListener("click", function(){
-        const catId = this.dataset.id;
-        document.querySelectorAll(".product-card").forEach(prod=>{
-            prod.style.display = (prod.dataset.category === catId)? "block":"none";
-            prod.querySelector(".card").style.background = (prod.dataset.category === catId)? "#f0f0f0":"#f8f8f8";
+            }else{
+
+                if(card.dataset.category === categoryId){
+
+                    card.style.display = "block";
+
+                }else{
+
+                    card.style.display = "none";
+                }
+            }
         });
     });
 });
-document.querySelector(".category-btn[data-id='']").addEventListener("click", function(){
-    document.querySelectorAll(".product-card").forEach(prod=>{
-        prod.style.display = "block";
-        prod.querySelector(".card").style.background = "#f0f0f0";
+
+
+// ===================== Category Cards =====================
+document.querySelectorAll(".category-card").forEach(card => {
+
+    card.addEventListener("click", function(){
+
+        const categoryId = this.dataset.id;
+
+        document.querySelectorAll(".product-card").forEach(product => {
+
+            if(product.dataset.category === categoryId){
+
+                product.style.display = "block";
+
+            }else{
+
+                product.style.display = "none";
+            }
+        });
     });
 });
 
-// ===================== بحث عن المنتج =====================
-document.getElementById("product-search").addEventListener("input", function(){
-    const q = this.value.toLowerCase();
-    document.querySelectorAll(".product-card").forEach(prod=>{
-        const name = prod.dataset.name.toLowerCase();
-        prod.style.display = name.includes(q)? "block":"none";
+
+// ===================== Product Click =====================
+document.querySelectorAll(".product-card").forEach(card => {
+
+    card.addEventListener("click", function(){
+
+        addProductToInvoice(this);
     });
 });
 
-// ===================== بحث عن الفواتير =====================
-document.getElementById("invoice-search").addEventListener("input", function(){
-    const q = this.value.toLowerCase();
-    document.querySelectorAll(".invoice-tab").forEach(tab=>{
-        const text = tab.textContent.toLowerCase();
-        tab.style.display = text.includes(q)? "inline-flex":"none";
+
+// ===================== New Invoice =====================
+document.getElementById("new-invoice-btn")
+.addEventListener("click", function(){
+
+    createInvoice();
+});
+
+document.addEventListener("click", function(e){
+
+    const header = document.getElementById("discount-header");
+
+    const select = document.getElementById("discount-type");
+
+    if(!header || !select){
+
+        return;
+
+    }
+
+    if(header.contains(e.target)){
+
+        select.style.display = "block";
+
+        return;
+
+    }
+
+    select.style.display = "none";
+
+});
+
+
+// ===================== Open Payment Modal =====================
+
+const addPaymentBtn = document.getElementById("add-payment-method-btn");
+
+if(addPaymentBtn){
+
+    addPaymentBtn.addEventListener("click", function(){
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("paymentMethodModal")
+        );
+
+        modal.show();
+
     });
-});
 
-// ===================== إضافة المنتجات عند الضغط =====================
-document.querySelectorAll(".product-card").forEach(card=>{
-    card.addEventListener("click", function(){ addProductToInvoice(this); });
-});
+}
 
-// ===================== أول فاتورة تلقائية =====================
+
+// ===================== Start =====================
+
+console.log("BEFORE CREATE");
+
 createInvoice();
+
+console.log("AFTER CREATE");
+
 </script>
+
+
+<div class="modal fade" id="paymentMethodModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    إضافة طريقة دفع
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+<div class="modal-body">
+    <label>اسم طريقة الدفع</label>
+    <input type="text" id="payment-method-name" class="form-control" placeholder="مثال: بنك البلاد">
+
+    <br>
+
+    <label>الحساب الرئيسي</label>
+    
+    <select id="payment-main-account" class="form-select">
+        <option value="">اختر الحساب</option>
+        {% for account in payment_parent_accounts %}
+            <option value="{{ account.id }}">
+                {{ account.display_name }} 
+            </option>
+        {% endfor %}
+    </select>
+</div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="save-payment-method">
+
+                    حفظ
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const saveBtn = document.getElementById("save-payment-method");
+    
+    if (saveBtn) {
+
+        console.log("تم العثور على زر الحفظ، جارٍ ربط الحدث...");
+
+        saveBtn.addEventListener("click", function(e) {
+
+            e.preventDefault(); 
+
+            console.log("تم الضغط على زر الحفظ!");
+
+            const name = document.getElementById("payment-method-name").value;
+
+            const account = document.getElementById("payment-main-account").value;
+
+
+            console.log("البيانات:", { name, account });
+
+
+fetch("{% url 'pos:add_payment_method' %}", {
+
+    method: "POST",
+
+    headers: {
+
+        "Content-Type": "application/json",
+
+        "X-CSRFToken": "{{ csrf_token }}"
+
+    },
+
+    body: JSON.stringify({
+
+        name: name,
+
+        parent_id: account
+
+    })
+
+})
+
+            .then(response => response.json())
+
+
+            .then(data => {
+
+                console.log(data);
+
+
+                if(data.success){
+
+                    alert("تم حفظ طريقة الدفع بنجاح");
+
+                    location.reload();
+
+                }else{
+
+                    alert(data.error || "حدث خطأ أثناء الحفظ");
+
+                }
+
+            })
+
+
+            .catch(error => {
+
+                console.error(error);
+
+                alert("خطأ في الاتصال بالسيرفر");
+
+            });
+
+
+        });
+
+    } else {
+
+        console.error("لم يتم العثور على الزر!");
+
+    }
+
+});
+</script>
+
 {% endblock %}

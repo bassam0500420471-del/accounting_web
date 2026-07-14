@@ -1,6 +1,7 @@
 {% extends "layout/base.html" %}
-{% load static %}
-{% block title %}سند صرف{% endblock %}
+{% load static i18n %}
+
+{% block title %}{% trans "Payment Voucher" %}{% endblock %}
 
 {% block content %}
 
@@ -18,62 +19,68 @@
         display: flex;
         align-items: center;
     }
+
     .select2-selection__rendered {
         line-height: normal !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
+
     .select2-selection__arrow {
         height: 36px;
     }
 </style>
 
 <div class="container mt-4" style="max-width: 900px;">
-    <h3 class="text-center mb-4">سند صرف</h3>
+
+    <h3 class="text-center mb-4">
+        {% trans "Payment Voucher" %}
+    </h3>
 
     <form method="post">
         {% csrf_token %}
 
-        <!-- نوع الجهة (بدون name حتى لا يُرسل للـ backend) -->
-        <label class="fw-bold mb-1">نوع الجهة</label>
+        <!-- نوع الجهة -->
+        <label class="fw-bold mb-1">{% trans "Party Type" %}</label>
         <select id="partyType" class="form-select mb-3" required>
-            <option value="">-- اختر --</option>
-            <option value="customer">عميل</option>
-            <option value="supplier">مورد</option>
+            <option value="">{% trans "-- Select --" %}</option>
+            <option value="customer">{% trans "Customer" %}</option>
+            <option value="supplier">{% trans "Supplier" %}</option>
         </select>
 
         <!-- الجهة -->
-        <label class="fw-bold mb-1">الجهة</label>
+        <label class="fw-bold mb-1">{% trans "Party" %}</label>
         <select id="partySelect" class="form-select mb-3" required>
-            <option value="">-- اختر أولاً نوع الجهة --</option>
+            <option value="">{% trans "-- Select Party Type First --" %}</option>
         </select>
 
-        <!-- حقول مخفية متوافقة مع الـ view -->
+        <!-- hidden fields -->
         <input type="hidden" name="supplier" id="supplierInput">
         <input type="hidden" name="customer" id="customerInput">
 
         <!-- الحساب -->
-        <label class="fw-bold mb-1">الحساب (صندوق / بنك)</label>
+        <label class="fw-bold mb-1">{% trans "Cash / Bank Account" %}</label>
         <select name="cash_account" class="form-select mb-3" required>
-            <option value="">-- اختر الحساب --</option>
+            <option value="">{% trans "-- Select Account --" %}</option>
             {% for a in cash_accounts %}
                 <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
             {% endfor %}
         </select>
 
         <!-- المبلغ -->
-        <label class="fw-bold mb-1">المبلغ</label>
+        <label class="fw-bold mb-1">{% trans "Amount" %}</label>
         <input type="number" step="0.01" name="amount" class="form-control mb-3" required>
 
         <!-- البيان -->
-        <label class="fw-bold mb-1">البيان</label>
+        <label class="fw-bold mb-1">{% trans "Description" %}</label>
         <input type="text" name="description" class="form-control mb-4">
 
         <div class="text-end">
             <button type="submit" class="btn btn-secondary px-4">
-                حفظ وترحيل
+                {% trans "Save & Post" %}
             </button>
         </div>
+
     </form>
 </div>
 
@@ -81,7 +88,7 @@
     function initSelect2(){
         $("#partySelect").select2({
             width: "100%",
-            placeholder: "-- اختر الجهة --",
+            placeholder: "{% trans '-- Select Party --' %}",
             allowClear: true
         });
     }
@@ -89,10 +96,10 @@
     function loadParties(partyType){
         $("#partySelect")
             .empty()
-            .append('<option value="">جار التحميل...</option>');
+            .append('<option value="">{% trans "Loading..." %}</option>');
 
         $.get("{% url 'payments:load_parties' %}", {party_type: partyType}, function(data){
-            $("#partySelect").empty().append('<option value="">-- اختر الجهة --</option>');
+            $("#partySelect").empty().append('<option value="">{% trans "-- Select Party --" %}</option>');
 
             if (data && data.length){
                 data.forEach(function(item){
@@ -112,13 +119,12 @@
         $("#partyType").on("change", function(){
             const t = $(this).val();
 
-            // تفريغ القيم السابقة
             $("#supplierInput").val("");
             $("#customerInput").val("");
 
             if (!t){
                 $("#partySelect")
-                    .html('<option value="">-- اختر أولاً نوع الجهة --</option>');
+                    .html('<option value="">{% trans "-- Select Party Type First --" %}</option>');
                 initSelect2();
                 return;
             }

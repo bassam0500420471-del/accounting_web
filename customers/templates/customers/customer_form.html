@@ -1,11 +1,24 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}إضافة عميل{% endblock %}
+{% block title %}
+    {% if edit_mode %}
+        {% trans "Edit Customer" %}
+    {% else %}
+        {% trans "Add Customer" %}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 
-<h3 class="mb-4">إضافة عميل</h3>
+<h3 class="mb-4">
+    {% if edit_mode %}
+        {% trans "Edit Customer" %}
+    {% else %}
+        {% trans "Add Customer" %}
+    {% endif %}
+</h3>
 
 <div class="card p-4">
 
@@ -16,144 +29,199 @@
 
     <div class="row">
 
-        <!-- ========== بيانات العميل ========== -->
+        <!-- ========== Customer Info ========== -->
         <div class="col-md-6">
 
-            <h5 class="mb-3">بيانات العميل</h5>
+            <h5 class="mb-3">{% trans "Customer Information" %}</h5>
 
-            <label class="form-label">نوع العميل</label><br>
+            <label class="form-label">{% trans "Customer Type" %}</label><br>
+
             <label>
-                <input type="radio" name="customer_type" value="individual"
+                <input type="radio"
+                       name="customer_type"
+                       value="individual"
+                       {% if customer.customer_type == "individual" %}checked{% endif %}
                        onclick="toggleBusinessFields()">
-                فردي
+                {% trans "Individual" %}
             </label>
+
             &nbsp;&nbsp;
+
             <label>
-                <input type="radio" name="customer_type" value="business" checked
+                <input type="radio"
+                       name="customer_type"
+                       value="business"
+                       {% if customer.customer_type != "individual" %}checked{% endif %}
                        onclick="toggleBusinessFields()">
-                تجاري
+                {% trans "Business" %}
             </label>
 
             <div class="mt-3">
-                <label>الاسم التجاري *</label>
-                <input name="commercial_name" class="form-control" required>
+                <label>{% trans "Commercial Name" %} *</label>
+                <input name="commercial_name"
+                       value="{{ customer.commercial_name|default:'' }}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="mt-3">
+                <label>{% trans "Commercial Name (English)" %}</label>
+                <input name="name_en"
+                       value="{{ customer.name_en|default:'' }}"
+                       class="form-control">
             </div>
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>الاسم الأول</label>
-                    <input name="first_name" class="form-control">
+                    <label>{% trans "First Name" %}</label>
+                    <input name="first_name"
+                           value="{{ customer.first_name|default:'' }}"
+                           class="form-control">
                 </div>
+
                 <div class="col">
-                    <label>الاسم الأخير</label>
-                    <input name="last_name" class="form-control">
+                    <label>{% trans "Last Name" %}</label>
+                    <input name="last_name"
+                           value="{{ customer.last_name|default:'' }}"
+                           class="form-control">
                 </div>
             </div>
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>الهاتف</label>
-                    <input name="phone" class="form-control">
+                    <label>{% trans "Phone" %}</label>
+                    <input name="phone"
+                           value="{{ customer.phone|default:'' }}"
+                           class="form-control">
                 </div>
+
                 <div class="col">
-                    <label>جوال</label>
-                    <input name="mobile" class="form-control">
+                    <label>{% trans "Mobile" %}</label>
+                    <input name="mobile"
+                           value="{{ customer.mobile|default:'' }}"
+                           class="form-control">
+                </div>
+            </div>
+
+            <!-- تم التعديل هنا: وضع العنوان العربي والإنجليزي بجانب بعض -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label>{% trans "Street Address 1" %}</label>
+                    <input name="street1"
+                           value="{{ customer.street1|default:'' }}"
+                           class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>{% trans "Address (English)" %}</label>
+                    <input name="address_en"
+                           value="{{ customer.address_en|default:'' }}"
+                           class="form-control">
                 </div>
             </div>
 
             <div class="mt-3">
-                <label>عنوان الشارع 1</label>
-                <input name="street1" class="form-control">
-            </div>
-
-            <div class="mt-3">
-                <label>عنوان الشارع 2</label>
-                <input name="street2" class="form-control">
+                <label>{% trans "Street Address 2" %}</label>
+                <input name="street2"
+                       value="{{ customer.street2|default:'' }}"
+                       class="form-control">
             </div>
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>المدينة</label>
-                    <input name="city" class="form-control">
+                    <label>{% trans "City" %}</label>
+                    <input name="city"
+                           value="{{ customer.city|default:'' }}"
+                           class="form-control">
                 </div>
+
                 <div class="col">
-                    <label>المنطقة</label>
-                    <input name="region" class="form-control">
+                    <label>{% trans "Region" %}</label>
+                    <input name="region"
+                           value="{{ customer.region|default:'' }}"
+                           class="form-control">
                 </div>
+
                 <div class="col">
-                    <label>الرمز البريدي</label>
-                    <input name="postal_code" class="form-control">
+                    <label>{% trans "Postal Code" %}</label>
+                    <input name="postal_code"
+                           value="{{ customer.postal_code|default:'' }}"
+                           class="form-control">
                 </div>
             </div>
 
             <div class="mt-3">
-                <label>البلد</label>
+                <label>{% trans "Country" %}</label>
                 <input name="country"
-                       value="المملكة العربية السعودية (SA)"
+                       value="{{ customer.country|default:'Saudi Arabia (SA)' }}"
                        class="form-control">
             </div>
 
             <div id="businessFields" class="mt-3">
                 <div class="row">
                     <div class="col">
-                        <label>الرقم الضريبي (اختياري)</label>
-                        <input name="tax_number" class="form-control">
+                        <label>{% trans "Tax Number (Optional)" %}</label>
+                        <input name="tax_number"
+                               value="{{ customer.tax_number|default:'' }}"
+                               class="form-control">
                     </div>
                     <div class="col">
-                        <label>سجل تجاري (اختياري)</label>
-                        <input name="cr_number" class="form-control">
+                        <label>{% trans "CR Number (Optional)" %}</label>
+                        <input name="cr_number"
+                               value="{{ customer.cr_number|default:'' }}"
+                               class="form-control">
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- ========== بيانات إضافية ========== -->
+        <!-- ========== Additional Info ========== -->
         <div class="col-md-6">
-
-            <h5 class="mb-3">بيانات إضافية</h5>
-
-            <label>البريد الإلكتروني</label>
-            <input name="email" class="form-control">
+            <h5 class="mb-3">{% trans "Additional Information" %}</h5>
+            <label>{% trans "Email" %}</label>
+            <input name="email"
+                   value="{{ customer.email|default:'' }}"
+                   class="form-control">
 
             <div class="mt-3">
-                <label>الرصيد الافتتاحي</label>
-                <input type="number" step="0.01"
+                <label>{% trans "Opening Balance" %}</label>
+                <input type="number"
+                       step="0.01"
                        name="opening_balance"
+                       value="{{ customer.opening_balance|default:'' }}"
                        class="form-control">
             </div>
 
             <div class="mt-3">
-                <label>الملاحظات</label>
+                <label>{% trans "Notes" %}</label>
                 <textarea name="notes"
                           class="form-control"
-                          rows="4"></textarea>
+                          rows="4">{{ customer.notes|default:'' }}</textarea>
             </div>
 
             <div class="mt-3">
-                <label>المرفقات</label>
+                <label>{% trans "Attachments" %}</label>
                 <input type="file"
                        name="attachment"
                        class="form-control">
             </div>
-
         </div>
-
     </div>
 
     <div class="mt-4 text-end">
         <button type="submit"
                 class="btn"
                 style="background:#6c757d; color:white; border-radius:6px;">
-            حفظ
+            {% if edit_mode %}
+                {% trans "Update" %}
+            {% else %}
+                {% trans "Save" %}
+            {% endif %}
         </button>
         <a href="/customers/" class="btn btn-secondary">
-            إلغاء
+            {% trans "Cancel" %}
         </a>
     </div>
-
 </form>
-
 </div>
 
 <script>

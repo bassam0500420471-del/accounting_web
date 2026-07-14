@@ -11,6 +11,9 @@ urlpatterns = [
     # عرض عرض السعر
     path("<int:pk>/", views.quotation_view, name="quotation_view"),
 
+    # تعديل عرض السعر
+    path("edit/<int:pk>/", views.quotation_edit, name="quotation_edit"),
+
     # طباعة عرض السعر
     path("<int:pk>/print/", views.quotation_print, name="quotation_print"),
 
@@ -19,4 +22,8 @@ urlpatterns = [
 
     # تحويل عرض السعر إلى فاتورة
     path("<int:pk>/convert/", views.quotation_to_invoice, name="quotation_convert"),
+
+    # ==================== 🛠️ مسارات الـ API وجلب البيانات ====================
+    path("api/search-customer/", views.search_customer, name="api_search_customer"),
+    path("api/search-product/", views.search_product, name="api_search_product"),
 ]

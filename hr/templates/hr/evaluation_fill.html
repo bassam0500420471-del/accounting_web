@@ -1,0 +1,94 @@
+{% extends "layout/base.html" %}
+{% load hr_extras %}
+{% load i18n %}
+
+{% block title %}{{ role_label }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <h3 class="fw-bold mb-3">
+        📝 {{ role_label }} - {{ evaluation.name }}
+    </h3>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body row">
+            <div class="col-md-4">
+                <strong>{% trans "Target Employee:" %}</strong><br>
+                {% if target.employee %}
+                    {{ target.employee.first_name_ar }} {{ target.employee.last_name_ar }}
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <strong>{% trans "Department:" %}</strong><br>
+                {% if target.employee and target.employee.department %}
+                    {{ target.employee.department }}
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <strong>{% trans "Period:" %}</strong><br>
+                {{ evaluation.start_date }} → {{ evaluation.end_date }}
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="card shadow-sm">
+        {% csrf_token %}
+
+        <div class="card-header fw-bold">
+            ✅ {% trans "Enter Scores" %}
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th>{% trans "Criteria" %}</th>
+                        <th style="width:140px;">{% trans "Weight" %}</th>
+                        <th style="width:200px;">{% trans "Score" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in criteria %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.weight }}%</td>
+                        <td>
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                max="100"
+                                class="form-control"
+                                name="score_{{ c.id }}"
+                                value="{{ existing_scores|get_item:c.id|default_if_none:'' }}"
+                                placeholder="{% trans '0 - 100' %}">
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">{% trans "No criteria for this evaluation" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success fw-bold">
+                    💾 {% trans "Save" %}
+                </button>
+                <a href="{% url 'hr:evaluation_detail' evaluation.id %}" class="btn btn-secondary fw-bold">
+                    {% trans "Back" %}
+                </a>
+            </div>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

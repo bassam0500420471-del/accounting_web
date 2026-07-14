@@ -1,5 +1,6 @@
 {% extends "layout/base.html" %}
 {% load l10n %}
+{% load i18n %}
 {% block content %}
 
 <style>
@@ -55,47 +56,47 @@
 
 <div class="page-box">
 
-    <h2 class="text-center fw-bold mb-4">إشعار دائن (مرتجع مبيعات)</h2>
+    <h2 class="text-center fw-bold mb-4">{% trans "Credit Note (Sales Return)" %}</h2>
 
-    <!-- بيانات الفاتورة -->
+    <!-- Invoice Info -->
     <div class="row mb-3">
         <div class="col-md-4">
-            <label>اسم العميل</label>
+            <label>{% trans "Customer Name" %}</label>
             <input class="input-box" value="{{ invoice.customer.name }}" readonly>
         </div>
         <div class="col-md-4">
-            <label>تاريخ الفاتورة</label>
+            <label>{% trans "Invoice Date" %}</label>
             <input class="input-box" value="{{ invoice.date_invoice }}" readonly>
         </div>
         <div class="col-md-4">
-            <label>رقم الفاتورة</label>
+            <label>{% trans "Invoice No" %}</label>
             <input class="input-box" value="{{ invoice.invoice_no }}" readonly>
         </div>
     </div>
 
-    <!-- سبب الإرجاع -->
+    <!-- Return Reason -->
     <div class="mb-3">
-        <label class="fw-bold">سبب الإرجاع <span class="text-danger">*</span></label>
+        <label class="fw-bold">{% trans "Return Reason" %} <span class="text-danger">*</span></label>
         <textarea name="reason" class="input-box" required></textarea>
     </div>
 
     <div id="qtyAlert" class="alert-box">
-        ⚠ لا يمكن إرجاع كمية أكبر من الكمية المتاحة
+        ⚠ {% trans "Cannot return a quantity greater than available" %}
     </div>
 
-    <!-- الأصناف -->
-    <h4 class="section-title">الأصناف</h4>
+    <!-- Items -->
+    <h4 class="section-title">{% trans "Items" %}</h4>
 
     <table class="table table-bordered items-table mt-2">
         <thead>
             <tr>
-                <th>الصنف</th>
-                <th>الكمية المتاحة</th>
-                <th>السعر</th>
-                <th>الخصم</th>
-                <th>الضريبة %</th>
-                <th>الإجمالي بعد الضريبة</th>
-                <th style="width:140px;">كمية الإرجاع</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Available Quantity" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Discount" %}</th>
+                <th>{% trans "Tax %" %}</th>
+                <th>{% trans "Total After Tax" %}</th>
+                <th style="width:140px;">{% trans "Return Quantity" %}</th>
             </tr>
         </thead>
 
@@ -103,7 +104,11 @@
         {% for item in items %}
         <tr>
             <td>{{ item.product.name }}</td>
-            <td>{{ item.remaining_qty|unlocalize }}</td>
+            <td>
+    أصلية: {{ item.qty|default:"0" }} | 
+    مرتجع سابق: {{ item.returned_qty_calculated|default:"0" }} | 
+    المتبقي: {{ item.remaining_qty|default:"0" }}
+</td>
             <td>{{ item.price|unlocalize }}</td>
             <td>{{ item.discount|unlocalize }}</td>
             <td>{{ item.tax|unlocalize }}</td>
@@ -125,20 +130,20 @@
         </tbody>
     </table>
 
-    <h4 class="section-title">المجاميع</h4>
+    <h4 class="section-title">{% trans "Totals" %}</h4>
 
     <table class="table table-bordered totals-box mt-2">
-        <tr><td>الإجمالي قبل الضريبة:</td><td id="total_before">0.00</td></tr>
-        <tr><td>إجمالي بعد الخصم:</td><td id="total_after_discount">0.00</td></tr>
-        <tr><td>قيمة الضريبة:</td><td id="total_tax">0.00</td></tr>
+        <tr><td>{% trans "Total Before Tax:" %}</td><td id="total_before">0.00</td></tr>
+        <tr><td>{% trans "Total After Discount:" %}</td><td id="total_after_discount">0.00</td></tr>
+        <tr><td>{% trans "Tax Value:" %}</td><td id="total_tax">0.00</td></tr>
         <tr style="background:#e7f1ff;">
-            <td class="fw-bold">الإجمالي بعد الضريبة:</td>
+            <td class="fw-bold">{% trans "Total After Tax:" %}</td>
             <td id="total_after_tax" class="fw-bold">0.00</td>
         </tr>
     </table>
 
     <div class="text-end mt-4">
-        <button type="submit" class="btn-main">💾 حفظ المرتجع</button>
+        <button type="submit" class="btn-main">💾 {% trans "Save Return" %}</button>
     </div>
 
 </div>

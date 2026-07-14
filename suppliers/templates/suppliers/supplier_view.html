@@ -1,30 +1,31 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="container mt-4">
 
-    <!-- الأزرار العلوية -->
+    <!-- Top Buttons -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">عرض فاتورة مشتريات</h3>
+        <h3 class="fw-bold">{% trans "View Purchase Invoice" %}</h3>
 
         <div>
-            <a href="/purchases/invoices/" class="btn btn-light">⬅️ رجوع</a>
+            <a href="/purchases/invoices/" class="btn btn-light">⬅️ {% trans "Back" %}</a>
 
             <a href="/purchases/invoices/{{ invoice.id }}/edit/" class="btn btn-warning">
-                ✏️ تعديل
+                ✏️ {% trans "Edit" %}
             </a>
 
             <a href="/purchases/invoices/{{ invoice.id }}/delete/"
                class="btn btn-danger"
-               onclick="return confirm('هل تريد حذف الفاتورة نهائيًا؟');">
-                🗑️ حذف
+               onclick="return confirm('{% trans "Do you want to permanently delete the invoice?" %}');">
+                🗑️ {% trans "Delete" %}
             </a>
 
             <a href="/purchases/invoices/{{ invoice.id }}/print/"
                class="btn btn-primary" target="_blank">
-               🖨️ طباعة
+               🖨️ {% trans "Print" %}
             </a>
 
             <a href="/purchases/invoices/{{ invoice.id }}/pdf/"
@@ -36,62 +37,62 @@
 
     <div class="card p-4">
 
-        <!-- رقم الفاتورة + التاريخ -->
+        <!-- Invoice Number + Date -->
         <div class="row mb-3">
             <div class="col-md-4">
-                <label class="fw-bold">رقم الفاتورة:</label>
+                <label class="fw-bold">{% trans "Invoice No:" %}</label>
                 <p>{{ invoice.invoice_no }}</p>
             </div>
             <div class="col-md-4">
-                <label class="fw-bold">تاريخ الفاتورة:</label>
+                <label class="fw-bold">{% trans "Invoice Date:" %}</label>
                 <p>{{ invoice.date_invoice }}</p>
             </div>
             <div class="col-md-4">
-                <label class="fw-bold">تاريخ الإصدار:</label>
+                <label class="fw-bold">{% trans "Issue Date:" %}</label>
                 <p>{{ invoice.date_issue }}</p>
             </div>
         </div>
 
         <hr>
 
-        <!-- بيانات المورد -->
-        <h5 class="fw-bold mt-3">بيانات المورد</h5>
+        <!-- Supplier Information -->
+        <h5 class="fw-bold mt-3">{% trans "Supplier Information" %}</h5>
         <div class="row mb-3">
             <div class="col-md-4">
-                <label class="fw-bold">الاسم التجاري:</label>
+                <label class="fw-bold">{% trans "Commercial Name:" %}</label>
                 <p>{{ invoice.supplier.commercial_name }}</p>
             </div>
             <div class="col-md-4">
-                <label class="fw-bold">الرقم الضريبي:</label>
+                <label class="fw-bold">{% trans "Tax Number:" %}</label>
                 <p>{{ invoice.supplier.tax_number }}</p>
             </div>
             <div class="col-md-4">
-                <label class="fw-bold">رقم السجل التجاري:</label>
+                <label class="fw-bold">{% trans "Commercial Registration No:" %}</label>
                 <p>{{ invoice.supplier.cr_number }}</p>
             </div>
         </div>
 
         <hr>
 
-        <!-- الوصف -->
-        <label class="fw-bold">الوصف:</label>
+        <!-- Description -->
+        <label class="fw-bold">{% trans "Description:" %}</label>
         <p>{{ invoice.description }}</p>
 
         <hr>
 
-        <!-- جدول الأصناف -->
-        <h5 class="fw-bold mt-3">الأصناف</h5>
+        <!-- Items Table -->
+        <h5 class="fw-bold mt-3">{% trans "Items" %}</h5>
 
         <table class="table table-bordered mt-2">
             <thead class="table-light">
                 <tr>
-                    <th>الصنف</th>
-                    <th>الوصف</th>
-                    <th>الكمية</th>
-                    <th>السعر</th>
-                    <th>الخصم</th>
-                    <th>الضريبة%</th>
-                    <th>الإجمالي</th>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Discount" %}</th>
+                    <th>{% trans "Tax %" %}</th>
+                    <th>{% trans "Total" %}</th>
                 </tr>
             </thead>
 
@@ -112,31 +113,31 @@
 
         <hr>
 
-        <!-- المجاميع -->
+        <!-- Totals -->
         <div class="row mt-3">
 
             <div class="col-md-3">
-                <label class="fw-bold">الإجمالي قبل الخصم:</label>
+                <label class="fw-bold">{% trans "Total Before Discount:" %}</label>
                 <p>{{ invoice.total_before_tax }}</p>
             </div>
 
             <div class="col-md-3">
-                <label class="fw-bold">إجمالي الخصم:</label>
+                <label class="fw-bold">{% trans "Total Discount:" %}</label>
                 <p>{{ invoice.total_discount }}</p>
             </div>
 
             <div class="col-md-3">
-                <label class="fw-bold">بعد الخصم:</label>
+                <label class="fw-bold">{% trans "After Discount:" %}</label>
                 <p>{{ invoice.total_after_discount }}</p>
             </div>
 
             <div class="col-md-3">
-                <label class="fw-bold">الضريبة:</label>
+                <label class="fw-bold">{% trans "Tax:" %}</label>
                 <p>{{ invoice.tax_value }}</p>
             </div>
 
             <div class="col-md-3 mt-3">
-                <label class="fw-bold">الإجمالي بعد الضريبة:</label>
+                <label class="fw-bold">{% trans "Total After Tax:" %}</label>
                 <p class="fw-bold text-success">{{ invoice.total_after_tax }}</p>
             </div>
 
@@ -146,7 +147,7 @@
 
         <!-- QR Code -->
         <div class="text-center mt-4">
-            <h6 class="fw-bold">رمز QR</h6>
+            <h6 class="fw-bold">{% trans "QR Code" %}</h6>
             <img src="data:image/png;base64,{{ qr_code }}" width="180">
         </div>
 

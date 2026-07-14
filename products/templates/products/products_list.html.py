@@ -1,0 +1,236 @@
+BBBBBBB BBBBBBBBBBBBBBBBBB
+BBBB BBBBBB
+BBBB BBBB
+
+BBBBB BBBBB gettext(u'Product Management') BBBBBBBB
+
+BBBBB BBBB
+XXXXXXX
+    XXXX X
+        XXXXXXXXXXX XXXXXXXX
+        XXXXXXXXXXXX XXXXXXX
+    X
+
+    XXXXX X
+        XXXXXXXXXXXXXX XXXXX
+        XXXXXXXXXXX XXX XXX XXX XXXXXXXXXXXXXXXXX
+    X
+
+    XXXXXXXXXXXXX X
+        XXXXXXXXXX XXXXX
+        XXXXXXXX XXX XXXX
+        XXXXXXXXXXXXXX XXXX
+        XXXXXX XXXXXX
+        XXXXXXXXXXXXXXXXX XXXXXXXX
+    X
+
+    XXXXXXXXXXXXXXXX X
+        XXXXXXXXXXXXXXXXX XXXXXXX XXXXXXXXXXX
+        XXXXXX XXXXX XXXXXXXXXXX
+    X
+
+    XXXXXXXXXXXXX X
+        XXXXXXXX XXXXX
+        XXXXXXXXXXXX XXXXXXX
+        XXXXXXXXXXXXXXXX XXXXXXX
+        XXXX XXXXX
+        XXXXXXX XXXXX
+    X
+
+    XXXXXXXXXXXXXXXXXXXXXX X
+        XXXXXXXXX XXXXXXXXX
+        XXXXXXXX XXXXXXXXXXXXX
+        XXXXXX XXXXX
+        XXXXXXX XXXXX
+        XXXXXXXXXXXX XX
+    X
+
+    XXXXXXXXXXXXXX X
+        XXXXXX XXXXX
+        XXXXXXX XXXXX
+        XXXXXXXXXXX XXXXXX
+        XXXXXXXXXXXXXX XXXX
+        XXXXXXX XXXXXXXX
+        XXXXXXXXXXX XXXXXXXXX XXXX XXXXX
+    X
+
+    XXXXXXXXXXXXXXXXXXXX X
+        XXXXXXXX XXXXX
+        XXXXXXXXX XXXXXXXXX
+        XXXX XXXX
+        XXXXX XXXX
+        XXXXXXXXXX XXXXXXXXXXXXXXX XXXXXX
+        XXXXXXXX XXXXX
+        XXXXXXX XXX XXXXX XXXXX
+        XXXXXXXXXXX XXXXX
+        XXXXXXXX XXXX
+        XXXXXXXXXXXXXX XXXX
+        XXXXXXXXXXX XXX XXX XXXX XXXXXXXXXXXXXXXX
+    X
+
+    XXXXXXXXXXXXXXXXXXXX XXX X
+        XXXXXX XXXXXX
+        XXXXXXX XXXXXX
+        XXXXXXXXXXX XXXXXX
+        XXXXXXXXXXXXXX XXXX
+    X
+
+    XXXXXXXXXXXX XXXXXXXXX X
+        XXXXXXXXXXXX XXXXX
+        XXXXXX XXXXXXXX
+    X
+
+    XXXXXXXXX X
+        XXXXXXXXX XXXXXXXXX
+        XXXXXXXX XXXXXXXXXXXXX
+    X
+
+    XXXXXXXXXXXXX X
+        XXXXXXXXXXXXXXXXX XXXXXXXX
+        XXXXXX XXXXXX
+        XXXXXXX XXXXX
+        XXXXXXXX XXX XXXXX
+        XXXXXXXXXXXXXX XXXX
+        XXXXXXX XXXXXXXX
+        XXXXXXXXXX XXXXX
+    X
+
+    XXXXXXXXXXXXXXXXX X
+        XXXXXXXX XXXXX
+        XXXXXXXXX XXXXXXXXX
+        XXXXXXXXXXXXXXXXX XXXXXXXX
+        XXXXXXXXXX XXXXXX
+        XXXXXXXXXXX XXX XXX XXX XXXXXXXXXXXXXXXX
+        XXXXXXXXXXXXXX XXXX
+        XXXXXXXX XXX
+    X
+
+    XXXXXXXXXXXXXXXXX X X
+        XXXXXX XXXXXXXX
+        XXXXXXXX XXX XXXXX
+        XXXXXXXXXXXXXXXX XXXXX
+        XXXXXXXX XXXXX
+        XXXXXXXXXXXX XXXXXXX
+        XXXX XXXX
+        XXXXXXXXXX XXXXX
+    X
+
+    XXXXXXXXXXXXXXXXX XXXXXXX X
+        XXXXXXXXXXXXXXXXX XXXXXXXX
+    X
+
+    XXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXX X
+        XXXXXXXX XXXXXX
+    X
+XXXXXXXX
+BBBBBBBB
+
+BBBBB BBBBBBB
+
+XXXX XXXXXXXXXXXXXXXXXXXXXX XXXXXX
+
+    XXXX XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXX XXXXXX
+        XXX XXXXXXXXXXXXXXXX gettext(u'Product Management') XXXXX
+        XX XXXXXXBBB BBBBBBBBBBBBBBBBBBBBBBX XXXXXXXXXX XXXXXXXXXXXXXXXXX
+            X  gettext(u'Add Product') 
+        XXXX
+    XXXXXX
+
+    XXXXX XXXXXXXXXXXX XXXXXXXXXXXXX
+        XXXXXX XXXXXXXXXXX XXXXXXXX XXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXX gettext(u'Search product...') XX
+    XXXXXXX
+
+    XXXX XXXXXXXXXXX XXXXX
+        XXXXXX XXXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXXXXX
+            XXXXXX XXXXXXXXXXXXXXXXXXXX
+                XXXX
+                    XXXX gettext(u'Product') XXXXX
+                    XXXX gettext(u'Price') XXXXX
+                    XXXX gettext(u'Available Quantity') XXXXX
+                    XXXX gettext(u'Type') XXXXX
+                    XXXX gettext(u'Status') XXXXX
+                    XXXX gettext(u'Actions') XXXXX
+                XXXXX
+            XXXXXXXX
+
+            XXXXXXX
+                BBB B BB BBBBBBBB
+                XXXX
+                    XXX XXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXX
+                        BB BBBBBBB
+                        XXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                            XXXX XXXXXX XXXXXX XXXXXXXXXXXXXXXXXXXXXX
+                            XXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                                XXXX XXXXXX XXXXXXX
+                            XXXXXX
+                        XXXXXX
+                        BBBBB
+                        XXXXXXXXXXXXX
+                    XXXXX
+
+                    XXX XXXXXXXXXXXXXXXXXXX  gettext(u'SAR') XXXXX
+                    XXX XXXXXXXXXXXXXXXXXXXXXX
+
+                    XXXX
+                        XXXXX XXXXXXXXXXXXXXXXXXXXX
+                            BB BBBBBB BB BBBBBBBB
+                                 gettext(u'Normal Product') 
+                            BBBB BBBBBB BB BBBBBBBBB
+                                 gettext(u'Service') 
+                            BBBB BBBBBB BB BBBBBBBB
+                                 gettext(u'Bundle Product') 
+                            BBBB
+                                 gettext(u'Undefined') 
+                            BBBBB
+                        XXXXXXX
+                    XXXXX
+
+                    XXXX
+                        BB BBBBBBBB
+                            XXXXX XXXXXXXXXXXXXXXXXXX XXXXXXXXX gettext(u'Active') XXXXXXX
+                        BBBB
+                            XXXXX XXXXXXXXXXXXXXXXXX XXXXXXXXX gettext(u'Inactive') XXXXXXX
+                        BBBBB
+                    XXXXX
+
+                    XXXX
+                        XXXX XXXXXXXXXXXXXXXXX
+                            XXXXXXX XXXXXXXXXXXXXXXXXXXXX gettext(u'Options')  XXXXXXXXXX
+                            XXXX XXXXXXXXXXXXXXXXXXXXXXXXX
+                                XX XXXXXXBBB BBBBBBBBBBBBBBBBBBBBBBB BBBBXXXX  gettext(u'View') XXXX
+                                XX XXXXXXBBB BBBBBBBBBBBBBBBBBBBBBBB BBBBXXXX  gettext(u'Edit') XXXX
+                                XX XXXXXXBBB BBBBBBBBBBBBBBBBBBBBBBBBB BBBBXXXX  gettext(u'Delete') XXXX
+                            XXXXXX
+                        XXXXXX
+                    XXXXX
+                XXXXX
+
+                BBBBB
+                XXXX
+                    XXX XXXXXXXXXXX XXXXXXXXXXXXXXXXXXX gettext(u'No products found') XXXXX
+                XXXXX
+                BBBBBB
+            XXXXXXXX
+
+        XXXXXXXX
+    XXXXXX
+
+XXXXXX
+
+BBBBBBBB
+
+BBBBB BBBBBBB
+XXXXXXXX
+    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX X
+        XXXXX XXXXX X XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX XX X
+            XXXXXXXXXXXXXXXXXXX X XXXXXXXX
+        XXX
+
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX XX X
+            XXXXXXXXXXXXXXXXXXX X XXXXXXX
+        XXX
+    XXX
+XXXXXXXXX
+BBBBBBBB

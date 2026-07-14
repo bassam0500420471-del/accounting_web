@@ -1,36 +1,37 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container mt-4" style="background:white; padding:40px;">
 
-    <h2 class="text-center mb-4 fw-bold">أمر شراء</h2>
+    <h2 class="text-center mb-4 fw-bold">{% trans "Purchase Order" %}</h2>
 
-    <!-- بيانات عامة -->
+    <!-- General Data -->
     <div class="row mb-4">
 
         <div class="col-md-6">
-            <p><strong>رقم أمر الشراء:</strong> {{ invoice.invoice_no }}</p>
-            <p><strong>المورد:</strong> {{ invoice.supplier.commercial_name }}</p>
+            <p><strong>{% trans "Purchase Order No:" %}</strong> {{ invoice.invoice_no }}</p>
+            <p><strong>{% trans "Supplier:" %}</strong> {{ invoice.supplier.commercial_name }}</p>
         </div>
 
         <div class="col-md-6 text-end">
-            <p><strong>تاريخ التسليم:</strong> {{ invoice.date_delivery|date:"j F Y" }}</p>
+            <p><strong>{% trans "Delivery Date:" %}</strong> {{ invoice.date_delivery|date:"j F Y" }}</p>
         </div>
 
     </div>
 
-    <!-- جدول الأصناف -->
+    <!-- Items Table -->
     <table class="table table-bordered text-center">
         <thead class="table-light">
             <tr>
                 <th>#</th>
-                <th>الصنف</th>
-                <th>الوصف</th>
-                <th>الكمية</th>
-                <th>السعر</th>
-                <th>الخصم</th>
-                <th>الضريبة %</th>
-                <th>الإجمالي</th>
+                <th>{% trans "Product" %}</th>
+                <th>{% trans "Description" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Discount" %}</th>
+                <th>{% trans "Tax %" %}</th>
+                <th>{% trans "Total" %}</th>
             </tr>
         </thead>
 
@@ -46,11 +47,15 @@
                 <td>{{ item.tax }}</td>
                 <td>{{ item.total }}</td>
             </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center text-muted">{% trans "No items found" %}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- المجاميع -->
+    <!-- Totals -->
     <div class="row mt-4">
 
         <div class="col-md-6"> </div>
@@ -58,33 +63,33 @@
         <div class="col-md-6">
 
             <div class="mb-2 d-flex justify-content-between">
-                <label><strong>الإجمالي قبل الضريبة:</strong></label>
+                <label><strong>{% trans "Total Before Tax:" %}</strong></label>
                 <input type="text" class="form-control w-50 text-end" value="{{ invoice.total_before_tax }}" readonly>
             </div>
 
             <div class="mb-2 d-flex justify-content-between">
-                <label><strong>الإجمالي بعد الخصم:</strong></label>
+                <label><strong>{% trans "Total After Discount:" %}</strong></label>
                 <input type="text" class="form-control w-50 text-end" value="{{ invoice.total_after_discount }}" readonly>
             </div>
 
             <div class="mb-2 d-flex justify-content-between">
-                <label><strong>إجمالي الضريبة:</strong></label>
+                <label><strong>{% trans "Total Tax:" %}</strong></label>
                 <input type="text" class="form-control w-50 text-end" value="{{ invoice.tax_value }}" readonly>
             </div>
 
             <div class="mb-2 d-flex justify-content-between">
-                <label><strong>الإجمالي النهائي:</strong></label>
+                <label><strong>{% trans "Final Total:" %}</strong></label>
                 <input type="text" class="form-control w-50 text-end fw-bold" value="{{ invoice.total }}" readonly>
             </div>
 
         </div>
     </div>
 
-    <!-- أزرار -->
+    <!-- Buttons -->
     <div class="text-end mt-4">
-        <a href="{% url 'po_edit' invoice.id %}" class="btn btn-warning">تعديل</a>
-        <a href="{% url 'po_print' invoice.id %}" class="btn btn-secondary">طباعة</a>
-        <a href="{% url 'po_list' %}" class="btn btn-dark">عودة للقائمة</a>
+        <a href="{% url 'po_edit' invoice.id %}" class="btn btn-warning">{% trans "Edit" %}</a>
+        <a href="{% url 'po_print' invoice.id %}" class="btn btn-secondary">{% trans "Print" %}</a>
+        <a href="{% url 'po_list' %}" class="btn btn-dark">{% trans "Back to List" %}</a>
     </div>
 
 </div>

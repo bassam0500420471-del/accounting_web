@@ -1,19 +1,20 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container mt-4">
 
     <h3 class="fw-bold text-center mb-4">
-        إنشاء إشعار مدين (مرتجع)
+        {% trans "Create Debit Note (Return)" %}
     </h3>
 
     <!-- =========================
-         اختيار المورد
+         Select Supplier
     ========================== -->
     <div class="mb-3">
-        <label class="fw-bold">اختر المورد:</label>
+        <label class="fw-bold">{% trans "Select Supplier:" %}</label>
         <select id="supplierSelect" class="form-select">
-            <option value="">-- اختر المورد --</option>
+            <option value="">{% trans "-- Select Supplier --" %}</option>
             {% for supplier in suppliers %}
                 <option value="{{ supplier.id }}">
                     {{ supplier.commercial_name }}
@@ -23,27 +24,27 @@
     </div>
 
     <!-- =========================
-         اختيار الفاتورة
+         Select Invoice
     ========================== -->
     <div class="mb-4">
-        <label class="fw-bold">اختر الفاتورة:</label>
+        <label class="fw-bold">{% trans "Select Invoice:" %}</label>
         <select id="invoiceSelect" class="form-select">
-            <option value="">-- اختر الفاتورة --</option>
+            <option value="">{% trans "-- Select Invoice --" %}</option>
         </select>
     </div>
 
     <!-- =========================
-         بيانات الفاتورة (عرض مبسط)
+         Invoice Data (Preview)
     ========================== -->
     <div id="invoiceData" style="display:none;">
 
         <div class="row mb-3">
             <div class="col">
-                <label class="fw-bold">رقم الفاتورة:</label>
+                <label class="fw-bold">{% trans "Invoice Number:" %}</label>
                 <input type="text" id="invoiceNo" class="form-control" readonly>
             </div>
             <div class="col">
-                <label class="fw-bold">تاريخ الفاتورة:</label>
+                <label class="fw-bold">{% trans "Invoice Date:" %}</label>
                 <input type="text" id="invoiceDate" class="form-control" readonly>
             </div>
         </div>
@@ -51,12 +52,12 @@
         <table class="table table-bordered text-center align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>الصنف</th>
-                    <th>الكمية</th>
-                    <th>السعر</th>
-                    <th>% الضريبة</th>
-                    <th>الخصم</th>
-                    <th>الإجمالي</th>
+                    <th>{% trans "Product" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Tax %" %}</th>
+                    <th>{% trans "Discount" %}</th>
+                    <th>{% trans "Total" %}</th>
                 </tr>
             </thead>
             <tbody id="itemsTable">
@@ -67,7 +68,7 @@
             class="btn btn-secondary w-100 mt-3"
             type="button"
             onclick="goToCreateReturn()">
-            متابعة إنشاء المرتجع
+            {% trans "Continue Creating Return" %}
         </button>
 
     </div>
@@ -78,6 +79,10 @@
      JavaScript
 ========================== -->
 <script>
+const SELECT_INVOICE_TEXT = "{% trans '-- Select Invoice --' %}";
+const INVOICE_NO_TEXT = "{% trans 'Invoice No' %}";
+const PLEASE_SELECT_INVOICE_TEXT = "{% trans 'Please select an invoice first' %}";
+
 const supplierSelect = document.getElementById("supplierSelect");
 const invoiceSelect  = document.getElementById("invoiceSelect");
 const invoiceData    = document.getElementById("invoiceData");
@@ -85,7 +90,7 @@ const itemsTable     = document.getElementById("itemsTable");
 
 supplierSelect.addEventListener("change", function () {
     const supplierId = this.value;
-    invoiceSelect.innerHTML = '<option value="">-- اختر الفاتورة --</option>';
+    invoiceSelect.innerHTML = `<option value="">${SELECT_INVOICE_TEXT}</option>`;
     invoiceData.style.display = "none";
 
     if (!supplierId) return;
@@ -96,7 +101,7 @@ supplierSelect.addEventListener("change", function () {
             data.invoices.forEach(inv => {
                 const opt = document.createElement("option");
                 opt.value = inv.id;
-                opt.textContent = `فاتورة رقم ${inv.invoice_no} | ${inv.date} | ${inv.total}`;
+                opt.textContent = `${INVOICE_NO_TEXT} ${inv.invoice_no} | ${inv.date} | ${inv.total}`;
                 invoiceSelect.appendChild(opt);
             });
         });
@@ -136,7 +141,7 @@ invoiceSelect.addEventListener("change", function () {
 function goToCreateReturn() {
     const invoiceId = invoiceSelect.value;
     if (!invoiceId) {
-        alert("الرجاء اختيار فاتورة أولاً");
+        alert(PLEASE_SELECT_INVOICE_TEXT);
         return;
     }
     window.location.href = `/purchase/returns/from-invoice/${invoiceId}/`;

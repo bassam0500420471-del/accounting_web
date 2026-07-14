@@ -1,24 +1,30 @@
 {% extends "layout/base.html" %}
-{% block title %}سندات القبض{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Receipt Vouchers" %}{% endblock %}
 
 {% block content %}
-<h3 class="mb-4">📥 سندات القبض</h3>
+
+<h3 class="mb-4">📥 {% trans "Receipt Vouchers" %}</h3>
 
 <table class="table table-bordered table-hover text-center align-middle">
+
     <thead class="table-light">
         <tr>
-            <th>رقم السند</th>
-            <th>الطرف</th>
-            <th>التاريخ</th>
-            <th>المبلغ</th>
-            <th>أنشئ بواسطة</th>
-            <th>الحالة</th>
-            <th>إجراءات</th>
+            <th>{% trans "Voucher Number" %}</th>
+            <th>{% trans "Party" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Amount" %}</th>
+            <th>{% trans "Created By" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
     </thead>
+
     <tbody>
         {% for r in receipts %}
         <tr class="{% if r.status == 'cancelled' %}table-secondary{% endif %}">
+
             <td>{{ r.voucher_no|default:r.id }}</td>
 
             <!-- الطرف -->
@@ -52,29 +58,31 @@
             <!-- الحالة -->
             <td>
                 {% if r.status == "posted" %}
-                    <span class="badge bg-success">مرحل</span>
+                    <span class="badge bg-success">{% trans "Posted" %}</span>
                 {% elif r.status == "cancelled" %}
-                    <span class="badge bg-danger">ملغى</span>
+                    <span class="badge bg-danger">{% trans "Cancelled" %}</span>
                 {% else %}
-                    <span class="badge bg-secondary">غير مرحل</span>
+                    <span class="badge bg-secondary">{% trans "Draft" %}</span>
                 {% endif %}
             </td>
 
             <!-- الإجراءات -->
             <td>
                 <div class="dropdown position-static">
+
                     <button class="btn btn-sm btn-secondary dropdown-toggle"
                             type="button"
                             data-bs-toggle="dropdown"
                             data-bs-display="static">
-                        خيارات
+                        {% trans "Options" %}
                     </button>
 
                     <ul class="dropdown-menu">
+
                         <li>
                             <a class="dropdown-item"
                                href="{% url 'payments:receipt_detail' r.id %}">
-                                👁 عرض السند
+                                👁 {% trans "View" %}
                             </a>
                         </li>
 
@@ -82,20 +90,27 @@
                         <li>
                             <a class="dropdown-item text-danger"
                                href="{% url 'payments:receipt_cancel' r.id %}"
-                               onclick="return confirm('هل أنت متأكد من إلغاء سند القبض؟')">
-                                ❌ إلغاء
+                               onclick="return confirm('{% trans "Are you sure you want to cancel this receipt voucher?" %}')">
+                                ❌ {% trans "Cancel" %}
                             </a>
                         </li>
                         {% endif %}
+
                     </ul>
+
                 </div>
             </td>
+
         </tr>
+
         {% empty %}
         <tr>
-            <td colspan="7">لا توجد سندات قبض</td>
+            <td colspan="7">{% trans "No receipt vouchers found" %}</td>
         </tr>
         {% endfor %}
+
     </tbody>
+
 </table>
+
 {% endblock %}

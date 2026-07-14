@@ -1,5 +1,8 @@
+{% load i18n %}
+
 {% extends "layout/base.html" %}
-{% block title %}إضافة فرع حساب{% endblock %}
+
+{% block title %}{% trans "Add Account Branch" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -9,15 +12,15 @@
 
             <!-- العنوان -->
             <h4 class="fw-bold mb-4 text-end">
-                إضافة فرع تحت الحساب: {{ parent.name }}
+                {% blocktrans %}Add branch under account: {{ parent.name }}{% endblocktrans %}
             </h4>
 
             <form method="post">
                 {% csrf_token %}
 
-                <!-- اسم الحساب (نفس شكل وطول الرمز) -->
+                <!-- اسم الحساب -->
                 <div class="mb-3 text-end">
-                    <label class="form-label fw-bold">اسم الحساب</label>
+                    <label class="form-label fw-bold">{% trans "Account Name" %}</label>
                     <input
                         type="text"
                         name="name"
@@ -27,9 +30,9 @@
                     >
                 </div>
 
-                <!-- الرمز (تلقائي) -->
+                <!-- الرمز -->
                 <div class="mb-4 text-end">
-                    <label class="form-label fw-bold">الرمز</label>
+                    <label class="form-label fw-bold">{% trans "Code" %}</label>
                     <input
                         type="text"
                         class="form-control"
@@ -40,14 +43,16 @@
 
                 <!-- الأزرار -->
                 <div class="d-flex gap-2 justify-content-end">
+
                     <button type="submit" class="btn btn-secondary">
-                        إضافة
+                        {% trans "Add" %}
                     </button>
 
                     <a href="{% url 'accounting:account_view' parent.pk %}"
                        class="btn btn-secondary">
-                        إلغاء
+                        {% trans "Cancel" %}
                     </a>
+
                 </div>
 
             </form>

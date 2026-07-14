@@ -27,6 +27,7 @@ def apply_stock_movement(
 
     # 1) سجل الحركة
     StockMovement.objects.create(
+        company=product.company,   # ✅ ربط الحركة تلقائياً بشركة المنتج
         product=product,
         qty_delta=qty_delta,
         move_type=move_type,

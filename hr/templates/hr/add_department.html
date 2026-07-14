@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Add Department" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% trans "Add New Department" %}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="text-danger">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            {% trans "Save" %}
+        </button>
+
+        <a href="{% url 'hr:departments' %}" class="btn btn-secondary">
+            {% trans "Cancel" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

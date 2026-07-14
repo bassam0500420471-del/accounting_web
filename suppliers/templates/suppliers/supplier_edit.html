@@ -1,12 +1,13 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}تعديل مورد{% endblock %}
+{% block title %}{% trans "Edit Supplier" %}{% endblock %}
 
 {% block content %}
 
 <style>
-/* ===== Select2 RTL تحسين ===== */
+/* ===== Select2 RTL Enhancement ===== */
 .select2-container--default .select2-selection--single {
     height: 42px;
     padding: 6px 10px;
@@ -33,7 +34,7 @@
 }
 </style>
 
-<h3 class="mb-4">تعديل مورد</h3>
+<h3 class="mb-4">{% trans "Edit Supplier" %}</h3>
 
 <div class="card p-4">
 
@@ -42,13 +43,13 @@
 
     <div class="row">
 
-        <!-- ========== بيانات المورد ========== -->
+        <!-- ========== Supplier Information ========== -->
         <div class="col-md-6">
 
-            <h5 class="mb-3">بيانات المورد</h5>
+            <h5 class="mb-3">{% trans "Supplier Information" %}</h5>
 
             <div class="mt-3">
-                <label>الاسم التجاري *</label>
+                <label>{% trans "Commercial Name" %} *</label>
                 <input name="commercial_name"
                        class="form-control"
                        value="{{ supplier.commercial_name }}"
@@ -57,13 +58,13 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>الاسم الأول</label>
+                    <label>{% trans "First Name" %}</label>
                     <input name="first_name"
                            class="form-control"
                            value="{{ supplier.first_name }}">
                 </div>
                 <div class="col">
-                    <label>الاسم الأخير</label>
+                    <label>{% trans "Last Name" %}</label>
                     <input name="last_name"
                            class="form-control"
                            value="{{ supplier.last_name }}">
@@ -72,13 +73,13 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>الهاتف</label>
+                    <label>{% trans "Phone" %}</label>
                     <input name="phone"
                            class="form-control"
                            value="{{ supplier.phone }}">
                 </div>
                 <div class="col">
-                    <label>جوال</label>
+                    <label>{% trans "Mobile" %}</label>
                     <input name="mobile"
                            class="form-control"
                            value="{{ supplier.mobile }}">
@@ -86,14 +87,14 @@
             </div>
 
             <div class="mt-3">
-                <label>عنوان الشارع 1</label>
+                <label>{% trans "Street Address 1" %}</label>
                 <input name="street1"
                        class="form-control"
                        value="{{ supplier.street1 }}">
             </div>
 
             <div class="mt-3">
-                <label>عنوان الشارع 2</label>
+                <label>{% trans "Street Address 2" %}</label>
                 <input name="street2"
                        class="form-control"
                        value="{{ supplier.street2 }}">
@@ -101,19 +102,19 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>المدينة</label>
+                    <label>{% trans "City" %}</label>
                     <input name="city"
                            class="form-control"
                            value="{{ supplier.city }}">
                 </div>
                 <div class="col">
-                    <label>المنطقة</label>
+                    <label>{% trans "Region" %}</label>
                     <input name="region"
                            class="form-control"
                            value="{{ supplier.region }}">
                 </div>
                 <div class="col">
-                    <label>الرمز البريدي</label>
+                    <label>{% trans "Postal Code" %}</label>
                     <input name="postal_code"
                            class="form-control"
                            value="{{ supplier.postal_code }}">
@@ -121,7 +122,7 @@
             </div>
 
             <div class="mt-3">
-                <label>البلد</label>
+                <label>{% trans "Country" %}</label>
                 <input name="country"
                        class="form-control"
                        value="{{ supplier.country }}">
@@ -129,13 +130,13 @@
 
             <div class="row mt-3">
                 <div class="col">
-                    <label>الرقم الضريبي (اختياري)</label>
+                    <label>{% trans "Tax Number (Optional)" %}</label>
                     <input name="tax_number"
                            class="form-control"
                            value="{{ supplier.tax_number }}">
                 </div>
                 <div class="col">
-                    <label>سجل تجاري (اختياري)</label>
+                    <label>{% trans "CR Number (Optional)" %}</label>
                     <input name="cr_number"
                            class="form-control"
                            value="{{ supplier.cr_number }}">
@@ -144,19 +145,19 @@
 
         </div>
 
-        <!-- ========== بيانات الحساب ========== -->
+        <!-- ========== Account Information ========== -->
         <div class="col-md-6">
 
-            <h5 class="mb-3">بيانات الحساب</h5>
+            <h5 class="mb-3">{% trans "Account Information" %}</h5>
 
-            <!-- ✅ حساب المورد (ذمم دائنة + بحث + تحديد تلقائي) -->
+            <!-- Supplier Account -->
             <div class="mb-3">
-                <label class="fw-bold">حساب المورد (ذمم دائنة) *</label>
+                <label class="fw-bold">{% trans "Supplier Account (Payables)" %} *</label>
                 <select name="account"
                         id="supplier_account"
                         class="form-select"
                         required>
-                    <option value="">-- اختر حساب المورد --</option>
+                    <option value="">{% trans "-- Select Supplier Account --" %}</option>
 
                     {% for acc in accounts %}
                         <option value="{{ acc.id }}"
@@ -167,26 +168,26 @@
                 </select>
             </div>
 
-            <label>البريد الإلكتروني</label>
+            <label>{% trans "Email" %}</label>
             <input name="email"
                    class="form-control"
                    value="{{ supplier.email }}">
 
             <div class="mt-3">
-                <label>الرصيد الافتتاحي</label>
+                <label>{% trans "Opening Balance" %}</label>
                 <input type="number" step="0.01"
                        name="opening_balance"
                        class="form-control"
                        value="{{ supplier.opening_balance }}">
 
-                <label class="mt-2">الملاحظات</label>
+                <label class="mt-2">{% trans "Notes" %}</label>
                 <textarea name="notes"
                           class="form-control"
                           rows="4">{{ supplier.notes }}</textarea>
             </div>
 
             <div class="mt-3">
-                <label>المرفقات</label>
+                <label>{% trans "Attachments" %}</label>
                 <input type="file"
                        name="attachment"
                        class="form-control">
@@ -200,10 +201,10 @@
         <button type="submit"
                 class="btn"
                 style="background:#6c757d; color:white; border-radius:6px;">
-            حفظ التعديل
+            {% trans "Save Changes" %}
         </button>
         <a href="/suppliers/" class="btn btn-secondary">
-            إلغاء
+            {% trans "Cancel" %}
         </a>
     </div>
 
@@ -214,16 +215,14 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- ✅ jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<!-- ✅ Select2 -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
 $(document).ready(function () {
     $('#supplier_account').select2({
-        placeholder: "-- اختر حساب المورد --",
+        placeholder: "{% trans '-- Select Supplier Account --' %}",
         allowClear: true,
         width: '100%',
         dir: "rtl",

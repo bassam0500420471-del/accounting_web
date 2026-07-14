@@ -1,17 +1,21 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
+
 {% block content %}
 
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
+
         <h3 class="fw-bold">
-            عرض القيد رقم {{ entry.entry_no }}
+            {% trans "View Entry No" %} {{ entry.entry_no }}
         </h3>
 
         <a href="{% url 'accounting:journals_list' %}"
            class="btn btn-secondary">
-            رجوع
+            {% trans "Back" %}
         </a>
+
     </div>
 
     <!-- ===== بيانات القيد ===== -->
@@ -19,29 +23,33 @@
         <div class="card-body">
 
             <div class="row mb-2">
+
                 <div class="col-md-4">
-                    <strong>التاريخ:</strong> {{ entry.date }}
+                    <strong>{% trans "Date" %}:</strong> {{ entry.date }}
                 </div>
+
                 <div class="col-md-4">
-                    <strong>الحالة:</strong>
+                    <strong>{% trans "Status" %}:</strong>
                     {% if entry.posted %}
-                        <span class="badge bg-success">مرحّل</span>
+                        <span class="badge bg-success">{% trans "Posted" %}</span>
                     {% else %}
-                        <span class="badge bg-secondary">مسودة</span>
+                        <span class="badge bg-secondary">{% trans "Draft" %}</span>
                     {% endif %}
                 </div>
+
                 <div class="col-md-4">
-                    <strong>المصدر:</strong>
-                    {% if entry.source_type %}
-                        آلي (فاتورة)
+                    <strong>{% trans "Source" %}:</strong>
+                    {% if entry.source_type == "invoice" %}
+                        {% trans "Auto" %} ({% trans "Invoice" %})
                     {% else %}
-                        يدوي
+                        {% trans "Manual" %}
                     {% endif %}
                 </div>
+
             </div>
 
             <div class="mt-2">
-                <strong>البيان:</strong>
+                <strong>{% trans "Description" %}:</strong>
                 <div class="border rounded p-2">
                     {{ entry.description }}
                 </div>
@@ -53,24 +61,30 @@
     <!-- ===== بنود القيد ===== -->
     <div class="card">
         <div class="card-body p-0">
+
             <table class="table table-bordered mb-0 text-center align-middle">
+
                 <thead class="table-light">
                     <tr>
-                        <th>الحساب</th>
-                        <th>مدين</th>
-                        <th>دائن</th>
-                        <th>مركز التكلفة</th>
+                        <th>{% trans "Account" %}</th>
+                        <th>{% trans "Debit" %}</th>
+                        <th>{% trans "Credit" %}</th>
+                        <th>{% trans "Cost Center" %}</th>
                     </tr>
                 </thead>
+
                 <tbody>
 
                     {% for line in lines %}
                     <tr>
+
                         <td class="text-end">
                             {{ line.account.code }} - {{ line.account.name }}
                         </td>
+
                         <td>{{ line.debit|floatformat:2 }}</td>
                         <td>{{ line.credit|floatformat:2 }}</td>
+
                         <td>
                             {% if line.cost_center %}
                                 {{ line.cost_center.name }}
@@ -78,25 +92,31 @@
                                 —
                             {% endif %}
                         </td>
+
                     </tr>
                     {% endfor %}
 
                     <!-- ===== الإجمالي ===== -->
                     <tr class="fw-bold {% if total_debit != total_credit %}table-danger{% else %}table-success{% endif %}">
-                        <td>الإجمالي</td>
+
+                        <td>{% trans "Total" %}</td>
                         <td>{{ total_debit|floatformat:2 }}</td>
                         <td>{{ total_credit|floatformat:2 }}</td>
+
                         <td>
                             {% if total_debit == total_credit %}
-                                ✔️ متوازن
+                                <span class="badge bg-success">{% trans "Balanced" %}</span>
                             {% else %}
-                                ❌ غير متوازن
+                                <span class="badge bg-danger">{% trans "Not Balanced" %}</span>
                             {% endif %}
                         </td>
+
                     </tr>
 
                 </tbody>
+
             </table>
+
         </div>
     </div>
 

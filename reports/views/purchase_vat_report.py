@@ -1,28 +1,57 @@
 from django.shortcuts import render
 from decimal import Decimal
+
 from purchase.models import PurchaseInvoice, PurchaseReturn
 
 
+def _has_field(model, field_name: str) -> bool:
+    try:
+        model._meta.get_field(field_name)
+        return True
+    except Exception:
+        return False
+
+
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def purchase_vat_report(request):
+    company = _get_request_company(request)
 
     date_from = request.GET.get("date_from")
-    date_to   = request.GET.get("date_to")
+    date_to = request.GET.get("date_to")
 
     rows = []
 
     total_before_tax = Decimal("0.00")
-    total_tax        = Decimal("0.00")
-    total_after_tax  = Decimal("0.00")
+    total_tax = Decimal("0.00")
+    total_after_tax = Decimal("0.00")
 
     invoices = PurchaseInvoice.objects.all()
-    returns  = PurchaseReturn.objects.all()
+    returns = PurchaseReturn.objects.all()
 
+    # ===== عزل الشركة =====
+    if company:
+        if _has_field(PurchaseInvoice, "company"):
+            invoices = invoices.filter(company=company)
+        if _has_field(PurchaseReturn, "company"):
+            returns = returns.filter(company=company)
+
+    # ===== فلترة التاريخ =====
     if date_from and date_to:
         invoices = invoices.filter(date_invoice__range=(date_from, date_to))
-        returns  = returns.filter(return_date__range=(date_from, date_to))
+        returns = returns.filter(return_date__range=(date_from, date_to))
+    else:
+        if date_from:
+            invoices = invoices.filter(date_invoice__gte=date_from)
+            returns = returns.filter(return_date__gte=date_from)
+        if date_to:
+            invoices = invoices.filter(date_invoice__lte=date_to)
+            returns = returns.filter(return_date__lte=date_to)
 
     invoices = invoices.order_by("date_invoice")
-    returns  = returns.order_by("return_date")
+    returns = returns.order_by("return_date")
 
     # ===============================
     # فواتير المشتريات
@@ -40,8 +69,8 @@ def purchase_vat_report(request):
         })
 
         total_before_tax += inv.total_before_tax
-        total_tax        += tax_value
-        total_after_tax  += inv.total_after_tax
+        total_tax += tax_value
+        total_after_tax += inv.total_after_tax
 
     # ===============================
     # مرتجعات المشتريات
@@ -57,8 +86,10 @@ def purchase_vat_report(request):
         })
 
         total_before_tax -= ret.total_before_tax
-        total_tax        -= ret.tax_value
-        total_after_tax  -= ret.total_after_tax
+        total_tax -= ret.tax_value
+        total_after_tax -= ret.total_after_tax
+
+    rows = sorted(rows, key=lambda x: (x["date"], x["type"], x["number"]))
 
     context = {
         "rows": rows,

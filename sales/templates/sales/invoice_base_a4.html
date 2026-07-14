@@ -1,57 +1,100 @@
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}"
+      dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
 
 <style>
-    body {
-        margin:0;
-        padding:0;
-        background:#f0f2f5;
-        font-family:Tahoma;
-    }
-
-    /* صفحة A4 */
-.a4-page {
-    width: 210mm;
-    min-height: 297mm;
-    height: auto;            /* المحتوى يتمدد بشكل طبيعي */
-    background: #ffffff;
-    margin: 20px auto;
-    padding: 20mm;
-    box-sizing: border-box;
-    display: block;          /* أهم خطوة – منع ضغط المحتوى */
+    /* 1. تعريف خط يدعم العربية لتجنب المربعات السوداء */
+/* تعريف خط Amiri */
+@font-face {
+    font-family: 'Amiri';
+    src: url("{% static 'fonts/Amiri-Regular.ttf' %}") format('truetype');
 }
 
+body {
+    background-color: #ffffff !important;
+    margin: 0;
+    padding: 0;
+    font-family: 'Amiri', sans-serif !important;
+}
+    /* 2. حاوية الفاتورة */
+    .invoice-paper {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 
+    /* 3. تنسيقات الجدول الأساسية */
     table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 14px;
     }
 
-    table thead th {
-        border-bottom: 1px solid #ccc;
-        padding: 6px;
+    .items-table th {
+        background-color: #1e293b !important;
+        color: #ffffff !important;
+        padding: 10px;
+        border: 1px solid #000 !important;
+        text-align: center;
         font-weight: bold;
+    }
+
+    .items-table td, .totals-table td {
+        padding: 10px;
+        border: 1px solid #000 !important;
         text-align: center;
     }
 
-    table tbody td {
-        border-bottom: 1px solid #eee;
-        padding: 6px;
-        text-align: center;
+    /* 4. تنسيقات النصوص والعناصر */
+    .header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 25px; }
+    .amount-text-box { 
+        width: 100%; 
+        border: 1px solid #000 !important; 
+        padding: 12px; 
+        text-align: center; 
+        font-weight: bold; 
+        margin-top: 15px; 
     }
+    
+.top-action-bar,
+.no-print {
+    display: none !important;
+}
+
+@media print {
+    #paymentModal {
+        display: none !important;
+    }
+}
 </style>
-
 </head>
 <body>
 
-<div class="a4-page">
-        {% block content %}
-        {% endblock %}
+<div class="invoice-paper">
+    {% block content %}
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    {% endblock %}
 </div>
 
 </body>

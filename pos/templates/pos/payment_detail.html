@@ -1,85 +1,333 @@
 {% extends "layout/base.html" %}
-{% block title %}سداد فاتورة{% endblock %}
+{% load i18n %}
+
+{% block title %}
+{% trans "Invoice Payment" %}
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width:600px">
-    <h4 class="mb-3">سداد فاتورة رقم {{ invoice.invoice_no }}</h4>
 
-    <!-- الفورم الرئيسي لإرسال المبلغ وطريقة السداد -->
+<div class="container mt-4" style="max-width:600px">
+
+    <h4 class="mb-3">
+        {% trans "Pay Invoice No." %} {{ invoice.invoice_no }}
+    </h4>
+
+    <!-- Payment Form -->
     <form method="post" id="payment_form">
+
         {% csrf_token %}
 
         <table class="table table-bordered">
+
             <tr>
-                <th>إجمالي الفاتورة</th>
-                <td>{{ invoice.total }}</td>
-            </tr>
-            <tr>
-                <th>الخصم</th>
+                <th>
+                    {% trans "Total Invoice" %}
+                </th>
+
                 <td>
+                    {{ invoice.total }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>
+                    {% trans "Discount" %}
+                </th>
+
+                <td>
+
                     <div class="input-group">
-                        <input type="number" step="0.01" min="0" class="form-control"
-                               name="discount_value" id="discount_value" value="0">
-                        <select class="form-select" name="discount_type" id="discount_type">
-                            <option value="percentage">نسبة %</option>
-                            <option value="value">قيمة</option>
+
+                        <input type="number"
+                               step="0.01"
+                               min="0"
+                               class="form-control"
+                               name="discount_value"
+                               id="discount_value"
+                               value="0">
+
+                        <select class="form-select"
+                                name="discount_type"
+                                id="discount_type">
+
+                            <option value="percentage">
+                                {% trans "Percentage %" %}
+                            </option>
+
+                            <option value="value">
+                                {% trans "Value" %}
+                            </option>
+
                         </select>
+
                     </div>
+
                 </td>
             </tr>
+
             <tr>
-                <th>المبلغ المدفوع</th>
+                <th>
+                    {% trans "Paid Amount" %}
+                </th>
+
                 <td>
-                    <input type="number" step="0.01" name="paid_amount"
-                           class="form-control" id="paid_amount" required>
+
+                    <input type="number"
+                           step="0.01"
+                           name="paid_amount"
+                           class="form-control"
+                           id="paid_amount"
+                           required>
+
                 </td>
             </tr>
+
             <tr>
-                <th>المتبقي</th>
-                <td id="remaining">{{ remaining }}</td>
+                <th>
+                    {% trans "Remaining" %}
+                </th>
+
+                <td id="remaining">
+                    {{ remaining }}
+                </td>
             </tr>
+
             <tr>
-                <th>طريقة السداد</th>
+                <th>
+                    {% trans "Payment Method" %}
+                </th>
+
                 <td>
-                    <select name="payment_method" class="form-select" id="payment_method">
-                        <option value="">-- اختر --</option>
+
+                    <select name="payment_method"
+                            class="form-select"
+                            id="payment_method">
+
+                        <option value="">
+                            -- {% trans "Select" %} --
+                        </option>
+
                         {% for method in payment_methods %}
-                            <option value="{{ method.id }}">{{ method.name }}</option>
+
+                        <option value="{{ method.id }}">
+                            {{ method.name }}
+                        </option>
+
                         {% endfor %}
+
+                        <option value="add">
+                            + إضافة طريقة دفع
+                        </option>
+
                     </select>
+
                 </td>
             </tr>
+
         </table>
 
-        <button type="submit" class="btn btn-secondary w-100 mt-3">
-            💾 حفظ السداد
+        <button type="submit"
+                class="btn btn-secondary w-100 mt-3">
+
+            💾 {% trans "Save Payment" %}
+
         </button>
+
     </form>
+
 </div>
 
 <script>
-// ==== حساب المتبقي أثناء الإدخال ====
+
+// ==== Live Remaining Calculation ====
+
 const totalInvoice = parseFloat({{ invoice.total }});
+
 const remainingTd = document.getElementById('remaining');
+
 const paidInput = document.getElementById('paid_amount');
+
 const discountInput = document.getElementById('discount_value');
+
 const discountType = document.getElementById('discount_type');
 
+
 function updateRemaining() {
+    // نستخدم parseFloat ونحول الأرقام لضمان الدقة
+    let total = parseFloat(totalInvoice);
     let paid = parseFloat(paidInput.value) || 0;
     let discountVal = parseFloat(discountInput.value) || 0;
-    let discountAmt = discountVal;
-
-    if(discountType.value === "percentage") {
-        discountAmt = totalInvoice * discountVal / 100;
+    
+    let discountAmt = 0;
+    if (discountType.value === "percentage") {
+        discountAmt = (total * discountVal) / 100;
+    } else {
+        discountAmt = discountVal;
     }
 
-    let remaining = totalInvoice - discountAmt - paid;
+    // حساب المتبقي الحقيقي
+    let remaining = total - discountAmt - paid;
+
+    // نقوم بتقريب النتيجة لأقرب خانتين عشريتين لتجنب أخطاء الكمبيوتر
+    // وإذا كانت النتيجة قريبة جداً من الصفر (مثل 0.00000000001) نحولها لصفر
+if (remaining < 0) {
+    remaining = 0;
+}
     remainingTd.innerText = remaining.toFixed(2);
 }
 
 paidInput.addEventListener('input', updateRemaining);
 discountInput.addEventListener('input', updateRemaining);
 discountType.addEventListener('change', updateRemaining);
+
+// ==== Add Payment Method ====
+
+document.getElementById("payment_method")
+.addEventListener("change", function(){
+
+    if(this.value === "add"){
+
+        this.value = "";
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("paymentMethodModal")
+        );
+
+        modal.show();
+
+    }
+
+});
+
+document.getElementById("save-payment-method").addEventListener("click", function(){
+
+    const name = document.getElementById("payment-method-name").value;
+    const parent = document.getElementById("payment-main-account").value;
+
+    if(!name){
+        alert("ادخل اسم طريقة الدفع");
+        return;
+    }
+
+    if(!parent){
+        alert("اختر الحساب الرئيسي");
+        return;
+    }
+
+    fetch("{% url 'pos:add_payment_method' %}", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+
+        body: JSON.stringify({
+            name: name,
+            parent_id: parent
+        })
+
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.success){
+
+            const select = document.getElementById("payment_method");
+
+            const option = document.createElement("option");
+
+            option.value = data.id;
+            option.text = data.name;
+
+            select.insertBefore(option, select.lastElementChild);
+
+            select.value = data.id;
+
+            bootstrap.Modal.getInstance(
+                document.getElementById("paymentMethodModal")
+            ).hide();
+
+            document.getElementById("payment-method-name").value = "";
+
+            alert("تمت إضافة طريقة الدفع");
+
+        }else{
+
+            alert(data.error);
+
+        }
+
+    });
+
+});
+
 </script>
+
+<div class="modal fade" id="paymentMethodModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    إضافة طريقة دفع
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <label>اسم طريقة الدفع</label>
+
+                <input type="text"
+                       id="payment-method-name"
+                       class="form-control">
+
+                <br>
+
+                <label>الحساب الرئيسي</label>
+
+                <select id="payment-main-account"
+                        class="form-select">
+
+                    {% for account in payment_parent_accounts %}
+
+                    <option value="{{ account.id }}">
+                        {{ account.display_name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="save-payment-method">
+
+                    حفظ
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

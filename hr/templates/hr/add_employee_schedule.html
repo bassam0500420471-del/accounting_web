@@ -1,53 +1,60 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}جدول الموظف الشهري{% endblock %}
+{% block title %}{% trans "Monthly Employee Schedule" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h3 class="mb-4">{% if create_mode %}إنشاء جدول جديد{% else %}جدول الموظفين{% endif %}</h3>
+    <h3 class="mb-4">
+        {% if create_mode %}
+            {% trans "Create New Schedule" %}
+        {% else %}
+            {% trans "Employee Schedule" %}
+        {% endif %}
+    </h3>
 
     <form id="employee-schedule-form" method="post" action="{% url 'hr:add_employee_schedule_ajax' %}">
         {% csrf_token %}
 
-        <!-- اختيار الشهر والسنة -->
+        <!-- Month & Year -->
         <div class="row mb-3">
             <div class="col-md-3">
-                <label class="form-label">الشهر</label>
+                <label class="form-label">{% trans "Month" %}</label>
                 <select name="month" class="form-select" required>
-                    {% for m in 1|make_list:"123456789101112" %}
-                        {% comment %} نستخدم range بدل فلتر غير موجود {% endcomment %}
-                        {% for month_num in "1,2,3,4,5,6,7,8,9,10,11,12"|split:"," %}
-                            <option value="{{ month_num }}" {% if month_num|int == month %}selected{% endif %}>
-                                {{ month_num }}
-                            </option>
-                        {% endfor %}
-                        {% break %} {# لإيقاف الحلقة الخارجية #}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">السنة</label>
-                <select name="year" class="form-select" required>
-                    {% for y in year|add:"0"|make_list:"0123456789" %}
-                        {% for y_num in year|add:"0"|int|range:year|add:5 %}
-                            <option value="{{ y_num }}" {% if y_num == year %}selected{% endif %}>
-                                {{ y_num }}
-                            </option>
-                        {% endfor %}
-                        {% break %}
+                    {% for month_num in "1,2,3,4,5,6,7,8,9,10,11,12"|split:"," %}
+                        <option value="{{ month_num }}" {% if month_num|int == month %}selected{% endif %}>
+                            {{ month_num }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>
 
-            <!-- حقل الموظف يظهر فقط لو ليس إنشاء جدول جديد -->
+            <div class="col-md-3">
+                <label class="form-label">{% trans "Year" %}</label>
+                <select name="year" class="form-select" required>
+                    {% for y_num in year|add:"0"|int|range:year|add:5 %}
+                        <option value="{{ y_num }}" {% if y_num == year %}selected{% endif %}>
+                            {{ y_num }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
             {% if not create_mode %}
             <div class="col-md-4">
-                <label class="form-label">الموظف</label>
+                <label class="form-label">{% trans "Employee" %}</label>
                 <select name="employee" class="form-select">
-                    <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>الكل</option>
+                    <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>
+                        {% trans "All" %}
+                    </option>
+                    {% get_current_language as LANGUAGE_CODE %}
                     {% for emp in employees %}
                     <option value="{{ emp.id }}" {% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
-                        {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                        {% if LANGUAGE_CODE == "ar" %}
+                            {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                        {% else %}
+                            {{ emp.first_name_en }} {{ emp.last_name_en }}
+                        {% endif %}
                     </option>
                     {% endfor %}
                 </select>
@@ -55,34 +62,56 @@
             {% endif %}
         </div>
 
-        <!-- جدول الموظفين -->
+        <!-- Table -->
         <table class="table table-bordered text-center">
             <thead>
                 <tr>
-                    <th>اليوم</th>
-                    <th>التاريخ</th>
+                    <th>{% trans "Day" %}</th>
+                    <th>{% trans "Date" %}</th>
+                    {% get_current_language as LANGUAGE_CODE %}
                     {% for emp in employees %}
-                        <th>{{ emp.first_name_ar }} {{ emp.last_name_ar }}</th>
+                        <th>
+                            {% if LANGUAGE_CODE == "ar" %}
+                                {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                            {% else %}
+                                {{ emp.first_name_en }} {{ emp.last_name_en }}
+                            {% endif %}
+                        </th>
                     {% endfor %}
                 </tr>
             </thead>
+
             <tbody>
                 {% for day in schedule_list %}
                 <tr>
                     <td>{{ day.day_name }}</td>
                     <td>{{ day.date }}</td>
+
                     {% for shift in day.shifts %}
                         <td>
                             {% if create_mode %}
                                 <input type="hidden" name="shift_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" value="">
+
                                 <button type="button"
                                         class="btn btn-light w-100 text-start shift-btn"
                                         data-day="{{ day.date }}"
                                         data-emp-id="{{ shift.emp_id }}">
-                                    {{ shift.shift_name if shift.shift_name != '--' else 'اختر شفت' }}
+                                    {% if shift.shift_name != '--' %}
+                                        {% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}
+                                            {% trans "Off Day" %}
+                                        {% else %}
+                                            {{ shift.shift_name }}
+                                        {% endif %}
+                                    {% else %}
+                                        {% trans "Select Shift" %}
+                                    {% endif %}
                                 </button>
                             {% else %}
-                                {{ shift.shift_name }}
+                                {% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}
+                                    {% trans "Off Day" %}
+                                {% else %}
+                                    {{ shift.shift_name }}
+                                {% endif %}
                             {% endif %}
                         </td>
                     {% endfor %}
@@ -92,10 +121,14 @@
         </table>
 
         {% if create_mode %}
-        <!-- أزرار الحفظ والإلغاء -->
         <div class="mt-3">
-            <button type="submit" class="btn btn-secondary">حفظ</button>
-            <a href="{% url 'hr:employee_schedule' %}" class="btn btn-secondary ms-2">إلغاء</a>
+            <button type="submit" class="btn btn-secondary">
+                {% trans "Save" %}
+            </button>
+
+            <a href="{% url 'hr:employee_schedule' %}" class="btn btn-secondary ms-2">
+                {% trans "Cancel" %}
+            </a>
         </div>
         {% endif %}
     </form>
@@ -103,24 +136,34 @@
     <div id="form-message" class="mt-3"></div>
 </div>
 
-<!-- Modal اختيار الشفت -->
+<!-- Modal -->
 <div class="modal fade" id="shiftModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">اختيار الشفت</h5>
+                <h5 class="modal-title">{% trans "Select Shift" %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
                 <ul class="list-group">
-                    <li class="list-group-item list-group-item-action" onclick="selectShift('', 'عطلة')">عطلة</li>
+                    <li class="list-group-item list-group-item-action"
+                        onclick="selectShift('', '{% trans "Off Day" %}')">
+                        {% trans "Off Day" %}
+                    </li>
+
                     {% for shift in shifts %}
                     <li class="list-group-item list-group-item-action"
-                        onclick="selectShift('{{ shift.id }}', '{{ shift.shift_name }} ({{ shift.start_time }} - {{ shift.end_time }})')">
-                        {{ shift.shift_name }}
-                        <small class="text-muted">({{ shift.start_time }} - {{ shift.end_time }})</small>
+                        onclick="selectShift('{{ shift.id }}', '{% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}{% trans "Off Day" %}{% else %}{{ shift.shift_name }}{% endif %} ({{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }})')">
+                        {% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}
+                            {% trans "Off Day" %}
+                        {% else %}
+                            {{ shift.shift_name }}
+                        {% endif %}
+                        <small class="text-muted">
+                            ({{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }})
+                        </small>
                     </li>
                     {% endfor %}
                 </ul>
@@ -172,6 +215,7 @@ document.getElementById("employee-schedule-form").addEventListener("submit", fun
     e.preventDefault();
     let form = e.target;
     let data = new FormData(form);
+
     fetch(form.action, {
         method: "POST",
         body: data,
@@ -184,14 +228,14 @@ document.getElementById("employee-schedule-form").addEventListener("submit", fun
     .then(result => {
         let msgDiv = document.getElementById("form-message");
         if (result.success) {
-            msgDiv.innerHTML = `<div class="alert alert-success">تم الحفظ بنجاح</div>`;
+            msgDiv.innerHTML = `<div class="alert alert-success">{% trans "Saved successfully" %}</div>`;
         } else {
-            msgDiv.innerHTML = `<div class="alert alert-danger">خطأ: ${result.error}</div>`;
+            msgDiv.innerHTML = `<div class="alert alert-danger">{% trans "Error" %}: ${result.error}</div>`;
         }
     })
     .catch(() => {
         document.getElementById("form-message").innerHTML =
-            `<div class="alert alert-danger">خطأ غير متوقع</div>`;
+            `<div class="alert alert-danger">{% trans "Unexpected error" %}</div>`;
     });
 });
 </script>

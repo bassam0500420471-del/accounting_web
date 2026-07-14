@@ -1,37 +1,40 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container mt-4">
 
-    <h2 class="fw-bold text-center mb-4">تفاصيل إشعار مدين (مرتجع)</h2>
+    <h2 class="fw-bold text-center mb-4">
+        {% trans "Debit Note Details (Return)" %}
+    </h2>
 
-    <!-- بيانات المرتجع -->
+    <!-- Return Data -->
     <div class="row mb-3">
         <div class="col-md-6">
-            <label class="fw-bold">رقم المرتجع:</label>
+            <label class="fw-bold">{% trans "Return Number:" %}</label>
             <input type="text" class="form-control" value="{{ return.return_no }}" readonly>
         </div>
         <div class="col-md-6">
-            <label class="fw-bold">تاريخ المرتجع:</label>
+            <label class="fw-bold">{% trans "Return Date:" %}</label>
             <input type="text" class="form-control" value="{{ return.date_return }}" readonly>
         </div>
     </div>
 
     <div class="mb-4">
-        <label class="fw-bold">المورد:</label>
+        <label class="fw-bold">{% trans "Supplier:" %}</label>
         <input type="text" class="form-control" value="{{ return.supplier.name }}" readonly>
     </div>
 
-    <!-- جدول الأصناف (مطابق للمبيعات) -->
+    <!-- Items Table -->
     <table class="table table-bordered text-center align-middle">
         <thead class="table-dark">
             <tr>
-                <th>الصنف</th>
-                <th>الكمية</th>
-                <th>السعر</th>
-                <th>الخصم</th>
-                <th>% الضريبة</th>
-                <th>الإجمالي</th>
+                <th>{% trans "Product" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Discount" %}</th>
+                <th>{% trans "Tax %" %}</th>
+                <th>{% trans "Total" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -43,6 +46,12 @@
                 <td>{{ item.discount }}</td>
                 <td>{{ item.tax }}%</td>
                 <td>{{ item.total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    {% trans "No items found" %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>

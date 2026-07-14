@@ -1,0 +1,47 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Add New Evaluation Type" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4"
+     style="background:#f1f3f5; min-height: calc(100vh - 120px); padding:20px; border-radius:10px;">
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h3 class="fw-bold mb-4">➕ {% trans "Add New Evaluation Type" %}</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- ✅ (الأضمن) خذ next من الرابط GET ولو ما موجود خذه من context -->
+                <input type="hidden" name="next" value="{{ request.GET.next|default:next|default:'' }}">
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">{% trans "Evaluation Type" %}</label>
+                    <input type="text" name="name" class="form-control" placeholder="{% trans 'Enter evaluation type' %}" required>
+                </div>
+
+                <div class="card shadow-sm mt-3">
+                    <div class="card-body text-end">
+                        <button type="submit" class="btn btn-secondary px-4">💾 {% trans "Save" %}</button>
+
+                        {% if request.GET.next or next %}
+                            <a href="{{ request.GET.next|default:next }}" class="btn btn-secondary px-4">
+                                ↩ {% trans "Back to Create Evaluation" %}
+                            </a>
+                        {% else %}
+                            <a href="{% url 'hr:evaluations' %}" class="btn btn-secondary px-4">
+                                ↩ {% trans "Back to Evaluation List" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,235 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}"
+      dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Add Sub Account" %}</title>
+
+    <style>
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .page-wrap {
+            width: 100%;
+            margin: 0;
+        }
+
+        .card {
+            width: 100%;
+            min-height: calc(100vh - 40px);
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 30px;
+            background: #f0f2f5;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 20px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .readonly-box {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 20px;
+            box-sizing: border-box;
+            background: #f9fafb;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 22px;
+            border-radius: 12px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: #fff;
+        }
+
+        .alert {
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 18px;
+        }
+
+        .alert-error,
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        @media (max-width: 768px) {
+            .card-header h3 {
+                font-size: 24px;
+            }
+
+            label,
+            input,
+            select,
+            .readonly-box {
+                font-size: 16px;
+            }
+
+            .btn {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-wrap">
+    <div class="card">
+
+        <div class="card-header">
+            <h3>{% trans "Add Sub Account" %}</h3>
+        </div>
+
+        <div class="card-body">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="form-group">
+                <label>{% trans "Parent Account" %}</label>
+                <div class="readonly-box">
+                    {{ parent.code }} - {{ parent.name }}
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>{% trans "Account Code" %}</label>
+                    <div class="readonly-box">{{ suggested_code }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">{% trans "Account Name" %}</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="account_type">{% trans "Account Type" %}</label>
+                    <select id="account_type" name="account_type">
+
+                        <option value="asset" {% if parent.account_type == 'asset' %}selected{% endif %}>
+                            {% trans "Assets" %}
+                        </option>
+
+                        <option value="liability" {% if parent.account_type == 'liability' %}selected{% endif %}>
+                            {% trans "Liabilities" %}
+                        </option>
+
+                        <option value="equity" {% if parent.account_type == 'equity' %}selected{% endif %}>
+                            {% trans "Equity" %}
+                        </option>
+
+                        <option value="revenue" {% if parent.account_type == 'revenue' %}selected{% endif %}>
+                            {% trans "Revenue" %}
+                        </option>
+
+                        <option value="expense" {% if parent.account_type == 'expense' %}selected{% endif %}>
+                            {% trans "Expenses" %}
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">
+                        {% trans "Save Sub Account" %}
+                    </button>
+
+                    <a href="{% url 'accounting:account_view' parent.pk %}"
+                       class="btn btn-secondary">
+                        {% trans "Back" %}
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

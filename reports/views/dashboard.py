@@ -15,6 +15,10 @@ def _has_field(model, field_name: str) -> bool:
         return False
 
 
+def _get_request_company(request):
+    return getattr(request, "company", None)
+
+
 def reports_dashboard(request):
     """
     لوحة التقارير - تعتمد على JournalLine
@@ -22,11 +26,25 @@ def reports_dashboard(request):
     - (اختياري) فلترة posted=True لو موجودة في JournalEntry
     - رسم بياني يومي للإيرادات/المصروفات
     """
+    company = _get_request_company(request)
 
     date_from = request.GET.get("date_from")
     date_to = request.GET.get("date_to")
 
     lines = JournalLine.objects.select_related("entry")
+
+    # ===== عزل الشركة =====
+    if company:
+        if _has_field(JournalLine, "company"):
+            lines = lines.filter(company=company)
+        else:
+            account_model = JournalLine._meta.get_field("account").remote_field.model
+            if _has_field(account_model, "company"):
+                lines = lines.filter(account__company=company)
+            else:
+                entry_model = JournalLine._meta.get_field("entry").remote_field.model
+                if _has_field(entry_model, "company"):
+                    lines = lines.filter(entry__company=company)
 
     # فلترة الفترة (إذا أُرسلت)
     if date_from:
@@ -56,7 +74,7 @@ def reports_dashboard(request):
 
     net_result = total_credit - total_debit
 
-    # عدد السطور داخل الفترة (للتأكد أن الفلترة فعلاً اشتغلت)
+    # عدد السطور داخل الفترة
     lines_count = lines.count()
 
     # بيانات الرسم البياني (يومي)

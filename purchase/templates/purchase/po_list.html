@@ -1,38 +1,37 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
 
 <div class="container-fluid mt-4">
 
-    <!-- زر إنشاء أمر شراء بلون الرمادي مثل زر خيارات -->
+    <!-- Create Purchase Order Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">إدارة أوامر الشراء</h3>
-        <a href="/purchase/po/add" class="btn btn-secondary">+ إنشاء أمر شراء</a>
+        <h3 class="fw-bold">{% trans "Purchase Orders Management" %}</h3>
+        <a href="/purchase/orders/add/" class="btn btn-secondary">+ {% trans "Create Purchase Order" %}</a>
     </div>
-
-    <!-- ✖ تمت إزالة الفلاتر العلوية بالكامل كما طلبت -->
 
     <table class="table table-hover text-center align-middle">
 
         <thead>
 
-            <!-- ⭐ صف الفلاتر داخل الجدول (أبقيته لأنه بنفس شكل صفحة الفواتير) ⭐ -->
+            <!-- Filter Row -->
             <tr>
                 <th><input type="text" class="filter-input form-control form-control-sm" placeholder="#"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="رقم أمر الشراء"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="المورد"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="التاريخ"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="الإجمالي"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Purchase Order No' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Supplier' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Date' %}"></th>
+                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Total' %}"></th>
                 <th></th>
             </tr>
 
-            <!-- ⭐ عناوين الجدول ⭐ -->
+            <!-- Table Headers -->
             <tr class="table-dark">
                 <th>#</th>
-                <th>رقم أمر الشراء</th>
-                <th>المورد</th>
-                <th>التاريخ</th>
-                <th>الإجمالي</th>
-                <th>الإجراءات</th>
+                <th>{% trans "Purchase Order No" %}</th>
+                <th>{% trans "Supplier" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th>{% trans "Total" %}</th>
+                <th>{% trans "Actions" %}</th>
             </tr>
 
         </thead>
@@ -50,17 +49,21 @@
                 <td>
                     <div class="btn-group">
                         <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                            خيارات
+                            {% trans "Options" %}
                         </button>
 
                         <ul class="dropdown-menu text-end">
-                            <li><a class="dropdown-item" href="/purchase/po/view/{{ p.id }}">عرض</a></li>
-                            <li><a class="dropdown-item" href="/purchase/po/print/{{ p.id }}">طباعة</a></li>
-                            <li><a class="dropdown-item text-danger" href="/purchase/delete/{{ p.id }}">حذف</a></li>
+                            <li><a class="dropdown-item" href="/purchase/orders/{{ p.id }}/">{% trans "View" %}</a></li>
+                            <li><a class="dropdown-item" href="/purchase/orders/{{ p.id }}/print/">{% trans "Print" %}</a></li>
+                            <li><a class="dropdown-item text-danger" href="/purchase/orders/{{ p.id }}/delete/">{% trans "Delete" %}</a></li>
                         </ul>
                     </div>
                 </td>
 
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">{% trans "No purchase orders found" %}</td>
             </tr>
             {% endfor %}
 
@@ -69,7 +72,6 @@
     </table>
 
 </div>
-
 
 <style>
 .filter-input {

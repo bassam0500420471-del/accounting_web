@@ -1,28 +1,31 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}إدارة المناوبات{% endblock %}
+{% block title %}{% trans "Shift Management" %}{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
-    <h3 class="mb-3">إدارة المناوبات</h3>
+    <h3 class="mb-3">{% trans "Shift Management" %}</h3>
 
     <!-- زر إضافة شفت جديد -->
     <div class="mb-3">
-        <a href="{% url 'hr:add_shift' %}" class="btn btn-secondary">+ إضافة شفت جديد</a>
+        <a href="{% url 'hr:add_shift' %}" class="btn btn-secondary">
+            + {% trans "Add New Shift" %}
+        </a>
     </div>
 
     <!-- جدول عرض المناوبات -->
     <table class="table table-bordered table-striped">
         <thead class="table-light">
             <tr>
-                <th>رقم الشفت</th>
-                <th>اسم الشفت</th>
-                <th>وقت البداية</th>
-                <th>وقت النهاية</th>
-                <th>استراحة من</th>
-                <th>استراحة إلى</th>
-                <th>ملاحظات</th>
-                <th>إجراءات</th>
+                <th>{% trans "Shift Order" %}</th>
+                <th>{% trans "Shift Name" %}</th>
+                <th>{% trans "Start Time" %}</th>
+                <th>{% trans "End Time" %}</th>
+                <th>{% trans "Break From" %}</th>
+                <th>{% trans "Break To" %}</th>
+                <th>{% trans "Notes" %}</th>
+                <th>{% trans "Actions" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -30,26 +33,34 @@
                 <tr>
                     <td>{{ shift.shift_order }}</td>
                     <td>{{ shift.shift_name }}</td>
-                    <td>{{ shift.start_time }}</td>
-                    <td>{{ shift.end_time }}</td>
-                    <td>{{ shift.break_start|default:"-" }}</td>
-                    <td>{{ shift.break_end|default:"-" }}</td>
+
+                    <!-- تنسيق الوقت -->
+                    <td>{{ shift.start_time|time:"H:i" }}</td>
+                    <td>{{ shift.end_time|time:"H:i" }}</td>
+                    <td>{{ shift.break_start|time:"H:i"|default:"-" }}</td>
+                    <td>{{ shift.break_end|time:"H:i"|default:"-" }}</td>
+
                     <td>{{ shift.notes|default:"-" }}</td>
                     <td>
-                        <!-- قائمة منسدلة للإجراءات -->
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ shift.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-gear"></i> إجراءات
+                            <button class="btn btn-sm btn-secondary dropdown-toggle"
+                                    type="button"
+                                    id="dropdownMenuButton{{ shift.id }}"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="bi bi-gear"></i> {% trans "Actions" %}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ shift.id }}">
                                 <li>
                                     <a class="dropdown-item" href="{% url 'hr:edit_shift' shift.id %}">
-                                        <i class="bi bi-pencil-square"></i> تعديل
+                                        <i class="bi bi-pencil-square"></i> {% trans "Edit" %}
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{% url 'hr:delete_shift' shift.id %}" onclick="return confirm('هل أنت متأكد من حذف هذا الشفت؟');">
-                                        <i class="bi bi-trash"></i> حذف
+                                    <a class="dropdown-item"
+                                       href="{% url 'hr:delete_shift' shift.id %}"
+                                       onclick="return confirm('{% trans "Are you sure you want to delete this shift?" %}');">
+                                        <i class="bi bi-trash"></i> {% trans "Delete" %}
                                     </a>
                                 </li>
                             </ul>
@@ -58,7 +69,9 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center">لا توجد بيانات حالياً</td>
+                    <td colspan="8" class="text-center">
+                        {% trans "No data available" %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

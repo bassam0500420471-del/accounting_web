@@ -1,16 +1,17 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 
-{% block title %}تسجيل الدخول والخروج{% endblock %}
+{% block title %}{% trans "Quick Check In and Check Out" %}{% endblock %}
 
 {% block content %}
 <div class="container d-flex flex-column align-items-center justify-content-center" style="height: 70vh;">
 
-    <h3 class="mb-4">تسجيل الدخول والخروج السريع</h3>
+    <h3 class="mb-4">{% trans "Quick Check In and Check Out" %}</h3>
 
     <!-- رسالة تحذير أو عدم وجود موظف مرتبط -->
     <div id="alert-container" class="mb-3">
         {% if not employee %}
-            <div class="alert alert-danger">الموظف غير مرتبط بحساب المستخدم.</div>
+            <div class="alert alert-danger">{% trans "Employee is not linked to the user account." %}</div>
         {% elif message %}
             <div class="alert alert-warning">{{ message }}</div>
         {% endif %}
@@ -27,18 +28,18 @@
                        background-color: #888888;
                        color: #fff;
                        transition: all 0.2s;">
-            {{ next_action|default:"تسجيل دخول" }}
+            {{ next_action|default:_("Check In") }}
         </button>
     </form>
 
     <!-- آخر تسجيل -->
     {% if last_attendance %}
         <div class="mt-4 text-center" style="color: #333;">
-            <p>آخر تسجيل: 
+            <p>{% trans "Last record:" %}
                 {% if last_attendance.check_out %}
-                    تم الخروج الساعة {{ last_attendance.check_out|time:"H:i" }}
+                    {% trans "Checked out at" %} {{ last_attendance.check_out|time:"H:i" }}
                 {% else %}
-                    تم الدخول الساعة {{ last_attendance.check_in|time:"H:i" }}
+                    {% trans "Checked in at" %} {{ last_attendance.check_in|time:"H:i" }}
                 {% endif %}
             </p>
         </div>
@@ -86,7 +87,7 @@
 
             if(now - lastClickTime < waitTime){
                 e.preventDefault();
-                alertContainer.innerHTML = '<div class="alert alert-warning">الرجاء الانتظار قبل تسجيل جديد!</div>';
+                alertContainer.innerHTML = '<div class="alert alert-warning">{% trans "Please wait before making a new record!" %}</div>';
                 return false;
             }
 

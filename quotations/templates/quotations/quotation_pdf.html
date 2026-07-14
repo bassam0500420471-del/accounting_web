@@ -1,199 +1,735 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
-from django.http import HttpResponse
-from django.template.loader import render_to_string
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
-from xhtml2pdf import pisa   # ✅ الصحيح
+<head>
 
-from .models import Quotation, QuotationItem
-from customers.models import Customer
-from products.models import Product
-from sales.models import SalesInvoice, SalesItem
+<meta charset="UTF-8">
 
+<style>
 
-# ================================
-#   قائمة عروض الأسعار
-# ================================
-def quotation_list(request):
-    quotations = Quotation.objects.all().order_by("-id")
-    return render(request, "quotations/quotation_list.html", {
-        "quotations": quotations
-    })
+@page {
+    size: A4;
+    margin: 10mm;
+}
 
 
-# ================================
-#   إنشاء عرض سعر
-# ================================
-def quotation_add(request):
-
-    customers = Customer.objects.all()
-    products = Product.objects.all()
-
-    last_q = Quotation.objects.order_by("-quotation_no").first()
-    next_number = int(last_q.quotation_no) + 1 if last_q else 1
-
-    if request.method == "POST":
-
-        quotation = Quotation.objects.create(
-            quotation_no=request.POST.get("quotation_no"),
-            customer_id=request.POST.get("customer"),
-            date_quotation=request.POST.get("date_quotation"),
-            description=request.POST.get("description"),
-            total_before_tax=0,
-            total_discount=0,
-            total_after_discount=0,
-            tax_value=0,
-            total_after_tax=0,
-            created_at=timezone.now()
-        )
-
-        rows = int(request.POST.get("total_rows", 0))
-
-        total_before = 0
-        total_discount = 0
-        total_tax = 0
-
-        for i in range(1, rows + 1):
-
-            prefix = f"row_{i}_"
-
-            product_id = request.POST.get(prefix + "product_id")
-            if not product_id:
-                continue
-
-            item_desc = request.POST.get(prefix + "desc")
-            qty = float(request.POST.get(prefix + "qty") or 0)
-            price = float(request.POST.get(prefix + "price") or 0)
-            discount = float(request.POST.get(prefix + "discount") or 0)
-            tax = float(request.POST.get(prefix + "tax") or 0)
-
-            line_total = (qty * price) - discount
-            tax_amount = line_total * (tax / 100)
-            final_total = line_total + tax_amount
-
-            QuotationItem.objects.create(
-                quotation=quotation,
-                product_id=product_id,
-                description=item_desc,
-                qty=qty,
-                price=price,
-                discount=discount,
-                tax=tax,
-                total=final_total
-            )
-
-            total_before += qty * price
-            total_discount += discount
-            total_tax += tax_amount
-
-        quotation.total_before_tax = total_before
-        quotation.total_discount = total_discount
-        quotation.total_after_discount = total_before - total_discount
-        quotation.tax_value = total_tax
-        quotation.total_after_tax = quotation.total_after_discount + total_tax
-        quotation.save()
-
-        return redirect("quotations_list")
-
-    return render(request, "quotations/quotation_add.html", {
-        "customers": customers,
-        "products": products,
-        "next_number": next_number
-    })
+body {
+    margin:0;
+    padding:0;
+    background:#fff;
+    font-family: Arial, Tahoma, sans-serif;
+    direction:rtl;
+    color:#000;
+}
 
 
-# ================================
-#   عرض عرض السعر
-# ================================
-def quotation_view(request, pk):
-    quotation = get_object_or_404(Quotation, pk=pk)
-    items = QuotationItem.objects.filter(quotation=quotation)
-    return render(request, "quotations/quotation_view.html", {
-        "quotation": quotation,
-        "items": items
-    })
+/* ===== رأس الصفحة ===== */
+
+.header-top-row {
+
+    display:table;
+    width:100%;
+    margin-bottom:20px;
+
+}
 
 
-# ================================
-#   الطباعة
-# ================================
-def quotation_print(request, pk):
-    quotation = get_object_or_404(Quotation, pk=pk)
-    items = QuotationItem.objects.filter(quotation=quotation)
-    return render(request, "quotations/quotation_print.html", {
-        "quotation": quotation,
-        "items": items
-    })
+.company-name-ar {
+
+    display:table-cell;
+    width:33%;
+    text-align:right;
+    vertical-align:middle;
+    font-size:24px;
+    font-weight:bold;
+
+}
 
 
-# ================================
-#   PDF (xhtml2pdf)
-# ================================
-def quotation_pdf(request, pk):
 
-    quotation = get_object_or_404(Quotation, pk=pk)
-    items = QuotationItem.objects.filter(quotation=quotation)
+.header-logo {
 
-    html = render_to_string(
-        "quotations/quotation_pdf.html",
-        {
-            "quotation": quotation,
-            "items": items
-        }
-    )
+    display:table-cell;
+    width:34%;
+    text-align:center;
+    vertical-align:middle;
 
-    response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = (
-        f'attachment; filename="quotation_{quotation.pk}.pdf"'
-    )
-
-    pisa_status = pisa.CreatePDF(
-        html,
-        dest=response,
-        encoding="UTF-8"
-    )
-
-    if pisa_status.err:
-        return HttpResponse("خطأ أثناء إنشاء ملف PDF", status=500)
-
-    return response
+}
 
 
-# ================================
-#   تحويل عرض السعر إلى فاتورة
-# ================================
-def quotation_to_invoice(request, pk):
+.header-logo img {
 
-    quotation = get_object_or_404(Quotation, pk=pk)
-    items = QuotationItem.objects.filter(quotation=quotation)
+    max-width:130px;
+    max-height:100px;
 
-    last_invoice = SalesInvoice.objects.order_by("-invoice_no").first()
-    next_number = int(last_invoice.invoice_no) + 1 if last_invoice else 1
+}
 
-    invoice = SalesInvoice.objects.create(
-        invoice_no=next_number,
-        customer=quotation.customer,
-        date_invoice=timezone.now().date(),
-        date_issue=timezone.now(),
-        description=quotation.description,
-        total_before_tax=quotation.total_before_tax,
-        total_discount=quotation.total_discount,
-        total_after_discount=quotation.total_after_discount,
-        tax_value=quotation.tax_value,
-        total_after_tax=quotation.total_after_tax,
-        created_at=timezone.now()
-    )
 
-    for item in items:
-        SalesItem.objects.create(
-            invoice=invoice,
-            product=item.product,
-            description=item.description,
-            qty=item.qty,
-            price=item.price,
-            discount=item.discount,
-            tax=item.tax,
-            total=item.total
-        )
 
-    return redirect("invoice_view", pk=invoice.id)
+.company-name-en {
+
+    display:table-cell;
+    width:33%;
+    text-align:left;
+    vertical-align:middle;
+    font-size:22px;
+    font-weight:bold;
+    direction:ltr;
+
+}
+
+
+/* ===== العنوان ===== */
+
+
+.invoice-main-title {
+
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    margin:20px 0;
+
+}
+
+
+
+/* ===== بيانات العرض ===== */
+
+
+.meta-data-table {
+
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:15px;
+
+}
+
+
+.meta-data-table td {
+
+    padding:6px;
+    font-size:13px;
+
+}
+
+
+
+
+/* ===== جدول الأصناف ===== */
+
+
+.items-table {
+
+    width:100%;
+    border-collapse:collapse;
+
+}
+
+
+.items-table th {
+
+    background:#000;
+    color:#fff;
+    border:1px solid #000;
+    padding:7px 5px;
+    text-align:center;
+    font-size:12px;
+
+}
+
+
+
+.items-table td {
+
+    border:1px solid #000;
+    padding:8px 5px;
+    text-align:center;
+    font-size:12px;
+
+}
+
+
+.item-name {
+
+    text-align:right !important;
+    font-weight:bold;
+
+}
+
+
+/* ===== الإجماليات ===== */
+
+
+.totals-table {
+
+    width:100%;
+    border-collapse:collapse;
+    margin-top:-1px;
+
+}
+
+
+.totals-table td {
+
+    border:1px solid #000;
+    padding:8px;
+
+}
+
+
+.totals-text-ar {
+
+    text-align:right;
+    font-weight:bold;
+    width:35%;
+
+}
+
+
+.totals-text-en {
+
+    text-align:left;
+    font-weight:bold;
+    direction:ltr;
+    width:35%;
+
+}
+
+
+.totals-value {
+
+    text-align:center;
+    font-weight:bold;
+
+}
+
+
+
+.amount-text-box {
+
+    width:100%;
+    border:1px solid #000;
+    border-radius:15px;
+    padding:12px;
+    text-align:center;
+    font-weight:bold;
+    margin-top:15px;
+
+}
+
+
+
+.invoice-footer {
+
+    margin-top:30px;
+    text-align:center;
+
+}
+
+
+.invoice-note {
+
+    font-size:15px;
+    font-weight:bold;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ===== رأس العرض ===== -->
+
+
+<div class="header-top-row">
+
+
+<div class="company-name-ar">
+
+{{ company.name|default:"" }}
+
+</div>
+
+
+
+<div class="header-logo">
+
+
+{% if company.logo %}
+
+<img src="{{ company.logo.path }}">
+
+
+{% else %}
+
+{{ company.name|default:"نظام محاسبك" }}
+
+
+{% endif %}
+
+
+</div>
+
+
+
+<div class="company-name-en">
+
+{{ company.name_en|default:company.name }}
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="invoice-main-title">
+
+عرض سعر - Quotation
+
+</div>
+
+
+
+<table class="meta-data-table">
+
+
+<tr>
+
+<td>
+
+<strong>الرقم الضريبي:</strong>
+
+{{ company.vat_no|default:"-" }}
+
+</td>
+
+
+<td style="text-align:left;">
+
+<strong>VAT No:</strong>
+
+{{ company.vat_no|default:"-" }}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+<strong>اسم العميل:</strong>
+
+{{ quotation.customer.commercial_name|default:quotation.customer.name }}
+
+</td>
+
+
+
+<td style="text-align:left;">
+
+<strong>Customer Name:</strong>
+
+{{ quotation.customer.name_en|default:"-" }}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+<strong>تاريخ العرض:</strong>
+
+{{ quotation.date_quotation|date:"Y-m-d" }}
+
+</td>
+
+
+<td style="text-align:left;">
+
+<strong>Date:</strong>
+
+{{ quotation.date_quotation|date:"d/m/Y" }}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+<strong>رقم العرض:</strong>
+
+{{ quotation.quotation_no }}
+
+</td>
+
+
+<td style="text-align:left;">
+
+<strong>Quotation No:</strong>
+
+{{ quotation.quotation_no }}
+
+</td>
+
+
+</tr>
+
+
+</table>
+<table class="items-table">
+
+<thead>
+
+<tr>
+
+<th style="width:5%;">
+#
+</th>
+
+<th style="width:15%;">
+الرمز<br>
+Code
+</th>
+
+<th style="width:30%;">
+اسم الصنف<br>
+Item Name
+</th>
+
+<th style="width:8%;">
+الكمية<br>
+Quantity
+</th>
+
+<th style="width:10%;">
+السعر<br>
+Price
+</th>
+
+<th style="width:10%;">
+الإجمالي<br>
+Subtotal
+</th>
+
+<th style="width:8%;">
+الخصم<br>
+Discount
+</th>
+
+<th style="width:8%;">
+الضريبة<br>
+VAT
+</th>
+
+<th style="width:10%;">
+الإجمالي<br>
+Total
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+{% for item in items %}
+
+<tr>
+
+<td>
+{{ forloop.counter }}
+</td>
+
+
+<td>
+{{ item.product.sku|default:"-" }}
+</td>
+
+
+<td class="item-name">
+{{ item.product.name }}
+</td>
+
+
+<td>
+{{ item.qty }}
+</td>
+
+
+<td>
+{{ item.price|floatformat:2 }}
+</td>
+
+
+<td>
+{{ item.subtotal|default:item.total|floatformat:2 }}
+</td>
+
+
+<td>
+{{ item.discount|floatformat:2 }}
+</td>
+
+
+<td>
+{{ item.tax_value|default:"0"|floatformat:2 }}
+</td>
+
+
+<td>
+{{ item.total|floatformat:2 }}
+</td>
+
+
+</tr>
+
+
+{% endfor %}
+
+
+</tbody>
+
+</table>
+
+
+
+
+<table class="totals-table">
+
+
+<tr>
+
+<td class="totals-text-ar">
+
+إجمالي الأصناف
+
+</td>
+
+
+<td class="totals-text-en">
+
+Total Quantity
+
+</td>
+
+
+<td class="totals-value">
+
+{{ total_qty|default:items.count }}
+
+</td>
+
+
+</tr>
+
+
+
+
+<tr>
+
+<td class="totals-text-ar">
+
+المبلغ الإجمالي غير شامل الضريبة
+
+</td>
+
+
+<td class="totals-text-en">
+
+Total Excluding VAT
+
+</td>
+
+
+<td class="totals-value">
+
+{{ quotation.total_before_tax|floatformat:2 }}
+
+</td>
+
+
+</tr>
+
+
+
+
+<tr>
+
+<td class="totals-text-ar">
+
+الخصم
+
+</td>
+
+
+<td class="totals-text-en">
+
+Discount
+
+</td>
+
+
+<td class="totals-value">
+
+{{ quotation.total_discount|floatformat:2 }}
+
+</td>
+
+
+</tr>
+
+
+
+
+<tr>
+
+<td class="totals-text-ar">
+
+ضريبة القيمة المضافة
+
+</td>
+
+
+<td class="totals-text-en">
+
+Total VAT
+
+</td>
+
+
+<td class="totals-value">
+
+{{ quotation.tax_value|floatformat:2 }}
+
+</td>
+
+
+</tr>
+
+
+
+
+<tr style="font-weight:bold;">
+
+<td class="totals-text-ar">
+
+الصافي
+
+</td>
+
+
+<td class="totals-text-en">
+
+Total Including VAT
+
+</td>
+
+
+<td class="totals-value">
+
+{{ quotation.total_after_tax|floatformat:2 }}
+
+</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+<div class="amount-text-box">
+
+
+{% if invoice_balance > 0 %}
+
+المبلغ المستحق للشركة:
+
+{{ invoice_balance|floatformat:2 }}
+
+ريال
+
+
+{% elif invoice_balance < 0 %}
+
+
+المبلغ المستحق للعميل:
+
+{{ invoice_balance|floatformat:2|cut:"-" }}
+
+ريال
+
+
+{% endif %}
+
+
+</div>
+<!-- ===== QR Code والتذييل ===== -->
+
+
+<div class="invoice-footer">
+
+
+{% if company.qr_code %}
+
+<div style="text-align:right;">
+
+<img 
+src="{{ company.qr_code.path }}"
+style="
+width:120px;
+height:120px;
+border:1px solid #ccc;
+padding:5px;
+">
+
+</div>
+
+{% endif %}
+
+
+
+<div class="invoice-note">
+
+<strong>
+شكراً لتعاملكم معنا
+</strong>
+
+<br>
+
+Thank you for your business
+
+</div>
+
+
+</div>
+
+
+
+</body>
+
+</html>

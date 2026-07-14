@@ -1,9 +1,10 @@
-{% load i18n %}
+{% load i18n static %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" dir="rtl">
+<html lang="{{ CURRENT_LANGUAGE }}" dir="{% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}{% trans "النظام المحاسبي ERP" %}{% endblock %}</title>
+    <title>{% block title %}{% trans "Accounting System ERP" %}{% endblock %}</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
 <style>
-/* ===== Box sizing لكل العناصر ===== */
+/* ===== Box sizing for all elements ===== */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -23,9 +24,27 @@ body {
     margin: 0;
 }
 
+html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+}
+
+html[dir="ltr"] body {
+    direction: ltr;
+    text-align: left;
+}
+
 .layout {
     display: flex;
     min-height: 100vh;
+}
+
+html[dir="rtl"] .layout {
+    flex-direction: row;
+}
+
+html[dir="ltr"] .layout {
+    flex-direction: row;
 }
 
 /* ===== Sidebar ===== */
@@ -116,7 +135,7 @@ body {
     max-width: 100%;
 }
 
-/* ===== Tables داخل page-box ===== */
+/* ===== Tables inside page-box ===== */
 .table-responsive {
     overflow-x: auto;
 }
@@ -125,6 +144,14 @@ body {
     width: 100%;
     table-layout: auto;
     border-collapse: collapse;
+}
+
+html[dir="rtl"] .page-box table {
+    direction: rtl;
+}
+
+html[dir="ltr"] .page-box table {
+    direction: ltr;
 }
 
 .page-box table th,
@@ -147,6 +174,189 @@ body {
 .dropdown-menu {
     z-index: 9999;
 }
+
+/* ================= FLOATING BUTTONS ================= */
+
+/* ---- Profile Floating Button (TOP) ---- */
+.profile-float {
+    position: fixed;
+    top: 18px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    z-index: 99999;
+    transition: transform .15s;
+    user-select: none;
+}
+
+html[dir="rtl"] .profile-float {
+    right: 18px;
+    left: auto;
+}
+
+html[dir="ltr"] .profile-float {
+    left: 18px;
+    right: auto;
+}
+
+.profile-float:hover {
+    transform: scale(1.06);
+}
+
+.profile-float img {
+    width: 40px;
+    height: 40px;
+}
+
+/* ---- Profile Panel ---- */
+.profile-panel {
+    position: fixed;
+    top: 88px;
+    width: 280px;
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+    border-radius: 14px;
+    z-index: 100000;
+    display: none;
+    overflow: hidden;
+    font-family: inherit;
+}
+
+html[dir="rtl"] .profile-panel {
+    right: 18px;
+    left: auto;
+}
+
+html[dir="ltr"] .profile-panel {
+    left: 18px;
+    right: auto;
+}
+
+.profile-panel.show {
+    display: block;
+}
+
+.profile-panel-header {
+    padding: 12px 14px;
+    background: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-panel-title {
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.profile-panel-close {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.profile-panel-body {
+    padding: 14px;
+}
+
+.profile-user {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.profile-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #e9ecef;
+    background: #fff;
+}
+
+.profile-user-meta {
+    min-width: 0;
+}
+
+.profile-user-name {
+    font-weight: 800;
+    font-size: 14px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-user-sub {
+    margin: 0;
+    color: #6c757d;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.profile-actions a,
+.profile-actions button {
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+}
+
+.profile-actions .w-100 {
+    width: 100%;
+}
+
+/* ---- GPT Floating Button (BOTTOM ONLY) ---- */
+.gpt-float {
+    position: fixed;
+    bottom: 24px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    z-index: 99998;
+    transition: transform .15s;
+    user-select: none;
+}
+
+html[dir="rtl"] .gpt-float {
+    right: 18px;
+    left: auto;
+}
+
+html[dir="ltr"] .gpt-float {
+    left: 18px;
+    right: auto;
+}
+
+.gpt-float:hover {
+    transform: scale(1.06);
+}
+
+.gpt-float img {
+    width: 40px;
+    height: 40px;
+}
 </style>
 
 {% block head %}{% endblock %}
@@ -158,219 +368,235 @@ body {
 
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
-    <h4>{% trans "النظام المحاسبي" %}</h4>
-    <h5>ERP</h5>
+    <h4>{% trans "Accounting System" %}</h4>
+    <h5>{% trans "ERP" %}</h5>
 
     <a href="/dashboard/" class="menu-btn">
-        <span>{% trans "لوحة التحكم" %}</span>
+        <span>{% trans "Dashboard" %}</span>
         <span class="menu-arrow">▶</span>
     </a>
 
-<!-- ================= الموارد البشرية ================= -->
-<button class="menu-btn menu-toggle">
-    <span>الموارد البشرية </span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-<!-- إدارة الموظفين -->
-<div class="menu-btn d-flex align-items-center justify-content-between">
-    <a href="{% url 'hr:employee_list' %}">إدارة الموظفين</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee' %}')">+</button>
-</div>
+    <!-- ================= Human Resources ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Human Resources" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <!-- Employee Management -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:employee_list' %}">{% trans "Employee Management" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee' %}')">+</button>
+        </div>
 
-<!-- إدارة المناوبات -->
-<div class="menu-btn d-flex align-items-center justify-content-between">
-    <a href="{% url 'hr:shifts' %}">إدارة المناوبات</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_shift' %}')">+</button>
-</div>
+        <!-- Shift Management -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:shifts' %}">{% trans "Shift Management" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_shift' %}')">+</button>
+        </div>
 
-<!-- إدارة جدول الموظفين -->
-<div class="menu-btn d-flex align-items-center justify-content-between">
-    <a href="{% url 'hr:employee_schedule' %}">إدارة جدول الموظفين</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee_schedule' %}')">+</button>
-</div>
+        <!-- Employee Schedule Management -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:employee_schedule' %}">{% trans "Employee Schedule Management" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee_schedule' %}')">+</button>
+        </div>
 
-<!-- سجل الحضور والانصراف -->
-<div class="menu-btn d-flex align-items-center justify-content-between">
-    <a href="{% url 'hr:attendance_page' %}">سجل الحضور والانصراف</a>
-    <button class="add-icon-btn" onclick="window.location.href='{% url 'hr:attendance_check_page' %}'">+</button>
-</div>
+        <!-- Attendance and Departure Log -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:attendance_page' %}">{% trans "Attendance and Departure Log" %}</a>
+            <button class="add-icon-btn" onclick="window.location.href='{% url 'hr:attendance_check_page' %}'">+</button>
+        </div>
 
-<!-- إدارة الإجازات -->
-<div class="menu-btn d-flex align-items-center justify-content-between">
-    <a href="{% url 'hr:leaves' %}">إدارة الإجازات</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_leave' %}')">+</button>
-</div>
+        <!-- Leave Management -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:leaves' %}">{% trans "Leave Management" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_leave' %}')">+</button>
+        </div>
 
-    <!-- مسيرات الرواتب -->
-    <div class="menu-btn d-flex align-items-center justify-content-between">
-        <a href="{% url 'hr:payrolls' %}">مسيرات الرواتب</a>
-        <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_payroll' %}')">+</button>
+        <!-- Payroll -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:payrolls' %}">{% trans "Payroll" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_payroll' %}')">+</button>
+        </div>
+
+        <!-- Evaluation Management -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:evaluations' %}">{% trans "Evaluation Management" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_evaluation' %}')">+</button>
+        </div>
+
+        <!-- Evaluation Records Management -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:evaluation_records_list' %}">{% trans "Evaluation Records Management" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:evaluation_record_start' %}')">+</button>
+        </div>
+
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+            <a href="{% url 'hr:hr_permissions_users' %}">{% trans "Permissions" %}</a>
+            <button class="add-icon-btn" onclick="window.location.href='{% url 'hr:hr_permissions_users' %}'">+</button>
+        </div>
+
+        <!-- Reports -->
+        <div class="menu-btn">
+            <a href="{% url 'hr:reports' %}">{% trans "Reports" %}</a>
+        </div>
     </div>
 
-    <!-- إدارة التقييم -->
-    <div class="menu-btn d-flex align-items-center justify-content-between">
-        <a href="{% url 'hr:evaluations' %}">إدارة التقييم</a>
-        <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_evaluation' %}')">+</button>
+    <!-- ================= Point of Sale ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Point of Sale" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="{% url 'pos:pos_home' %}">{% trans "Point of Sale" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'pos:pos_home' %}')">+</button>
+        </div>
     </div>
 
-    <!-- التقارير -->
-    <div class="menu-btn">
-        <a href="{% url 'hr:reports' %}">التقارير</a>
-    </div>
-</div>
+    <!-- ================= Sales ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Sales" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/customers/">{% trans "Customers" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/customers/add/')">+</button>
+        </div>
 
-<!-- ================= نقاط البيع ================= -->
-<button class="menu-btn menu-toggle">
-    <span>{% trans "نقاط البيع " %}</span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-    <div class="menu-btn">
-        <a href="{% url 'pos:pos_home' %}">{% trans "نقاط البيع" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('{% url 'pos:pos_home' %}')">+</button>
-    </div>
-</div>
+        <div class="menu-btn">
+            <a href="/sales/invoices/">{% trans "Sales Invoices" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/sales/invoices/add/')">+</button>
+        </div>
 
-<!-- ================= المبيعات ================= -->
-<button class="menu-btn menu-toggle">
-    <span>{% trans "المبيعات" %}</span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-    <div class="menu-btn">
-        <a href="/customers/">{% trans "العملاء" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/customers/add/')">+</button>
+        <div class="menu-btn">
+            <a href="/sales/returns/">{% trans "Sales Returns" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/sales/returns/new/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/quotations/">{% trans "Quotations" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/quotations/add/')">+</button>
+        </div>
     </div>
 
-    <div class="menu-btn">
-        <a href="/sales/invoices/">{% trans "فواتير المبيعات" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/sales/invoices/add/')">+</button>
+    <!-- ================= Purchases ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Purchases" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/suppliers/">{% trans "Suppliers" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/suppliers/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/purchase/invoices/">{% trans "Purchase Invoices" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/purchase/invoices/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/purchase/returns/">{% trans "Purchase Returns" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/purchase/returns/new/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/purchase/orders/">{% trans "Purchase Orders" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/purchase/orders/add/')">+</button>
+        </div>
     </div>
 
-    <div class="menu-btn">
-        <a href="/sales/returns/">{% trans "مرتجعات المبيعات" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/sales/returns/new/')">+</button>
+    <!-- ================= Products ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Products" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/products/">{% trans "Product List" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/products/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="/products/categories/">{% trans "Product Categories" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/products/categories/add/')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="{% url 'products:stock_adjust' %}">{% trans "Manual Stock Adjustment" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'products:stock_adjust' %}')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="{% url 'products:stock_ledger' %}">{% trans "Stock Movement Log" %}</a>
+        </div>
+
+        <div class="menu-btn">
+            <a href="{% url 'products:stock_take_sheet_new' %}">{% trans "Stock Count Sheet" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('{% url 'products:stock_take_sheet_new' %}')">+</button>
+        </div>
+
+        <div class="menu-btn">
+            <a href="{% url 'products:stock_take_list' %}">{% trans "Inventory Management" %}</a>
+        </div>
     </div>
 
-    <div class="menu-btn">
-        <a href="/quotations/">{% trans "عروض الأسعار" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/quotations/add/')">+</button>
-    </div>
-</div>
+    <!-- ================= Accounting ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Accounting" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/accounting/journals/">{% trans "Journal Entries" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/accounting/journals/add/')">+</button>
+        </div>
 
-<!-- ================= المشتريات ================= -->
-<button class="menu-btn menu-toggle">
-    <span>{% trans "المشتريات" %}</span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-    <div class="menu-btn">
-        <a href="/suppliers/">{% trans "الموردين" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/suppliers/add/')">+</button>
-    </div>
+        <div class="menu-btn">
+            <a href="/accounting/chart/">{% trans "Chart of Accounts" %}</a>
+        </div>
 
-    <div class="menu-btn">
-        <a href="/purchase/invoices/">{% trans "فواتير المشتريات" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/purchase/invoices/add/')">+</button>
-    </div>
+        <div class="menu-btn">
+            <a href="/cost-centers/">{% trans "Cost Centers" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/cost-centers/add/')">+</button>
+        </div>
 
-    <div class="menu-btn">
-        <a href="/purchase/returns/">{% trans "مرتجعات المشتريات" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/purchase/returns/new/')">+</button>
+        <div class="menu-btn">
+            <a href="/cost-centers/tree">🌳 {% trans "Cost Center Tree" %}</a>
+        </div>
     </div>
 
-    <div class="menu-btn">
-        <a href="/purchase/orders/">{% trans "أوامر الشراء" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/purchase/orders/add/')">+</button>
-    </div>
-</div>
+    <!-- ================= Payments ================= -->
+    <button class="menu-btn menu-toggle">
+        <span>{% trans "Payments" %}</span>
+        <span class="menu-arrow">▼</span>
+    </button>
+    <div class="submenu">
+        <div class="menu-btn">
+            <a href="/payments/receipts/">{% trans "Receipt Vouchers" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/payments/receipt/new/')">+</button>
+        </div>
 
-<!-- ================= المنتجات ================= -->
-<button class="menu-btn menu-toggle">
-    <span>{% trans "المنتجات" %}</span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-    <div class="menu-btn">
-        <a href="/products/">{% trans "قائمة المنتجات" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/products/add/')">+</button>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/products/categories/">{% trans "تصنيفات المنتجات" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/products/categories/add/')">+</button>
+        <div class="menu-btn">
+            <a href="/payments/payments/">{% trans "Payment Vouchers" %}</a>
+            <button class="add-icon-btn" onclick="goAdd('/payments/payment/new/')">+</button>
+        </div>
     </div>
 
-    <div class="menu-btn">
-        <a href="{% url 'products:stock_adjust' %}">تعديل المخزون يدويًا</a>
-        <button class="add-icon-btn" onclick="goAdd('{% url 'products:stock_adjust' %}')">+</button>
+    <!-- ================= Reports ================= -->
+    <div class="menu-btn d-flex align-items-center justify-content-between" style="background:#3A3D40; border:1px solid #4a4a4a;">
+        <a href="{% url 'reports:dashboard' %}" style="flex:1; color:#fff; text-decoration:none;">{% trans "Reports" %}</a>
+        <span class="menu-arrow">▶</span>
     </div>
-
-    <div class="menu-btn">
-        <a href="{% url 'products:stock_ledger' %}">سجل عمليات المخزون</a>
-    </div>
-
-<div class="menu-btn">
-    <a href="{% url 'products:stock_take_sheet_new' %}">ورقة الجرد</a>
-    <button class="add-icon-btn" onclick="goAdd('{% url 'products:stock_take_sheet_new' %}')">+</button>
-</div>
-
-    <div class="menu-btn">
-        <a href="{% url 'products:stock_take_list' %}">إدارة الجرد</a>
-    </div>
-</div>
-
-<!-- ================= المحاسبة ================= -->
-<button class="menu-btn menu-toggle">
-    <span>{% trans "المحاسبة" %}</span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-    <div class="menu-btn">
-        <a href="/accounting/journals/">{% trans "القيود اليومية" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/accounting/journals/add/')">+</button>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/accounting/chart/">{% trans "شجرة الحسابات" %}</a>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/cost-centers/">{% trans "مراكز التكلفة" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/cost-centers/add/')">+</button>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/cost-centers/tree">🌳 شجرة مراكز التكلفة</a>
-    </div>
-</div>
-
-<!-- ================= المدفوعات ================= -->
-<button class="menu-btn menu-toggle">
-    <span>{% trans "المدفوعات" %}</span>
-    <span class="menu-arrow">▼</span>
-</button>
-<div class="submenu">
-    <div class="menu-btn">
-        <a href="/payments/receipts/">{% trans "سندات القبض" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/payments/receipt/new/')">+</button>
-    </div>
-
-    <div class="menu-btn">
-        <a href="/payments/payments/">{% trans "سندات الصرف" %}</a>
-        <button class="add-icon-btn" onclick="goAdd('/payments/payment/new/')">+</button>
-    </div>
-</div>
-
-<!-- ================= التقارير ================= -->
-<div class="menu-btn d-flex align-items-center justify-content-between" style="background:#3A3D40; border:1px solid #4a4a4a;">
-    <a href="{% url 'reports:dashboard' %}" style="flex:1; color:#fff; text-decoration:none;">التقارير</a>
-    <span class="menu-arrow">▶</span>
-</div>
 
 <a href="/settings/" class="menu-btn">
-    <span>{% trans "إعدادات الشركة" %}</span>
+    <span>{% trans "Company Settings" %}</span>
+    <span class="menu-arrow">▶</span>
+</a>
+
+<a href="{% url 'zatca:settings' %}" class="menu-btn">
+    <span>{% trans "إعدادات ربط الهيئة" %}</span>
     <span class="menu-arrow">▶</span>
 </a>
 </div>
@@ -378,10 +604,21 @@ body {
 <!-- ================= CONTENT ================= -->
 <div class="content-wrapper">
     <div class="page-box">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}{% endblock %}
     </div>
 </div>
-
 </div>
 
 <script>
@@ -389,13 +626,12 @@ function goAdd(url) {
     window.location.href = url;
 }
 
-// Sidebar toggle مع ضبط arrow عند التحميل
+// Sidebar toggle with arrow adjustment on load
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll(".sidebar .menu-toggle").forEach(btn => {
         const menu = btn.nextElementSibling;
         const arrow = btn.querySelector(".menu-arrow");
 
-        // إخفاء القوائم الفرعية عند التحميل
         if (!menu.style.display || menu.style.display !== "block") {
             menu.style.display = "none";
             arrow.textContent = "▶";
@@ -409,7 +645,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// السماح بإرسال الفورمات المصرّح لها
+// Allow submission of authorized forms
 document.addEventListener("submit", function (e) {
     if (e.target.matches("form[data-allow-submit]")) {
         return true;
@@ -421,6 +657,230 @@ document.addEventListener("submit", function (e) {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 {% block scripts %}{% endblock %}
+{% if user.is_authenticated %}
+
+<!-- ================= TOP PROFILE FLOAT (with Logout) ================= -->
+<div class="profile-float" id="profileFloatBtn" title="{% trans 'Profile' %}">
+    <img src="{% static 'images/user-circle.png' %}" alt="Profile">
+</div>
+
+<div class="profile-panel" id="profilePanel">
+    <div class="profile-panel-header">
+        <div class="profile-panel-title">{% trans "Profile" %}</div>
+        <button type="button" class="profile-panel-close" id="profileClose">×</button>
+    </div>
+
+    <div class="profile-panel-body">
+        <div class="profile-user">
+            <img class="profile-avatar" src="{% static 'images/user-default.png' %}" alt="User"/>
+            <div class="profile-user-meta">
+                <p class="profile-user-name">{{ user.get_full_name|default:user.username }}</p>
+                <p class="profile-user-sub">{% trans "Username" %}: {{ user.username }}</p>
+<p class="profile-user-sub">
+    {% trans "Company" %}:
+    {% if request.user.employee.company %}
+        {{ request.user.employee.company.name }}
+    {% elif request.user.profile.company %}
+        {{ request.user.profile.company.name }}
+    {% else %}
+        {% trans "Not Specified" %}
+    {% endif %}
+</p>
+                <!-- ✅ Language Switch -->
+                <div class="mt-2 d-flex justify-content-center">
+                    <form action="{% url 'set_language' %}" method="post" class="d-flex align-items-center gap-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+
+                        <button type="submit" name="language" value="ar"
+                            class="btn btn-sm {% if CURRENT_LANGUAGE == 'ar' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+                            AR
+                        </button>
+
+                        <button type="submit" name="language" value="en"
+                            class="btn btn-sm {% if CURRENT_LANGUAGE == 'en' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+                            EN
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            {% url 'profile' as profile_url %}
+            {% if profile_url %}
+                <a href="{{ profile_url }}" class="btn btn-outline-primary btn-sm w-100">{% trans "Edit Image" %}</a>
+            {% else %}
+                <a href="#" class="btn btn-outline-secondary btn-sm w-100 disabled">{% trans "Edit Image" %}</a>
+            {% endif %}
+        </div>
+
+        <div style="height:8px;"></div>
+
+        <form method="post" action="{% url 'accounts:logout' %}" data-allow-submit style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm w-100"
+                    style="border-radius:10px; padding:8px 10px; font-size:12.5px;">
+                {% trans "Logout" %}
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ================= BOTTOM GPT FLOAT (ONLY) ================= -->
+<a class="gpt-float" id="gptButton" href="#" title="{% trans 'Help' %}">
+    <img src="{% static 'images/erp-mascot.png' %}" alt="GPT">
+</a>
+
+<script>
+/* ================= Profile Float (Draggable + Panel) ================= */
+const profileBtn = document.getElementById("profileFloatBtn");
+const profilePanel = document.getElementById("profilePanel");
+const profileClose = document.getElementById("profileClose");
+const isRTL = document.documentElement.dir === "rtl";
+let p_offsetX = 0, p_offsetY = 0, p_isDown = false, p_moved = false;
+
+// restore position
+const profileSavedPos = localStorage.getItem("profileFloatPosition");
+if (profileSavedPos) {
+    const pos = JSON.parse(profileSavedPos);
+
+    if (isRTL) {
+        profileBtn.style.right = pos.side + "px";
+        profileBtn.style.left = "auto";
+        profilePanel.style.right = pos.side + "px";
+        profilePanel.style.left = "auto";
+    } else {
+        profileBtn.style.left = pos.side + "px";
+        profileBtn.style.right = "auto";
+        profilePanel.style.left = pos.side + "px";
+        profilePanel.style.right = "auto";
+    }
+
+    profileBtn.style.top = pos.top + "px";
+    profilePanel.style.top = (pos.top + 70) + "px";
+}
+
+function toggleProfilePanel(show) {
+    if (typeof show === "boolean") {
+        profilePanel.classList.toggle("show", show);
+    } else {
+        profilePanel.classList.toggle("show");
+    }
+}
+
+profileBtn.addEventListener("click", function(){
+    if (p_moved) return;
+    toggleProfilePanel();
+});
+
+profileClose.addEventListener("click", function(){
+    toggleProfilePanel(false);
+});
+
+document.addEventListener("click", function(e){
+    if (!profilePanel.classList.contains("show")) return;
+    if (profilePanel.contains(e.target) || profileBtn.contains(e.target)) return;
+    toggleProfilePanel(false);
+});
+
+// drag
+profileBtn.addEventListener("mousedown", function(e){
+    p_isDown = true;
+    p_moved = false;
+
+    if (isRTL) {
+        p_offsetX = window.innerWidth - e.clientX - parseInt(getComputedStyle(profileBtn).right || 0);
+    } else {
+        p_offsetX = e.clientX - profileBtn.offsetLeft;
+    }
+
+    p_offsetY = e.clientY - profileBtn.offsetTop;
+    profileBtn.style.cursor = "grabbing";
+});
+
+document.addEventListener("mousemove", function(e){
+    if (!p_isDown) return;
+
+    p_moved = true;
+
+    const newTop = (e.clientY - p_offsetY);
+
+    if (isRTL) {
+        const newRight = (window.innerWidth - e.clientX - p_offsetX);
+        profileBtn.style.right = newRight + "px";
+        profileBtn.style.left = "auto";
+        profilePanel.style.right = newRight + "px";
+        profilePanel.style.left = "auto";
+    } else {
+        const newLeft = (e.clientX - p_offsetX);
+        profileBtn.style.left = newLeft + "px";
+        profileBtn.style.right = "auto";
+        profilePanel.style.left = newLeft + "px";
+        profilePanel.style.right = "auto";
+    }
+
+    profileBtn.style.top = newTop + "px";
+    profilePanel.style.top = (newTop + 70) + "px";
+});
+
+document.addEventListener("mouseup", function(){
+    if (!p_isDown) return;
+    p_isDown = false;
+    profileBtn.style.cursor = "grab";
+
+    const sideValue = isRTL
+        ? parseInt(getComputedStyle(profileBtn).right || 0)
+        : profileBtn.offsetLeft;
+
+    localStorage.setItem("profileFloatPosition", JSON.stringify({
+        side: sideValue,
+        top: profileBtn.offsetTop
+    }));
+
+    setTimeout(() => { p_moved = false; }, 50);
+});
+
+/* ================= GPT Float (Draggable LINK ONLY) ================= */
+const gptBtn = document.getElementById("gptButton");
+
+let g_offsetX = 0, g_offsetY = 0, g_isDown = false;
+
+const gptSavedPos = localStorage.getItem("gptFloatPosition");
+if (gptSavedPos) {
+    const pos = JSON.parse(gptSavedPos);
+    gptBtn.style.left = pos.left + "px";
+    gptBtn.style.top  = pos.top  + "px";
+    gptBtn.style.bottom = "auto";
+}
+
+gptBtn.addEventListener("mousedown", function(e){
+    g_isDown = true;
+    g_offsetX = e.clientX - gptBtn.offsetLeft;
+    g_offsetY = e.clientY - gptBtn.offsetTop;
+    gptBtn.style.cursor = "grabbing";
+});
+
+document.addEventListener("mousemove", function(e){
+    if (!g_isDown) return;
+    gptBtn.style.left = (e.clientX - g_offsetX) + "px";
+    gptBtn.style.top  = (e.clientY - g_offsetY) + "px";
+    gptBtn.style.bottom = "auto";
+});
+
+document.addEventListener("mouseup", function(){
+    if (!g_isDown) return;
+    g_isDown = false;
+    gptBtn.style.cursor = "grab";
+
+    localStorage.setItem("gptFloatPosition", JSON.stringify({
+        left: gptBtn.offsetLeft,
+        top:  gptBtn.offsetTop
+    }));
+});
+</script>
+
+{% endif %}
 
 </body>
 </html>

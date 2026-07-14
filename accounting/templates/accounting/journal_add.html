@@ -1,4 +1,7 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
 {% block content %}
 
 <style>
@@ -14,24 +17,12 @@
     justify-content:center;
     border:none;
 }
-.btn-main:hover {
-    background:#5c636a;
-    color:#fff;
-}
+.btn-main:hover { background:#5c636a; color:#fff; }
 
-.balance-ok {
-    color:#198754;
-    font-weight:bold;
-}
-.balance-bad {
-    color:#dc3545;
-    font-weight:bold;
-}
+.balance-ok { color:#198754; font-weight:bold; }
+.balance-bad { color:#dc3545; font-weight:bold; }
 
-/* ================= Select2 نفس شكل form-control ================= */
-.select2-container {
-    width: 100% !important;
-}
+.select2-container { width: 100% !important; }
 
 .select2-container--default .select2-selection--single {
     height: 38px !important;
@@ -42,139 +33,119 @@
     display: flex;
     align-items: center;
 }
-
-.select2-selection__rendered {
-    line-height: normal !important;
-    padding-right: 0 !important;
-}
-
-.select2-selection__arrow {
-    height: 36px !important;
-}
 </style>
 
 <div class="container mt-4">
 
-    <!-- العنوان -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">إضافة قيد يومي يدوي</h3>
+        <h3 class="fw-bold">{% trans "Add Manual Journal Entry" %}</h3>
 
         <a href="{% url 'accounting:journals_list' %}" class="btn-main">
-            رجوع
+            {% trans "Back" %}
         </a>
     </div>
 
     <form method="post" id="journalForm">
         {% csrf_token %}
 
-        <!-- رأس القيد -->
         <div class="card mb-3">
             <div class="card-body">
                 <div class="row g-3">
+
                     <div class="col-md-3">
-                        <label class="fw-bold">التاريخ</label>
-                        <input type="date"
-                               name="date"
-                               id="journalDate"
-                               class="form-control"
-                               required>
+                        <label class="fw-bold">{% trans "Date" %}</label>
+                        <input type="date" name="date" id="journalDate"
+                               class="form-control" required>
                     </div>
 
                     <div class="col-md-9">
-                        <label class="fw-bold">البيان</label>
-                        <input type="text"
-                               name="description"
+                        <label class="fw-bold">{% trans "Description" %}</label>
+                        <input type="text" name="description"
                                class="form-control"
-                               placeholder="اكتب بيان القيد"
+                               placeholder="{% trans 'Enter description' %}"
                                required>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <!-- سطور القيد -->
         <div class="card">
             <div class="card-body p-0">
+
                 <table class="table table-bordered text-center align-middle mb-0" id="linesTable">
+
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>الحساب</th>
-                            <th>مدين</th>
-                            <th>دائن</th>
+                            <th>{% trans "Account" %}</th>
+                            <th>{% trans "Debit" %}</th>
+                            <th>{% trans "Credit" %}</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <!-- سطر 1 -->
-                        <tr>
-                            <td>1</td>
-                            <td class="text-start">
-                                <select name="row_1_account" class="form-select account-select">
-                                    <option value="">— اختر الحساب —</option>
-                                    {% for a in accounts %}
-                                        <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" step="0.01" name="row_1_debit" class="form-control debit">
-                            </td>
-                            <td>
-                                <input type="number" step="0.01" name="row_1_credit" class="form-control credit">
-                            </td>
-                        </tr>
 
-                        <!-- سطر 2 -->
+                        {% for i in "12"|make_list %}
+                        {% if forloop.counter <= 2 %}
                         <tr>
-                            <td>2</td>
+                            <td>{{ forloop.counter }}</td>
                             <td class="text-start">
-                                <select name="row_2_account" class="form-select account-select">
-                                    <option value="">— اختر الحساب —</option>
+                                <select name="row_{{ forloop.counter }}_account"
+                                        class="form-select account-select">
+                                    <option value="">{% trans "Select Account" %}</option>
                                     {% for a in accounts %}
                                         <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
-                            <td>
-                                <input type="number" step="0.01" name="row_2_debit" class="form-control debit">
-                            </td>
-                            <td>
-                                <input type="number" step="0.01" name="row_2_credit" class="form-control credit">
-                            </td>
+                            <td><input type="number" step="0.01"
+                                       name="row_{{ forloop.counter }}_debit"
+                                       class="form-control debit"></td>
+                            <td><input type="number" step="0.01"
+                                       name="row_{{ forloop.counter }}_credit"
+                                       class="form-control credit"></td>
                         </tr>
+                        {% endif %}
+                        {% endfor %}
+
                     </tbody>
 
                     <tfoot>
                         <tr class="fw-bold">
-                            <td colspan="2">الإجمالي</td>
+                            <td colspan="2">{% trans "Total" %}</td>
                             <td id="totalDebit">0.00</td>
                             <td id="totalCredit">0.00</td>
                         </tr>
                     </tfoot>
+
                 </table>
+
             </div>
         </div>
 
         <input type="hidden" name="total_rows" id="totalRows" value="2">
 
-        <!-- الأزرار -->
         <div class="d-flex justify-content-between align-items-center mt-3">
+
             <button type="button" class="btn-main" onclick="addRow()">
-                ➕ إضافة سطر
+                ➕ {% trans "Add Row" %}
             </button>
 
             <div id="balanceMsg"></div>
 
             <button type="submit" class="btn-main" id="saveBtn" disabled>
-                💾 حفظ القيد
+                💾 {% trans "Save Entry" %}
             </button>
+
         </div>
 
     </form>
 </div>
 
-<!-- ================= JS ================= -->
+<!-- Select2 (مرة واحدة فقط) -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
 document.getElementById("journalDate").value =
@@ -182,18 +153,26 @@ document.getElementById("journalDate").value =
 
 let totalRows = 2;
 
+function initSelect2() {
+    $('.account-select').select2({
+        width: '100%',
+        dir: '{% if LANGUAGE_CODE == "ar" %}rtl{% else %}ltr{% endif %}'
+    });
+}
+
 function addRow() {
     totalRows++;
     document.getElementById("totalRows").value = totalRows;
 
     const tbody = document.querySelector("#linesTable tbody");
+
     const row = document.createElement("tr");
 
     row.innerHTML = `
         <td>${totalRows}</td>
         <td class="text-start">
             <select name="row_${totalRows}_account" class="form-select account-select">
-                <option value="">— اختر الحساب —</option>
+                <option value="">{% trans "Select Account" %}</option>
                 {% for a in accounts %}
                     <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
                 {% endfor %}
@@ -202,9 +181,9 @@ function addRow() {
         <td><input type="number" step="0.01" name="row_${totalRows}_debit" class="form-control debit"></td>
         <td><input type="number" step="0.01" name="row_${totalRows}_credit" class="form-control credit"></td>
     `;
-    tbody.appendChild(row);
 
-    $('.account-select').select2({ width:'100%', dir:'rtl' });
+    tbody.appendChild(row);
+    initSelect2();
 }
 
 function calculateBalance() {
@@ -226,30 +205,18 @@ function calculateBalance() {
     }
 
     if (debit !== credit) {
-        msg.innerHTML =
-            `<span class="balance-bad">❌ غير متوازن (الفرق ${Math.abs(debit-credit).toFixed(2)})</span>`;
+        msg.innerHTML = `<span class="balance-bad">❌ {% trans "Not Balanced" %}</span>`;
         saveBtn.disabled = true;
     } else {
-        msg.innerHTML =
-            `<span class="balance-ok">✔️ قيد متوازن</span>`;
+        msg.innerHTML = `<span class="balance-ok">✔ {% trans "Balanced Entry" %}</span>`;
         saveBtn.disabled = false;
     }
 }
 
 document.addEventListener("input", calculateBalance);
-</script>
 
-<!-- ================= Select2 ================= -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<script>
 $(document).ready(function () {
-    $('.account-select').select2({
-        width: '100%',
-        dir: 'rtl'
-    });
+    initSelect2();
 });
 </script>
 

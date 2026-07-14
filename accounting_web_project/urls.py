@@ -1,54 +1,56 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.static import static  # ✅ هذا مهم
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # 🏠 لوحة التحكم
-    path("", include("dashboard.urls")),
+    # تغيير اللغة
+    path("i18n/", include("django.conf.urls.i18n")),
+
+    # الحسابات: دخول / خروج / تسجيل شركة
+    path("", include("accounts.urls")),
+
+    # لوحة التحكم
     path("dashboard/", include("dashboard.urls")),
 
-    # 📊 التقارير
+    # التقارير
     path("reports/", include("reports.urls")),
 
-    # 🧮 المحاسبة
+    # المحاسبة
     path("accounting/", include("accounting.urls")),
     path("accounting/journals/", include("journal.urls")),
 
-    # 🔐 الحسابات
-    path("accounts/", include("django.contrib.auth.urls")),
-
-    # 🧾 المبيعات
+    # المبيعات
     path("sales/", include("sales.urls")),
     path("customers/", include("customers.urls")),
     path("quotations/", include("quotations.urls")),
 
-    # 🛒 المشتريات
+    # المشتريات
     path("purchase/", include("purchase.urls")),
     path("suppliers/", include("suppliers.urls")),
 
-    # 📦 المنتجات والمخازن
+    # المنتجات
     path("products/", include("products.urls")),
     path("cost-centers/", include("cost_centers.urls")),
 
-    # 🔍 بيانات مساعدة
+    # بيانات مساعدة
     path("lookup/", include("lookup.urls")),
     path("settings/", include("company.urls")),
 
-    # 💰 السندات / المدفوعات
+    # المدفوعات
     path("payments/", include("payments.urls")),
 
-    # 🧾⭐ نقطة البيع POS (إضافة جديدة)
-    # ⚠️ مهم: استخدم namespace في pos/urls.py
+    # POS
     path("pos/", include("pos.urls", namespace="pos")),
 
-    # 🟢 الموارد البشرية HR
-    # ⚠️ مهم: استخدم namespace في hr/urls.py
+    # ZATCA
+    path("zatca/", include("zatca.urls")),
+
+    # HR
     path("hr/", include("hr.urls", namespace="hr")),
 ]
 
-# ✅ عرض ملفات الصور أثناء التطوير
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

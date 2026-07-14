@@ -4,8 +4,7 @@ from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Sum
 
-from .models import JournalEntry, JournalLine
-from accounting.models import Account
+from accounting.models import JournalEntry, JournalLine, Account
 from cost_centers.models import CostCenter
 
 
@@ -18,8 +17,23 @@ def clean_decimal(value):
     return Decimal(value.replace(",", "."))
 
 
+def get_user_company(request):
+    user = getattr(request, "user", None)
+    if not user or not user.is_authenticated:
+        return None
+    profile = getattr(user, "profile", None)
+    company = getattr(profile, "company", None) if profile else None
+    return company
+
+
 def journal_list(request):
-    journals = JournalEntry.objects.all().order_by("-date", "-id")
+    company = get_user_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        journals = JournalEntry.objects.none()
+        return render(request, "journal/list.html", {"journals": journals})
+
+    journals = JournalEntry.objects.filter(company=company).exclude(company__isnull=True).order_by("-date", "-id")
 
     for j in journals:
         totals = j.lines.aggregate(
@@ -33,9 +47,19 @@ def journal_list(request):
 
 
 def journal_add(request):
+    company = get_user_company(request)
+
     accounts = Account.objects.filter(parent__isnull=False).order_by("code")
     cost_centers = CostCenter.objects.filter(status="ACTIVE")
     today = timezone.now().date()
+
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return render(request, "journal/add.html", {
+            "accounts": accounts,
+            "cost_centers": cost_centers,
+            "today": today,
+        })
 
     if request.method == "POST":
         date = request.POST.get("date")
@@ -89,6 +113,7 @@ def journal_add(request):
             })
 
         entry = JournalEntry.objects.create(
+            company=company,
             date=date,
             description=description,
             status="POSTED",
@@ -110,7 +135,13 @@ def journal_add(request):
 
 
 def journal_view(request, pk):
-    entry = get_object_or_404(JournalEntry, pk=pk)
+    company = get_user_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("journal_list")
+
+    entry = get_object_or_404(JournalEntry.objects.exclude(company__isnull=True), pk=pk, company=company)
+
     return render(request, "journal/add.html", {
         "view_mode": True,
         "entry": entry,
@@ -121,9 +152,15 @@ def journal_view(request, pk):
 
 
 def journal_edit(request, pk):
-    entry = get_object_or_404(JournalEntry, pk=pk)
+    company = get_user_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("journal_list")
+
+    entry = get_object_or_404(JournalEntry.objects.exclude(company__isnull=True), pk=pk, company=company)
+
     accounts = Account.objects.filter(parent__isnull=False).order_by("code")
-    cost_centers = CostCenter.objects.filter(is_active=True)
+    cost_centers = CostCenter.objects.filter(status="ACTIVE")
 
     if request.method == "POST":
         date = request.POST.get("date")
@@ -188,7 +225,13 @@ def journal_edit(request, pk):
 
 
 def journal_delete(request, pk):
-    entry = get_object_or_404(JournalEntry, pk=pk)
+    company = get_user_company(request)
+    if not company:
+        messages.error(request, "❌ لا توجد شركة مرتبطة بحسابك. اربط الشركة بالمستخدم أولاً.")
+        return redirect("journal_list")
+
+    entry = get_object_or_404(JournalEntry.objects.exclude(company__isnull=True), pk=pk, company=company)
     entry.delete()
+
     messages.success(request, "✅ تم حذف القيد")
     return redirect("journal_list")

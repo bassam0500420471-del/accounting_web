@@ -1,5 +1,6 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 
 <!-- ================= Select2 ================= -->
@@ -69,7 +70,7 @@
 </style>
 
 <div class="container mt-4">
-<h3 class="mb-4 text-end">إنشاء فاتورة مشتريات</h3>
+<h3 class="mb-4 text-end">{% trans "Create Purchase Invoice" %}</h3>
 
 <form method="post">
 {% csrf_token %}
@@ -77,37 +78,36 @@
 
 <div class="card p-4">
 
-<!-- ================= رأس الفاتورة ================= -->
+<!-- ================= Invoice Header ================= -->
 <div class="row mb-3">
     <div class="col-md-3">
-        <label>رقم الفاتورة</label>
+        <label>{% trans "Invoice Number" %}</label>
         <input type="number" class="form-control" name="invoice_no" value="{{ next_number }}">
     </div>
 
     <div class="col-md-3">
-        <label>تاريخ الفاتورة</label>
+        <label>{% trans "Invoice Date" %}</label>
         <input type="date" id="date_invoice" name="date_invoice" class="form-control">
     </div>
 
     <div class="col-md-3">
-        <label>تاريخ الإصدار</label>
-        <!-- ✅ هذا هو الحقل المفقود -->
+        <label>{% trans "Issue Date" %}</label>
         <input type="date" name="date_issue" class="form-control" required>
     </div>
 
     <div class="col-md-3">
-        <label>تاريخ التسليم</label>
+        <label>{% trans "Delivery Date" %}</label>
         <input type="date" id="delivery_date" name="delivery_date" class="form-control">
     </div>
 </div>
 
-<!-- ================= المورد ================= -->
+<!-- ================= Supplier ================= -->
 <div class="row mb-3">
     <div class="col-md-10">
-        <label>المورد</label>
+        <label>{% trans "Supplier" %}</label>
         <div class="dropdown-box">
             <input type="text" id="supplier_search" class="form-control"
-                   placeholder="بحث عن مورد..." autocomplete="off">
+                   placeholder="{% trans 'Search for a supplier.' %}" autocomplete="off">
 
             <input type="hidden" id="supplier_id" name="supplier">
 
@@ -117,40 +117,40 @@
     <div class="col-md-2 d-flex align-items-end">
         <a href="/suppliers/add/?return=invoice"
            class="btn btn-main btn-action w-100">
-            + إضافة مورد
+            + {% trans "Add Supplier" %}
         </a>
     </div>
 </div>
 
-<!-- ================= الوصف ================= -->
+<!-- ================= Description ================= -->
 <div class="mb-3">
-    <label>الوصف</label>
+    <label>{% trans "Description" %}</label>
     <textarea name="description" class="form-control"></textarea>
 </div>
 
-<!-- ================= إضافة منتج ================= -->
+<!-- ================= Add Product ================= -->
 <div class="row mb-3">
     <div class="col-md-3">
         <a href="/products/add/?return=invoice"
            class="btn btn-main btn-action">
-            + إضافة منتج
+            + {% trans "Add Product" %}
         </a>
     </div>
 </div>
 
-<!-- ================= جدول الأصناف ================= -->
+<!-- ================= Items Table ================= -->
 <table class="table table-bordered text-center align-middle" style="overflow:visible !important;">
 <thead class="table-light">
 <tr>
-    <th>الصنف</th>
-    <th>الوصف</th>
-    <th>الكمية</th>
-    <th>السعر</th>
-    <th>الخصم</th>
-    <th>%الضريبة</th>
-    <th>الإجمالي</th>
-    <th>مركز التكلفة</th>
-    <th>حذف</th>
+    <th>{% trans "Product" %}</th>
+    <th>{% trans "Description" %}</th>
+    <th>{% trans "Quantity" %}</th>
+    <th>{% trans "Price" %}</th>
+    <th>{% trans "Discount" %}</th>
+    <th>{% trans "Tax %" %}</th>
+    <th>{% trans "Total" %}</th>
+    <th>{% trans "Cost Center" %}</th>
+    <th>{% trans "Delete" %}</th>
 </tr>
 </thead>
 
@@ -159,7 +159,7 @@
     <td>
         <div class="dropdown-box">
             <input type="text" class="form-control product-input"
-                   placeholder="بحث عن منتج..." autocomplete="off">
+                   placeholder="{% trans 'Search for a product.' %}" autocomplete="off">
 
             <input type="hidden" name="row_1_product_id" class="product-id">
 
@@ -170,11 +170,10 @@
     <td><input type="number" name="row_1_qty" value="1" class="form-control qty-input"></td>
     <td><input type="number" name="row_1_price" value="0" class="form-control price-input"></td>
 
-    <!-- ✅ تعديل الخصم فقط: حقل واحد يقبل 10 أو 10% -->
     <td>
         <input type="text" name="row_1_discount" value="0"
                class="form-control discount-input"
-               placeholder="مثال: 10 أو 10%">
+               placeholder="{% trans 'Example: 10 or 10%' %}">
     </td>
 
     <td><input type="number" name="row_1_tax" value="15" class="form-control tax-input"></td>
@@ -182,14 +181,14 @@
     <td>
         <select name="row_1_cost_center"
                 class="form-select cost-center-select">
-            <option value="">اختر مركز تكلفة</option>
+            <option value="">{% trans "Select Cost Center" %}</option>
             {% for cc in cost_centers %}
                 <option value="{{ cc.id }}">{{ cc.name }}</option>
             {% endfor %}
         </select>
     </td>
     <td>
-        <button type="button" class="btn btn-delete btn-row-delete">X</button>
+        <button type="button" class="btn btn-delete btn-row-delete">{% trans "Delete" %}</button>
     </td>
 </tr>
 </tbody>
@@ -198,82 +197,97 @@
 <div class="text-end mt-2">
     <button type="button" id="add_row_btn"
             class="btn btn-main btn-action">
-        + إضافة صف
+        + {% trans "Add Row" %}
     </button>
 </div>
 
 </div>
 
-<!-- ================= المجاميع ================= -->
+<!-- ================= Totals ================= -->
 <div class="card p-4 mt-4">
 <div class="row mb-2">
-    <label class="col-md-4 fw-bold">الإجمالي قبل الضريبة</label>
+    <label class="col-md-4 fw-bold">{% trans "Total Before Tax" %}</label>
     <div class="col-md-4"><input type="number" id="sum_before_tax" class="form-control" readonly></div>
 </div>
 <div class="row mb-2">
-    <label class="col-md-4 fw-bold">إجمالي الخصم</label>
+    <label class="col-md-4 fw-bold">{% trans "Total Discount" %}</label>
     <div class="col-md-4"><input type="number" id="sum_discount" class="form-control" readonly></div>
 </div>
 <div class="row mb-2">
-    <label class="col-md-4 fw-bold">إجمالي الضريبة</label>
+    <label class="col-md-4 fw-bold">{% trans "Total Tax" %}</label>
     <div class="col-md-4"><input type="number" id="sum_tax" class="form-control" readonly></div>
 </div>
 <div class="row mb-2">
-    <label class="col-md-4 fw-bold">الإجمالي بعد الضريبة</label>
+    <label class="col-md-4 fw-bold">{% trans "Total After Tax" %}</label>
     <div class="col-md-4"><input type="number" id="sum_after_tax" class="form-control" readonly></div>
 </div>
 </div>
 
 <div class="text-end mt-4">
     <button type="submit" class="btn btn-main btn-action">
-        حفظ الفاتورة
+        {% trans "Save Invoice" %}
     </button>
 </div>
 
 </form>
 </div>
 
-<!-- ================= السكربتات ================= -->
+<!-- ================= Scripts ================= -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* تاريخ اليوم */
-    const today = new Date().toISOString().split("T")[0];
-const dateInvoice = document.getElementById("date_invoice");
-const deliveryDate = document.getElementById("delivery_date");
-const dateIssue = document.querySelector('input[name="date_issue"]');
+    const SELECT_COST_CENTER_TEXT = "{% trans 'Select Cost Center' %}";
+    const NO_RESULTS_FOUND_TEXT = "{% trans 'No results found' %}";
+    const FAILED_TO_LOAD_DATA_TEXT = "{% trans 'Failed to load data' %}";
+const SEARCH_PRODUCT_PLACEHOLDER = "{% trans 'Search for a product.' %}";
+const SEARCH_SUPPLIER_PLACEHOLDER = "{% trans 'Search for a supplier.' %}";
+    const EXAMPLE_DISCOUNT_PLACEHOLDER = "{% trans 'Example: 10 or 10%' %}";
+    const DELETE_TEXT = "{% trans 'Delete' %}";
+    const IS_RTL = document.documentElement.dir === "rtl";
 
-if (dateInvoice && !dateInvoice.value) dateInvoice.value = today;
-if (deliveryDate && !deliveryDate.value) deliveryDate.value = today;
-if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا السطر المهم
+    const supplierSearchInput = document.getElementById("supplier_search");
+    if (supplierSearchInput) {
+        supplierSearchInput.placeholder = SEARCH_SUPPLIER_PLACEHOLDER;
+    }
 
-    /* Select2 (للصف الأول) */
-    $('.cost-center-select').select2({
-        dir:"rtl",
-        width:"100%",
-        placeholder:"اختر مركز تكلفة",
-        allowClear:true
+    document.querySelectorAll(".product-input").forEach(el => {
+        el.placeholder = SEARCH_PRODUCT_PLACEHOLDER;
     });
 
-    /* ===================== حساب صف + المجاميع ===================== */
+    /* Today's date */
+    const today = new Date().toISOString().split("T")[0];
+    const dateInvoice = document.getElementById("date_invoice");
+    const deliveryDate = document.getElementById("delivery_date");
+    const dateIssue = document.querySelector('input[name="date_issue"]');
+
+    if (dateInvoice && !dateInvoice.value) dateInvoice.value = today;
+    if (deliveryDate && !deliveryDate.value) deliveryDate.value = today;
+    if (dateIssue && !dateIssue.value) dateIssue.value = today;
+
+    /* Select2 (for first row) */
+    $('.cost-center-select').select2({
+        dir: IS_RTL ? "rtl" : "ltr",
+        width: "100%",
+        placeholder: SELECT_COST_CENTER_TEXT,
+        allowClear: true
+    });
+
+    /* ===================== Row calculation + totals ===================== */
     function toNum(v){
         const n = parseFloat(v);
         return isNaN(n) ? 0 : n;
     }
 
-    // ✅ تعديل الخصم فقط: يقرأ "10%" كنسبة و"10" كقيمة
     function parseDiscount(rawValue, baseAmount){
         const s = (rawValue || "").toString().trim();
 
         if (!s) return 0;
 
-        // لو كتب % => نسبة
         if (s.includes("%")) {
             const pct = toNum(s.replace("%",""));
             return (baseAmount * pct) / 100.0;
         }
 
-        // غير كده قيمة
         return toNum(s);
     }
 
@@ -334,7 +348,7 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
             list.style.display = "block";
 
             if (!data || !data.length) {
-                list.innerHTML = '<div class="dropdown-item text-muted">لا يوجد نتائج</div>';
+                list.innerHTML = '<div class="dropdown-item text-muted">' + NO_RESULTS_FOUND_TEXT + '</div>';
                 return;
             }
 
@@ -358,7 +372,7 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
                 .then(r => r.json())
                 .then(render)
                 .catch(() => {
-                    list.innerHTML = '<div class="dropdown-item text-danger">تعذر تحميل البيانات</div>';
+                    list.innerHTML = '<div class="dropdown-item text-danger">' + FAILED_TO_LOAD_DATA_TEXT + '</div>';
                     list.style.display = "block";
                 });
         }
@@ -373,7 +387,7 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
         });
     }
 
-    /* ================= المورد ================= */
+    /* ================= Supplier ================= */
     const supplierInput = document.getElementById("supplier_search");
     const supplierList  = document.getElementById("supplier_list");
     const supplierId    = document.getElementById("supplier_id");
@@ -382,7 +396,7 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
         bindAutocomplete(supplierInput, supplierList, supplierId, "/suppliers/api/search/");
     }
 
-    /* ================= المنتج (مع جلب السعر) ================= */
+    /* ================= Product (with fetching price) ================= */
     function bindProductRow(row){
         const input  = row.querySelector(".product-input");
         const list   = row.querySelector(".dropdown-list");
@@ -390,6 +404,8 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
         const priceInput = row.querySelector(".price-input");
 
         if (!input || !list || !hidden || !priceInput) return;
+
+        input.placeholder = SEARCH_PRODUCT_PLACEHOLDER;
 
         bindAutocomplete(input, list, hidden, "/products/search/", function(obj){
             fetch("/purchase/api/get-product-price/?product_id=" + obj.id)
@@ -406,7 +422,7 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
 
     document.querySelectorAll(".item-row").forEach(r => bindProductRow(r));
 
-    /* ================= زر إضافة صف ================= */
+    /* ================= Add row button ================= */
     const addBtn = document.getElementById("add_row_btn");
     const tbody  = document.getElementById("items_table");
     const totalRowsInput = document.getElementById("total_rows");
@@ -424,7 +440,7 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
             <td>
                 <div class="dropdown-box">
                     <input type="text" class="form-control product-input"
-                           placeholder="بحث عن منتج..." autocomplete="off">
+                           placeholder="${SEARCH_PRODUCT_PLACEHOLDER}" autocomplete="off">
                     <input type="hidden" name="row_${next}_product_id" class="product-id">
                     <div class="dropdown-list"></div>
                 </div>
@@ -433,21 +449,20 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
             <td><input type="number" name="row_${next}_qty" value="1" class="form-control qty-input"></td>
             <td><input type="number" name="row_${next}_price" value="0" class="form-control price-input"></td>
 
-            <!-- ✅ تعديل الخصم فقط: حقل واحد يقبل 10 أو 10% -->
-            <td><input type="text" name="row_${next}_discount" value="0" class="form-control discount-input" placeholder="مثال: 10 أو 10%"></td>
+            <td><input type="text" name="row_${next}_discount" value="0" class="form-control discount-input" placeholder="${EXAMPLE_DISCOUNT_PLACEHOLDER}"></td>
 
             <td><input type="number" name="row_${next}_tax" value="15" class="form-control tax-input"></td>
             <td><input type="number" name="row_${next}_total" class="form-control row-total" readonly></td>
             <td>
                 <select name="row_${next}_cost_center" class="form-select cost-center-select">
-                    <option value="">اختر مركز تكلفة</option>
+                    <option value="">${SELECT_COST_CENTER_TEXT}</option>
                     {% for cc in cost_centers %}
                         <option value="{{ cc.id }}">{{ cc.name }}</option>
                     {% endfor %}
                 </select>
             </td>
             <td>
-                <button type="button" class="btn btn-delete btn-row-delete">X</button>
+                <button type="button" class="btn btn-delete btn-row-delete">${DELETE_TEXT}</button>
             </td>
         `;
 
@@ -455,17 +470,17 @@ if (dateIssue && !dateIssue.value) dateIssue.value = today;   // ✅ هذا ال
         totalRowsInput.value = next;
 
         $(tr).find('.cost-center-select').select2({
-            dir:"rtl",
-            width:"100%",
-            placeholder:"اختر مركز تكلفة",
-            allowClear:true
+            dir: IS_RTL ? "rtl" : "ltr",
+            width: "100%",
+            placeholder: SELECT_COST_CENTER_TEXT,
+            allowClear: true
         });
 
         bindProductRow(tr);
         calcAll();
     });
 
-    /* ================= حذف صف ================= */
+    /* ================= Delete row ================= */
     document.addEventListener("click", function(e){
         if(!e.target.classList.contains("btn-row-delete")) return;
 

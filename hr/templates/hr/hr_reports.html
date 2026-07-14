@@ -1,0 +1,210 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Evaluation Reports" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <h3 class="fw-bold mb-4">📊 {% trans "Evaluation Reports & Performance Analysis" %}</h3>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+
+                <div class="col-md-3">
+                    <label class="form-label">{% trans "View Mode" %}</label>
+                    <select name="report_mode" class="form-select">
+                        <option value="summary" {% if report_mode == "summary" %}selected{% endif %}>
+                            {% trans "Monthly Summary" %}
+                        </option>
+                        <option value="details" {% if report_mode == "details" %}selected{% endif %}>
+                            {% trans "Details by Evaluation Type" %}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">{% trans "Employee" %}</label>
+                    <select name="employee" class="form-select">
+                        <option value="">{% trans "All Employees" %}</option>
+                        {% for emp in employees %}
+                            <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
+                                {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">{% trans "From Date" %}</label>
+                    <input type="date" name="from_date" value="{{ request.GET.from_date }}" class="form-control">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">{% trans "To Date" %}</label>
+                    <input type="date" name="to_date" value="{{ request.GET.to_date }}" class="form-control">
+                </div>
+
+                <div class="col-md-2 text-end">
+                    <button class="btn btn-primary px-4" type="submit">
+                        🔍 {% trans "Show" %}
+                    </button>
+
+                    {% if request.GET %}
+                        <a href="{% url 'hr:reports' %}" class="btn btn-outline-secondary px-4 mt-2">
+                            ♻️ {% trans "Reset" %}
+                        </a>
+                    {% endif %}
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    {% if report_mode == "summary" %}
+        <div class="card shadow-sm">
+            <div class="card-header fw-bold">
+                📅 {% trans "Monthly Summary per Employee" %}
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-bordered table-hover mb-0 text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "Employee" %}</th>
+                            <th>{% trans "Department" %}</th>
+                            <th>{% trans "Month" %}</th>
+                            <th>{% trans "Evaluations Count" %}</th>
+                            <th>{% trans "Monthly Average %" %}</th>
+                            <th>{% trans "Grade" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in monthly_summaries %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td class="text-start">
+                                    {{ row.employee.first_name_ar }} {{ row.employee.last_name_ar }}
+                                </td>
+                                <td>
+                                    {{ row.employee.department.name|default:"—" }}
+                                </td>
+                                <td>{{ row.month_label }}</td>
+                                <td>{{ row.evaluations_count }}</td>
+                                <td><strong>{{ row.final_score }}%</strong></td>
+                                <td>
+                                    {% if row.grade == 'ممتاز' %}
+                                        <span class="badge bg-success">{% trans "Excellent" %}</span>
+                                    {% elif row.grade == 'جيد جداً' %}
+                                        <span class="badge bg-primary">{% trans "Very Good" %}</span>
+                                    {% elif row.grade == 'جيد' %}
+                                        <span class="badge bg-warning text-dark">{% trans "Good" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{% trans "Needs Improvement" %}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-muted py-4">{% trans "No monthly results" %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow-sm">
+            <div class="card-header fw-bold">
+                📋 {% trans "Evaluation Details by Type" %}
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-bordered table-hover mb-0 text-center align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "Employee" %}</th>
+                            <th>{% trans "Department" %}</th>
+                            <th>{% trans "Evaluation" %}</th>
+                            <th>{% trans "Evaluation Type" %}</th>
+                            <th>{% trans "Period" %}</th>
+                            <th>{% trans "Evaluations Count" %}</th>
+                            <th>{% trans "Score %" %}</th>
+                            <th>{% trans "Grade" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in evaluation_details %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+
+                                <td class="text-start">
+                                    {{ row.employee.first_name_ar }} {{ row.employee.last_name_ar }}
+                                </td>
+
+                                <td>
+                                    {{ row.employee.department.name|default:"—" }}
+                                </td>
+
+                                <td>{{ row.evaluation.name }}</td>
+
+                                <td>{{ row.evaluation_type_name }}</td>
+
+                                <td>
+                                    {{ row.evaluation.start_date }}<br>
+                                    <small class="text-muted">{% trans "To" %}</small><br>
+                                    {{ row.evaluation.end_date }}
+                                </td>
+
+                                <td>{{ row.count }}</td>
+
+                                <td><strong>{{ row.final_score }}%</strong></td>
+
+                                <td>
+                                    {% if row.grade == 'ممتاز' %}
+                                        <span class="badge bg-success">{% trans "Excellent" %}</span>
+                                    {% elif row.grade == 'جيد جداً' %}
+                                        <span class="badge bg-primary">{% trans "Very Good" %}</span>
+                                    {% elif row.grade == 'جيد' %}
+                                        <span class="badge bg-warning text-dark">{% trans "Good" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{% trans "Needs Improvement" %}</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if row.evaluation.status == 'active' %}
+                                        <span class="badge bg-success">{% trans "Active" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{% trans "Closed" %}</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <a href="{% url 'hr:hr_report_detail_items' row.employee.id row.evaluation.id %}" class="btn btn-sm btn-outline-primary">
+                                        {% trans "View" %}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="11" class="text-muted py-4">
+                                    {% trans "No results found" %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,4 +1,7 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
 {% block content %}
 
 <!-- jQuery -->
@@ -15,12 +18,11 @@
 
 <style>
     #chartTree {
-        direction: rtl;
+        direction: {% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %};
         font-size: 18px;
         line-height: 1.9;
     }
 
-    /* صف العقدة */
     .tree-row {
         display: flex;
         align-items: center;
@@ -28,9 +30,8 @@
         gap: 8px;
     }
 
-    /* الأزرار */
     .tree-actions {
-        margin-left: auto; /* مهم مع RTL */
+        margin-left: auto;
         display: none;
         gap: 10px;
     }
@@ -49,7 +50,6 @@
         color: #dc3545;
     }
 
-    /* إظهار الأزرار عند المرور */
     .jstree-anchor:hover .tree-actions {
         display: inline-flex;
     }
@@ -58,14 +58,21 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-body">
-            <h4 class="fw-bold text-end mb-3">شجرة الحسابات</h4>
+
+            <h4 class="fw-bold text-end mb-3">
+                {% trans "Chart of Accounts Tree" %}
+            </h4>
+
             <div id="chartTree"></div>
+
         </div>
     </div>
 </div>
 
 <script>
 $(function () {
+
+    const LANG = "{{ LANGUAGE_CODE }}";
 
     const tree = $("#chartTree").jstree({
         core: {
@@ -79,7 +86,7 @@ $(function () {
             themes: { dots: true, icons: true }
         },
         plugins: ["wholerow"],
-        rtl: true
+        rtl: LANG === "ar"
     });
 
     function addActions() {
@@ -90,24 +97,25 @@ $(function () {
             const node = tree.jstree(true).get_node($li.attr("id"));
             if (!node) return;
 
-            // لا تظهر الأزرار للجذر
             if (node.parent === "#") return;
 
             const id = node.id;
 
             let actions = `<span class="tree-actions">
-                <i class="fa fa-eye" title="عرض"
+
+                <i class="fa fa-eye"
+                   title="{% trans 'View' %}"
                    onclick="window.location.href='/accounting/accounts/${id}/view/'"></i>
-                <i class="fa fa-pen" title="تعديل"
-                   onclick="window.location.href='/accounting/accounts/${id}/edit/'"></i>
-                <i class="fa fa-plus" title="إضافة فرع"
+
+                <i class="fa fa-plus"
+                   title="{% trans 'Add Child' %}"
                    onclick="window.location.href='/accounting/accounts/${id}/add-child/'"></i>
             `;
 
-            // زر الحذف يظهر فقط إذا لا يوجد أبناء
             if (!node.children || node.children.length === 0) {
-                actions += `<i class="fa fa-trash delete" title="حذف"
-                   onclick="if(confirm('تأكيد الحذف؟')) {
+                actions += `<i class="fa fa-trash delete"
+                   title="{% trans 'Delete' %}"
+                   onclick="if(confirm('{% trans 'Confirm delete?' %}')) {
                        window.location.href='/accounting/accounts/${id}/delete/';
                    }"></i>`;
             }
@@ -122,8 +130,7 @@ $(function () {
         });
     }
 
-    // بعد تحميل الشجرة أو فتح أي عقدة
-    $("#chartTree").on("ready.jstree open_node.jstree", function () {
+    $("#chartTree").on("ready.jstree open_node.jstree refresh.jstree", function () {
         addActions();
     });
 
