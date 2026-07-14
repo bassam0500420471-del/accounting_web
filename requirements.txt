@@ -4,3 +4,4 @@ psycopg2-binary
 whitenoise
 xhtml2pdf
 django-extensions
+weasyprint
