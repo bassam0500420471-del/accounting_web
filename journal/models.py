@@ -32,9 +32,9 @@ class JournalEntry(models.Model):
     )
 
     entry_no = models.IntegerField(
-        unique=True,
         blank=True,
         null=True,
+        editable=False,
         verbose_name="رقم القيد"
     )
 
@@ -89,6 +89,14 @@ class JournalEntry(models.Model):
         auto_now_add=True,
         verbose_name="تاريخ الإنشاء"
     )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "entry_no"],
+                name="uniq_journal_entry_no_per_company",
+            )
+        ]
+        ordering = ["-entry_no"]
 
     def __str__(self):
         return f"قيد رقم {self.entry_no or self.pk}"
@@ -106,11 +114,18 @@ class JournalEntry(models.Model):
         return self.total_debit == self.total_credit
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         if self.entry_no is None:
-            self.entry_no = self.pk
-            super().save(update_fields=["entry_no"])
+            last_no = (
+                JournalEntry.objects
+                .filter(company=self.company)
+                .aggregate(models.Max("entry_no"))
+                ["entry_no__max"]
+                or 0
+            )
 
+            self.entry_no = last_no + 1
+
+        super().save(*args, **kwargs)
 
 class JournalLine(models.Model):
     entry = models.ForeignKey(

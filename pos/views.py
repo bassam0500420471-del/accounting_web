@@ -9,11 +9,15 @@ import json
 from products.models import Product, Category
 from pos.models import Invoice, InvoiceItem, Payment, PaymentMethod
 from customers.models import Customer
-from accounting.models import Account
+from accounting.models import Account, JournalEntry, JournalLine
+from django.db.models import Max
 from decimal import Decimal
 import qrcode
 import base64
 from io import BytesIO
+from accounting.services.journal_service import create_sales_journal
+
+print("===== POS VIEWS LOADED =====")
 
 # ============================
 # ✅ تحديد الشركة الحالية
@@ -31,6 +35,103 @@ def _get_company(request):
 
     return company
 
+# =========================================
+# إنشاء قيد محاسبي لفاتورة POS
+# =========================================
+def create_pos_journal(invoice, payment):
+
+    company = invoice.company
+
+    last_no = JournalEntry.objects.filter(
+        company=company
+    ).aggregate(
+        Max("entry_no")
+    )["entry_no__max"] or 0
+
+
+    entry = JournalEntry.objects.create(
+        company=company,
+        entry_no=last_no + 1,
+        date=invoice.created_at.date(),
+        description=f"قيد فاتورة POS رقم {invoice.invoice_no}",
+        source_type="sales_invoice",
+        source_id=invoice.id,
+        posted=True
+    )
+
+
+    # مدين: الصندوق / البنك
+    # التحقق من حساب طريقة الدفع
+    if not payment.method or not payment.method.account:
+        raise Exception(
+            "طريقة الدفع غير مرتبطة بحساب محاسبي"
+        )
+
+
+    # مدين: الصندوق / البنك
+    JournalLine.objects.create(
+        entry=entry,
+        account=payment.method.account,
+        debit=payment.amount,
+        credit=0
+    )
+
+    # حساب المبيعات
+    sales_account = Account.objects.get(
+        company=company,
+        code="4000"
+    )
+
+
+    # حساب الضريبة
+    vat_account = Account.objects.filter(
+        company=company,
+        name__icontains="ضريبة القيمة المضافة"
+    ).first()
+
+    subtotal = Decimal("0.00")
+    vat_amount = Decimal("0.00")
+
+
+    for item in invoice.items.all():
+
+        line_total = (
+            Decimal(str(item.price)) *
+            Decimal(str(item.quantity))
+        )
+
+        discount = Decimal(str(item.discount or 0))
+
+        after_discount = line_total - discount
+
+        subtotal += after_discount
+
+        vat_amount += (
+            after_discount *
+            Decimal(str(item.tax or 0)) /
+            Decimal("100")
+        )
+
+    # دائن: المبيعات قبل الضريبة
+    JournalLine.objects.create(
+        entry=entry,
+        account=sales_account,
+        debit=0,
+        credit=subtotal
+    )
+
+
+    # دائن: ضريبة القيمة المضافة
+    if vat_amount > 0:
+        JournalLine.objects.create(
+            entry=entry,
+            account=vat_account,
+            debit=0,
+            credit=vat_amount
+        )
+
+
+    return entry
 
 # =========================================
 # صفحة POS الرئيسية
@@ -191,6 +292,9 @@ def pos_save_invoice(request):
 
             InvoiceItem.objects.bulk_create(invoice_items)
 
+            # إنشاء القيد المحاسبي يتم بعد الدفع وليس عند حفظ الفاتورة
+            pass
+
         return JsonResponse({"success": True, "invoice_id": invoice.id})
 
     except Exception as e:
@@ -205,11 +309,20 @@ def payment_detail(request, invoice_id):
     company = _get_company(request)
 
     # ✅ ممنوع الوصول لفاتورة شركة ثانية
-    invoice = get_object_or_404(Invoice, pk=invoice_id, company=company)
-    payment_methods = PaymentMethod.objects.filter(
-    company=company
-)
+    invoice = get_object_or_404(
+        Invoice,
+        pk=invoice_id,
+        company=company
+    )
 
+    payment_methods = PaymentMethod.objects.filter(
+        company=company
+    ).order_by("name")
+
+    print("===== POS PAYMENT METHODS =====")
+    print("COUNT:", payment_methods.count())
+    print(list(payment_methods.values("id", "name")))
+    print("===============================")
     total_paid_previous = Decimal(
         str(
             sum(
@@ -294,9 +407,16 @@ def payment_detail(request, invoice_id):
             method=payment_method,
             date=timezone.now()
         )
+
+
+        create_pos_journal(
+            invoice,
+            payment
+        )
+
+
         invoice.is_draft = False
         invoice.save()
-
         # 3. حساب المتبقي الحقيقي (سالب، صفر، أو موجب)
         # مجموع المدفوعات الحالي (بما فيها الدفعة الجديدة)
         total_paid_after = sum(p.amount for p in invoice.payments.all())
@@ -445,40 +565,57 @@ def add_payment_method(request):
 # =========================================
 # طباعة فاتورة نقاط البيع (حرارية)
 # =========================================
-# =========================================
-# طباعة فاتورة نقاط البيع (حرارية)
-# =========================================
 def pos_invoice_print(request, pk):
     company = _get_company(request)
-    invoice = get_object_or_404(Invoice.objects.select_related('customer'), pk=pk, company=company)
-    
+
+    invoice = get_object_or_404(
+        Invoice.objects.select_related('customer'),
+        pk=pk,
+        company=company
+    )
+
     items = invoice.items.all()
-    
+
     # 1. حساب المجموع الأساسي للعناصر
-    subtotal = sum(float(item.price or 0) * float(item.quantity or 0) for item in items)
-    
-    # 2. حساب إجمالي الخصم
-    discount_total = sum(float(item.discount or 0) * float(item.quantity or 0) for item in items)
-    
-    # 3. حساب إجمالي الضريبة
-    tax_amount = sum(
-        ((float(item.price or 0) * float(item.quantity or 0)) - (float(item.discount or 0) * float(item.quantity or 0))) * (float(item.tax or 0) / 100) 
+    subtotal = sum(
+        float(item.price or 0) * float(item.quantity or 0)
         for item in items
     )
-    
-    # 4. حساب المدفوعات والمتبقي
+
+    # 2. حساب إجمالي الخصم
+    discount_total = sum(
+        float(item.discount or 0) * float(item.quantity or 0)
+        for item in items
+    )
+
+    # 3. حساب إجمالي الضريبة
+    tax_amount = sum(
+        (
+            (float(item.price or 0) * float(item.quantity or 0))
+            - (float(item.discount or 0) * float(item.quantity or 0))
+        ) * (float(item.tax or 0) / 100)
+        for item in items
+    )
+
+    # 4. حساب المدفوع والمتبقي
     total_paid = float(invoice.paid_amount)
     remaining = float(invoice.remaining_amount)
 
-    # --- توليد الباركود ---
+    # توليد QR
     qr_text = f"Invoice Number: {invoice.id}"
+
     qr = qrcode.make(qr_text)
+
     buffer = BytesIO()
+
     qr.save(buffer, format="PNG")
-    qr_data = base64.b64encode(buffer.getvalue()).decode()
-    
-    # إرجاع الصفحة (هذا السطر يجب أن يكون بنفس مستوى الأسطر فوقه)
-    return render(request, "pos/pos_print.html", {
+
+    qr_data = base64.b64encode(
+        buffer.getvalue()
+    ).decode()
+
+
+    return render(request, "pos/invoice_print.html", {
         "invoice": invoice,
         "items": items,
         "subtotal": subtotal,
@@ -486,5 +623,45 @@ def pos_invoice_print(request, pk):
         "tax_amount": tax_amount,
         "total_paid": total_paid,
         "remaining": remaining,
-        "qr_code": f"data:image/png;base64,{qr_data}", 
+        "qr_code": f"data:image/png;base64,{qr_data}",
+        "auto_print": True,
+    })
+
+
+# =========================================
+# عرض فاتورة نقاط البيع بدون طباعة
+# =========================================
+# =========================================
+# عرض فاتورة نقاط البيع بدون طباعة
+# =========================================
+def pos_invoice_view(request, pk):
+    company = _get_company(request)
+
+    invoice = get_object_or_404(
+        Invoice.objects.select_related('customer'),
+        pk=pk,
+        company=company
+    )
+
+    items = invoice.items.all()
+
+    subtotal = sum(
+        float(item.price or 0) * float(item.quantity or 0)
+        for item in items
+    )
+
+    # --- أضف كود توليد QR هنا ---
+    qr_text = f"Invoice Number: {invoice.id}"
+    qr = qrcode.make(qr_text)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    qr_data = base64.b64encode(buffer.getvalue()).decode()
+    # ---------------------------
+
+    return render(request, "pos/invoice_view.html", {
+        "invoice": invoice,
+        "items": items,
+        "subtotal": subtotal,
+        "qr_code": f"data:image/png;base64,{qr_data}", # تأكد من تمرير المتغير
+        "auto_print": False, 
     })

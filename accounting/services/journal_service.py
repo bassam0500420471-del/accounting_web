@@ -36,26 +36,40 @@ def create_sales_journal(invoice):
     entry = JournalEntry.objects.create(
         company=invoice.company,
         entry_no=next_entry_no,
-        date=invoice.date_invoice,
+        date=getattr(invoice, "date_invoice", invoice.created_at.date()),
         description=description,
         source_type="sales_invoice",
         source_id=invoice.id,
         posted=True
     )
 
-    items_total = (
-        invoice.items.aggregate(
-            total=Sum(
-                ExpressionWrapper(
-                    F("qty") * F("price"),
-                    output_field=DecimalField(max_digits=12, decimal_places=2)
+    first_item = invoice.items.first()
+
+    if first_item and hasattr(first_item, "qty"):
+        qty_field = "qty"
+    else:
+        qty_field = "quantity"
+
+    items_total = invoice.items.aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                F(qty_field) * F("price"),
+                output_field=DecimalField(
+                    max_digits=12,
+                    decimal_places=2
                 )
             )
-        )["total"] or Decimal("0.00")
-    )
+        )
+    )["total"] or Decimal("0.00")
 
     discount_value = getattr(invoice, "total_discount", Decimal("0.00")) or Decimal("0.00")
-    tax_value = getattr(invoice, "tax_value", Decimal("0.00")) or Decimal("0.00")
+    tax_value = (
+        getattr(invoice, "tax_value", None)
+        or getattr(invoice, "total_tax", None)
+        or getattr(invoice, "tax", Decimal("0.00"))
+        or Decimal("0.00")
+    )
+
 
     net_total = items_total - discount_value
     grand_total = net_total + tax_value

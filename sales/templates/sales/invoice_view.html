@@ -408,9 +408,11 @@ body {
 </div>
             <div class="mb-3">
                 <label class="fw-bold mb-1">{% trans "Account (Cash / Bank)" %}</label>
-                <select name="cash_account" class="form-select" required>
-                    {% for a in cash_accounts %}
-                        <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+                <select name="payment_method" class="form-select" required>
+                    {% for method in payment_methods %}
+                        <option value="{{ method.id }}">
+                            {{ method.name }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>

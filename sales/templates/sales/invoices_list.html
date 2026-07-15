@@ -116,9 +116,10 @@
                     </button>
 <ul class="dropdown-menu custom-menu">
     <li>
-        <a class="dropdown-item" href="{% url 'sales:invoice_view' invoice.object.id %}">
-            <i class="fa-solid fa-eye icon"></i> {% trans "View" %}
-        </a>
+<a class="dropdown-item"
+   href="{% if invoice.type == 'pos' %}{% url 'pos:pos_invoice_view' invoice.object.id %}{% else %}{% url 'sales:invoice_view' invoice.object.id %}{% endif %}">
+    <i class="fa-solid fa-eye icon"></i> {% trans "View" %}
+</a>
     </li>
     <li>
         <a class="dropdown-item" href="{% url 'sales:invoice_print' invoice.object.id %}" target="_blank">
@@ -130,18 +131,33 @@
             <i class="fa-solid fa-file-pdf icon"></i> {% trans "Download PDF" %}
         </a>
     </li>
-    {% if invoice.type == "sales" %}
-    <li>
-        <a class="dropdown-item" href="{% url 'sales:invoice_view' invoice.object.id %}?open_payment=1">
-            <i class="fa-solid fa-credit-card icon"></i> {% trans "Pay" %}
-        </a>
-    </li>
-    <li>
-        <a class="dropdown-item return-btn" href="{% url 'sales:create_return' invoice.object.id %}">
-            <i class="fa-solid fa-rotate-left return-icon"></i> {% trans "Invoice Return" %}
-        </a>
-    </li>
-    {% endif %}
+{% if invoice.type == "sales" %}
+
+<li>
+    <a class="dropdown-item" href="{% url 'sales:invoice_view' invoice.object.id %}?open_payment=1">
+        <i class="fa-solid fa-credit-card icon"></i>
+        {% trans "Pay" %}
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item return-btn" href="{% url 'sales:create_return' invoice.object.id %}">
+        <i class="fa-solid fa-rotate-left return-icon"></i>
+        {% trans "Invoice Return" %}
+    </a>
+</li>
+
+{% elif invoice.type == "pos" %}
+
+<li>
+    <a class="dropdown-item"
+       href="{% url 'pos:payment_detail' invoice.object.id %}">
+        <i class="fa-solid fa-credit-card icon"></i>
+        {% trans "Pay" %}
+    </a>
+</li>
+
+{% endif %}
 </ul>
                 </div>
             </td>

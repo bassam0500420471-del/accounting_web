@@ -6,7 +6,12 @@ from sales.models import SalesInvoice
 
 class JournalEntry(models.Model):
     company = models.ForeignKey('Company', on_delete=models.CASCADE)
-    entry_no = models.IntegerField(null=True, blank=True, editable=False) 
+    entry_no = models.IntegerField(
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name="رقم القيد"
+    )
 
     date = models.DateField(default=timezone.now)
     description = models.CharField(max_length=255)

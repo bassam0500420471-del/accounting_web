@@ -28,10 +28,23 @@ def index(request):
         total_leaves = Leave.objects.filter(status='approved').count()
 
     # ==============================
-    # مؤشرات الفواتير (بدون عزل حالياً لأن الموديلات ما فيها company)
+    # مؤشرات الفواتير (مع عزل الشركة)
     # ==============================
-    total_invoices = SalesInvoice.objects.count()
-    pending_invoices = SalesInvoice.objects.filter(payment_status='pending').count()
+    if company:
+        total_invoices = SalesInvoice.objects.filter(
+            company=company
+        ).count()
+
+        pending_invoices = SalesInvoice.objects.filter(
+            company=company,
+            payment_status="pending"
+        ).count()
+    else:
+        total_invoices = SalesInvoice.objects.count()
+
+        pending_invoices = SalesInvoice.objects.filter(
+            payment_status="pending"
+        ).count()
 
     # ==============================
     # الحضور اليومي (✅ مع العزل بالشركة)
@@ -60,11 +73,19 @@ def index(request):
         })
 
     # ==============================
-    # بيانات المبيعات (بدون عزل حالياً لأن الموديلات ما فيها company)
+    # بيانات المبيعات (مع عزل الشركة)
     # ==============================
-    sales_invoices = SalesInvoice.objects.all()
-    top_sales = sales_invoices.order_by('-total_after_tax')[:5]
-    daily_sales_payment = sales_invoices.filter(date_invoice=today)
+    if company:
+        sales_invoices = SalesInvoice.objects.filter(
+            company=company
+        )
+    else:
+        sales_invoices = SalesInvoice.objects.all()
+
+    top_sales = sales_invoices.order_by("-total_after_tax")[:5]
+    daily_sales_payment = sales_invoices.filter(
+        date_invoice=today
+    )
 
     # ==============================
     # بيانات المشتريات (بدون عزل حالياً لأن الموديلات ما فيها company)

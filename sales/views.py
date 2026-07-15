@@ -1,43 +1,33 @@
-import os  # لاستخدام os
-from django.conf import settings  # <--- هذا هو السطر الناقص الذي يسبب الخطأ
+from decimal import Decimal
+from datetime import datetime, date, time
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
-# ... باقي الاستيرادات ...from django.http import JsonResponse, HttpResponse
-from django.template.loader import render_to_string
-from django.contrib import messages
+from django.http import JsonResponse, HttpResponse
 from django.db import transaction
-from django.db.models import Sum
-from django.core.exceptions import PermissionDenied
-from decimal import Decimal, InvalidOperation
-from datetime import datetime, time, date
+from django.db.models import Sum, Q
+from django.urls import reverse
+from django.contrib import messages
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt # أضف هذا السطر في الأعلى
+from django.views.decorators.csrf import csrf_exempt
+
 from sales.models import SalesInvoice
-from pos.models import Invoice as PosInvoice # تأكد من هذا الاستيراد
-from .models import SalesInvoice, SalesItem, ReturnInvoice, ReturnItem
 from pos.models import Invoice as PosInvoice
+from pos.models import PaymentMethod
+from .models import SalesInvoice, SalesItem, ReturnInvoice, ReturnItem
 from customers.models import Customer
 from products.models import Product
 from cost_centers.models import CostCenter
-
-from accounting.services.journal_service import create_sales_journal, create_sales_return_journal
-from accounting.models import JournalEntry
 from payments.models import PaymentVoucher, VoucherAllocation
-from payments.services.allocation_service import get_sales_invoice_balance
+from accounting.models import JournalEntry
+from accounting.services.journal_service import create_sales_journal, create_sales_return_journal
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.core.exceptions import PermissionDenied
 
-from weasyprint import HTML, CSS
-from django.conf import settings
-from decimal import Decimal
-from django.db.models import Sum
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
-from django.db import models
-from accounting.models import Account
 import base64
-import qrcode
 from io import BytesIO
-from qrcode.constants import ERROR_CORRECT_H
+import qrcode
 
 def _tlv(tag, value):
     value = str(value).encode("utf-8")
@@ -89,7 +79,6 @@ def generate_invoice_qr(invoice):
     img.save(buffer, format="PNG")
 
     return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
-    return qr_code
 
 def _get_company(request):
     user = getattr(request, "user", None)
@@ -147,7 +136,22 @@ def get_next_invoice_number(company):
 def get_next_return_number(company):
     last = ReturnInvoice.objects.filter(company=company).order_by("-return_no").first()
     return (last.return_no + 1) if last and last.return_no else 1
+def get_sales_invoice_balance(invoice):
+    invoice_total = Decimal(str(invoice.total_after_tax or 0))
 
+    paid = VoucherAllocation.objects.filter(
+        sales_invoice=invoice
+    ).aggregate(
+        total=Sum("amount")
+    )["total"] or Decimal("0.00")
+
+    returns = ReturnInvoice.objects.filter(
+        original_invoice=invoice
+    ).aggregate(
+        total=Sum("total_after_tax")
+    )["total"] or Decimal("0.00")
+
+    return invoice_total - paid - returns
 
 def quotation_add(request):
     company = _get_company(request)
@@ -181,18 +185,13 @@ def invoices_list(request):
 
     # فواتير المبيعات
     sales_qs = SalesInvoice.objects.filter(company=company).order_by("-id")
-    for inv in sales_qs:
-        dt = (
-            timezone.make_aware(datetime.combine(inv.date_invoice, time.min))
-            if inv.date_invoice
-            else timezone.now()
-        )
 
+    for inv in sales_qs:
         invoices.append({
             "type": "sales",
             "id": inv.id,
             "number": str(inv.invoice_no) if inv.invoice_no else f"INV-{inv.id}",
-            "date": dt,
+            "date": inv.created_at,
             "total": getattr(inv, "total_after_tax", Decimal("0.00")),
             "object": inv,
         })
@@ -219,7 +218,6 @@ def invoices_list(request):
             "object": inv,
         })
 
-    # ترتيب جميع الفواتير حسب التاريخ
     invoices.sort(key=lambda x: x["date"], reverse=True)
 
     return render(
@@ -227,7 +225,7 @@ def invoices_list(request):
         "sales/invoices_list.html",
         {"invoices": invoices},
     )
-
+  
 @csrf_exempt
 def invoice_add(request):
     company = _get_company(request)
@@ -300,44 +298,77 @@ def invoice_add(request):
         "next_number": next_number, "today": today,
     })
 def invoice_view(request, pk):
+
     user_company = _get_company(request)
 
-    # 1. محاولة البحث في المبيعات
-    invoice = SalesInvoice.objects.filter(pk=pk, company=user_company).first()
-    
-    if invoice:
-        # حسابات الرصيد للعميل
-        total_invoiced = SalesInvoice.objects.filter(company=user_company, customer=invoice.customer, id__lt=invoice.id).aggregate(total=Sum('total_after_tax'))['total'] or Decimal("0.00")
-        total_paid = VoucherAllocation.objects.filter(receipt_voucher__customer=invoice.customer, receipt_voucher__date__lt=invoice.date_invoice).aggregate(total=Sum('amount'))['total'] or Decimal("0.00")
+    invoice = SalesInvoice.objects.filter(
+        pk=pk,
+        company=user_company
+    ).first()
+
+    is_pos = False
+
+    if not invoice:
+        invoice = get_object_or_404(
+            PosInvoice,
+            pk=pk,
+            company=user_company
+        )
+        is_pos = True
+
+    payment_methods = PaymentMethod.objects.filter(
+        company=user_company
+    ).order_by("name")
+
+    print("========== PAYMENT METHODS ==========")
+    print(list(payment_methods.values("id", "name")))
+    print("=====================================")
+
+    qr_code = generate_invoice_qr(invoice)
+
+    customer_previous_balance = Decimal("0.00")
+    invoice_balance = Decimal("0.00")
+
+    if not is_pos:
+
+        invoice_balance = get_sales_invoice_balance(invoice)
+
+        total_invoiced = SalesInvoice.objects.filter(
+            company=user_company,
+            customer=invoice.customer,
+            id__lt=invoice.id
+        ).aggregate(
+            total=Sum("total_after_tax")
+        )["total"] or Decimal("0.00")
+
+        total_paid = VoucherAllocation.objects.filter(
+            receipt_voucher__customer=invoice.customer,
+            receipt_voucher__date__lt=invoice.date_invoice
+        ).aggregate(
+            total=Sum("amount")
+        )["total"] or Decimal("0.00")
+
         customer_previous_balance = total_invoiced - total_paid
 
-        # جلب الحسابات (هنا الخلل كان أنها خارج نطاق التنفيذ)
-        cash_accounts = Account.objects.filter(
-            is_active=True
-        ).filter(
-            models.Q(company=user_company) | models.Q(company__isnull=True)
-        ).order_by("code")
+    if is_pos:
+        template_name = "pos/invoice_view.html"
+    else:
+        template_name = "sales/invoice_view.html"
 
-        qr_code = generate_invoice_qr(invoice)
-
-        return render(request, "sales/invoice_view.html", {
+    return render(
+        request,
+        template_name,
+        {
             "invoice": invoice,
-            "company": user_company,
             "items": invoice.items.all(),
+            "company": user_company,
+            "payment_methods": payment_methods,
             "customer_previous_balance": customer_previous_balance,
-            "invoice_balance": get_sales_invoice_balance(invoice),
-            "cash_accounts": cash_accounts, # تم تمريرها للقالب الآن
+            "invoice_balance": invoice_balance,
             "qr_code": qr_code,
-        })
-
-    # 2. إذا لم توجد، ابحث في POS
-    pos_invoice = get_object_or_404(PosInvoice, pk=pk, company=user_company)
-    qr_code = generate_invoice_qr(pos_invoice)
-    return render(request, "pos/pos_invoice_view.html", {
-        "invoice": pos_invoice,
-        "company": user_company,
-        "qr_code": qr_code
-    })
+            "is_pos": is_pos,
+        }
+    )
 
     # حساب الرصيد السابق
     total_invoiced = SalesInvoice.objects.filter(
@@ -361,12 +392,6 @@ def invoice_view(request, pk):
     # ===============================
     # حسابات الصندوق والبنك
     # ===============================
-    cash_accounts = Account.objects.filter(
-        is_active=True
-    ).filter(
-        models.Q(company=user_company) |
-        models.Q(company__isnull=True)
-    ).order_by("code")
 
 
     qr_code = generate_invoice_qr(invoice)
@@ -380,7 +405,6 @@ def invoice_view(request, pk):
             "items": invoice.items.all(),
             "customer_previous_balance": customer_previous_balance,
             "invoice_balance": get_sales_invoice_balance(invoice),
-            "cash_accounts": cash_accounts,
             "qr_code": qr_code,
         }
     )
@@ -408,21 +432,27 @@ def invoice_delete(request, pk):
 
 def invoice_pdf(request, pk):
     company = _get_company(request)
-    
-    # 1. محاولة البحث في فواتير المبيعات
-    invoice = SalesInvoice.objects.filter(pk=pk, company=company).first()
+
+    invoice = SalesInvoice.objects.filter(
+        pk=pk,
+        company=company
+    ).first()
+
     is_pos = False
     template_name = "sales/invoice_print.html"
-    
-    # 2. إذا لم توجد، ابحث في فواتير الـ POS
-    if not invoice:
-        invoice = get_object_or_404(PosInvoice, pk=pk, company=company)
-        is_pos = True
-        template_name = "pos/pos_print.html" # تأكد من أن هذا الملف موجود في مجلد pos لديك
 
-    items = invoice.items.all() if hasattr(invoice, 'items') else []
+    if not invoice:
+        invoice = get_object_or_404(
+            PosInvoice,
+            pk=pk,
+            company=company
+        )
+        is_pos = True
+        template_name = "pos/invoice_print.html"
+
+    items = invoice.items.all()
     qr_code = generate_invoice_qr(invoice)
-    
+
     context = {
         "invoice": invoice,
         "items": items,
@@ -430,23 +460,38 @@ def invoice_pdf(request, pk):
         "qr_code": qr_code,
         "print_mode": True,
     }
-    
-    # إضافة الحسابات فقط إذا كانت فاتورة مبيعات عادية
+
     if not is_pos:
         context.update({
-            "remaining_amount": (invoice.total_after_tax - getattr(invoice, 'paid_amount', 0)),
+            "remaining_amount": (
+                invoice.total_after_tax
+                - getattr(invoice, "paid_amount", 0)
+            ),
             "invoice_balance": get_sales_invoice_balance(invoice),
-            "cash_accounts": Account.objects.filter(models.Q(company=company) | models.Q(company__isnull=True), is_active=True).order_by("code")
         })
 
-    # توليد ملف الـ PDF
-    html_string = render_to_string(template_name, context, request=request)
-    pdf = HTML(string=html_string, base_url=request.build_absolute_uri("/")).write_pdf()
+    html_string = render_to_string(
+        template_name,
+        context,
+        request=request
+    )
 
-    response = HttpResponse(pdf, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="invoice_{getattr(invoice, "invoice_no", invoice.id)}.pdf"'
+    pdf = HTML(
+        string=html_string,
+        base_url=request.build_absolute_uri("/")
+    ).write_pdf()
+
+    response = HttpResponse(
+        pdf,
+        content_type="application/pdf"
+    )
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="invoice_{getattr(invoice, "invoice_no", invoice.id)}.pdf"'
+    )
 
     return response
+
 def returns_list(request):
     company = _get_company(request)
 
@@ -525,37 +570,46 @@ def create_return(request, pk):
 def invoice_print(request, pk):
     user_company = _get_company(request)
 
-    # 1. البحث في فواتير المبيعات أولاً
-    invoice = SalesInvoice.objects.filter(pk=pk, company=user_company).first()
+    invoice = SalesInvoice.objects.filter(
+        pk=pk,
+        company=user_company
+    ).first()
+
     is_pos = False
 
-    # 2. إذا لم توجد، ابحث في فواتير الـ POS
-    if not invoice:  # يجب أن تبدأ من هنا (تحت الـ indentation الخاص بالدالة)
-        invoice = get_object_or_404(PosInvoice, pk=pk, company=user_company)
+    if not invoice:
+        invoice = get_object_or_404(
+            PosInvoice,
+            pk=pk,
+            company=user_company
+        )
         is_pos = True
-        template_name = "pos/pos_print.html"
+        template_name = "pos/invoice_print.html"
     else:
         template_name = "sales/invoice_print.html"
 
-    # --- حسابات الرصيد (فقط إذا كانت فاتورة مبيعات عادية وليست POS) ---
     invoice_balance = Decimal("0.00")
     customer_previous_balance = Decimal("0.00")
-    
-    if not is_pos and hasattr(invoice, 'customer'):
+
+    if not is_pos and hasattr(invoice, "customer"):
+
         invoice_balance = get_sales_invoice_balance(invoice)
-        
-        # حساب الرصيد السابق
+
         total_invoiced = SalesInvoice.objects.filter(
             company=user_company,
             customer=invoice.customer,
             id__lt=invoice.id
-        ).aggregate(total=Sum("total_after_tax"))["total"] or Decimal("0.00")
+        ).aggregate(
+            total=Sum("total_after_tax")
+        )["total"] or Decimal("0.00")
 
         total_paid = VoucherAllocation.objects.filter(
             receipt_voucher__customer=invoice.customer,
-            receipt_voucher__date__lt=getattr(invoice, 'date_invoice', datetime.now())
-        ).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
-        
+            receipt_voucher__date__lt=invoice.date_invoice
+        ).aggregate(
+            total=Sum("amount")
+        )["total"] or Decimal("0.00")
+
         customer_previous_balance = total_invoiced - total_paid
 
     qr_code = generate_invoice_qr(invoice)
@@ -568,9 +622,10 @@ def invoice_print(request, pk):
             "company": user_company,
             "items": invoice.items.all(),
             "customer_previous_balance": customer_previous_balance,
-            "invoice_balance": invoice_balance, # ستكون 0 في حالة الـ POS
+            "invoice_balance": invoice_balance,
             "qr_code": qr_code,
             "print_mode": True,
+            "is_pos": is_pos,
         }
     )
 

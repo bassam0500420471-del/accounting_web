@@ -6,14 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from django.core.exceptions import PermissionDenied
 
-from payments.models import ReceiptVoucher
+from payments.models import ReceiptVoucher, VoucherAllocation
+from pos.models import PaymentMethod
 from payments.services.payment_journal_service import cancel_receipt_voucher
 from customers.models import Customer
 from suppliers.models import Supplier
 from cost_centers.models import CostCenter
 from accounting.models import Account
 from django.db import models
-from payments.models import ReceiptVoucher, VoucherAllocation # تأكد من استيراد الموديل الجديد
+ # تأكد من استيراد الموديل الجديد
 from sales.models import SalesInvoice
 from pos.models import Invoice as PosInvoice
 from pos.models import Payment
@@ -50,6 +51,9 @@ def receipt_create(request):
     suppliers = Supplier.objects.filter(company=company).order_by("commercial_name")
     cost_centers = CostCenter.objects.filter(company=company, is_active=True).order_by("name")
     other_accounts = Account.objects.filter(company=company, is_active=True).order_by("code")
+    payment_methods = PaymentMethod.objects.filter(
+        company=company,
+    ).order_by("name")
 
     if request.method == "POST":
         party_type = (request.POST.get("party_type") or "").strip()
@@ -58,7 +62,7 @@ def receipt_create(request):
         supplier_id = (request.POST.get("supplier") or "").strip()
         cost_center_id = (request.POST.get("cost_center") or "").strip()
         other_account_id = (request.POST.get("other_account") or "").strip()
-        cash_account_id = (request.POST.get("cash_account") or "").strip()
+        payment_method_id = (request.POST.get("payment_method") or "").strip()
         amount = (request.POST.get("amount") or "").strip()
         description = (request.POST.get("description") or "").strip()
         invoice_id = request.POST.get("invoice_id")
@@ -66,7 +70,7 @@ def receipt_create(request):
         if not party_type:
             messages.error(request, "الرجاء اختيار نوع الجهة")
             return redirect("payments:receipt_create")
-        if not cash_account_id:
+        if not payment_method_id:
             messages.error(request, "الرجاء اختيار حساب الصندوق/البنك")
             return redirect("payments:receipt_create")
         if not amount:
@@ -75,13 +79,42 @@ def receipt_create(request):
 
         try:
             amount_decimal = Decimal(amount)
+
         except InvalidOperation:
             messages.error(request, "المبلغ غير صحيح")
             return redirect("payments:receipt_create")
 
-        cash_account = Account.objects.filter(is_active=True, id=cash_account_id, company=company).first()
+
+        
+
+        print("payment_method_id =", payment_method_id)
+        print("company =", company.id)
+
+        print(
+            list(
+                PaymentMethod.objects.filter(company=company).values(
+                    "id",
+                    "name",
+                    "company_id"
+                )
+            )
+        )
+
+        payment_method = PaymentMethod.objects.filter(
+            id=payment_method_id,
+            company=company
+        ).first()
+
+        if not payment_method:
+            messages.error(request, "طريقة الدفع غير موجودة")
+            return redirect("payments:receipt_create")
+
+
+        cash_account = payment_method.account
+
+
         if not cash_account:
-            messages.error(request, "حساب الصندوق/البنك غير موجود أو لا يتبع لشركتك")
+            messages.error(request, "طريقة الدفع لا تحتوي على حساب مرتبط")
             return redirect("payments:receipt_create")
 
         customer = supplier = cost_center = other_account = None
@@ -202,6 +235,7 @@ def receipt_create(request):
         "suppliers": suppliers,
         "cost_centers": cost_centers,
         "other_accounts": other_accounts,
+        "payment_methods": payment_methods,
         "invoice_id": request.GET.get("invoice_id"),
     })
 

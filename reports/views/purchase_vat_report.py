@@ -2,7 +2,8 @@ from django.shortcuts import render
 from decimal import Decimal
 
 from purchase.models import PurchaseInvoice, PurchaseReturn
-
+from sales.models import SalesInvoice, ReturnInvoice
+from pos.models import Invoice as PosInvoice
 
 def _has_field(model, field_name: str) -> bool:
     try:
@@ -30,6 +31,7 @@ def purchase_vat_report(request):
 
     invoices = PurchaseInvoice.objects.all()
     returns = PurchaseReturn.objects.all()
+
 
     # ===== عزل الشركة =====
     if company:
