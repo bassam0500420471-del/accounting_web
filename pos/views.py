@@ -566,6 +566,7 @@ def add_payment_method(request):
 # طباعة فاتورة نقاط البيع (حرارية)
 # =========================================
 def pos_invoice_print(request, pk):
+
     company = _get_company(request)
 
     invoice = get_object_or_404(
@@ -628,7 +629,7 @@ def pos_invoice_print(request, pk):
         "total_paid": total_paid,
         "remaining": remaining,
         "qr_code": f"data:image/png;base64,{qr_data}",
-        "auto_print": True,
+        "auto_print": False,
     })
 
 

@@ -117,16 +117,30 @@ th{
 /* إخفاء الزر أثناء الطباعة */
 @media print{
 
+    @page {
+        size: 80mm auto;
+        margin: 0;
+    }
+
+    html, body {
+        width: 80mm;
+        margin: 0;
+        padding: 0;
+    }
+
     body{
         background:#fff;
-        padding:0;
     }
 
     .receipt{
         box-shadow:none;
         margin:0;
         width:80mm;
+        max-width:80mm;
+        padding:3mm;
+        box-sizing:border-box;
     }
+
 
     .print-btn{
         display:none !important;
