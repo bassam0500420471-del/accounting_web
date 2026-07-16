@@ -84,16 +84,23 @@ def customer_view(request, pk):
 # ================================
 @login_required
 def customer_create(request):
+    print("========== CUSTOMER CREATE ENTER ==========")
+
     company = _get_company(request)
+
+    print("USER:", request.user)
+    print("COMPANY:", company)
+
     if not company:
         return redirect("/customers/")
 
     if request.method == "POST":
+
         customer = Customer.objects.create(
             company=company,
             customer_type=request.POST.get("customer_type"),
             commercial_name=request.POST.get("commercial_name"),
-name_en=request.POST.get("name_en"),
+            name_en=request.POST.get("name_en"),
             address_en=request.POST.get("address_en"),
             first_name=request.POST.get("first_name"),
             last_name=request.POST.get("last_name"),
@@ -115,14 +122,28 @@ name_en=request.POST.get("name_en"),
         )
 
         parent_account, created = Account.objects.get_or_create(
+            company=company,
             code="10000103",
-            defaults={"name": "العملاء", "is_active": True, "parent": None}
+            defaults={
+                "name": "العملاء",
+                "is_active": True,
+                "parent": None,
+            }
         )
 
-        last_child = Account.objects.filter(parent=parent_account).order_by("-code").first()
-        new_code = int(last_child.code) + 1 if last_child and str(last_child.code).isdigit() else 10000103001
+        last_child = Account.objects.filter(
+            company=company,
+            parent=parent_account
+        ).order_by("-code").first()
+
+        new_code = (
+            int(last_child.code) + 1
+            if last_child and str(last_child.code).isdigit()
+            else 10000103001
+        )
 
         account = Account.objects.create(
+            company=company,
             code=str(new_code),
             name=f"عميل - {customer.commercial_name or customer.name}",
             parent=parent_account,
@@ -133,12 +154,16 @@ name_en=request.POST.get("name_en"),
         customer.save()
 
         if request.GET.get("return") == "invoice":
-            return redirect(f"/sales/invoices/add/?customer_id={customer.id}")
+            return redirect(
+                f"/sales/invoices/add/?customer_id={customer.id}"
+            )
 
         return redirect("/customers/")
 
-    return render(request, "customers/customer_form.html")
-
+    return render(
+        request,
+        "customers/customer_form.html"
+    )
 
 # ================================
 #   API: إضافة عميل (AJAX)
@@ -199,7 +224,13 @@ def all_customers(request):
 #    تعديل عميل
 # ================================
 def customer_edit(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
+    company = _get_company(request)
+
+    customer = get_object_or_404(
+        Customer,
+        pk=pk,
+        company=company
+    )
     if request.method == "POST":
         customer.customer_type = request.POST.get("customer_type")
         customer.commercial_name = request.POST.get("commercial_name")

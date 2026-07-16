@@ -112,6 +112,8 @@ def _get_company(request):
     from company.models import Company
     return Company.objects.first()
 
+def _model_has_field(model, field_name):
+    return field_name in [field.name for field in model._meta.get_fields()]
 
 def _to_decimal(value, default="0"):
     try:

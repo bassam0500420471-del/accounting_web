@@ -142,6 +142,11 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
     username = (username or "").strip()
     password = password or ""
     email = (employee.email or "").strip().lower()
+    print("========== ENTER _create_or_update_employee_user ==========")
+    print("EMPLOYEE ID:", employee.id)
+    print("EMPLOYEE:", employee.first_name_ar)
+    print("USERNAME:", username)
+    print("USE USER ACCOUNT:", use_user_account)
 
     # ==========================
     # لو السويتش مقفول => عطّل الحساب الحالي وفك الربط
@@ -176,9 +181,14 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
     if employee.user_id:
         user = employee.user
 
-        existing = User.objects.exclude(id=user.id).filter(username__iexact=username).first()
+        existing = User.objects.exclude(id=user.id).filter(
+            username__iexact=username
+        ).first()
+
         if existing:
-            raise ValueError("❌ اسم المستخدم مستخدم بالفعل لمستخدم آخر.")
+            raise ValueError(
+                "❌ اسم المستخدم مستخدم بالفعل لمستخدم آخر."
+            )
 
         user.username = username
         user.email = email
@@ -191,16 +201,48 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
 
         user.save()
 
+        created_user = False
 
-        update_fields = ["use_user_account"]
-        if getattr(employee, "user_id", None) != user.id:
-            employee.user = user
-            update_fields.append("user")
+    else:
+        # ==========================
+        # إنشاء مستخدم جديد
+        # ==========================
+        if User.objects.filter(username__iexact=username).exists():
+            raise ValueError(
+                "❌ اسم المستخدم مستخدم بالفعل."
+            )
 
-        employee.use_user_account = True
-        employee.save(update_fields=update_fields)
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=employee.first_name_en or employee.first_name_ar or "",
+            last_name=employee.last_name_en or employee.last_name_ar or ""
+        )
 
-        return user, False, False
+        created_user = True
+
+    print("========== PROFILE LINK ==========")
+    print("USER:", user.username)
+    print("EMPLOYEE COMPANY:", employee.company)
+    print("EMPLOYEE BRANCH:", employee.branch)
+
+    profile = user.profile
+    profile.company = employee.company
+    profile.branch = employee.branch
+    profile.role = "staff"
+    profile.save()
+
+    employee.user = user
+    employee.use_user_account = True
+    employee.save(
+        update_fields=[
+            "user",
+            "use_user_account",
+        ]
+    )
+
+    return user, created_user, False
 
     # ==========================
     # لو لا يوجد user مرتبط، نبحث باسم المستخدم
@@ -228,28 +270,52 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
 
         return existing_by_username, False, False
 
-    # ==========================
-    # إنشاء user جديد
-    # ==========================
-    if not password:
-        raise ValueError("❌ كلمة المرور مطلوبة لإنشاء حساب دخول جديد.")
+    else:
+        # ==========================
+        # إنشاء مستخدم جديد
+        # ==========================
+        if User.objects.filter(username__iexact=username).exists():
+            raise ValueError(
+                "❌ اسم المستخدم مستخدم بالفعل."
+            )
 
-    user = User.objects.create_user(
-        username=username,
-        email=email,
-        password=password,
-        first_name=employee.first_name_en or employee.first_name_ar or "",
-        last_name=employee.last_name_en or employee.last_name_ar or "",
-    )
-    user.is_active = True
-    user.save()
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=employee.first_name_en or employee.first_name_ar or "",
+            last_name=employee.last_name_en or employee.last_name_ar or ""
+        )
 
+        # ==========================
+        # ربط المستخدم بالشركة والفرع
+        # ==========================
+    print("========== PROFILE LINK ==========")
+    print("EMPLOYEE COMPANY:", employee.company)
+    print("USER:", user.username)
+
+    profile = user.profile
+    profile.company = employee.company
+    profile.branch = employee.branch
+    profile.role = "staff"
+    profile.save()
+
+    print("PROFILE COMPANY AFTER SAVE:", profile.company)
+    print("PROFILE BRANCH AFTER SAVE:", profile.branch)
+
+    print("PROFILE COMPANY AFTER SAVE:", user.profile.company)
 
     employee.user = user
     employee.use_user_account = True
-    employee.save(update_fields=["user", "use_user_account"])
+    employee.save(
+        update_fields=[
+            "user",
+            "use_user_account",
+        ]
+    )
 
-    return user, True, False
+    return user, created_user, False
+	
 # ==========================
 # ==========================
 # عرض قائمة الموظفين
