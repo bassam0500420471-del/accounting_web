@@ -60,11 +60,12 @@ urlpatterns = [
     path('evaluations/edit/<int:eval_id>/', views.evaluation_edit, name='evaluation_edit'),
     path('evaluations/close/<int:eval_id>/', views.evaluation_close, name='evaluation_close'),
 
-    # ✅ صفحات تنفيذ التقييم (زميل / مدير)
     path('evaluations/<int:eval_id>/peer/<int:target_id>/', views.evaluation_fill_peer, name='evaluation_fill_peer'),
     path('evaluations/<int:eval_id>/manager/<int:target_id>/', views.evaluation_fill_manager, name='evaluation_fill_manager'),
 
-    # ✅ صفحات السجل (إنشاء سجل + إدارة السجل)
+    # ==========================
+    # السجلات
+    # ==========================
     path('evaluations/records/new/', views.evaluation_record_start, name='evaluation_record_start'),
     path('evaluations/records/', views.evaluation_records_list, name='evaluation_records_list'),
 
@@ -75,7 +76,7 @@ urlpatterns = [
     path('reports/details/<int:employee_id>/<int:evaluation_id>/', views.hr_report_detail_items, name='hr_report_detail_items'),
 
     # ==========================
-    # الحضور والانصراف (الإدارة)
+    # الحضور والانصراف
     # ==========================
     path('attendance/', views.attendance_page, name='attendance_page'),
     path('attendance/check-in/<int:employee_id>/', views.attendance_check_in_ajax, name='attendance_check_in_ajax'),
@@ -91,7 +92,12 @@ urlpatterns = [
     # ==========================
     path("permissions/", views.hr_permissions_users, name="hr_permissions_users"),
     path("permissions/<int:user_id>/", views.hr_permissions_page, name="hr_permissions_page"),
-    
-    # 🔥 الرابط الجديد المضاف لإدارة قيود صلاحيات موظف معين مباشرة
+
+    # إدارة قيود صلاحيات موظف معين
     path('employees/<int:employee_id>/manage-restrictions/', views.manage_user_permissions, name='manage_user_permissions'),
+
+    # ==========================
+    # فحص المستخدم مؤقتاً
+    # ==========================
+    path('check-user/', views.check_user, name='check_user'),
 ]

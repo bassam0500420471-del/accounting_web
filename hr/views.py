@@ -10,6 +10,7 @@ from django.db import transaction
 from django.utils.formats import date_format
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required 
+from django.http import HttpResponse
 
 # ✅ استيراد الـ Decorator المخصص لجدولك بدلاً من الافتراضي
 from .decorators import hr_permission_required
@@ -250,16 +251,34 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
 
     return user, True, False
 # ==========================
+# ==========================
 # عرض قائمة الموظفين
 # ==========================
 @login_required
 @hr_permission_required("employees_view")
 def employee_list(request):
+    print("========== EMPLOYEE LIST OPEN ==========")
+
+    from django.conf import settings
+
     company = _company_required(request)
     if not company:
         return redirect("accounts:login")
 
     employees = Employee.objects.filter(company=company).order_by("employee_number")
+
+    print("DATABASE:", settings.DATABASES["default"]["NAME"])
+    print("COMPANY ID:", company.id)
+    print("EMPLOYEES COUNT:", employees.count())
+
+    for e in employees:
+        print(
+            "EMPLOYEE:",
+            e.id,
+            e.first_name_ar,
+            e.last_name_ar
+        )
+
     return render(request, "hr/employee_list.html", {"employees": employees})
 
 
@@ -2134,3 +2153,23 @@ def manage_user_permissions(request, employee_id):
         'fields_data': fields_data
     }
     return render(request, 'hr/manage_permissions.html', context)
+# ==========================
+# فحص مستخدم مؤقت
+# ==========================
+@login_required
+def check_user(request):
+    user = request.user
+
+    text = f"""
+Username: {user.username}
+ID: {user.id}
+Is staff: {user.is_staff}
+
+Groups:
+{list(user.groups.values_list('name', flat=True))}
+
+Permissions:
+{list(user.user_permissions.values_list('codename', flat=True))}
+"""
+
+    return HttpResponse(text)
