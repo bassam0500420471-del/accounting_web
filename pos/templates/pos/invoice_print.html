@@ -85,6 +85,7 @@ th{
 .totals td:last-child{
     text-align:left;
     width:35%;
+    padding-left:19px;
 }
 
 .total-final td{
@@ -115,38 +116,71 @@ th{
 }
 
 /* إخفاء الزر أثناء الطباعة */
-@media print{
+@media print {
 
     @page {
         size: 80mm auto;
         margin: 0;
     }
 
-    html, body {
-        width: 80mm;
-        margin: 0;
-        padding: 0;
-    }
-
-    body{
-        background:#fff;
-    }
-
-    .receipt{
-        box-shadow:none;
-        margin:0;
+    html,
+    body {
         width:80mm;
-        max-width:80mm;
-        padding:3mm;
-        box-sizing:border-box;
+        margin:0 !important;
+        padding:0 !important;
+        background:#fff;
+        overflow:hidden;
     }
 
 
-    .print-btn{
+    .receipt {
+
+        width:76mm;
+        max-width:76mm;
+
+        margin:0 auto;
+        padding:2mm;
+
+        box-sizing:border-box;
+        box-shadow:none;
+
+        overflow:hidden;
+    }
+
+
+    table {
+        width:100%;
+        table-layout:fixed;
+    }
+
+
+    th,
+    td {
+        font-size:8px;
+        padding:1px;
+        overflow:hidden;
+        word-break:break-word;
+    }
+
+
+    .logo {
+        max-width:60mm;
+        height:auto;
+    }
+
+
+    .qr-section img {
+        max-width:35mm;
+        height:auto;
+    }
+
+
+    .print-btn {
         display:none !important;
     }
 
 }
+
 </style>
 
 </head>
@@ -266,7 +300,7 @@ th{
     <div class="qr-section">
 
         {% if qr_code %}
-            <img src="{{ qr_code }}" width="120" height="120">
+            <img src="{{ qr_code }}" width="100" height="100">
         {% endif %}
 
         <p style="font-size:10px;margin-top:5px;">
