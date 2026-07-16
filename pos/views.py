@@ -606,8 +606,16 @@ def pos_invoice_print(request, pk):
     total_paid = float(invoice.paid_amount)
     remaining = float(invoice.remaining_amount)
 
-    # توليد QR
-    qr_text = f"Invoice Number: {invoice.id}"
+    # توليد QR باستخدام رقم فاتورة POS الصحيح
+    qr_text = f"""
+اسم الشركة: {invoice.company.name}
+الرقم الضريبي: {invoice.company.vat_no}
+رقم الفاتورة: POS-{invoice.invoice_no}
+التاريخ: {invoice.created_at.strftime('%Y-%m-%d %H:%M')}
+الإجمالي: {invoice.total}
+الضريبة: {tax_amount}
+الإجمالي بعد الضريبة: {invoice.total}
+"""
 
     qr = qrcode.make(qr_text)
 
@@ -655,8 +663,8 @@ def pos_invoice_view(request, pk):
         for item in items
     )
 
-    # --- أضف كود توليد QR هنا ---
-    qr_text = f"Invoice Number: {invoice.id}"
+    # --- توليد QR باستخدام رقم فاتورة POS الصحيح ---
+    qr_text = f"Invoice Number: POS-{invoice.invoice_no}"
     qr = qrcode.make(qr_text)
     buffer = BytesIO()
     qr.save(buffer, format="PNG")

@@ -69,21 +69,42 @@
     </div>
 
 <div class="center info">
-    <div><strong>رقم الفاتورة:</strong> {{ invoice.id }}</div>
-    <div><strong>التاريخ:</strong> {{ invoice.created_at|date:"Y-m-d H:i" }}</div>
+
+    <div>
+        <strong>رقم الفاتورة:</strong>
+        POS-{{ invoice.invoice_no }}
+    </div>
+
+    <div>
+        <strong>التاريخ:</strong>
+        {{ invoice.created_at|date:"Y-m-d H:i" }}
+    </div>
     
-<div style="margin-top: 10px; border-top: 1px dotted #000; padding-top: 5px;">
-    {% if invoice.customer %}
-        <div><strong>العميل:</strong> {{ invoice.customer.name }}</div>
-        
-        <div><strong>الرقم الضريبي:</strong> 
-            {{ invoice.customer.vat_no|default:invoice.customer.tax_number|default:"غير متوفر" }}
-        </div>
-        
-    {% else %}
-        <div><strong>العميل:</strong> عميل نقدي</div>
-    {% endif %}
-</div>
+    <div style="margin-top: 10px; border-top: 1px dotted #000; padding-top: 5px;">
+
+        {% if invoice.customer %}
+
+            <div>
+                <strong>العميل:</strong>
+                {{ invoice.customer.name }}
+            </div>
+            
+            <div>
+                <strong>الرقم الضريبي:</strong>
+                {{ invoice.customer.vat_no|default:invoice.customer.tax_number|default:"غير متوفر" }}
+            </div>
+            
+        {% else %}
+
+            <div>
+                <strong>العميل:</strong>
+                عميل نقدي
+            </div>
+
+        {% endif %}
+
+    </div>
+
 </div>
 
 <table>

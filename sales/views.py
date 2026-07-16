@@ -46,11 +46,42 @@ def generate_invoice_qr(invoice):
         vat_amount = f"{Decimal(str(invoice.tax_value or 0)):.2f}"
     else:
         # حالة فاتورة نقاط البيع (POS)
-        # نفترض أن الحقل هو created_at أو استخدم الحقل الموجود لديك في الموديل
-        invoice_datetime = invoice.created_at.isoformat() if hasattr(invoice, 'created_at') else datetime.now().isoformat()
-        # جرب استخراج الإجمالي (عدل الحقل إذا كان مختلفاً في موديل الـ POS)
-        total = f"{Decimal(str(getattr(invoice, 'total_after_tax', getattr(invoice, 'total', 0)))):.2f}"
-        vat_amount = f"{Decimal(str(getattr(invoice, 'tax_value', getattr(invoice, 'tax', 0)))):.2f}"
+        invoice_datetime = (
+            invoice.created_at.isoformat()
+            if hasattr(invoice, "created_at")
+            else datetime.now().isoformat()
+        )
+
+        total = Decimal("0.00")
+        vat_amount = Decimal("0.00")
+
+        # حساب الإجمالي والضريبة من بنود الفاتورة
+        for item in invoice.items.all():
+
+            line_subtotal = (
+                Decimal(str(item.price)) *
+                Decimal(str(item.quantity))
+            )
+
+            discount_amount = (
+                line_subtotal *
+                Decimal(str(item.discount)) /
+                Decimal("100")
+            )
+
+            after_discount = line_subtotal - discount_amount
+
+            tax_amount = (
+                after_discount *
+                Decimal(str(item.tax)) /
+                Decimal("100")
+            )
+
+            total += after_discount + tax_amount
+            vat_amount += tax_amount
+
+        total = f"{total:.2f}"
+        vat_amount = f"{vat_amount:.2f}"
 
     company = invoice.company
     seller_name = company.name
