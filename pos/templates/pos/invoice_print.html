@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<td>{{ item.quantity }}</td>
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
@@ -198,20 +198,20 @@ th{
 
         </thead>
 
-        <tbody>
+<tbody>
 
         {% for item in items %}
 
         <tr>
             <td>{{ item.product.name }}</td>
-            <td>{{ item.qty }}</td>
+            <td>{{ item.quantity }}</td>
             <td>{{ item.price|floatformat:2 }}</td>
             <td>{{ item.total|floatformat:2 }}</td>
         </tr>
 
         {% endfor %}
 
-        </tbody>
+</tbody>
 
     </table>
 

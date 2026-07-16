@@ -576,6 +576,10 @@ def pos_invoice_print(request, pk):
 
     items = invoice.items.all()
 
+    for item in items:
+        print("اسم المنتج:", item.product.name)
+        print("الكمية:", item.quantity)
+
     # 1. حساب المجموع الأساسي للعناصر
     subtotal = sum(
         float(item.price or 0) * float(item.quantity or 0)

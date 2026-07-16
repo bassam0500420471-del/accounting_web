@@ -70,15 +70,16 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.qty }}</td> <td>{{ item.price|floatformat:2 }}</td>
-            <td>{{ item.discount|floatformat:2 }}</td>
-            <td>{{ item.tax|floatformat:2 }}%</td>
-            <td>{{ item.total|floatformat:2 }}</td>
-        </tr>
-        {% endfor %}
+{% for item in items %}
+<tr>
+    <td>{{ item.product.name }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>{{ item.price|floatformat:2 }}</td>
+    <td>{{ item.discount|floatformat:2 }}</td>
+    <td>{{ item.tax|floatformat:2 }}%</td>
+    <td>{{ item.total|floatformat:2 }}</td>
+</tr>
+{% endfor %}
     </tbody>
 </table>
 
