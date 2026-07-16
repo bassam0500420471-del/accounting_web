@@ -35,8 +35,9 @@ html[dir="ltr"] body {
 }
 
 .layout {
-    display: flex;
-    min-height: 100vh;
+    display:flex;
+    min-height:100vh;
+    position:relative;
 }
 
 html[dir="rtl"] .layout {
@@ -123,8 +124,6 @@ html[dir="ltr"] .layout {
 .content-wrapper {
     flex: 1 1 auto;
     padding: 25px;
-    overflow-x: auto;
-    overflow-y: auto;
     min-width: 0;
 }
 
@@ -179,8 +178,8 @@ html[dir="ltr"] .page-box table {
 
 /* ---- Profile Floating Button (TOP) ---- */
 .profile-float {
-    position: fixed;
-    top: 18px;
+    position: fixed !important;
+    top: 20px;
     width: 62px;
     height: 62px;
     border-radius: 50%;
@@ -190,7 +189,7 @@ html[dir="ltr"] .page-box table {
     align-items: center;
     justify-content: center;
     cursor: grab;
-    z-index: 99999;
+    z-index: 9999999 !important;
     transition: transform .15s;
     user-select: none;
 }
@@ -323,8 +322,8 @@ html[dir="ltr"] .profile-panel {
 
 /* ---- GPT Floating Button (BOTTOM ONLY) ---- */
 .gpt-float {
-    position: fixed;
-    bottom: 24px;
+    position: fixed !important;
+    bottom: 25px;
     width: 62px;
     height: 62px;
     border-radius: 50%;
@@ -334,7 +333,7 @@ html[dir="ltr"] .profile-panel {
     align-items: center;
     justify-content: center;
     cursor: grab;
-    z-index: 99998;
+    z-index: 9999999 !important;
     transition: transform .15s;
     user-select: none;
 }
@@ -357,6 +356,112 @@ html[dir="ltr"] .gpt-float {
     width: 40px;
     height: 40px;
 }
+
+.gpt-chat-box {
+
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 330px;
+    height: 450px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.3);
+    display: none;
+    z-index: 999999;
+    overflow: hidden;
+}
+
+.gpt-chat-box.show {
+    display: block;
+}
+
+.gpt-chat-header {
+    background: #2D3033;
+    color: white;
+    padding: 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:bold;
+}
+
+.gpt-chat-header button {
+    background:none;
+    border:none;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.gpt-chat-body {
+    height:330px;
+    padding:15px;
+    overflow-y:auto;
+}
+
+.gpt-chat-input {
+    display:flex;
+    border-top:1px solid #ddd;
+}
+
+.gpt-chat-input input {
+    flex:1;
+    border:none;
+    padding:10px;
+}
+
+.gpt-chat-input button {
+    width:80px;
+    border:none;
+    background:#2D3033;
+    color:white;
+}
+
+/* ===== Floating Buttons Fix ===== */
+
+.profile-float {
+    position: fixed !important;
+    top: 20px;
+    right: 20px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    z-index: 2147483647 !important;
+    cursor: grab;
+    user-select: none;
+}
+
+
+.gpt-float {
+    position: fixed !important;
+    bottom: 25px;
+    right: 20px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    z-index: 2147483647 !important;
+    cursor: grab;
+    user-select: none;
+}
+
+.profile-panel,
+.gpt-chat-box {
+
+    position: fixed !important;
+    margin: 0;
+}
+
 </style>
 
 {% block head %}{% endblock %}
@@ -657,230 +762,344 @@ document.addEventListener("submit", function (e) {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 {% block scripts %}{% endblock %}
+
+
 {% if user.is_authenticated %}
 
-<!-- ================= TOP PROFILE FLOAT (with Logout) ================= -->
-<div class="profile-float" id="profileFloatBtn" title="{% trans 'Profile' %}">
-    <img src="{% static 'images/user-circle.png' %}" alt="Profile">
+<div class="profile-float" id="profileFloatBtn">
+    {% if request.user.profile.company.logo %}
+        <img src="{{ request.user.profile.company.logo.url }}">
+    {% else %}
+        <img src="{% static 'images/user-circle.png' %}">
+    {% endif %}
 </div>
 
 <div class="profile-panel" id="profilePanel">
+
     <div class="profile-panel-header">
-        <div class="profile-panel-title">{% trans "Profile" %}</div>
-        <button type="button" class="profile-panel-close" id="profileClose">×</button>
+
+        <span class="profile-panel-title">
+            {% trans "Profile" %}
+        </span>
+
+
+        <button class="profile-panel-close"
+                onclick="document.getElementById('profilePanel').classList.remove('show')">
+            ×
+        </button>
+
     </div>
+
 
     <div class="profile-panel-body">
+
         <div class="profile-user">
-            <img class="profile-avatar" src="{% static 'images/user-default.png' %}" alt="User"/>
+
+            {% if request.user.profile.company.logo %}
+
+                <img class="profile-avatar"
+                     src="{{ request.user.profile.company.logo.url }}">
+
+            {% else %}
+
+                <img class="profile-avatar"
+                     src="{% static 'images/user-circle.png' %}">
+
+            {% endif %}
+
+
             <div class="profile-user-meta">
-                <p class="profile-user-name">{{ user.get_full_name|default:user.username }}</p>
-                <p class="profile-user-sub">{% trans "Username" %}: {{ user.username }}</p>
-<p class="profile-user-sub">
-    {% trans "Company" %}:
-    {% if request.user.employee.company %}
-        {{ request.user.employee.company.name }}
-    {% elif request.user.profile.company %}
-        {{ request.user.profile.company.name }}
-    {% else %}
-        {% trans "Not Specified" %}
-    {% endif %}
-</p>
-                <!-- ✅ Language Switch -->
-                <div class="mt-2 d-flex justify-content-center">
-                    <form action="{% url 'set_language' %}" method="post" class="d-flex align-items-center gap-2">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ request.path }}">
 
-                        <button type="submit" name="language" value="ar"
-                            class="btn btn-sm {% if CURRENT_LANGUAGE == 'ar' %}btn-dark{% else %}btn-outline-dark{% endif %}">
-                            AR
-                        </button>
+                <p class="profile-user-name">
+                    {{ request.user.username }}
+                </p>
 
-                        <button type="submit" name="language" value="en"
-                            class="btn btn-sm {% if CURRENT_LANGUAGE == 'en' %}btn-dark{% else %}btn-outline-dark{% endif %}">
-                            EN
-                        </button>
-                    </form>
-                </div>
+
+        <p class="profile-user-sub">
+            {{ request.user.profile.company.name }}
+        </p>
+
             </div>
+
         </div>
+
 
         <div class="profile-actions">
-            {% url 'profile' as profile_url %}
-            {% if profile_url %}
-                <a href="{{ profile_url }}" class="btn btn-outline-primary btn-sm w-100">{% trans "Edit Image" %}</a>
-            {% else %}
-                <a href="#" class="btn btn-outline-secondary btn-sm w-100 disabled">{% trans "Edit Image" %}</a>
-            {% endif %}
+
+            <a href="/settings/"
+               class="btn btn-primary w-100">
+
+                {% trans "Settings" %}
+
+            </a>
+
+
+            <a href="/logout/"
+               class="btn btn-danger w-100">
+
+                {% trans "Logout" %}
+
+            </a>
+
         </div>
 
-        <div style="height:8px;"></div>
-
-        <form method="post" action="{% url 'accounts:logout' %}" data-allow-submit style="margin:0;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm w-100"
-                    style="border-radius:10px; padding:8px 10px; font-size:12.5px;">
-                {% trans "Logout" %}
-            </button>
-        </form>
     </div>
+
 </div>
 
-<!-- ================= BOTTOM GPT FLOAT (ONLY) ================= -->
-<a class="gpt-float" id="gptButton" href="#" title="{% trans 'Help' %}">
-    <img src="{% static 'images/erp-mascot.png' %}" alt="GPT">
+<a class="gpt-float" id="gptButton" href="#">
+    🤖
 </a>
 
-<script>
-/* ================= Profile Float (Draggable + Panel) ================= */
-const profileBtn = document.getElementById("profileFloatBtn");
-const profilePanel = document.getElementById("profilePanel");
-const profileClose = document.getElementById("profileClose");
-const isRTL = document.documentElement.dir === "rtl";
-let p_offsetX = 0, p_offsetY = 0, p_isDown = false, p_moved = false;
 
-// restore position
-const profileSavedPos = localStorage.getItem("profileFloatPosition");
-if (profileSavedPos) {
-    const pos = JSON.parse(profileSavedPos);
+<div class="gpt-chat-box" id="gptChatBox">
 
-    if (isRTL) {
-        profileBtn.style.right = pos.side + "px";
-        profileBtn.style.left = "auto";
-        profilePanel.style.right = pos.side + "px";
-        profilePanel.style.left = "auto";
-    } else {
-        profileBtn.style.left = pos.side + "px";
-        profileBtn.style.right = "auto";
-        profilePanel.style.left = pos.side + "px";
-        profilePanel.style.right = "auto";
-    }
 
-    profileBtn.style.top = pos.top + "px";
-    profilePanel.style.top = (pos.top + 70) + "px";
-}
+    <div class="gpt-chat-header">
 
-function toggleProfilePanel(show) {
-    if (typeof show === "boolean") {
-        profilePanel.classList.toggle("show", show);
-    } else {
-        profilePanel.classList.toggle("show");
-    }
-}
+        <span>
+            {% trans "AI Assistant" %}
+        </span>
 
-profileBtn.addEventListener("click", function(){
-    if (p_moved) return;
-    toggleProfilePanel();
-});
 
-profileClose.addEventListener("click", function(){
-    toggleProfilePanel(false);
-});
+        <button onclick="document.getElementById('gptChatBox').classList.remove('show')">
+            ×
+        </button>
 
-document.addEventListener("click", function(e){
-    if (!profilePanel.classList.contains("show")) return;
-    if (profilePanel.contains(e.target) || profileBtn.contains(e.target)) return;
-    toggleProfilePanel(false);
-});
+    </div>
 
-// drag
-profileBtn.addEventListener("mousedown", function(e){
-    p_isDown = true;
-    p_moved = false;
 
-    if (isRTL) {
-        p_offsetX = window.innerWidth - e.clientX - parseInt(getComputedStyle(profileBtn).right || 0);
-    } else {
-        p_offsetX = e.clientX - profileBtn.offsetLeft;
-    }
+    <div class="gpt-chat-body">
 
-    p_offsetY = e.clientY - profileBtn.offsetTop;
-    profileBtn.style.cursor = "grabbing";
-});
+        {% trans "How can I help you?" %}
 
-document.addEventListener("mousemove", function(e){
-    if (!p_isDown) return;
+    </div>
 
-    p_moved = true;
 
-    const newTop = (e.clientY - p_offsetY);
+<div class="gpt-chat-input">
 
-    if (isRTL) {
-        const newRight = (window.innerWidth - e.clientX - p_offsetX);
-        profileBtn.style.right = newRight + "px";
-        profileBtn.style.left = "auto";
-        profilePanel.style.right = newRight + "px";
-        profilePanel.style.left = "auto";
-    } else {
-        const newLeft = (e.clientX - p_offsetX);
-        profileBtn.style.left = newLeft + "px";
-        profileBtn.style.right = "auto";
-        profilePanel.style.left = newLeft + "px";
-        profilePanel.style.right = "auto";
-    }
+    <input type="text"
+           id="gptInput"
+           placeholder="{% trans 'Write your question' %}">
 
-    profileBtn.style.top = newTop + "px";
-    profilePanel.style.top = (newTop + 70) + "px";
-});
 
-document.addEventListener("mouseup", function(){
-    if (!p_isDown) return;
-    p_isDown = false;
-    profileBtn.style.cursor = "grab";
+    <button id="gptSendBtn">
+        {% trans "Send" %}
+    </button>
 
-    const sideValue = isRTL
-        ? parseInt(getComputedStyle(profileBtn).right || 0)
-        : profileBtn.offsetLeft;
-
-    localStorage.setItem("profileFloatPosition", JSON.stringify({
-        side: sideValue,
-        top: profileBtn.offsetTop
-    }));
-
-    setTimeout(() => { p_moved = false; }, 50);
-});
-
-/* ================= GPT Float (Draggable LINK ONLY) ================= */
-const gptBtn = document.getElementById("gptButton");
-
-let g_offsetX = 0, g_offsetY = 0, g_isDown = false;
-
-const gptSavedPos = localStorage.getItem("gptFloatPosition");
-if (gptSavedPos) {
-    const pos = JSON.parse(gptSavedPos);
-    gptBtn.style.left = pos.left + "px";
-    gptBtn.style.top  = pos.top  + "px";
-    gptBtn.style.bottom = "auto";
-}
-
-gptBtn.addEventListener("mousedown", function(e){
-    g_isDown = true;
-    g_offsetX = e.clientX - gptBtn.offsetLeft;
-    g_offsetY = e.clientY - gptBtn.offsetTop;
-    gptBtn.style.cursor = "grabbing";
-});
-
-document.addEventListener("mousemove", function(e){
-    if (!g_isDown) return;
-    gptBtn.style.left = (e.clientX - g_offsetX) + "px";
-    gptBtn.style.top  = (e.clientY - g_offsetY) + "px";
-    gptBtn.style.bottom = "auto";
-});
-
-document.addEventListener("mouseup", function(){
-    if (!g_isDown) return;
-    g_isDown = false;
-    gptBtn.style.cursor = "grab";
-
-    localStorage.setItem("gptFloatPosition", JSON.stringify({
-        left: gptBtn.offsetLeft,
-        top:  gptBtn.offsetTop
-    }));
-});
-</script>
+</div>
+</div>
 
 {% endif %}
+
+<script>
+
+/* ================= Floating Buttons Drag + Click ================= */
+
+function makeDraggable(element, clickCallback, linkedBox) {
+
+    let offsetX = 0;
+    let offsetY = 0;
+    let dragging = false;
+    let moved = false;
+
+
+    element.addEventListener("mousedown", function(e) {
+
+        dragging = true;
+        moved = false;
+
+        offsetX = e.clientX - element.offsetLeft;
+        offsetY = e.clientY - element.offsetTop;
+
+        element.style.cursor = "grabbing";
+
+    });
+
+
+
+    document.addEventListener("mousemove", function(e) {
+
+        if (!dragging) {
+            return;
+        }
+
+
+        let newLeft = e.clientX - offsetX;
+        let newTop = e.clientY - offsetY;
+
+
+
+        if (
+            Math.abs(newLeft - element.offsetLeft) > 5 ||
+            Math.abs(newTop - element.offsetTop) > 5
+        ) {
+
+            moved = true;
+
+        }
+
+
+
+        element.style.left = newLeft + "px";
+        element.style.top = newTop + "px";
+
+        element.style.right = "auto";
+        element.style.bottom = "auto";
+
+
+
+        /*
+            تحريك النافذة المرتبطة مع الزر
+        */
+
+if (linkedBox) {
+
+    linkedBox.style.left = newLeft + "px";
+
+    linkedBox.style.top = (newTop + element.offsetHeight + 15) + "px";
+
+    linkedBox.style.right = "auto";
+
+    linkedBox.style.bottom = "auto";
+
+}
+
+
+
+    });
+
+
+
+    document.addEventListener("mouseup", function() {
+
+
+        if (dragging && !moved && clickCallback) {
+
+            clickCallback();
+
+        }
+
+
+        dragging = false;
+
+        element.style.cursor = "grab";
+
+
+    });
+
+
+}
+
+
+
+/* ================= تشغيل الازرار ================= */
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+
+    const profileBtn = document.getElementById("profileFloatBtn");
+
+    const profilePanel = document.getElementById("profilePanel");
+
+
+    const gptBtn = document.getElementById("gptButton");
+
+    const gptChat = document.getElementById("gptChatBox");
+
+
+
+
+    /* ===== Profile Button ===== */
+
+
+    if (profileBtn) {
+
+
+        makeDraggable(
+            profileBtn,
+
+            function(){
+
+
+                if (profilePanel) {
+
+
+                    profilePanel.classList.toggle("show");
+
+if(profilePanel.classList.contains("show")){
+
+    profilePanel.style.left = profileBtn.offsetLeft + "px";
+
+    profilePanel.style.top = 
+        (profileBtn.offsetTop + profileBtn.offsetHeight + 15) + "px";
+
+}
+
+
+
+                }
+
+
+            },
+
+            profilePanel
+
+        );
+
+
+    }
+
+
+
+
+
+    /* ===== GPT Button ===== */
+
+
+    if (gptBtn) {
+
+
+        makeDraggable(
+            gptBtn,
+
+            function(){
+
+
+                if (gptChat) {
+
+
+                    gptChat.classList.toggle("show");
+
+if(gptChat.classList.contains("show")){
+
+    gptChat.style.left = gptBtn.offsetLeft + "px";
+
+    gptChat.style.top =
+        (gptBtn.offsetTop - 470) + "px";
+
+}
+
+
+
+                }
+
+
+            },
+
+            gptChat
+
+        );
+
+
+    }
+
+
+
+});
+
+</script>
 
 </body>
 </html>
