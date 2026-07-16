@@ -663,12 +663,33 @@ def pos_invoice_view(request, pk):
         for item in items
     )
 
-    # --- توليد QR باستخدام رقم فاتورة POS الصحيح ---
-    qr_text = f"Invoice Number: POS-{invoice.invoice_no}"
+    # --- توليد QR لعرض فاتورة نقاط البيع ---
+    tax_amount = sum(
+        (
+            (float(item.price or 0) * float(item.quantity or 0))
+            - (float(item.discount or 0) * float(item.quantity or 0))
+        ) * (float(item.tax or 0) / 100)
+        for item in items
+    )
+
+    qr_text = f"""
+اسم الشركة: {invoice.company.name}
+الرقم الضريبي: {invoice.company.vat_no}
+رقم الفاتورة: POS-{invoice.invoice_no}
+التاريخ: {invoice.created_at.strftime('%Y-%m-%d %H:%M')}
+إجمالي الفاتورة: {invoice.total}
+قيمة الضريبة: {tax_amount:.2f}
+"""
+
     qr = qrcode.make(qr_text)
+
     buffer = BytesIO()
+
     qr.save(buffer, format="PNG")
-    qr_data = base64.b64encode(buffer.getvalue()).decode()
+
+    qr_data = base64.b64encode(
+        buffer.getvalue()
+    ).decode()
     # ---------------------------
 
     return render(request, "pos/invoice_view.html", {

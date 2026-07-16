@@ -896,6 +896,17 @@ console.log("BEFORE CREATE");
 createInvoice();
 
 console.log("AFTER CREATE");
+// عند فتح الصفحة لا تعرض كل المنتجات
+document.querySelectorAll(".product-card").forEach(card => {
+
+    if(card.dataset.category){
+        card.style.display = "none";
+    }else{
+        // المنتجات بدون تصنيف تبقى ظاهرة
+        card.style.display = "block";
+    }
+
+});
 
 </script>
 

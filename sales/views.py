@@ -87,12 +87,17 @@ def generate_invoice_qr(invoice):
     seller_name = company.name
     vat_number = company.vat_no
 
+    invoice_number = str(
+        getattr(invoice, "invoice_no", invoice.id)
+    )
+
     tlv = b"".join([
-        _tlv(1, seller_name),
-        _tlv(2, vat_number),
-        _tlv(3, invoice_datetime),
-        _tlv(4, total),
-        _tlv(5, vat_amount),
+        _tlv(1, seller_name),        # اسم البائع
+        _tlv(2, vat_number),         # الرقم الضريبي
+        _tlv(3, invoice_datetime),   # التاريخ والوقت
+        _tlv(4, total),              # الإجمالي شامل الضريبة
+        _tlv(5, vat_amount),         # قيمة الضريبة
+        _tlv(6, "Invoice No: " + invoice_number),     # رقم الفاتورة
     ])
 
     encoded = base64.b64encode(tlv).decode("utf-8")
