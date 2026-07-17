@@ -11,7 +11,8 @@
         background: #343a40;
         padding: 6px;
     }
-    .filter-row input, .filter-row select {
+    .filter-row input,
+    .filter-row select {
         width: 100%;
         height: 32px;
         font-size: 13px;
@@ -26,16 +27,18 @@
 
     <h3 class="text-center mb-4">📊 تقرير المبيعات الضريبية</h3>
 
-    <!-- 🔹 فلترة التاريخ -->
+    <!-- فلترة التاريخ -->
     <form method="get" class="row g-3 mb-4 justify-content-center">
         <div class="col-md-3">
             <label class="form-label fw-bold">من تاريخ</label>
             <input type="date" name="date_from" value="{{ date_from }}" class="form-control">
         </div>
+
         <div class="col-md-3">
             <label class="form-label fw-bold">إلى تاريخ</label>
             <input type="date" name="date_to" value="{{ date_to }}" class="form-control">
         </div>
+
         <div class="col-md-2 d-flex align-items-end">
             <button class="btn btn-secondary w-100">
                 عرض التقرير
@@ -44,20 +47,28 @@
     </form>
 
     <div class="table-responsive">
+
         <table class="table table-bordered table-striped" id="salesVatTable">
+
             <thead>
+
                 <tr>
                     <th>التاريخ</th>
                     <th>النوع</th>
                     <th>الرقم</th>
+                    <th>منشئ الفاتورة</th>
+                    <th>طريقة الدفع</th>
                     <th>قبل الضريبة</th>
                     <th>الضريبة</th>
                     <th>بعد الضريبة</th>
                 </tr>
 
-                <!-- 🔍 فلاتر داخل الهيدر -->
                 <tr class="filter-row">
-                    <th><input type="date" class="column-filter" data-col="0"></th>
+
+                    <th>
+                        <input type="date" class="column-filter" data-col="0">
+                    </th>
+
                     <th>
                         <select class="column-filter" data-col="1">
                             <option value="">الكل</option>
@@ -65,64 +76,141 @@
                             <option value="مرتجع بيع">مرتجع بيع</option>
                         </select>
                     </th>
-                    <th><input type="text" class="column-filter" data-col="2"></th>
-                    <th><input type="text" class="column-filter" data-col="3"></th>
-                    <th><input type="text" class="column-filter" data-col="4"></th>
-                    <th><input type="text" class="column-filter" data-col="5"></th>
+
+                    <th>
+                        <input type="text" class="column-filter" data-col="2">
+                    </th>
+
+                    <th>
+                        <input type="text" class="column-filter" data-col="3">
+                    </th>
+
+                    <th>
+                        <input type="text" class="column-filter" data-col="4">
+                    </th>
+
+                    <th>
+                        <input type="text" class="column-filter" data-col="5">
+                    </th>
+
+                    <th>
+                        <input type="text" class="column-filter" data-col="6">
+                    </th>
+
+                    <th>
+                        <input type="text" class="column-filter" data-col="7">
+                    </th>
+
                 </tr>
+
             </thead>
 
             <tbody>
+
                 {% for row in rows %}
+
                 <tr>
+
                     <td>{{ row.date }}</td>
+
                     <td>{{ row.type }}</td>
+
                     <td>{{ row.number }}</td>
-                    <td class="text-end">{{ row.before_tax|floatformat:2 }}</td>
-                    <td class="text-end">{{ row.tax|floatformat:2 }}</td>
-                    <td class="text-end">{{ row.after_tax|floatformat:2 }}</td>
+
+                    <td>{{ row.user }}</td>
+
+                    <td>{{ row.payment_method }}</td>
+
+                    <td class="text-end">
+                        {{ row.before_tax|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ row.tax|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ row.after_tax|floatformat:2 }}
+                    </td>
+
                 </tr>
+
                 {% empty %}
+
                 <tr>
-                    <td colspan="6" class="text-center text-muted">لا توجد بيانات</td>
+                    <td colspan="8" class="text-center text-muted">
+                        لا توجد بيانات
+                    </td>
                 </tr>
+
                 {% endfor %}
+
             </tbody>
 
             <tfoot>
+
                 <tr>
-                    <td colspan="3" class="text-center">الإجمالي</td>
-                    <td class="text-end">{{ totals.before_tax|floatformat:2 }}</td>
-                    <td class="text-end">{{ totals.tax|floatformat:2 }}</td>
-                    <td class="text-end">{{ totals.after_tax|floatformat:2 }}</td>
+
+                    <td colspan="5" class="text-center">
+                        الإجمالي
+                    </td>
+
+                    <td class="text-end">
+                        {{ totals.before_tax|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ totals.tax|floatformat:2 }}
+                    </td>
+
+                    <td class="text-end">
+                        {{ totals.after_tax|floatformat:2 }}
+                    </td>
+
                 </tr>
+
             </tfoot>
+
         </table>
+
     </div>
+
 </div>
 
 <script>
+
 document.querySelectorAll('.column-filter').forEach(el => {
     el.addEventListener('input', filterTable);
     el.addEventListener('change', filterTable);
 });
 
 function filterTable() {
+
     const filters = document.querySelectorAll('.column-filter');
     const rows = document.querySelectorAll('#salesVatTable tbody tr');
 
     rows.forEach(row => {
+
         let show = true;
+
         filters.forEach(filter => {
+
             const val = filter.value.trim();
+
             if (!val) return;
+
             if (!row.children[filter.dataset.col].innerText.includes(val)) {
                 show = false;
             }
+
         });
+
         row.style.display = show ? '' : 'none';
+
     });
+
 }
+
 </script>
 
 {% endblock %}

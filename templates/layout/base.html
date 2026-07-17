@@ -420,10 +420,9 @@ html[dir="ltr"] .gpt-float {
 
 /* ===== Floating Buttons Fix ===== */
 
-.profile-float {
+..profile-float {
     position: fixed !important;
     top: 20px;
-    right: 20px;
     width: 62px;
     height: 62px;
     border-radius: 50%;
@@ -437,11 +436,19 @@ html[dir="ltr"] .gpt-float {
     user-select: none;
 }
 
+html[dir="rtl"] .profile-float{
+    left:20px;
+    right:auto;
+}
+
+html[dir="ltr"] .profile-float{
+    right:150px;
+    left:auto;
+}
 
 .gpt-float {
     position: fixed !important;
     bottom: 25px;
-    right: 20px;
     width: 62px;
     height: 62px;
     border-radius: 50%;
@@ -453,6 +460,16 @@ html[dir="ltr"] .gpt-float {
     z-index: 2147483647 !important;
     cursor: grab;
     user-select: none;
+}
+
+html[dir="rtl"] .gpt-float{
+    left:20px;
+    right:auto;
+}
+
+html[dir="ltr"] .gpt-float{
+    right:150px;
+    left:auto;
 }
 
 .profile-panel,
@@ -460,6 +477,26 @@ html[dir="ltr"] .gpt-float {
 
     position: fixed !important;
     margin: 0;
+}
+
+html[dir="rtl"] .profile-panel{
+    left:20px;
+    right:auto;
+}
+
+html[dir="ltr"] .profile-panel{
+    right:20px;
+    left:auto;
+}
+
+html[dir="rtl"] .gpt-chat-box{
+    left:20px;
+    right:auto;
+}
+
+html[dir="ltr"] .gpt-chat-box{
+    right:20px;
+    left:auto;
 }
 
 </style>
@@ -701,7 +738,13 @@ html[dir="ltr"] .gpt-float {
 </a>
 
 <a href="{% url 'zatca:settings' %}" class="menu-btn">
-    <span>{% trans "إعدادات ربط الهيئة" %}</span>
+    <span>
+        {% if CURRENT_LANGUAGE == "ar" %}
+            إعدادات ربط الهيئة
+        {% else %}
+            ZATCA Integration Settings
+        {% endif %}
+    </span>
     <span class="menu-arrow">▶</span>
 </a>
 </div>
@@ -824,12 +867,47 @@ document.addEventListener("submit", function (e) {
         </div>
 
 
-        <div class="profile-actions">
+        <div class="mb-3">
+
+    <form action="{% url 'set_language' %}"
+          method="post">
+
+        {% csrf_token %}
+
+        <input type="hidden"
+               name="next"
+               value="{{ request.path }}">
+
+        <select name="language"
+                class="form-select"
+                onchange="this.form.submit()">
+
+            <option value="ar"
+                    {% if CURRENT_LANGUAGE == "ar" %}selected{% endif %}>
+                🇸🇦 العربية
+            </option>
+
+            <option value="en"
+                    {% if CURRENT_LANGUAGE == "en" %}selected{% endif %}>
+                🇺🇸 English
+            </option>
+
+        </select>
+
+    </form>
+
+</div>
+
 
             <a href="/settings/"
                class="btn btn-primary w-100">
 
-                {% trans "Settings" %}
+                {% if CURRENT_LANGUAGE == "ar" %}
+الإعدادات
+{% else %}
+Settings
+{% endif %}
+
 
             </a>
 

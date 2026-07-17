@@ -99,12 +99,26 @@
 
     </table>
 
-    <a href="{% url 'pos:pos_home' %}"
-       class="btn btn-primary mt-3">
+<div class="mt-3">
 
-        {% trans "Back to POS" %}
+    <a href="{% url 'pos:pos_home' %}"
+       class="btn btn-primary">
+
+        الرجوع إلى نقاط البيع
 
     </a>
+
+    <a href="{% url 'pos:pos_invoice_print' invoice.id %}"
+       class="btn btn-success"
+       target="_blank">
+
+        🖨️ طباعة
+
+    </a>
+
+</div>
+
+</div>
 
 </div>
 

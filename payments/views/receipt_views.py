@@ -183,6 +183,32 @@ def receipt_create(request):
                     amount=amount_decimal
                 )
 
+                print("========== CHECK ==========")
+                print("Invoice :", invoice.invoice_no)
+                print("Voucher :", voucher.voucher_no)
+                print("Cash Account :", voucher.cash_account)
+                print(
+                    "Cash Account Name :",
+                    voucher.cash_account.name if voucher.cash_account else ""
+                )
+                print("===========================")
+
+                VoucherAllocation.objects.create(
+                    receipt_voucher=voucher,
+                    sales_invoice=invoice,
+                    amount=amount_decimal
+                )
+
+                print("========== CHECK ==========")
+                print("Invoice :", invoice.invoice_no)
+                print("Voucher :", voucher.voucher_no)
+                print("Cash Account :", voucher.cash_account)
+                print(
+                    "Cash Account Name :",
+                    voucher.cash_account.name if voucher.cash_account else ""
+                )
+                print("===========================")
+
                 invoice.paid_amount = min(
                     invoice.total_after_tax,
                     invoice.paid_amount + amount_decimal

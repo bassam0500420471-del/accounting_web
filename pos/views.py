@@ -229,18 +229,24 @@ def pos_save_invoice(request):
         with transaction.atomic():
             if invoice_id:
                 # ✅ إعادة حفظ مسودة موجودة (داخل نفس الشركة فقط)
-                invoice = get_object_or_404(Invoice, pk=invoice_id, company=company)
+                invoice = get_object_or_404(
+                    Invoice.objects.select_related(
+                        "customer",
+                        "created_by"
+                    ),
+                    pk=invoice_id,
+                    company=company
+                )
 
-                # ✅ منع الخصم مرتين: لو كانت نهائية وعايز تحفظ نهائي تاني
-                if (invoice.is_draft is False) and (is_final is True):
-                    return JsonResponse({
-                        "success": False,
-                        "error": "هذه الفاتورة محفوظة نهائيًا بالفعل. لا يمكن حفظها نهائيًا مرة أخرى لتفادي خصم المخزون مرتين."
-                    })
+                print("CREATED BY:", invoice.created_by)
 
                 invoice.total = total
                 invoice.customer = customer
                 invoice.is_draft = not is_final
+
+                if not invoice.created_by:
+                    invoice.created_by = request.user
+
                 invoice.save()
 
                 # نحذف العناصر القديمة (ملاحظة: طالما كانت Draft قبل النهائي، ما في خصم تم سابقاً)
@@ -251,9 +257,12 @@ def pos_save_invoice(request):
                     company=company,
                     total=total,
                     customer=customer,
+                    created_by=request.user,
                     is_draft=not is_final
                 )
 
+                print("NEW INVOICE CREATED BY:", invoice.created_by)
+	
             invoice_items = []
 
             for i in items:
@@ -459,6 +468,7 @@ def payment_detail(request, invoice_id):
 
         payment_parent_accounts.append(account)
 
+
     return render(
         request,
         "pos/payment_detail.html",
@@ -570,7 +580,11 @@ def pos_invoice_print(request, pk):
     company = _get_company(request)
 
     invoice = get_object_or_404(
-        Invoice.objects.select_related('customer'),
+        Invoice.objects.select_related(
+    'customer',
+    'created_by'
+)
+,
         pk=pk,
         company=company
     )
@@ -651,13 +665,17 @@ def pos_invoice_view(request, pk):
     company = _get_company(request)
 
     invoice = get_object_or_404(
-        Invoice.objects.select_related('customer'),
+        Invoice.objects.select_related(
+            "customer",
+            "created_by"
+        ),
         pk=pk,
         company=company
     )
 
-    items = invoice.items.all()
+    print("CREATED BY:", invoice.created_by)
 
+    items = invoice.items.all()
     subtotal = sum(
         float(item.price or 0) * float(item.quantity or 0)
         for item in items

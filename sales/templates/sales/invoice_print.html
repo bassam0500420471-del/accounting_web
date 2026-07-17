@@ -208,7 +208,13 @@ body {
             <div class="company-name-en">{% if company %}{{ company.name_en|default:company.name }}{% endif %}</div>
         </div>
 
-        <div class="invoice-main-title">فاتورة ضريبية مبسطة - Simplified Tax Invoice</div>
+                <div class="invoice-main-title">
+            {% if invoice.customer and invoice.customer.tax_number %}
+                فاتورة ضريبية - Tax Invoice
+            {% else %}
+                فاتورة ضريبية مبسطة - Simplified Tax Invoice
+            {% endif %}
+        </div>
 
         <table class="meta-data-table">
             <tr>

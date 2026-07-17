@@ -166,7 +166,13 @@ th{
 {{ invoice.created_at|date:"Y-m-d H:i" }}
 </div>
 
+<div>
+<strong>منشئ الفاتورة :</strong>
+{{ invoice.created_by.username }}
+</div>
+
 {% if invoice.customer %}
+
 
 <div>
 <strong>العميل :</strong>

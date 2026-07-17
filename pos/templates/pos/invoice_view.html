@@ -75,10 +75,15 @@
         POS-{{ invoice.invoice_no }}
     </div>
 
-    <div>
-        <strong>التاريخ:</strong>
-        {{ invoice.created_at|date:"Y-m-d H:i" }}
-    </div>
+<div>
+    <strong>التاريخ:</strong>
+    {{ invoice.created_at|date:"Y-m-d H:i" }}
+</div>
+
+<div>
+    <strong>منشئ الفاتورة:</strong>
+    {{ invoice.created_by }}
+</div>
     
     <div style="margin-top: 10px; border-top: 1px dotted #000; padding-top: 5px;">
 

@@ -4,6 +4,7 @@ from accounts.models import Company
 from products.models import Product
 from customers.models import Customer
 from accounting.models import Account
+from django.contrib.auth.models import User
 
 # =========================================
 # الفاتورة
@@ -33,6 +34,15 @@ class Invoice(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="pos_created_invoices",
+        verbose_name="منشئ الفاتورة"
+    )
+
 
     # ✅ مهم: ما نخليها unique على مستوى الجدول
     invoice_no = models.IntegerField(null=True, blank=True)

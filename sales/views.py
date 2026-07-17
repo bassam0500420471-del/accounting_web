@@ -295,9 +295,10 @@ def invoice_add(request):
                 with transaction.atomic():
                     customer = get_object_or_404(Customer, id=customer_id, company=company)
                     invoice = SalesInvoice.objects.create(
-                        company=company, 
-                        invoice_no=next_number, 
+                        company=company,
+                        invoice_no=next_number,
                         customer=customer,
+                        user=request.user,
                         date_invoice=request.POST.get("date_invoice") or today,
                         date_issue=request.POST.get("date_issue") or today,
                         description=request.POST.get("description", ""),

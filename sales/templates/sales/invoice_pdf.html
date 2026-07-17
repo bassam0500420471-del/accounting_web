@@ -29,7 +29,13 @@
     }
 </style>
 
-<h2 style="text-align:center; margin-bottom:15px;">{% trans "Sales Invoice" %}</h2>
+<h2 style="text-align:center; margin-bottom:15px;">
+    {% if invoice.customer and invoice.customer.tax_number %}
+        فاتورة ضريبية - Tax Invoice
+    {% else %}
+        فاتورة ضريبية مبسطة - Simplified Tax Invoice
+    {% endif %}
+</h2>
 
 <!-- Invoice Info -->
 <div style="margin-bottom:20px; font-size:15px;">
