@@ -204,50 +204,48 @@ def password_reset_page(request):
             }
         )
 
+        if form.is_valid():
 
-if form.is_valid():
+            try:
+                from django.conf import settings
 
-    try:
-        from django.conf import settings
+                print("========== PASSWORD RESET ==========")
+                print("Username:", user.username)
+                print("Email:", user.email)
+                print("HTTPS:", request.is_secure())
 
-        print("========== PASSWORD RESET ==========")
-        print("Username:", user.username)
-        print("Email:", user.email)
-        print("HTTPS:", request.is_secure())
+                print("========== SMTP DEBUG ==========")
+                print("EMAIL_HOST =", settings.EMAIL_HOST)
+                print("EMAIL_PORT =", settings.EMAIL_PORT)
+                print("EMAIL_USER =", settings.EMAIL_HOST_USER)
+                print("PASSWORD EXISTS =", bool(settings.EMAIL_HOST_PASSWORD))
+                print("PASSWORD LENGTH =", len(settings.EMAIL_HOST_PASSWORD or ""))
 
-        print("========== SMTP DEBUG ==========")
-        print("EMAIL_HOST =", settings.EMAIL_HOST)
-        print("EMAIL_PORT =", settings.EMAIL_PORT)
-        print("EMAIL_USER =", settings.EMAIL_HOST_USER)
-        print("PASSWORD EXISTS =", bool(settings.EMAIL_HOST_PASSWORD))
-        print("PASSWORD LENGTH =", len(settings.EMAIL_HOST_PASSWORD or ""))
+                form.save(
+                    request=request,
+                    use_https=True,
+                    from_email=settings.EMAIL_HOST_USER,
+                    email_template_name="accounts/password_reset_email.html",
+                    subject_template_name="accounts/password_reset_subject.txt",
+                )
 
-        form.save(
-            request=request,
-            use_https=True,
-            from_email=settings.EMAIL_HOST_USER,
-            email_template_name="accounts/password_reset_email.html",
-            subject_template_name="accounts/password_reset_subject.txt",
-        )
+                print("EMAIL SENT SUCCESSFULLY")
 
-        print("EMAIL SENT SUCCESSFULLY")
+                messages.success(
+                    request,
+                    "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك."
+                )
 
-        messages.success(
-            request,
-            "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك."
-        )
+            except Exception:
+                import traceback
+                traceback.print_exc()
 
-    except Exception:
-        import traceback
-        traceback.print_exc()
+                messages.error(
+                    request,
+                    "تعذر إرسال البريد حالياً، راجع سجلات السيرفر."
+                )
 
-        messages.error(
-            request,
-            "تعذر إرسال البريد حالياً، راجع سجلات السيرفر."
-        )
-
-        return redirect("accounts:login")
-
+            return redirect("accounts:login")
 
     return render(
         request,
