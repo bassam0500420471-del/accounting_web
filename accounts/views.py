@@ -246,7 +246,7 @@ if form.is_valid():
             "تعذر إرسال البريد حالياً، راجع سجلات السيرفر."
         )
 
-    return redirect("accounts:login")
+        return redirect("accounts:login")
 
 
     return render(
