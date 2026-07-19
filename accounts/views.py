@@ -217,50 +217,28 @@ def password_reset_page(request):
                     subject_template_name="accounts/password_reset_subject.txt",
                 )
 
-
-                logout(request)
-
-
                 messages.success(
                     request,
-                    f"تم إرسال رابط إعادة تعيين كلمة المرور إلى البريد: {user.email}"
-                )
-
-
-                return redirect(
-                    "accounts:login"
+                    "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك."
                 )
 
 
             except Exception as e:
 
+                print(
+                    "PASSWORD RESET ERROR:",
+                    e
+                )
+
                 messages.error(
                     request,
-                    f"خطأ أثناء إرسال البريد: {str(e)}"
-                )
-
-                return render(
-                    request,
-                    "accounts/password_reset.html",
-                    {
-                        "username": username
-                    }
+                    "تعذر إرسال البريد حالياً، حاول لاحقاً."
                 )
 
 
-        messages.error(
-            request,
-            "تعذر إرسال رابط إعادة التعيين."
-        )
-
-
-        return render(
-            request,
-            "accounts/password_reset.html",
-            {
-                "username": username
-            }
-        )
+            return redirect(
+                "accounts:login"
+            )
 
 
     return render(
