@@ -22,7 +22,7 @@ SECRET_KEY = os.environ.get(
     "dev-insecure-key-for-local-only"
 )
 
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 
 ALLOWED_HOSTS = [
@@ -40,11 +40,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://accounting-web-72p4.onrender.com",
 ]
 
-SECURE_SSL_REDIRECT = True
-
-SESSION_COOKIE_SECURE = True
-
-CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 SECURE_PROXY_SSL_HEADER = (
     "HTTP_X_FORWARDED_PROTO",

@@ -208,37 +208,41 @@ def password_reset_page(request):
         if form.is_valid():
 
             try:
+                print("========== PASSWORD RESET ==========")
+                print("Username:", user.username)
+                print("Email:", user.email)
+                print("HTTPS:", request.is_secure())
+
+                from django.conf import settings
+                print("SMTP USER:", settings.EMAIL_HOST_USER)
+                print("SMTP HOST:", settings.EMAIL_HOST)
 
                 form.save(
                     request=request,
-                    use_https=request.is_secure(),
-                    from_email=None,
+                    use_https=True,
+                    from_email="bassam0500420471@gmail.com",
                     email_template_name="accounts/password_reset_email.html",
                     subject_template_name="accounts/password_reset_subject.txt",
+                    fail_silently=False,
                 )
+
+                print("EMAIL SENT SUCCESSFULLY")
 
                 messages.success(
                     request,
                     "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك."
                 )
 
-
-            except Exception as e:
-
-                print(
-                    "PASSWORD RESET ERROR:",
-                    e
-                )
+            except Exception:
+                import traceback
+                traceback.print_exc()
 
                 messages.error(
                     request,
-                    "تعذر إرسال البريد حالياً، حاول لاحقاً."
+                    "تعذر إرسال البريد حالياً، راجع سجلات السيرفر."
                 )
 
-
-            return redirect(
-                "accounts:login"
-            )
+            return redirect("accounts:login")
 
 
     return render(
