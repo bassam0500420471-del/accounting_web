@@ -223,7 +223,7 @@ def password_reset_page(request):
                     from_email="bassam0500420471@gmail.com",
                     email_template_name="accounts/password_reset_email.html",
                     subject_template_name="accounts/password_reset_subject.txt",
-                    fail_silently=False,
+                    
                 )
 
                 print("EMAIL SENT SUCCESSFULLY")
