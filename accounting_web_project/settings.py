@@ -13,20 +13,40 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ============================================================
+# ============================================================
 # SECURITY
 # ============================================================
+
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "dev-insecure-key-for-local-only"
 )
 
-DEBUG = True  # مؤقتًا فقط، لاحقًا False في الإنتاج
+DEBUG = False
+
 
 ALLOWED_HOSTS = [
-    ".onrender.com",
-    "127.0.0.1",
+    "accounting-system.net",
+    "www.accounting-system.net",
     "localhost",
+    "127.0.0.1",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://accounting-system.net",
+    "https://www.accounting-system.net",
+]
+
+SECURE_SSL_REDIRECT = True
+
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = True
+
+SECURE_PROXY_SSL_HEADER = (
+    "HTTP_X_FORWARDED_PROTO",
+    "https",
+)
 
 # ============================================================
 # AUTH SETTINGS
@@ -62,6 +82,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sites',
 
     # apps
     'cost_centers.apps.CostCentersConfig',
@@ -92,6 +113,9 @@ INSTALLED_APPS = [
 
     'django_extensions',
 ]
+
+SITE_ID = 1
+SITE_DOMAIN = "accounting-system.net"
 
 # ============================================================
 # MIDDLEWARE
@@ -186,12 +210,15 @@ STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
 # EMAIL CONFIGURATION
 # ============================================================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 465
-EMAIL_USE_TLS = False
+
 EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 
 EMAIL_HOST_USER = "bassam0500420471@gmail.com"
+EMAIL_HOST_PASSWORD = "setvxdopwqjfguqv"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # ============================================================
