@@ -28,13 +28,16 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "accounting-system.net",
     "www.accounting-system.net",
+    "accounting-web-72p4.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
 
+
 CSRF_TRUSTED_ORIGINS = [
     "https://accounting-system.net",
     "https://www.accounting-system.net",
+    "https://accounting-web-72p4.onrender.com",
 ]
 
 SECURE_SSL_REDIRECT = True
