@@ -259,19 +259,15 @@ body {
 
 <div class="header-logo">
 
-
 {% if company.logo %}
 
-<img src="{{ company.logo.path }}">
-
+<img src="{{ company.logo.url }}" style="max-width:130px; max-height:100px;">
 
 {% else %}
 
 {{ company.name|default:"نظام محاسبك" }}
 
-
 {% endif %}
-
 
 </div>
 

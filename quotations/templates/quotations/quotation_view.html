@@ -218,10 +218,6 @@ body {
                 <td style="text-align: left; width: 50%; font-family: Arial;"><strong>VAT No:</strong> {{ company.vat_no|default:"-" }}</td> 
             </tr>
             <tr>
-                <td style="text-align: right;"><strong>نوع الدفع:</strong> أجل</td>
-                <td style="text-align: left; font-family: Arial;"><strong>Payment Type:</strong> Credit</td>
-            </tr>
-            <tr>
 <tr>
     <!-- الجانب العربي: استخدم commercial_name -->
     <td style="text-align: right;"><strong>اسم العميل:</strong> {{ quotation.customer.commercial_name|default:quotation.customer.name }}</td>
@@ -231,12 +227,12 @@ body {
 </tr>
             </tr>
 <tr>
-    <td style="text-align: right;"><strong>تاريخ الفاتورة:</strong> {{ quotation.date_quotation|date:"Y-m-d" }}</td>
-    <td style="text-align: left; font-family: Arial;"><strong>Invoice Date:</strong> {{ quotation.date_quotation|date:"d/m/Y" }}</td>
+    <td style="text-align: right;"><strong>تاريخ عرض السعر :</strong> {{ quotation.date_quotation|date:"Y-m-d" }}</td>
+    <td style="text-align: left; font-family: Arial;"><strong>Quotation  Date:</strong> {{ quotation.date_quotation|date:"d/m/Y" }}</td>
 </tr>
             <tr>
-                <td style="text-align: right;"><strong>رقم الفاتورة:</strong> {{ quotation.quotation_no }}</td>
-                <td style="text-align: left; font-family: Arial;"><strong>Invoice No:</strong> {{ quotation.quotation_no }}</td>
+                <td style="text-align: right;"><strong>رقم عرض السعر :</strong> {{ quotation.quotation_no }}</td>
+                <td style="text-align: left; font-family: Arial;"><strong>Quotation  No:</strong> {{ quotation.quotation_no }}</td>
             </tr>
             <tr>
                 <td style="text-align: right;"><strong>الرقم الضريبي للعميل:</strong> {{ quotation.customer.tax_number|default:"-" }}</td>
