@@ -30,9 +30,8 @@ ALLOWED_HOSTS = [
     "www.accounting-system.net",
     "accounting-web-72p4.onrender.com",
     "localhost",
+    "127.0.0.1",
     "169.58.36.192",
-    "accounting-system.net",
-    "www.accounting-system.net",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
