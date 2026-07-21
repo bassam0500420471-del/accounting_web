@@ -40,13 +40,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://www.accounting-system.net",
     "https://www.accounting-system.net",
     "http://169.58.36.192",
-    "127.0.0.1",
-]
-
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://accounting-system.net",
-    "https://www.accounting-system.net",
+    "http://127.0.0.1",
     "https://accounting-web-72p4.onrender.com",
 ]
 
