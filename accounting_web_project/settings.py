@@ -44,11 +44,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://accounting-system.net",
-    "https://www.accounting-system.net",
-    "https://accounting-web-72p4.onrender.com",
-]
 
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
