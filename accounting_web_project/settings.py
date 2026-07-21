@@ -31,16 +31,18 @@ ALLOWED_HOSTS = [
     "accounting-web-72p4.onrender.com",
     "localhost",
     "127.0.0.1",
+    "169.58.36.192",
 ]
-
 
 CSRF_TRUSTED_ORIGINS = [
     "http://accounting-system.net",
     "http://www.accounting-system.net",
     "https://accounting-system.net",
     "https://www.accounting-system.net",
-    "https://accounting-web-72p4.onrender.com",
+    "http://169.58.36.192",
+    "127.0.0.1",
 ]
+
 
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
@@ -69,8 +71,12 @@ MEDIA_ROOT = BASE_DIR / "media"
 # ============================================================
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'main',      # اسم قاعدة البيانات
+        'USER': 'main',      # اسم المستخدم
+        'PASSWORD': 'YBfzGM8reY7DX25B',  # كلمة المرور
+        'HOST': '127.0.0.1',               # اتركه كما هو
+        'PORT': '5432',                    # البورت الافتراضي لبوستجرس
     }
 }
 
