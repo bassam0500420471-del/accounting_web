@@ -35,6 +35,8 @@ ALLOWED_HOSTS = [
 
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://accounting-system.net",
+    "http://www.accounting-system.net",
     "https://accounting-system.net",
     "https://www.accounting-system.net",
     "https://accounting-web-72p4.onrender.com",
@@ -113,6 +115,8 @@ INSTALLED_APPS = [
     'hr',
 
     'django_extensions',
+    "ecommerce",
+
 ]
 
 SITE_ID = 1
@@ -138,8 +142,11 @@ MIDDLEWARE = [
     'accounting.middleware.chart_init_middleware.EnsureChartExistsMiddleware',
     'accounts.middleware.CurrentCompanyMiddleware',
 
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+'django.contrib.messages.middleware.MessageMiddleware',
+
+'ecommerce.middleware.StoreMiddleware',
+
+'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 # ============================================================
@@ -148,6 +155,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'accounting_web_project.urls'
 WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
 
+# ============================================================
 # ============================================================
 # TEMPLATES
 # ============================================================
@@ -166,6 +174,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'ecommerce.context_processors.store_context',
+                'ecommerce.context_processors.navigation_context',
             ],
         },
     },

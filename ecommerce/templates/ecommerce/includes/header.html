@@ -1,0 +1,144 @@
+<header class="store-header">
+
+    <div class="container">
+
+        <div class="row align-items-center gy-3">
+
+
+            <!-- Logo -->
+
+            <div class="col-lg-3 col-md-4 col-8">
+
+                <a href="{% url 'ecommerce:home' store.slug %}"
+                   class="store-logo d-flex align-items-center">
+
+
+                    {% if store.logo %}
+
+                        <img
+                            src="{{ store.logo.url }}"
+                            alt="{{ store.name }}"
+                            class="store-logo-img">
+
+                    {% endif %}
+
+
+                    <span class="store-name">
+
+                        {{ store.name }}
+
+                    </span>
+
+
+                </a>
+
+            </div>
+
+
+
+            <!-- Search -->
+
+            <div class="col-lg-5 col-md-8 d-none d-md-block">
+
+                {% include "ecommerce/includes/search.html" %}
+
+            </div>
+
+
+
+            <!-- Actions -->
+
+            <div class="col-lg-4 col-4">
+
+
+                <div class="store-actions">
+
+
+                    <!-- Wishlist -->
+
+                    <a href="{% url 'ecommerce:wishlist' store.slug %}"
+                       class="action-item"
+                       title="المفضلة">
+
+
+                        <i class="bi bi-heart"></i>
+
+
+                        <span class="action-count">
+
+                            {{ wishlist_count|default:"0" }}
+
+                        </span>
+
+
+                    </a>
+
+
+
+                    <!-- Cart -->
+
+                    <a href="{% url 'ecommerce:cart' store.slug %}"
+                       class="action-item"
+                       title="السلة">
+
+
+                        <i class="bi bi-cart3"></i>
+
+
+                        <span class="action-count">
+
+                            {{ cart_count|default:"0" }}
+
+                        </span>
+
+
+                    </a>
+
+
+
+                    <!-- Account -->
+
+
+                    {% if user.is_authenticated %}
+
+
+                        <a href="{% url 'ecommerce:account' store.slug %}"
+                           class="action-item">
+
+
+                            <i class="bi bi-person-circle"></i>
+
+
+                        </a>
+
+
+                    {% else %}
+
+
+                        <a href="{% url 'login' %}"
+                           class="action-item">
+
+
+                            <i class="bi bi-box-arrow-in-right"></i>
+
+
+                        </a>
+
+
+                    {% endif %}
+
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</header>

@@ -45,6 +45,9 @@ urlpatterns = [
     # POS
     path("pos/", include("pos.urls", namespace="pos")),
 
+    # المتجر الإلكتروني
+    path("store/", include("ecommerce.urls")),
+
     # ZATCA
     path("zatca/", include("zatca.urls")),
 

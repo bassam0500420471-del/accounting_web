@@ -1,0 +1,114 @@
+<nav class="store-navbar">
+
+    <div class="container">
+
+        <div class="navbar-wrapper">
+
+
+            <!-- All Categories -->
+
+            <div class="categories-menu">
+
+                <button class="categories-btn">
+
+                    <i class="bi bi-list"></i>
+
+                    كل الأقسام
+
+                </button>
+
+
+                <div class="categories-dropdown">
+
+
+                    {% for category in categories %}
+
+                        <a href="{% url 'ecommerce:category' store.slug category.slug %}">
+
+                            {{ category.name }}
+
+                        </a>
+
+
+                    {% empty %}
+
+                        <span>
+                            لا توجد تصنيفات
+                        </span>
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- Main Menu -->
+
+
+            <ul class="navbar-links">
+
+
+                <li>
+
+                    <a href="{% url 'ecommerce:home' store.slug %}">
+                        الرئيسية
+                    </a>
+
+                </li>
+
+
+
+                <li>
+
+                    <a href="{% url 'ecommerce:products' store.slug %}">
+                        المنتجات
+                    </a>
+
+                </li>
+
+
+
+                <li>
+
+                    <a href="#">
+                        العروض
+                    </a>
+
+                </li>
+
+
+
+                <li>
+
+                    <a href="#">
+                        الأكثر مبيعاً
+                    </a>
+
+                </li>
+
+
+
+                <li>
+
+                    <a href="#">
+                        تواصل معنا
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+
+
+        </div>
+
+
+    </div>
+
+
+</nav>

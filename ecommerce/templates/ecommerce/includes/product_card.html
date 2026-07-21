@@ -1,0 +1,153 @@
+{% load static %}
+
+<div class="product-card">
+
+    <!-- صورة المنتج -->
+    <div class="product-image">
+
+        {% with image=product.images.first %}
+
+            {% if image %}
+
+                <img src="{{ image.image.url }}"
+                     alt="{{ product.name }}">
+
+            {% else %}
+
+                <img src="{% static 'ecommerce/images/no-image.png' %}"
+                     alt="{{ product.name }}">
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- شارة المنتج -->
+
+        {% if product.sale_price %}
+
+            <span class="product-badge product-sale">
+
+                خصم
+
+            </span>
+
+        {% else %}
+
+            <span class="product-badge product-new">
+
+                جديد
+
+            </span>
+
+        {% endif %}
+
+
+        <!-- أدوات سريعة -->
+
+        <div class="product-tools">
+
+            <a href="#">
+
+                <i class="bi bi-heart"></i>
+
+            </a>
+
+            <a href="#">
+
+                <i class="bi bi-eye"></i>
+
+            </a>
+
+            <a href="#">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- معلومات المنتج -->
+
+    <div class="product-content">
+
+        {% if product.category %}
+
+            <div class="product-category">
+
+                {{ product.category.name }}
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="product-name">
+
+            {{ product.name }}
+
+        </div>
+
+
+        <!-- التقييم -->
+
+        <div class="product-rating">
+
+            ★★★★★
+
+        </div>
+
+
+        <!-- السعر -->
+
+        <div class="product-price">
+
+            {% if product.sale_price %}
+
+                <span class="current-price">
+
+                    {{ product.sale_price }}
+
+                    {{ store.currency.symbol|default:"ر.س" }}
+
+                </span>
+
+                <span class="old-price">
+
+                    {{ product.price }}
+
+                </span>
+
+            {% else %}
+
+                <span class="current-price">
+
+                    {{ product.price }}
+
+                    {{ store.currency.symbol|default:"ر.س" }}
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- زر السلة -->
+
+        <button class="add-cart-btn"
+                data-product="{{ product.id }}">
+
+            <i class="bi bi-cart-plus"></i>
+
+            إضافة إلى السلة
+
+        </button>
+
+    </div>
+
+</div>
