@@ -40,9 +40,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://www.accounting-system.net",
     "https://www.accounting-system.net",
     "http://169.58.36.192",
-    "http://127.0.0.1",
-    "https://accounting-web-72p4.onrender.com",
+    "127.0.0.1",
 ]
+
+
 
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
