@@ -118,14 +118,14 @@ def stock_ledger(request):
 # 3) ورقة الجرد
 # ======================================
 @login_required
-def stock_take_sheet(request):
+def stock_take_sheet(request, take_id=None):
 
     if not getattr(request, "company", None):
         messages.error(request, "لا يمكن فتح ورقة جرد قبل ربط المستخدم بشركة.")
         return redirect("/")
 
     category_id = request.GET.get("category_id") or ""
-    view_id = request.GET.get("view_id")
+    view_id = take_id
 
     categories = Category.objects.filter(company=request.company, active=True).order_by("sort_order", "name")
 
@@ -208,11 +208,18 @@ def stock_take_save(request):
             system_qty = product.current_stock
             diff = physical_qty - system_qty
 
+            comment = request.POST.get(
+                f"comment_{product.id}",
+                ""
+            ).strip()
+
             total += 1
+
             if diff == 0:
                 matched += 1
             else:
                 mismatched += 1
+
                 apply_stock_movement(
                     product=product,
                     qty_delta=diff,
@@ -224,13 +231,22 @@ def stock_take_save(request):
                     note="جرد مخزون"
                 )
 
+            if comment:
+                final_comment = comment
+            else:
+                final_comment = (
+                    "مطابق"
+                    if diff == 0
+                    else f"فرق {diff:+}"
+                )
+
             StockTakeItem.objects.create(
                 stock_take=stock_take,
                 product=product,
                 system_qty=system_qty,
                 physical_qty=physical_qty,
                 diff_qty=diff,
-                comment="مطابق" if diff == 0 else f"فرق {diff:+}"
+                comment=final_comment,
             )
 
         stock_take.total_items = total

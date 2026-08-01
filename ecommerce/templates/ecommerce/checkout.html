@@ -1,0 +1,663 @@
+{% extends "ecommerce/base_store.html" %}
+
+{% block title %}إتمام الطلب{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.14.0/moyasar.css">
+
+<style>
+
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row g-4">
+
+
+        <!-- ملخص الطلب -->
+
+        <div class="col-lg-5">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    🛒 ملخص الطلب
+                </div>
+
+
+                <div class="card-body">
+
+
+                    {% for item in items %}
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <span>
+                            {{ item.product.name }} × {{ item.quantity }}
+                        </span>
+
+
+                        <strong>
+                            {{ item.subtotal }} ر.س
+                        </strong>
+
+                    </div>
+
+
+                    {% empty %}
+
+                    <p>
+                        السلة فارغة
+                    </p>
+
+
+                    {% endfor %}
+
+
+                    <hr>
+
+
+                    <h5 class="text-end">
+                        الإجمالي: {{ total }} ر.س
+                    </h5>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- طرق الدفع -->
+
+
+        <div class="col-lg-7">
+
+
+            <div class="card shadow-sm">
+
+
+                <div class="card-header">
+
+                    💳 اختر طريقة الدفع
+
+                </div>
+
+
+
+                <div class="card-body">
+
+
+
+<form
+id="checkoutForm"
+method="POST"
+enctype="multipart/form-data"
+action="{% url 'ecommerce:checkout' store.slug %}"
+>
+
+
+{% csrf_token %}
+
+
+
+<div class="payment-options mb-4">
+
+
+{% for method in payment_methods %}
+
+
+{% if method.payment_type == "bank" or method.payment_type == "cash" %}
+
+
+<label class="payment-box d-block mb-2 p-2 border rounded"
+style="cursor:pointer;">
+
+
+<input
+
+type="radio"
+
+data-type="{{ method.payment_type }}"
+
+name="payment_method"
+
+value="{{ method.id }}"
+
+{% if forloop.first %}checked{% endif %}
+
+class="form-check-input me-2"
+
+>
+
+
+{{ method.name }}
+
+
+</label>
+
+
+{% endif %}
+
+
+{% endfor %}
+
+
+</div>
+
+
+
+<!-- بطاقة ميسر -->
+
+
+<div id="cardSection"
+style="display:none; margin-top:20px;">
+
+
+<h5>
+بيانات البطاقة
+</h5>
+
+
+<div class="mysr-form"></div>
+
+
+</div>
+<!-- قسم التحويل البنكي -->
+
+<div id="bankSection"
+style="display:none; margin-top:20px;">
+
+
+<div class="alert alert-info">
+
+
+<h5>
+🏦 بيانات التحويل البنكي
+</h5>
+
+
+<p>
+
+<strong>
+البنك:
+</strong>
+
+{{ bank_method.bank_name }}
+
+</p>
+
+
+<p>
+
+<strong>
+اسم الحساب:
+</strong>
+
+{{ bank_method.account_name }}
+
+</p>
+
+
+<p>
+
+<strong>
+رقم الحساب:
+</strong>
+
+{{ bank_method.account_number }}
+
+</p>
+
+
+<p>
+
+<strong>
+الآيبان:
+</strong>
+
+{{ bank_method.iban }}
+
+</p>
+
+
+</div>
+
+
+
+
+<label class="form-label">
+
+صورة التحويل البنكي
+
+</label>
+
+
+
+<input
+
+type="file"
+
+name="bank_receipt"
+
+class="form-control"
+
+accept="image/*"
+
+>
+
+
+</div>
+
+
+
+
+<!-- زر التأكيد -->
+
+<button
+
+class="btn btn-primary w-100 mt-4"
+
+type="button"
+
+id="submitBtn"
+
+style="display:none;"
+
+>
+
+تأكيد الدفع
+
+</button>
+
+
+
+</form>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
+
+<script>
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const cardSection = document.getElementById(
+        "cardSection"
+    );
+
+
+    const bankSection = document.getElementById(
+        "bankSection"
+    );
+
+
+    const submitBtn = document.getElementById(
+        "submitBtn"
+    );
+
+
+    const paymentRadios =
+        document.querySelectorAll(
+            'input[name="payment_method"]'
+        );
+
+
+    let selectedKey = "";
+
+
+
+    submitBtn.addEventListener(
+        "click",
+        async function () {
+
+
+            if (submitBtn.disabled) {
+
+                return;
+
+            }
+
+
+            submitBtn.disabled = true;
+
+
+
+            console.log(
+                "CONFIRM BUTTON CLICKED"
+            );
+
+
+
+            const form =
+                document.getElementById(
+                    "checkoutForm"
+                );
+
+
+
+            const response =
+                await fetch(
+                    form.action,
+                    {
+
+                        method: "POST",
+
+
+                        body:
+                            new FormData(form),
+
+
+                        headers: {
+
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+
+                        }
+
+                    }
+                );
+
+
+
+            const data =
+                await response.json();
+
+
+
+            console.log(
+                "CHECKOUT RESPONSE:",
+                data
+            );
+
+
+            if (data.redirect) {
+
+                window.location.href = data.redirect;
+
+                return;
+
+            }
+
+
+            if (!data.success) {
+
+
+                alert(
+                    data.message
+                );
+
+
+                submitBtn.disabled = false;
+
+
+                return;
+
+            }
+
+
+            console.log(
+                "AMOUNT FROM SERVER:",
+                data.amount
+            );
+
+
+
+            console.log(
+                "CALLBACK:",
+                data.callback_url
+            );
+
+
+
+            console.log(
+                "OPEN MOYASAR"
+            );
+
+
+
+        }
+    );
+
+
+
+    function initPayment() {
+
+
+        let selected =
+            document.querySelector(
+                'input[name="payment_method"]:checked'
+            );
+
+
+
+        if (!selected) {
+
+            console.log(
+                "NO PAYMENT SELECTED"
+            );
+
+            return;
+
+        }
+
+
+
+        let gateway =
+            (
+                selected.dataset.gateway || ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+
+        let paymentType =
+            selected.dataset.type;
+
+
+
+        let key =
+            selected.dataset.key;
+
+
+
+        selectedKey = key;
+
+
+
+        console.log(
+            "GATEWAY:",
+            gateway
+        );
+
+
+
+        console.log(
+            "PAYMENT TYPE:",
+            paymentType
+        );
+
+
+
+        console.log(
+            "KEY:",
+            key
+        );
+
+
+
+// Moyasar
+
+if (
+    gateway.includes("moyasar")
+) {
+
+
+    cardSection.style.display =
+        "block";
+
+
+    bankSection.style.display =
+        "none";
+
+
+    submitBtn.style.display =
+        "none";
+
+
+    document.querySelector(
+        ".mysr-form"
+    ).innerHTML = "";
+
+
+
+    Moyasar.init({
+
+        element:
+            ".mysr-form",
+
+
+        amount:
+            Math.round(
+                Number(
+                    "{{ total|floatformat:'2' }}".replace(/,/g, "")
+                ) * 100
+            ),
+
+
+        currency:
+            "SAR",
+
+
+        description:
+            "Order from Store - {{ store.slug }}",
+
+
+        publishable_api_key:
+            key,
+
+
+        callback_url:
+            window.location.origin +
+            "/store/{{ store.slug }}/payment/moyasar/callback/",
+
+
+        methods:
+            [
+                "creditcard"
+            ]
+
+    });
+
+
+}
+
+
+        // Bank
+
+        else if (
+            paymentType === "bank"
+        ) {
+
+
+            cardSection.style.display =
+                "none";
+
+
+            bankSection.style.display =
+                "block";
+
+
+            submitBtn.style.display =
+                "block";
+
+
+        }
+
+
+
+        // Cash
+
+        else {
+
+
+            cardSection.style.display =
+                "none";
+
+
+            bankSection.style.display =
+                "none";
+
+
+            submitBtn.style.display =
+                "block";
+
+
+        }
+
+
+    }
+
+
+
+    paymentRadios.forEach(
+        function(radio){
+
+
+            radio.addEventListener(
+                "change",
+                function(){
+
+
+                    initPayment();
+
+
+                }
+            );
+
+
+        }
+    );
+
+
+
+    initPayment();
+
+
+
+});
+
+
+</script>
+
+{% endblock %}

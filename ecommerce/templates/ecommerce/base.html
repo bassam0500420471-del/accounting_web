@@ -49,7 +49,6 @@
 <body>
 
 
-
 <!-- ===========================
         PAGE LOADER
 =========================== -->
@@ -58,13 +57,6 @@
 
     <div class="loader-content">
 
-        {% if store.company.logo %}
-
-            <img src="{{ store.company.logo.url }}"
-                 class="loader-logo"
-                 alt="Logo">
-
-        {% endif %}
 
         <div class="loader-spinner"></div>
 
@@ -115,10 +107,13 @@
 
         <div class="top-center">
 
-            🚚 شحن مجاني للطلبات فوق 299 ر.س
+            {% if store.top_bar_enabled %}
+
+                {{ store.top_bar_text }}
+
+            {% endif %}
 
         </div>
-
 
 
         <div class="top-right">
@@ -146,49 +141,28 @@
 
     <div class="container">
 
-        <div class="header-row">
-
-            <a href="/{{ store.slug }}/"
-               class="store-logo">
-
-                {% if store.company.logo %}
-
-                <img src="{{ store.company.logo.url }}"
-                     alt="{{ store.company.name }}">
-
-                {% endif %}
-
-                <div>
-
-                    <h2>
-
-                        {{ store.name }}
-
-                    </h2>
-
-                    <small>
-
-                        {{ store.company.name }}
-
-                    </small>
-
-                </div>
-
-            </a>
+        <div class="header-wrapper">
 
 
 
 
             <!-- Search -->
 
-            <form class="search-box">
+            <!-- Search -->
+
+            <form class="search-box"
+                  
+                  method="GET">
 
                 <input type="search"
-                       placeholder="ابحث عن أكثر من 10000 منتج...">
+                       name="q"
+                       placeholder="ابحث عن المنتجات..."
+                       value="{{ request.GET.q }}">
 
-                <button>
 
-                    <i class="bi bi-search"></i>
+                <button type="button">
+
+                    <i class="bi bi-search-heart"></i>
 
                 </button>
 
@@ -196,38 +170,42 @@
 
 
 
-
             <!-- Icons -->
 
             <div class="header-icons">
 
-                <a href="#"
-                   title="المفضلة">
 
-                    <i class="bi bi-heart"></i>
+                <!-- المفضلة -->
 
-                </a>
+<a href="{% url 'ecommerce:wishlist' store.slug %}"
+   title="المفضلة">
 
-                <a href="#"
-                   title="حسابي">
+    <i class="bi bi-heart"></i>
 
-                    <i class="bi bi-person"></i>
+</a>
 
-                </a>
 
-                <a href="#"
+                <!-- حسابي -->
+
+<a href="{% url 'ecommerce:account' store.slug %}">
+    <i class="bi bi-person"></i>
+</a>
+
+
+
+                <a href="{% url 'ecommerce:cart' store_slug=store.slug %}"
                    class="cart-icon"
                    title="السلة">
 
                     <i class="bi bi-cart3"></i>
 
-                    <span>
+<span id="cart-count">
 
-                        0
+    {{ cart_count|default:0 }}
 
-                    </span>
-
+</span>
                 </a>
+
 
             </div>
 
@@ -244,26 +222,24 @@
           MAIN MENU
 =========================== -->
 
+
 <nav class="main-menu">
 
     <div class="container">
 
-        <a href="/">الرئيسية</a>
+        <a href="#categories">الأقسام</a>
 
-        <a href="#">الأقسام</a>
+        <a href="#offers">العروض</a>
 
-        <a href="#">العروض</a>
+        <a href="#new-products">الجديد</a>
 
-        <a href="#">الجديد</a>
+        <a href="#best-selling">الأكثر مبيعاً</a>
 
-        <a href="#">الأكثر مبيعاً</a>
-
-        <a href="#">تواصل معنا</a>
+        <a href="#contact">تواصل معنا</a>
 
     </div>
 
 </nav>
-
 
 
 
@@ -281,46 +257,6 @@
         NEWSLETTER
 =========================== -->
 
-<section class="newsletter">
-
-    <div class="container">
-
-        <div class="newsletter-box">
-
-            <div>
-
-                <h2>
-
-                    اشترك ليصلك كل جديد
-
-                </h2>
-
-                <p>
-
-                    احصل على أحدث العروض والمنتجات الجديدة مباشرة.
-
-                </p>
-
-            </div>
-
-            <form class="newsletter-form">
-
-                <input type="email"
-                       placeholder="البريد الإلكتروني">
-
-                <button type="submit">
-
-                    اشتراك
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</section>
 
 
 
@@ -329,7 +265,7 @@
             FOOTER
 =========================== -->
 
-<footer class="store-footer">
+<footer class="store-footer" id="contact">
 
     <div class="container">
 
@@ -395,12 +331,11 @@
 
                     <li><a href="#">الأقسام</a></li>
 
-                    <li><a href="#">العروض</a></li>
+                    <a href="#offers">العروض</a>
 
                     <li><a href="#">الأكثر مبيعاً</a></li>
 
-                    <li><a href="#">تواصل معنا</a></li>
-
+                    <a href="#contact">تواصل معنا</a>
                 </ul>
 
             </div>
@@ -517,47 +452,9 @@
         MOBILE MENU BUTTON
 =========================== -->
 
-<button id="mobileMenuBtn"
-        class="mobile-menu-btn">
-
-    <i class="bi bi-list"></i>
-
-</button>
 
 
 
-<!-- ===========================
-        MOBILE MENU
-=========================== -->
-
-<div id="mobileMenu"
-     class="mobile-menu">
-
-    <div class="mobile-menu-header">
-
-        <h3>
-
-            القائمة
-
-        </h3>
-
-        <button id="closeMobileMenu">
-
-            <i class="bi bi-x-lg"></i>
-
-        </button>
-
-    </div>
-
-    <a href="/">الرئيسية</a>
-    <a href="#">الأقسام</a>
-    <a href="#">العروض</a>
-    <a href="#">الجديد</a>
-    <a href="#">الأكثر مبيعاً</a>
-    <a href="#">حسابي</a>
-    <a href="#">السلة</a>
-
-</div>
 
 
 
@@ -575,6 +472,208 @@
 {% load static %}
 
 <script src="{% static 'ecommerce/js/store.js' %}"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const searchInput = document.querySelector(".search-box input");
+
+
+    if(!searchInput) return;
+
+
+    searchInput.addEventListener("input", function(){
+
+        let search = this.value.toLowerCase().trim();
+
+
+        let products = document.querySelectorAll(".product-card");
+
+
+        products.forEach(function(product){
+
+
+            let name = product.querySelector(".product-name");
+
+
+            if(name){
+
+                let productName = name.innerText.toLowerCase();
+
+
+                if(productName.includes(search)){
+
+                    product.style.display = "";
+
+                }else{
+
+                    product.style.display = "none";
+
+                }
+
+
+            }
+
+
+        });
+
+
+    });
+
+
+});
+
+</script>
+
+<script>
+
+function getCookie(name){
+
+    let cookieValue = null;
+
+    if(document.cookie && document.cookie !== ""){
+
+        const cookies = document.cookie.split(";");
+
+        for(let i=0;i<cookies.length;i++){
+
+            const cookie = cookies[i].trim();
+
+            if(cookie.substring(0,name.length+1)===name+"="){
+
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length+1)
+                );
+
+                break;
+
+            }
+
+        }
+
+    }
+
+    return cookieValue;
+
+}
+
+const csrftoken = getCookie("csrftoken");
+
+
+
+// ================================
+// إضافة للسلة
+// ================================
+
+document.addEventListener("click",function(e){
+
+    const btn = e.target.closest(".add-cart-btn");
+
+    if(!btn){
+
+        return;
+
+    }
+
+    fetch(
+
+        "/store/{{ store.slug }}/cart/add/" + btn.dataset.product + "/",
+
+        {
+
+            method:"POST",
+
+            headers:{
+
+                "X-CSRFToken":csrftoken
+
+            }
+
+        }
+
+    )
+
+    .then(response=>response.json())
+
+    .then(data=>{
+
+        if(data.status==="success"){
+
+            document.getElementById("cart-count").textContent = parseInt(data.items);
+
+            alert("تمت إضافة المنتج إلى السلة");
+
+        }
+
+    });
+
+});
+
+
+
+// ================================
+// المفضلة
+// ================================
+
+document.addEventListener("click",function(e){
+
+    const btn = e.target.closest(".wishlist-btn");
+
+    if(!btn){
+
+        return;
+
+    }
+
+    e.preventDefault();
+
+    const icon = btn.querySelector("i");
+
+    fetch(
+
+        "/store/{{ store.slug }}/wishlist/" + btn.dataset.product + "/",
+
+        {
+
+            method:"POST",
+
+            headers:{
+
+                "X-CSRFToken":csrftoken
+
+            }
+
+        }
+
+    )
+
+    .then(response=>response.json())
+
+    .then(data=>{
+
+        if(data.status==="added"){
+
+            icon.className="bi bi-heart-fill";
+
+            icon.style.color="red";
+
+        }
+
+        else{
+
+            icon.className="bi bi-heart";
+
+            icon.style.color="";
+
+        }
+
+    });
+
+});
+
+
+</script>
 
 </body>
 </html>

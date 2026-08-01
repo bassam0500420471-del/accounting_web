@@ -42,13 +42,23 @@
         <a class="fw-bold text-decoration-none"
            href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
             {{ sales_before_tax|intcomma }}
-        </a>
     </td>
     <td>
         <a class="fw-bold text-decoration-none"
            href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
             {{ sales_vat|intcomma }}
-        </a>
+    </td>
+</tr>
+
+<tr>
+    <td>فواتير نقاط البيع POS</td>
+
+    <td>
+        {{ pos_before_tax|intcomma }}
+    </td>
+
+    <td>
+        {{ pos_vat|intcomma }}
     </td>
 </tr>
 

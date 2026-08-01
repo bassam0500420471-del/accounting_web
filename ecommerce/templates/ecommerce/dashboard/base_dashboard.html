@@ -1,0 +1,401 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+
+{% block title %}
+لوحة المتجر
+{% endblock %}
+
+</title>
+
+
+
+<style>
+
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+
+
+body{
+
+    margin:0;
+
+    font-family:Tahoma,Arial,sans-serif;
+
+    background:#f5f7fb;
+
+}
+
+
+
+/* الحاوية الرئيسية */
+
+.dashboard{
+
+    display:flex;
+
+    min-height:100vh;
+
+}
+
+
+
+/* القائمة الجانبية */
+
+aside{
+
+    width:260px;
+
+    background:#222;
+
+    color:white;
+
+    padding:25px;
+
+    flex-shrink:0;
+
+}
+
+
+
+aside h3{
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+    font-size:20px;
+
+}
+
+
+
+aside ul{
+
+    list-style:none;
+
+    padding:0;
+
+    margin:0;
+
+}
+
+
+
+aside li{
+
+    margin-bottom:15px;
+
+}
+
+
+
+aside a{
+
+    display:block;
+
+    color:#ddd;
+
+    text-decoration:none;
+
+    padding:12px 15px;
+
+    border-radius:8px;
+
+    transition:0.3s;
+
+}
+
+
+
+aside a:hover{
+
+    background:#0d6efd;
+
+    color:white;
+
+}
+
+
+
+/* المستخدم */
+
+.user-box{
+
+    margin-top:40px;
+
+    padding-top:20px;
+
+    border-top:1px solid #444;
+
+    text-align:center;
+
+    color:#bbb;
+
+    font-size:14px;
+
+}
+
+
+
+/* المحتوى */
+
+main{
+
+    flex:1;
+
+    padding:35px;
+
+}
+
+
+
+/* رسائل النظام */
+
+.alert{
+
+    background:white;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+
+}
+
+
+
+/* تجاوب الجوال */
+
+@media(max-width:768px){
+
+
+.dashboard{
+
+    flex-direction:column;
+
+}
+
+
+
+aside{
+
+    width:100%;
+
+}
+
+
+
+main{
+
+    padding:20px;
+
+}
+
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="dashboard">
+
+
+
+<aside>
+
+
+
+<h3>
+
+🛒
+
+{{ store.name|default:"المتجر الإلكتروني" }}
+
+</h3>
+
+
+
+
+<ul>
+
+
+<li>
+
+<a href="{% url 'ecommerce:dashboard' store_slug=store.slug %}">
+
+📊 لوحة التحكم
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="{% url 'ecommerce:dashboard_products' store_slug=store.slug %}">
+
+📦 المنتجات
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="{% url 'ecommerce:dashboard_orders' store_slug=store.slug %}">
+
+🛒 الطلبات
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="{% url 'ecommerce:dashboard_customers' store_slug=store.slug %}">
+
+👥 العملاء
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="#">
+
+🔥 العروض
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="{% url 'ecommerce:dashboard_reports' store_slug=store.slug %}">
+
+📈 التقارير
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="{% url 'ecommerce:dashboard_settings' store_slug=store.slug %}">
+
+⚙️ إعدادات المتجر
+
+</a>
+
+</li>
+
+
+</ul>
+
+
+
+<div class="user-box">
+
+
+👤
+
+{{ request.user.username }}
+
+
+</div>
+
+
+
+</aside>
+
+
+
+
+
+
+<main>
+
+
+
+{% if messages %}
+
+
+{% for message in messages %}
+
+
+<div class="alert">
+
+{{ message }}
+
+</div>
+
+
+{% endfor %}
+
+
+{% endif %}
+
+
+
+
+{% block content %}
+
+
+{% endblock %}
+
+
+
+</main>
+
+
+
+</div>
+
+
+
+</body>
+
+
+</html>

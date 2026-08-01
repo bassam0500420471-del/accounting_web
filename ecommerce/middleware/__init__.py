@@ -4,7 +4,9 @@ from ecommerce.models import Store
 
 class StoreMiddleware:
     """
-    يحدد المتجر الحالي اعتماداً على store_slug الموجود في الرابط
+    يحدد المتجر الحالي اعتماداً على الرابط
+    مثال:
+    /store/store-2/
     """
 
     def __init__(self, get_response):
@@ -16,16 +18,20 @@ class StoreMiddleware:
         # القيمة الافتراضية
         request.store = None
 
-        # حماية من عدم وجود resolver_match
-        store_slug = None
 
-        if hasattr(request, "resolver_match") and request.resolver_match:
-            store_slug = request.resolver_match.kwargs.get("store_slug")
+        # تقسيم الرابط
+        parts = request.path.strip("/").split("/")
 
 
-        if store_slug:
+        # مثال:
+        # /store/store-2/
+        if len(parts) >= 2 and parts[0] == "store":
+
+            store_slug = parts[1]
+
 
             try:
+
                 request.store = Store.objects.select_related(
                     "theme",
                     "settings",
@@ -35,8 +41,17 @@ class StoreMiddleware:
                     is_active=True,
                 )
 
+                print(
+                    "STORE FOUND:",
+                    request.store
+                )
+
+
             except Store.DoesNotExist:
-                raise Http404("المتجر غير موجود")
+
+                raise Http404(
+                    "المتجر غير موجود"
+                )
 
 
         response = self.get_response(request)

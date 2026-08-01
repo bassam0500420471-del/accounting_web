@@ -41,7 +41,11 @@ def payment_create(request):
     other_accounts = Account.objects.filter(company=company, is_active=True).order_by("code")
 
     if request.method == "POST":
-        party_type = (request.POST.get("party_type") or "supplier").strip()
+
+        party_type = (request.POST.get("party_type") or "").strip()
+
+        print("PARTY TYPE =", party_type)
+        print("POST DATA =", request.POST)
 
         supplier_id = request.POST.get("supplier")
         customer_id = request.POST.get("customer")

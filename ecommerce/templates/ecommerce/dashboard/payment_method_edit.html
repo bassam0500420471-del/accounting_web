@@ -1,0 +1,500 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+تعديل {{ payment_method.name }}
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container-fluid settings-page">
+
+
+
+<div class="settings-header">
+
+    <div>
+
+        <div class="breadcrumb-nav">
+
+            <a href="{% url 'ecommerce:payment_methods' store.slug %}">
+                طرق الدفع
+            </a>
+
+            <i class="bi bi-chevron-left"></i>
+
+            <span>
+                تعديل {{ payment_method.name }}
+            </span>
+
+        </div>
+
+
+
+        <h1>
+
+            {% if payment_method.payment_type == "bank" %}
+
+                <i class="bi bi-bank"></i>
+
+
+            {% elif payment_method.payment_type == "card" %}
+
+                <i class="bi bi-credit-card-2-front"></i>
+
+
+            {% elif payment_method.payment_type == "online" %}
+
+                <i class="bi bi-globe"></i>
+
+
+            {% endif %}
+
+
+            تعديل {{ payment_method.name }}
+
+        </h1>
+
+
+
+        <p>
+            تحديث بيانات وسيلة الدفع التي ستظهر للعملاء أثناء إتمام الطلب.
+        </p>
+
+
+    </div>
+
+
+
+    <div class="header-icon">
+
+
+        {% if payment_method.payment_type == "bank" %}
+
+            <i class="bi bi-bank2"></i>
+
+
+        {% elif payment_method.payment_type == "card" %}
+
+            <i class="bi bi-credit-card"></i>
+
+
+        {% elif payment_method.payment_type == "online" %}
+
+            <i class="bi bi-globe2"></i>
+
+
+        {% endif %}
+
+
+
+    </div>
+
+
+</div>
+
+
+
+
+
+
+<form method="post">
+
+{% csrf_token %}
+
+
+
+<div class="premium-card">
+
+
+
+<div class="card-title">
+
+
+{% if payment_method.payment_type == "bank" %}
+
+
+    <i class="bi bi-bank2"></i>
+    <span>بيانات الحساب البنكي</span>
+
+
+
+{% elif payment_method.payment_type == "card" %}
+
+
+    <i class="bi bi-credit-card"></i>
+    <span>بيانات الدفع بالبطاقة</span>
+
+
+
+{% elif payment_method.payment_type == "online" %}
+
+
+    <i class="bi bi-globe"></i>
+    <span>بيانات بوابة الدفع الإلكتروني</span>
+
+
+
+{% endif %}
+
+
+
+</div>
+
+
+
+
+
+<div class="row g-4">
+
+
+
+
+
+{% if payment_method.payment_type == "bank" %}
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+اسم البنك
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-bank"></i>
+
+
+<input
+type="text"
+name="bank_name"
+class="form-control"
+value="{{ payment_method.bank_name|default:'' }}">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+اسم صاحب الحساب
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-person"></i>
+
+
+<input
+type="text"
+name="account_name"
+class="form-control"
+value="{{ payment_method.account_name|default:'' }}">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+رقم الحساب
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-credit-card"></i>
+
+
+<input
+type="text"
+name="account_number"
+class="form-control"
+value="{{ payment_method.account_number|default:'' }}">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+رقم الآيبان IBAN
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-upc-scan"></i>
+
+
+<input
+type="text"
+name="iban"
+class="form-control"
+value="{{ payment_method.iban|default:'' }}">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+{% elif payment_method.payment_type == "card" or payment_method.payment_type == "online" %}
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+اسم مزود الدفع الإلكتروني
+</label>
+
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-globe"></i>
+
+
+<input
+type="text"
+name="gateway_name"
+class="form-control"
+placeholder="مثال: moyasar"
+value="{{ payment_method.gateway_name|default:'' }}">
+
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+المفتاح القابل للنشر
+(Publishable Key)
+</label>
+
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-key"></i>
+
+
+
+<input
+type="text"
+name="gateway_publishable_key"
+class="form-control"
+placeholder="pk_test_xxxxxxxxx"
+value="{{ payment_method.gateway_publishable_key|default:'' }}">
+
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+المفتاح السري
+(Secret Key)
+</label>
+
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-shield-lock"></i>
+
+
+
+<input
+type="password"
+name="gateway_secret_key"
+class="form-control"
+placeholder="sk_test_xxxxxxxxx"
+value="{{ payment_method.gateway_secret_key|default:'' }}">
+
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+{% endif %}
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="d-flex gap-3 mt-4">
+
+
+
+<button
+type="submit"
+class="btn btn-primary btn-lg">
+
+
+<i class="bi bi-save"></i>
+
+
+حفظ البيانات
+
+
+</button>
+
+
+
+
+
+<a
+href="{% url 'ecommerce:payment_methods' store.slug %}"
+class="btn btn-light btn-lg">
+
+
+<i class="bi bi-arrow-right"></i>
+
+
+إلغاء
+
+
+</a>
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+</form>
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,1077 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+طلبات المتجر
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container-fluid">
+
+
+<h2 class="mb-4">
+🛒 إدارة الطلبات
+</h2>
+
+
+
+
+<!-- الإحصائيات -->
+
+<div class="stats-grid">
+
+
+<div class="card">
+<h4>كل الطلبات</h4>
+<h2>{{ statistics.total }}</h2>
+</div>
+
+
+<div class="card">
+<h4>بانتظار المراجعة</h4>
+<h2>{{ statistics.pending }}</h2>
+</div>
+
+
+<div class="card">
+<h4>مؤكد</h4>
+<h2>{{ statistics.confirmed }}</h2>
+</div>
+
+
+<div class="card">
+<h4>قيد التجهيز</h4>
+<h2>{{ statistics.processing }}</h2>
+</div>
+
+
+<div class="card">
+<h4>تم الشحن</h4>
+<h2>{{ statistics.shipped }}</h2>
+</div>
+
+
+<div class="card">
+<h4>تم التسليم</h4>
+<h2>{{ statistics.delivered }}</h2>
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="table-box">
+
+
+<table class="orders-table">
+
+
+<thead>
+
+
+<tr class="filters">
+
+
+
+<th>
+
+<div class="filter-box">
+
+<input 
+id="f_order"
+type="text"
+placeholder="رقم الطلب"
+onkeyup="filterOrders()">
+
+
+<button onclick="clearFilter('f_order')">
+×
+</button>
+
+</div>
+
+</th>
+
+
+
+
+<th>
+
+<div class="filter-box">
+
+<input 
+id="f_customer"
+type="text"
+placeholder="العميل"
+onkeyup="filterOrders()">
+
+
+
+<button onclick="clearFilter('f_customer')">
+×
+</button>
+
+
+</div>
+
+</th>
+
+
+
+
+<th>
+
+<div class="filter-box">
+
+<input 
+id="f_items"
+type="number"
+placeholder="عدد المنتجات"
+onkeyup="filterOrders()">
+
+
+
+<button onclick="clearFilter('f_items')">
+×
+</button>
+
+
+</div>
+
+</th>
+
+
+
+
+<th>
+
+<div class="filter-box">
+
+
+<input 
+id="f_total"
+type="number"
+placeholder="الإجمالي"
+onkeyup="filterOrders()">
+
+
+
+<button onclick="clearFilter('f_total')">
+×
+</button>
+
+
+
+</div>
+
+</th>
+
+
+
+
+<th>
+
+<select id="f_payment"
+onchange="filterOrders()">
+
+
+<option value="">
+كل طرق الدفع
+</option>
+
+
+<option value="نقدي">
+نقدي
+</option>
+
+
+<option value="بطاقة">
+بطاقة
+</option>
+
+
+</select>
+
+</th>
+
+
+
+
+<th>
+
+<select id="f_status"
+onchange="filterOrders()">
+
+
+<option value="">
+كل الحالات
+</option>
+
+
+<option value="بانتظار المراجعة">
+بانتظار المراجعة
+</option>
+
+
+<option value="مؤكد">
+مؤكد
+</option>
+
+
+<option value="قيد التجهيز">
+قيد التجهيز
+</option>
+
+
+<option value="تم الشحن">
+تم الشحن
+</option>
+
+
+<option value="تم التسليم">
+تم التسليم
+</option>
+
+
+
+</select>
+
+
+</th>
+
+
+
+
+<th>
+
+
+<div class="filter-box">
+
+
+<input 
+id="f_date"
+type="date"
+onchange="filterOrders()">
+
+
+
+<button onclick="clearFilter('f_date')">
+×
+</button>
+
+
+
+</div>
+
+
+</th>
+
+
+
+<th>
+
+<button class="search-btn"
+onclick="filterOrders()">
+
+🔍 بحث
+
+</button>
+
+
+</th>
+
+
+
+</tr>
+
+
+
+
+
+
+<tr>
+
+<th>
+رقم الطلب
+</th>
+
+
+<th>
+العميل
+</th>
+
+
+<th>
+عدد المنتجات
+</th>
+
+
+<th>
+الإجمالي
+</th>
+
+
+<th>
+طريقة الدفع
+</th>
+
+
+<th>
+الحالة
+</th>
+
+
+<th>
+التاريخ
+</th>
+
+
+<th>
+إجراء
+</th>
+
+
+</tr>
+
+
+
+</thead>
+
+
+
+
+
+<tbody>
+
+
+
+{% for order in orders %}
+
+
+
+<tr
+
+data-order="{{ order.order_no }}"
+
+data-customer="{{ order.customer|lower }}"
+
+data-items="{{ order.items.count }}"
+
+data-total="{{ order.total|floatformat:2 }}"
+
+data-payment="{{ order.payment_method|default:'-' }}"
+
+data-status="{{ order.get_status_display }}"
+
+data-date="{{ order.created_at|date:'Y-m-d' }}"
+
+>
+
+
+
+
+<td>
+{{ order.order_no }}
+</td>
+
+
+
+<td>
+{{ order.customer }}
+</td>
+
+
+
+<td>
+{{ order.items.count }}
+</td>
+
+
+
+<td>
+{{ order.total }}
+</td>
+
+
+
+<td>
+{{ order.payment_method|default:"-" }}
+</td>
+
+
+
+<td>
+{{ order.get_status_display }}
+</td>
+
+
+
+<td>
+{{ order.created_at|date:"Y-m-d H:i" }}
+</td>
+
+
+
+<td>
+
+<a href="{% url 'ecommerce:order_detail' store_slug=store.slug pk=order.id %}">
+👁 عرض
+</a>
+
+
+</td>
+
+
+
+</tr>
+
+
+
+{% empty %}
+
+
+
+<tr>
+
+<td colspan="8">
+لا توجد طلبات حالياً
+</td>
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+</tbody>
+</table>
+
+
+</div>
+
+
+
+
+
+<!-- الصفحات -->
+
+
+<div class="pagination-box">
+
+
+{% if orders.has_previous %}
+
+<a href="?page={{ orders.previous_page_number }}">
+السابق
+</a>
+
+{% endif %}
+
+
+
+<span>
+صفحة {{ orders.number }}
+من {{ orders.paginator.num_pages }}
+</span>
+
+
+
+{% if orders.has_next %}
+
+<a href="?page={{ orders.next_page_number }}">
+التالي
+</a>
+
+{% endif %}
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<style>
+
+
+.stats-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(150px,1fr));
+
+gap:15px;
+
+margin-bottom:30px;
+
+}
+
+
+
+
+.card{
+
+background:white;
+
+padding:20px;
+
+border-radius:10px;
+
+text-align:center;
+
+box-shadow:
+0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+
+
+
+.table-box{
+
+background:white;
+
+padding:20px;
+
+border-radius:10px;
+
+overflow:auto;
+
+}
+
+
+
+
+
+.orders-table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+
+
+
+
+.orders-table thead tr:not(.filters) th{
+
+background:#222;
+
+color:white;
+
+padding:12px;
+
+text-align:center;
+
+}
+
+
+
+
+
+.filters th{
+
+background:white;
+
+padding:8px;
+
+border-bottom:3px solid #222;
+
+}
+
+
+
+
+
+.filter-box{
+
+position:relative;
+
+}
+
+
+
+
+
+.filter-box input{
+
+width:100%;
+
+height:34px;
+
+padding:5px 30px 5px 8px;
+
+border:1px solid #ccc;
+
+border-radius:6px;
+
+text-align:center;
+
+}
+
+
+
+
+
+.filter-box button{
+
+
+position:absolute;
+
+left:5px;
+
+top:5px;
+
+
+width:24px;
+
+height:24px;
+
+
+border:none;
+
+border-radius:50%;
+
+
+background:#999;
+
+
+color:white;
+
+
+font-size:16px;
+
+
+cursor:pointer;
+
+
+}
+
+
+
+.filter-box button:hover{
+
+background:#666;
+
+}
+
+
+
+
+
+.filters select{
+
+
+width:100%;
+
+height:34px;
+
+border-radius:6px;
+
+border:1px solid #ccc;
+
+text-align:center;
+
+}
+
+
+
+
+
+.search-btn{
+
+
+background:#0d6efd;
+
+
+color:white;
+
+
+border:none;
+
+
+padding:8px 18px;
+
+
+border-radius:6px;
+
+
+cursor:pointer;
+
+
+}
+
+
+
+.search-btn:hover{
+
+
+background:#0b5ed7;
+
+
+}
+
+
+
+
+
+.orders-table td{
+
+
+padding:12px;
+
+
+text-align:center;
+
+
+border-bottom:1px solid #ddd;
+
+
+}
+
+
+
+
+
+.orders-table tbody tr:hover{
+
+
+background:#f7f7f7;
+
+
+}
+
+
+
+
+
+.orders-table a{
+
+
+color:#0d6efd;
+
+
+text-decoration:none;
+
+
+font-weight:bold;
+
+
+}
+
+
+
+
+
+.pagination-box{
+
+
+margin-top:25px;
+
+
+text-align:center;
+
+
+}
+
+
+
+.pagination-box a{
+
+
+margin:10px;
+
+
+color:#0d6efd;
+
+
+}
+
+
+
+
+
+</style>
+
+
+
+
+
+
+
+
+<script>
+
+
+function filterOrders(){
+
+
+
+let order = 
+document.getElementById("f_order").value.toLowerCase();
+
+
+
+let customer =
+document.getElementById("f_customer").value.toLowerCase();
+
+
+
+let items =
+document.getElementById("f_items").value;
+
+
+
+let total =
+document.getElementById("f_total").value;
+
+
+
+let payment =
+document.getElementById("f_payment").value;
+
+
+
+let status =
+document.getElementById("f_status").value;
+
+
+
+let date =
+document.getElementById("f_date").value;
+
+
+
+let rows =
+document.querySelectorAll(
+".orders-table tbody tr"
+);
+
+
+
+
+
+rows.forEach(row=>{
+
+
+
+let show = true;
+
+
+
+let rowOrder =
+(row.dataset.order || "").toLowerCase();
+
+
+
+let rowCustomer =
+(row.dataset.customer || "").toLowerCase();
+
+
+
+let rowItems =
+row.dataset.items || "";
+
+
+
+let rowTotal =
+row.cells[3].innerText || "";
+
+
+let rowPayment =
+row.dataset.payment || "";
+
+
+
+let rowStatus =
+row.dataset.status || "";
+
+
+
+let rowDate =
+row.dataset.date || "";
+
+
+
+
+
+
+
+// رقم الطلب
+
+if(
+order &&
+!rowOrder.includes(order)
+){
+
+show=false;
+
+}
+
+
+
+
+// اسم العميل
+
+if(
+customer &&
+!rowCustomer.includes(customer)
+){
+
+show=false;
+
+}
+
+
+
+
+
+// عدد المنتجات
+
+if(
+items &&
+rowItems != items
+){
+
+show=false;
+
+}
+
+
+
+
+// الإجمالي
+
+if(total){
+
+
+let cleanRowTotal = parseFloat(
+    rowTotal
+    .replace(",", ".")
+    .trim()
+);
+
+
+
+let cleanSearchTotal = parseFloat(
+    total
+    .replace(",", ".")
+    .trim()
+);
+
+
+
+if(cleanRowTotal != cleanSearchTotal){
+
+show=false;
+
+}
+
+
+}
+
+
+
+// طريقة الدفع
+
+if(
+payment &&
+rowPayment != payment
+){
+
+show=false;
+
+}
+
+
+
+
+// الحالة
+
+if(
+status &&
+rowStatus != status
+){
+
+show=false;
+
+}
+
+
+
+
+
+// التاريخ
+
+if(
+date &&
+rowDate != date
+){
+
+show=false;
+
+}
+
+
+
+
+
+row.style.display =
+show ? "" : "none";
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+function clearFilter(id){
+
+
+
+document.getElementById(id).value="";
+
+
+
+filterOrders();
+
+
+
+}
+
+
+
+</script>
+
+
+
+{% endblock %}

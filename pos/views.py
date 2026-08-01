@@ -42,6 +42,15 @@ def create_pos_journal(invoice, payment):
 
     company = invoice.company
 
+    # منع إنشاء أكثر من قيد لنفس الفاتورة
+    if JournalEntry.objects.filter(
+        company=company,
+        source_type="sales_invoice",
+        source_id=invoice.id
+    ).exists():
+        return
+
+
     last_no = JournalEntry.objects.filter(
         company=company
     ).aggregate(
@@ -59,7 +68,6 @@ def create_pos_journal(invoice, payment):
         posted=True
     )
 
-
     # مدين: الصندوق / البنك
     # التحقق من حساب طريقة الدفع
     if not payment.method or not payment.method.account:
@@ -68,13 +76,13 @@ def create_pos_journal(invoice, payment):
         )
 
 
-    # مدين: الصندوق / البنك
     JournalLine.objects.create(
         entry=entry,
         account=payment.method.account,
         debit=payment.amount,
         credit=0
     )
+
 
     # حساب المبيعات
     sales_account = Account.objects.get(
@@ -88,6 +96,7 @@ def create_pos_journal(invoice, payment):
         company=company,
         name__icontains="ضريبة القيمة المضافة"
     ).first()
+
 
     subtotal = Decimal("0.00")
     vat_amount = Decimal("0.00")
@@ -112,6 +121,7 @@ def create_pos_journal(invoice, payment):
             Decimal("100")
         )
 
+
     # دائن: المبيعات قبل الضريبة
     JournalLine.objects.create(
         entry=entry,
@@ -122,7 +132,8 @@ def create_pos_journal(invoice, payment):
 
 
     # دائن: ضريبة القيمة المضافة
-    if vat_amount > 0:
+    if vat_amount > 0 and vat_account:
+
         JournalLine.objects.create(
             entry=entry,
             account=vat_account,

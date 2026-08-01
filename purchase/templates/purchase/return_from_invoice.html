@@ -122,7 +122,7 @@
     <td class="available-qty">{{ rem }}</td>
     <td>{{ item.price }}</td>
     <td>{{ item.discount|default:0 }}</td>
-    <td>{{ item.tax|default:15 }}</td>
+    <td>{{ item.tax_rate|default:15 }}</td>
 
     <td class="row-unit-total fw-bold">0.00</td>
 
@@ -136,11 +136,12 @@
                name="qty_{{ item.id }}"
                value="0"
                min="0"
-               max="{{ rem }}"
+               max="{{ rem|floatformat:2 }}"
                step="0.01"
                data-price="{{ item.price }}"
                data-discount="{{ item.discount|default:0 }}"
-               data-tax="{{ item.tax|default:15 }}">
+               data-tax="{{ item.tax_rate|default:15 }}">
+
     </td>
 </tr>
 {% endwith %}
@@ -199,10 +200,10 @@ function calcTotals() {
     document.querySelectorAll(".items-table tbody tr").forEach(row => {
 
         const input = row.querySelector(".return-input");
-        const maxQty = toNum(input.max);
-        let qty = toNum(input.value);
+        const maxQty = Number(toNum(input.max).toFixed(2));
+        let qty = Number(toNum(input.value).toFixed(2));
 
-        if (qty > maxQty) {
+        if (qty - maxQty > 0.001) {
             input.value = maxQty;
             qty = maxQty;
             alertBox.style.display = "block";

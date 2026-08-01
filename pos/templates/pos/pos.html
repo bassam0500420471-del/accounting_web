@@ -95,38 +95,33 @@
                      data-stock="{{ p.current_stock }}"
                      data-category="{% if p.category %}{{ p.category.id }}{% endif %}">
 
-                    <div class="card text-center"
-                         style="cursor:pointer;
-                                height:150px;
-                                background:#f8f8f8;
-                                border-radius:8px;">
-
+<div class="card text-center product-pos-card"
+     style="cursor:pointer;
+            background:#f8f8f8;
+            border-radius:8px;">
                         {% if p.image %}
-                        <img src="{{ p.image.url }}"
-                             style="width:100%;
-                                    height:80px;
-                                    object-fit:cover;
-                                    border-radius:8px 8px 0 0;">
+<img src="{{ p.image.url }}"
+     class="product-pos-image product-preview"
+     data-image="{{ p.image.url }}"
+     alt="{{ p.get_name }}">
+
                         {% else %}
-                        <div style="width:100%;
-                                    height:80px;
-                                    background:#e0e0e0;
-                                    border-radius:8px 8px 0 0;"></div>
+<div class="product-pos-image"
+     style="background:#e0e0e0;"></div>
+
                         {% endif %}
 
-                        <div class="card-body p-1">
+                        <div class="card-body p-1 d-flex flex-column">
 
-                            <h6 class="card-title"
-                                style="font-size:13px; margin:2px 0;">
-                                {{ p.get_name }}
-                            </h6>
-
-                            <p class="card-text"
-                               style="font-size:12px; margin:0;">
+<h6 class="card-title product-pos-name">
+    {{ p.get_name }}
+</h6>
+                            <p class="card-text product-pos-price">
+                               
                                 {{ p.sale_price }} {% trans "SAR" %}
                             </p>
 
-                            <small class="stock-text">
+                            <small class="stock-text product-pos-stock">
                                 {% trans "Stock" %}: {{ p.current_stock }}
                             </small>
 
@@ -170,10 +165,66 @@ let invoices = {};
 
 let activeInvoiceId = null;
 
-// ===================== Create Invoice =====================
-function createInvoice(name = null){
+// ===================== Auto Save =====================
 
-    const id = invoiceCounter++;
+function saveInvoicesState(){
+
+    sessionStorage.setItem(
+        "pos_invoices",
+        JSON.stringify({
+            invoices: invoices,
+            activeInvoiceId: activeInvoiceId,
+            invoiceCounter: invoiceCounter
+        })
+    );
+
+}
+
+function loadInvoicesState(){
+
+    const data = sessionStorage.getItem("pos_invoices");
+
+    if(!data) return;
+
+    const state = JSON.parse(data);
+
+    invoices = {};
+    invoiceCounter = state.invoiceCounter || 1;
+
+    for(const id in state.invoices){
+
+        createInvoice(Number(id), "فاتورة");
+
+        invoices[id] = state.invoices[id];
+
+const select = document.querySelector(
+    `.invoice-content[data-id='${id}'] .customer-select`
+);
+
+if(select){
+    select.value = invoices[id].customer_id || "";
+}
+
+        renderInvoice(Number(id));
+    }
+
+    activeInvoiceId = state.activeInvoiceId;
+
+    if(activeInvoiceId){
+        setActiveInvoice(activeInvoiceId);
+    }
+
+}
+
+// ===================== Create Invoice =====================
+function createInvoice(id = null, name = null){
+
+    if(id === null){
+    id = invoiceCounter++;
+}else{
+    invoiceCounter = Math.max(invoiceCounter, Number(id) + 1);
+}
+
 
     invoices[id] = {
         items: {},
@@ -382,6 +433,9 @@ function createInvoice(name = null){
     content.querySelector(".customer-select").addEventListener("change", function(){
         invoices[id].customer_id = this.value || null;
     });
+if(invoices[id].customer_id){
+    content.querySelector(".customer-select").value = invoices[id].customer_id;
+}
 
     setActiveInvoice(id);
 }
@@ -426,6 +480,9 @@ function deleteInvoice(id){
     }else{
         activeInvoiceId = null;
     }
+
+    saveInvoicesState();
+
 }
 
 
@@ -659,11 +716,22 @@ document.querySelector(
     `.invoice-content[data-id='${id}'] .grand-total`
 ).value = total.toFixed(2);
 
-    document.querySelector(
-        `.invoice-content[data-id='${id}'] .total`
-    ).innerText = total.toFixed(2);
-}
+document.querySelector(
+    `.invoice-content[data-id='${id}'] .total`
+).innerText = total.toFixed(2);
 
+saveInvoicesState();
+
+}   // <-- هذا القوس ناقص عندك
+
+// ===================== Remove Item =====================
+function removeItem(invoiceId, pid){
+
+    delete invoices[invoiceId].items[pid];
+
+    renderInvoice(invoiceId);
+
+}
 
 // ===================== Change Qty =====================
 function changeQty(invoiceId, pid, delta){
@@ -845,29 +913,6 @@ document.getElementById("new-invoice-btn")
     createInvoice();
 });
 
-document.addEventListener("click", function(e){
-
-    const header = document.getElementById("discount-header");
-
-    const select = document.getElementById("discount-type");
-
-    if(!header || !select){
-
-        return;
-
-    }
-
-    if(header.contains(e.target)){
-
-        select.style.display = "block";
-
-        return;
-
-    }
-
-    select.style.display = "none";
-
-});
 
 
 // ===================== Open Payment Modal =====================
@@ -891,11 +936,15 @@ if(addPaymentBtn){
 
 // ===================== Start =====================
 
-console.log("BEFORE CREATE");
+console.log("BEFORE LOAD");
 
-createInvoice();
+loadInvoicesState();
 
-console.log("AFTER CREATE");
+if (Object.keys(invoices).length === 0) {
+    createInvoice();
+}
+
+console.log("AFTER LOAD");
 // عند فتح الصفحة لا تعرض كل المنتجات
 document.querySelectorAll(".product-card").forEach(card => {
 
@@ -968,6 +1017,22 @@ document.querySelectorAll(".product-card").forEach(card => {
 </div>
 
 <script>
+document.querySelectorAll(".product-preview").forEach(function(img){
+
+    img.addEventListener("click", function(e){
+
+        e.stopPropagation();
+
+        document.getElementById("previewImage").src =
+            this.dataset.image;
+
+        new bootstrap.Modal(
+            document.getElementById("imagePreviewModal")
+        ).show();
+
+    });
+
+});
 document.addEventListener("DOMContentLoaded", function() {
 
     const saveBtn = document.getElementById("save-payment-method");
@@ -1054,5 +1119,84 @@ fetch("{% url 'pos:add_payment_method' %}", {
 
 });
 </script>
+<style>
+.product-pos-card{
+    height:235px !important;
+    display:flex;
+    flex-direction:column;
+}
 
+.product-pos-image{
+    width:100%;
+    height:95px;
+    object-fit:contain;
+    border-radius:8px 8px 0 0;
+    background:#fff;
+}
+
+.product-pos-name{
+    min-height:54px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    font-size:13px;
+    line-height:1.3;
+    padding:4px 6px;
+    word-break:break-word;
+}
+
+.product-pos-price{
+    font-size:13px;
+    font-weight:bold;
+    margin-top:auto;
+}
+
+.product-pos-stock{
+    font-size:12px;
+    margin-bottom:6px;
+}
+</style>
+<div class="modal fade" id="imagePreviewModal" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+
+        <div class="modal-content">
+
+<div class="modal-header">
+
+    <button type="button"
+            class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center"
+            data-bs-dismiss="modal"
+            style="width:36px;
+                   height:36px;
+                   padding:0;
+                   font-size:20px;
+                   margin-right:auto;
+                   margin-left:0;">
+
+        ×
+
+    </button>
+
+    <h5 class="modal-title mx-auto">
+        {% trans "Product Image" %}
+    </h5>
+
+</div>
+            <div class="modal-body text-center">
+
+                <img id="previewImage"
+                     src=""
+                     style="max-width:100%;
+                            max-height:75vh;
+                            object-fit:contain;">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 {% endblock %}

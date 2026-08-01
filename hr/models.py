@@ -368,14 +368,40 @@ class Evaluation(models.Model):
     end_date = models.DateField(default=timezone.now)
     employee = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.SET_NULL)
     comment = models.TextField(blank=True)
-
+    notes = models.TextField(
+    blank=True,
+    verbose_name=_("Notes")
+    )
     class Meta:
         ordering = ["-start_date"]
 
+def __str__(self):
+    return f"{self.name} - {self.department} - {self.status}"
+
+
+class EvaluationAttachment(models.Model):
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="hr_evaluation_attachments"
+    )
+
+    evaluation = models.ForeignKey(
+        Evaluation,
+        on_delete=models.CASCADE,
+        related_name="attachments"
+    )
+
+    file = models.FileField(
+        upload_to="evaluation_attachments/"
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
     def __str__(self):
-        return f"{self.name} - {self.department} - {self.status}"
-
-
+        return self.file.name
 # ================= سجل الحضور =================
 class Attendance(models.Model):
     company = models.ForeignKey(
@@ -484,8 +510,16 @@ class EvaluationScore(models.Model):
         blank=True
     )
 
-    target = models.ForeignKey(EvaluationTarget, on_delete=models.CASCADE, related_name="scores")
-    criteria = models.ForeignKey(EvaluationCriteria, on_delete=models.CASCADE)
+    target = models.ForeignKey(
+        EvaluationTarget,
+        on_delete=models.CASCADE,
+        related_name="scores"
+    )
+
+    criteria = models.ForeignKey(
+        EvaluationCriteria,
+        on_delete=models.CASCADE
+    )
 
     evaluator = models.ForeignKey(
         Employee,
@@ -497,11 +531,27 @@ class EvaluationScore(models.Model):
 
     role = models.CharField(
         max_length=20,
-        choices=(("peer", _("Peer")), ("manager", _("Manager"))),
+        choices=(
+            ("peer", _("Peer")),
+            ("manager", _("Manager"))
+        ),
         default="peer"
     )
 
     value = models.FloatField(default=0)
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
+
+    attachment = models.FileField(
+        upload_to="evaluation_scores/",
+        blank=True,
+        null=True,
+        verbose_name=_("Attachment")
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -512,7 +562,6 @@ class EvaluationScore(models.Model):
                 name="hr_uniq_score_per_company"
             )
         ]
-
 
 class HRPermission(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="hr_permissions")

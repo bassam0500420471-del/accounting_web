@@ -25,32 +25,41 @@ def get_request_company(request):
 
 
 def generate_next_child_code(parent, company):
+
     siblings = Account.objects.filter(
         company=company,
         parent=parent
     ).exclude(code__isnull=True).exclude(code="")
 
-    numeric_codes = []
+    numbers = []
+
     for acc in siblings:
         code = str(acc.code).strip()
+
         if code.isdigit():
-            numeric_codes.append(int(code))
+            numbers.append(int(code))
 
-    parent_code = str(parent.code).strip() if parent.code else ""
+    parent_code = str(parent.code).strip()
 
-    if numeric_codes:
-        return str(max(numeric_codes) + 1)
+    # إذا يوجد حسابات فرعية سابقة
+    if numbers:
+        return str(max(numbers) + 1)
 
-    if parent.parent_id is None:
-        if parent_code.isdigit():
-            return str(int(parent_code) + 1)
-        return f"{parent_code}1"
-
+    # أول حساب فرعي
     if parent_code.isdigit():
-        return f"{parent_code}01"
+        base = int(parent_code) * 100
+        code = base + 1
+
+        # تأكد أنه غير موجود
+        while Account.objects.filter(
+            company=company,
+            code=str(code)
+        ).exists():
+            code += 1
+
+        return str(code)
 
     return f"{parent_code}1"
-
 
 # ======================================
 # 📘 عرض القيود اليومية
@@ -416,4 +425,135 @@ def add_child_account(request, pk):
             "parent": parent,
             "suggested_code": suggested_code
         }
+    )
+
+# ======================================
+# ✏️ تعديل حساب
+# ======================================
+def account_edit(request, pk):
+
+    company = get_request_company(request)
+
+    if not company:
+        messages.error(
+            request,
+            "❌ لا توجد شركة مرتبطة بحسابك"
+        )
+        return redirect("accounting:chart_tree")
+
+
+    account = get_object_or_404(
+        Account,
+        pk=pk,
+        company=company
+    )
+
+
+    if request.method == "POST":
+
+        name = request.POST.get("name", "").strip()
+        name_en = request.POST.get("name_en", "").strip()
+
+        if not name:
+            messages.error(
+                request,
+                "❌ اسم الحساب مطلوب"
+            )
+            return redirect(
+                "accounting:account_edit",
+                pk=account.pk
+            )
+
+
+        account.name = name
+        account.name_en = name_en
+
+        account.save()
+
+
+        messages.success(
+            request,
+            "✅ تم تعديل الحساب بنجاح"
+        )
+
+        return redirect(
+            "accounting:chart_tree"
+        )
+
+
+    return render(
+        request,
+        "accounting/accounts/edit.html",
+        {
+            "account": account
+        }
+    )
+
+
+
+# ======================================
+# 🗑️ حذف حساب
+# ======================================
+def account_delete(request, pk):
+
+    company = get_request_company(request)
+
+    if not company:
+        messages.error(
+            request,
+            "❌ لا توجد شركة مرتبطة بحسابك"
+        )
+        return redirect("accounting:chart_tree")
+
+
+    account = get_object_or_404(
+        Account,
+        pk=pk,
+        company=company
+    )
+
+
+    if request.method != "POST":
+        return redirect(
+            "accounting:chart_tree"
+        )
+
+
+    # منع حذف الحسابات التي لها أبناء
+    if account.children.exists():
+
+        messages.error(
+            request,
+            "❌ لا يمكن حذف حساب يحتوي على حسابات فرعية"
+        )
+
+        return redirect(
+            "accounting:chart_tree"
+        )
+
+
+    # منع حذف الحسابات المرتبطة بقيود
+    if account.journal_lines.exists():
+
+        messages.error(
+            request,
+            "❌ لا يمكن حذف حساب مرتبط بقيود محاسبية"
+        )
+
+        return redirect(
+            "accounting:chart_tree"
+        )
+
+
+    account.delete()
+
+
+    messages.success(
+        request,
+        "✅ تم حذف الحساب بنجاح"
+    )
+
+
+    return redirect(
+        "accounting:chart_tree"
     )

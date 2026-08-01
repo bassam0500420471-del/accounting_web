@@ -30,6 +30,14 @@ def products_list(request):
 # ================================
 def product_add(request):
 
+    print("========== PRODUCT DEBUG ==========")
+    print("USER:", request.user)
+    print("COMPANY:", getattr(request, "company", None))
+
+    if not getattr(request, "company", None):
+        messages.error(request, "لا يمكن إضافة منتج قبل ربط المستخدم بشركة.")
+        return redirect("/")
+
     if not getattr(request, "company", None):
         messages.error(request, "لا يمكن إضافة منتج قبل ربط المستخدم بشركة.")
         return redirect("/")

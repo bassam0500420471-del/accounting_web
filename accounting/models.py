@@ -6,9 +6,10 @@ from sales.models import SalesInvoice
 
 class JournalEntry(models.Model):
     company = models.ForeignKey('Company', on_delete=models.CASCADE)
+
     entry_no = models.IntegerField(
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
         editable=False,
         verbose_name="رقم القيد"
     )
@@ -39,15 +40,26 @@ class JournalEntry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = (('company', 'entry_no'),)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['company', 'entry_no'],
+                name='unique_company_entry_no'
+            )
+        ]
         ordering = ['-entry_no']
 
     def save(self, *args, **kwargs):
         if self.entry_no is None:
-            last_no = JournalEntry.objects.filter(company=self.company).aggregate(
-                m=Max("entry_no")
-            )["m"] or 0
+            last_no = (
+                JournalEntry.objects
+                .filter(company=self.company)
+                .aggregate(
+                    m=Max("entry_no")
+                )["m"] or 0
+            )
+
             self.entry_no = last_no + 1
+
         super().save(*args, **kwargs)
 
     @property

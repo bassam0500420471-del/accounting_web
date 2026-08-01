@@ -8,6 +8,7 @@ from .models import (
     Employee,
     Leave,
     Evaluation,
+    EvaluationAttachment,
     EvaluationCriteria,
     EvaluationTarget,
     EvaluationScore,
@@ -15,7 +16,6 @@ from .models import (
     Department,
     HRPermission,
 )
-
 
 # ==========================
 # نموذج الموظف
@@ -344,7 +344,21 @@ class LeaveForm(forms.ModelForm):
 # ==========================
 # نموذج التقييم
 # ==========================
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
 class EvaluationForm(forms.ModelForm):
+
+    attachments = forms.FileField(
+        label=_("Attachments"),
+        required=False,
+        widget=MultipleFileInput(attrs={
+            "class": "form-control",
+        })
+    )
+
     class Meta:
         model = Evaluation
         fields = [
@@ -356,22 +370,43 @@ class EvaluationForm(forms.ModelForm):
             "end_date",
             "employee",
             "comment",
+            "notes",
         ]
+
         widgets = {
             "name": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": _("Evaluation name")
             }),
-            "evaluation_type": forms.Select(attrs={"class": "form-control"}),
-            "department": forms.Select(attrs={"class": "form-control"}),
-            "status": forms.Select(attrs={"class": "form-control"}),
-            "start_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "end_date": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "employee": forms.Select(attrs={"class": "form-control"}),
+            "evaluation_type": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "department": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "status": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "start_date": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date"
+            }),
+            "end_date": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date"
+            }),
+            "employee": forms.Select(attrs={
+                "class": "form-control"
+            }),
             "comment": forms.Textarea(attrs={
                 "class": "form-control",
                 "rows": 3,
-                "placeholder": _("Notes")
+                "placeholder": _("Comment")
+            }),
+            "notes": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 4,
+                "placeholder": _("Additional Notes")
             }),
         }
 
@@ -379,7 +414,79 @@ class EvaluationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["start_date"].initial = timezone.now().date()
         self.fields["end_date"].initial = timezone.now().date()
+# ==========================
+# نموذج التقييم
+# ==========================
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class EvaluationForm(forms.ModelForm):
+
+    attachments = forms.FileField(
+        label=_("Attachments"),
+        required=False,
+        widget=MultipleFileInput(attrs={
+            "class": "form-control",
+        })
+    )
+
+    class Meta:
+        model = Evaluation
+        fields = [
+            "name",
+            "evaluation_type",
+            "department",
+            "status",
+            "start_date",
+            "end_date",
+            "employee",
+            "comment",
+            "notes",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": _("Evaluation name")
+            }),
+            "evaluation_type": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "department": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "status": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "start_date": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date"
+            }),
+            "end_date": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date"
+            }),
+            "employee": forms.Select(attrs={
+                "class": "form-control"
+            }),
+            "comment": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 3,
+                "placeholder": _("Comment")
+            }),
+            "notes": forms.Textarea(attrs={
+                "class": "form-control",
+                "rows": 4,
+                "placeholder": _("Additional Notes")
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["start_date"].initial = timezone.now().date()
+        self.fields["end_date"].initial = timezone.now().date()
 
 # ==========================
 # نموذج معايير التقييم

@@ -1,0 +1,87 @@
+{% extends "ecommerce/base_store.html" %}
+
+
+{% block title %}
+
+التحويل البنكي
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container py-5">
+
+
+<div class="card shadow p-4">
+
+
+<h3 class="mb-4">
+🏦 التحويل البنكي
+</h3>
+
+
+<p>
+يرجى تحويل مبلغ الطلب إلى الحساب التالي:
+</p>
+
+
+<hr>
+
+
+<p>
+🏦 البنك:
+<strong>
+{{ payment_method.bank_name }}
+</strong>
+</p>
+
+
+<p>
+👤 اسم الحساب:
+<strong>
+{{ payment_method.account_name }}
+</strong>
+</p>
+
+
+<p>
+💳 IBAN:
+<strong>
+{{ payment_method.iban }}
+</strong>
+</p>
+
+
+<p>
+🔢 رقم الحساب:
+<strong>
+{{ payment_method.account_number }}
+</strong>
+</p>
+
+
+
+<form method="post">
+
+{% csrf_token %}
+
+<button 
+type="submit"
+class="btn btn-success mt-3 w-100">
+
+✅ تم التحويل - إرسال الإثبات
+
+</button>
+
+</form>
+
+</div>
+
+
+</div>
+
+
+{% endblock %}

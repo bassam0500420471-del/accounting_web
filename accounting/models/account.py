@@ -87,11 +87,6 @@ class Account(models.Model):
         verbose_name='طريقة دفع'
     )
 
-    tags = models.JSONField(
-        default=list,
-        blank=True,
-        verbose_name='وسوم'
-    )
 
     tags = models.JSONField(
         default=list,

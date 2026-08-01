@@ -7,10 +7,10 @@
 
             <!-- Logo -->
 
-            <div class="col-lg-3 col-md-4 col-8">
+            <div class="col-lg-3 col-md-4 col-12">
 
                 <a href="{% url 'ecommerce:home' store.slug %}"
-                   class="store-logo d-flex align-items-center">
+                   class="store-logo">
 
 
                     {% if store.logo %}
@@ -36,9 +36,10 @@
 
 
 
+
             <!-- Search -->
 
-            <div class="col-lg-5 col-md-8 d-none d-md-block">
+            <div class="col-lg-5 col-md-4 col-12">
 
                 {% include "ecommerce/includes/search.html" %}
 
@@ -46,33 +47,13 @@
 
 
 
+
             <!-- Actions -->
 
-            <div class="col-lg-4 col-4">
+            <div class="col-lg-4 col-md-4 col-12">
 
 
                 <div class="store-actions">
-
-
-                    <!-- Wishlist -->
-
-                    <a href="{% url 'ecommerce:wishlist' store.slug %}"
-                       class="action-item"
-                       title="المفضلة">
-
-
-                        <i class="bi bi-heart"></i>
-
-
-                        <span class="action-count">
-
-                            {{ wishlist_count|default:"0" }}
-
-                        </span>
-
-
-                    </a>
-
 
 
                     <!-- Cart -->
@@ -96,14 +77,36 @@
 
 
 
-                    <!-- Account -->
 
+<!-- Wishlist -->
+
+<a href="{% url 'ecommerce:wishlist' store.slug %}"
+   class="action-item"
+   title="المفضلة">
+
+
+    <i class="bi bi-heart"></i>
+
+
+    <span id="wishlistCount" class="action-count">
+
+        {{ wishlist_count|default:"0" }}
+
+    </span>
+
+
+</a>
+
+
+
+                    <!-- Account -->
 
                     {% if user.is_authenticated %}
 
 
                         <a href="{% url 'ecommerce:account' store.slug %}"
-                           class="action-item">
+                           class="action-item"
+                           title="حسابي">
 
 
                             <i class="bi bi-person-circle"></i>
@@ -116,7 +119,8 @@
 
 
                         <a href="{% url 'login' %}"
-                           class="action-item">
+                           class="action-item"
+                           title="تسجيل الدخول">
 
 
                             <i class="bi bi-box-arrow-in-right"></i>

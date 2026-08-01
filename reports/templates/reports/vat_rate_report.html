@@ -117,6 +117,37 @@
 </table>
 </div>
 
+<!-- ===================== صافي ضريبة الفترة الحالية ===================== -->
+<div class="card mb-4">
+
+<div class="card-header bg-dark text-white fw-bold">
+    صافي الضريبة
+</div>
+
+<table class="table table-bordered text-center mb-0">
+<thead class="table-light">
+<tr>
+    <th>البيان</th>
+    <th>القيمة</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+    <td class="fw-bold">
+        صافي ضريبة الفترة الحالية
+    </td>
+
+    <td class="fw-bold">
+        {{ vat_period|intcomma }}
+    </td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
 {% endif %}
 
 </div>

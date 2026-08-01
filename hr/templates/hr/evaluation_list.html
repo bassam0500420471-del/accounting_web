@@ -6,120 +6,300 @@
 {% block content %}
 <div class="container-fluid mt-4">
 
-    <!-- العنوان + زر الإضافة -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">📋 {% trans "Evaluations Management" %}</h3>
+
+        <h3 class="fw-bold">
+            📋 {% trans "Evaluations Management" %}
+        </h3>
 
         <a href="{% url 'hr:add_evaluation' %}" class="btn btn-secondary">
             ➕ {% trans "Add Evaluation" %}
         </a>
+
     </div>
 
-    <!-- جدول التقييمات -->
+
     <div class="card shadow-sm">
+
         <div class="card-body p-0">
 
+
             <table class="table table-bordered table-hover mb-0 text-center align-middle small">
+
+
                 <thead class="table-dark">
+
                     <tr>
-                        <th style="width: 5%;">#</th>
-                        <th style="width: 22%;">{% trans "Evaluation Name" %}</th>
-                        <th style="width: 12%;">{% trans "Type" %}</th>
-                        <th style="width: 26%;">{% trans "Period" %}</th>
-                        <th style="width: 10%;">{% trans "Department" %}</th>
-                        <th style="width: 10%;">{% trans "Employees Count" %}</th>
-                        <th style="width: 8%;">{% trans "Status" %}</th>
-                        <th style="width: 7%;">{% trans "Actions" %}</th>
+
+                        <th style="width:5%;">#</th>
+
+                        <th style="width:20%;">
+                            {% trans "Evaluation Name" %}
+                        </th>
+
+                        <th style="width:12%;">
+                            {% trans "Type" %}
+                        </th>
+
+                        <th style="width:18%;">
+                            {% trans "Period" %}
+                        </th>
+
+                        <th style="width:12%;">
+                            {% trans "Department" %}
+                        </th>
+
+                        <th style="width:8%;">
+                            {% trans "Employees" %}
+                        </th>
+
+                        <th style="width:10%;">
+                            {% trans "Status" %}
+                        </th>
+
+                        <th style="width:15%;">
+                            {% trans "Actions" %}
+                        </th>
+
                     </tr>
+
                 </thead>
 
+
                 <tbody>
-                    {% for evaluation in evaluations %}
+
+
+                {% for evaluation in evaluations %}
+
+
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
 
                         <td class="text-start">
-                            <strong>{{ evaluation.name }}</strong>
+
+                            <strong>
+                                {{ evaluation.name }}
+                            </strong>
+
                         </td>
 
-                        <td>{{ evaluation.evaluation_type }}</td>
 
                         <td>
+                            {{ evaluation.evaluation_type }}
+                        </td>
+
+
+                        <td>
+
                             <div class="small text-muted">
-                                {% trans "From" %} {{ evaluation.start_date|date:"d M Y" }}
+
+                                {% trans "From" %}
+                                {{ evaluation.start_date|date:"d M Y" }}
+
                             </div>
+
+
                             <div class="fw-bold">
-                                {% trans "To" %} {{ evaluation.end_date|date:"d M Y" }}
+
+                                {% trans "To" %}
+                                {{ evaluation.end_date|date:"d M Y" }}
+
                             </div>
+
                         </td>
 
+
                         <td>
+
                             {{ evaluation.department|default:"—" }}
+
                         </td>
 
+
                         <td>
+
                             {{ evaluation.targets_count }}
+
                         </td>
 
+
+
                         <td>
-                            {% if evaluation.status == 'draft' %}
-                                <span class="badge bg-secondary">{% trans "Draft" %}</span>
-                            {% elif evaluation.status == 'active' %}
-                                <span class="badge bg-success">{% trans "Active" %}</span>
-                            {% elif evaluation.status == 'closed' %}
-                                <span class="badge bg-danger">{% trans "Closed" %}</span>
+
+
+                            {% if evaluation.status == "draft" %}
+
+                                <span class="badge bg-secondary">
+
+                                    {% trans "Draft" %}
+
+                                </span>
+
+
+                            {% elif evaluation.status == "active" %}
+
+                                <span class="badge bg-success">
+
+                                    {% trans "Active" %}
+
+                                </span>
+
+
+                            {% elif evaluation.status == "closed" %}
+
+                                <span class="badge bg-danger">
+
+                                    {% trans "Closed" %}
+
+                                </span>
+
+
                             {% endif %}
+
+
                         </td>
 
+
+
                         <td>
+
+
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-secondary dropdown-toggle"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+
+
+                                <button
+                                    class="btn btn-sm btn-secondary dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown">
+
+
                                     {% trans "Options" %}
+
+
                                 </button>
+
+
+
                                 <ul class="dropdown-menu">
+
+
+
                                     <li>
+
+
                                         <a class="dropdown-item"
                                            href="{% url 'hr:evaluation_detail' evaluation.id %}">
-                                            {% trans "View" %}
+
+                                            👁 {% trans "View" %}
+
                                         </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'hr:evaluation_edit' evaluation.id %}">
-                                            {% trans "Edit" %}
-                                        </a>
+
+
                                     </li>
 
-                                    {% if evaluation.status != 'closed' %}
-                                    <li><hr class="dropdown-divider"></li>
+
+
                                     <li>
+
+
+                                        <a class="dropdown-item"
+                                           href="{% url 'hr:evaluation_edit' evaluation.id %}">
+
+                                            ✏️ {% trans "Edit" %}
+
+                                        </a>
+
+
+                                    </li>
+
+
+
+                                    {% if evaluation.status != "closed" %}
+
+
+                                    <li>
+
+                                        <hr class="dropdown-divider">
+
+                                    </li>
+
+
+                                    <li>
+
+
                                         <a class="dropdown-item text-danger"
                                            href="{% url 'hr:evaluation_close' evaluation.id %}"
                                            onclick="return confirm('{% trans "Are you sure you want to close the evaluation?" %}');">
-                                            {% trans "Close" %}
+
+
+                                            🔒 {% trans "Close" %}
+
+
                                         </a>
+
+
                                     </li>
+
+
                                     {% endif %}
+
+
+
                                 </ul>
+
+
                             </div>
+
+
                         </td>
+
+
+
                     </tr>
-                    {% empty %}
+
+
+                {% empty %}
+
+
                     <tr>
-                        <td colspan="8" class="text-muted py-4">
+
+
+                        <td colspan="8" class="text-center text-muted py-4">
+
+
                             {% trans "No evaluations available" %}
+
+
                         </td>
+
+
                     </tr>
-                    {% endfor %}
+
+
+                {% endfor %}
+
+
+
                 </tbody>
+
+
 
             </table>
 
+
+
         </div>
+
+
     </div>
 
+
 </div>
+
+
 {% endblock %}

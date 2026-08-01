@@ -241,82 +241,7 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
             "use_user_account",
         ]
     )
-
     return user, created_user, False
-
-    # ==========================
-    # لو لا يوجد user مرتبط، نبحث باسم المستخدم
-    # ==========================
-    existing_by_username = User.objects.filter(username__iexact=username).first()
-    if existing_by_username:
-        linked_emp = getattr(existing_by_username, "employee", None)
-        if linked_emp and linked_emp.id != employee.id:
-            raise ValueError("❌ اسم المستخدم هذا مربوط بموظف آخر.")
-
-        existing_by_username.email = email
-        existing_by_username.first_name = employee.first_name_en or employee.first_name_ar or ""
-        existing_by_username.last_name = employee.last_name_en or employee.last_name_ar or ""
-        existing_by_username.is_active = True
-
-        if password:
-            existing_by_username.set_password(password)
-
-        existing_by_username.save()
-
-
-        employee.user = existing_by_username
-        employee.use_user_account = True
-        employee.save(update_fields=["user", "use_user_account"])
-
-        return existing_by_username, False, False
-
-    else:
-        # ==========================
-        # إنشاء مستخدم جديد
-        # ==========================
-        if User.objects.filter(username__iexact=username).exists():
-            raise ValueError(
-                "❌ اسم المستخدم مستخدم بالفعل."
-            )
-
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=employee.first_name_en or employee.first_name_ar or "",
-            last_name=employee.last_name_en or employee.last_name_ar or ""
-        )
-
-        # ==========================
-        # ربط المستخدم بالشركة والفرع
-        # ==========================
-    print("========== PROFILE LINK ==========")
-    print("EMPLOYEE COMPANY:", employee.company)
-    print("USER:", user.username)
-
-    profile = user.profile
-    profile.company = employee.company
-    profile.branch = employee.branch
-    profile.role = "staff"
-    profile.save()
-
-    print("PROFILE COMPANY AFTER SAVE:", profile.company)
-    print("PROFILE BRANCH AFTER SAVE:", profile.branch)
-
-    print("PROFILE COMPANY AFTER SAVE:", user.profile.company)
-
-    employee.user = user
-    employee.use_user_account = True
-    employee.save(
-        update_fields=[
-            "user",
-            "use_user_account",
-        ]
-    )
-
-    return user, created_user, False
-	
-# ==========================
 # ==========================
 # عرض قائمة الموظفين
 # ==========================
@@ -581,11 +506,28 @@ def delete_shift(request, shift_id):
     shift.delete()
     return redirect("hr:shifts")
 
-from django.shortcuts import render
-
+@login_required
+@hr_permission_required("attendance_view")
 def shifts_view(request):
-    shifts = Shift.objects.all()
-    return render(request, "hr/shifts_list.html", {"shifts": shifts})
+    company = _company_required(request)
+    if not company:
+        return redirect("accounts:login")
+
+    _ensure_default_shifts(company)
+
+    shifts = (
+        Shift.objects
+        .filter(company=company)
+        .order_by("shift_order", "id")
+    )
+
+    return render(
+        request,
+        "hr/shifts_list.html",
+        {
+            "shifts": shifts
+        }
+    )
 # ==========================
 # جدول الموظفين
 # ==========================
@@ -1431,9 +1373,13 @@ def evaluation_fill_peer(request, eval_id, target_id):
     criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
 
     if request.method == "POST":
+        notes = (request.POST.get("notes") or "").strip()
+        attachment = request.FILES.get("attachment")
+
         for c in criteria:
             key = f"score_{c.id}"
             v_raw = (request.POST.get(key) or "").strip()
+
             try:
                 v = float(v_raw) if v_raw != "" else 0
             except ValueError:
@@ -1444,8 +1390,12 @@ def evaluation_fill_peer(request, eval_id, target_id):
                 target=target,
                 criteria=c,
                 evaluator=evaluator_emp,
-                role="peer",
-                defaults={"value": v}
+                role="manager",
+                defaults={
+                    "value": v,
+                    "notes": notes,
+                    "attachment": attachment,
+                }
             )
 
         messages.success(request, "✅ تم حفظ تقييم الزميل بنجاح.")
@@ -1513,10 +1463,16 @@ def evaluation_fill_manager(request, eval_id, target_id):
 
     criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
 
+
     if request.method == "POST":
+
+        notes = (request.POST.get("notes") or "").strip()
+        attachment = request.FILES.get("attachment")
+
         for c in criteria:
             key = f"score_{c.id}"
             v_raw = (request.POST.get(key) or "").strip()
+
             try:
                 v = float(v_raw) if v_raw != "" else 0
             except ValueError:
@@ -1527,11 +1483,15 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 target=target,
                 criteria=c,
                 evaluator=evaluator_emp,
-                role="manager",
-                defaults={"value": v}
+                role="peer",
+                defaults={
+                    "value": v,
+                    "notes": notes,
+                    "attachment": attachment,
+                }
             )
 
-        messages.success(request, "✅ تم حفظ تقييم المدير بنجاح.")
+        messages.success(request, "✅ تم حفظ تقييم الزميل بنجاح.")
         return redirect("hr:evaluation_records_list")
 
     existing_scores = {
@@ -1953,146 +1913,92 @@ def _sync_user_django_permissions_from_hrpermission(user, permission_obj):
 
     permission_map = {
         # الموظفون
-        "view_employees": [
-            "hr.view_employee",
-        ],
-        "add_employees": [
-            "hr.add_employee",
-        ],
-        "edit_employees": [
-            "hr.change_employee",
-        ],
-        "delete_employees": [
-            "hr.delete_employee",
-        ],
+        "view_employees": ["hr.view_employee"],
+        "add_employees": ["hr.add_employee"],
+        "edit_employees": ["hr.change_employee"],
+        "delete_employees": ["hr.delete_employee"],
 
         # الأقسام
-        "view_departments": [
-            "hr.view_department",
-        ],
-        "add_departments": [
-            "hr.add_department",
-        ],
-        "edit_departments": [
-            "hr.change_department",
-        ],
-        "delete_departments": [
-            "hr.delete_department",
-        ],
+        "view_departments": ["hr.view_department"],
+        "add_departments": ["hr.add_department"],
+        "edit_departments": ["hr.change_department"],
+        "delete_departments": ["hr.delete_department"],
 
         # الحضور
-        "view_attendance": [
-            "hr.view_attendance",
-        ],
-        "add_attendance": [
-            "hr.change_attendance",
-        ],
-        "edit_attendance": [
-            "hr.change_attendance",
-        ],
-        "approve_attendance": [
-            "hr.change_attendance",
-        ],
+        "view_attendance": ["hr.view_attendance"],
+        "add_attendance": ["hr.change_attendance"],
+        "edit_attendance": ["hr.change_attendance"],
+        "approve_attendance": ["hr.change_attendance"],
 
         # الإجازات
-        "view_leaves": [
-            "hr.view_leave",
-        ],
-        "add_leaves": [
-            "hr.add_leave",
-        ],
-        "approve_leaves": [
-            "hr.change_leave",
-        ],
-        "reject_leaves": [
-            "hr.change_leave",
-        ],
+        "view_leaves": ["hr.view_leave"],
+        "add_leaves": ["hr.add_leave"],
+        "approve_leaves": ["hr.change_leave"],
+        "reject_leaves": ["hr.change_leave"],
 
         # التقييمات
-        "view_evaluations": [
-            "hr.view_evaluation",
-        ],
-        "add_evaluations": [
-            "hr.add_evaluation",
-        ],
-        "edit_evaluations": [
-            "hr.change_evaluation",
-        ],
-        "delete_evaluations": [
-            "hr.delete_evaluation",
-        ],
-        "peer_evaluation": [
-            "hr.change_evaluation",
-        ],
-        "manager_evaluation": [
-            "hr.change_evaluation",
-        ],
-        "approve_evaluation_results": [
-            "hr.change_evaluation",
-        ],
-        "view_evaluation_reports": [
-            "hr.view_evaluation",
-        ],
+        "view_evaluations": ["hr.view_evaluation"],
+        "add_evaluations": ["hr.add_evaluation"],
+        "edit_evaluations": ["hr.change_evaluation"],
+        "delete_evaluations": ["hr.delete_evaluation"],
+        "peer_evaluation": ["hr.change_evaluation"],
+        "manager_evaluation": ["hr.change_evaluation"],
+        "approve_evaluation_results": ["hr.change_evaluation"],
+        "view_evaluation_reports": ["hr.view_evaluation"],
 
         # الرواتب
-        "view_payroll": [
-            "hr.view_payroll",
-        ],
-        "add_payroll": [
-            "hr.add_payroll",
-        ],
+        "view_payroll": ["hr.view_payroll"],
+        "add_payroll": ["hr.add_payroll"],
 
-        # الشفتات والجدول
-        "view_shifts": [
-            "hr.view_shift",
-        ],
-        "add_shifts": [
-            "hr.add_shift",
-        ],
-        "edit_shifts": [
-            "hr.change_shift",
-        ],
-        "delete_shifts": [
-            "hr.delete_shift",
-        ],
-        "view_schedule": [
-            "hr.view_employeeschedule",
-        ],
-        "edit_schedule": [
-            "hr.add_employeeschedule",
-        ],
+        # الشفتات
+        "view_shifts": ["hr.view_shift"],
+        "add_shifts": ["hr.add_shift"],
+        "edit_shifts": ["hr.change_shift"],
+        "delete_shifts": ["hr.delete_shift"],
+
+        # الجداول
+        "view_schedule": ["hr.view_employeeschedule"],
+        "edit_schedule": ["hr.add_employeeschedule"],
     }
 
     all_permission_codes = set()
+
     for codes in permission_map.values():
         all_permission_codes.update(codes)
 
     permissions_to_clear = Permission.objects.filter(
         content_type__app_label__in=["hr", "auth"],
-        codename__in=[code.split(".")[1] for code in all_permission_codes]
+        codename__in=[c.split(".")[1] for c in all_permission_codes]
     )
+
     user.user_permissions.remove(*permissions_to_clear)
 
     permissions_to_add = []
-    for form_field, perm_codes in permission_map.items():
-        if getattr(permission_obj, form_field, False):
+
+    for field_name, perm_codes in permission_map.items():
+        if getattr(permission_obj, field_name, False):
             for perm_code in perm_codes:
                 app_label, codename = perm_code.split(".")
+
                 perm = Permission.objects.filter(
                     content_type__app_label=app_label,
                     codename=codename
                 ).first()
+
                 if perm:
                     permissions_to_add.append(perm)
 
     if permissions_to_add:
         user.user_permissions.add(*permissions_to_add)
+
+
 @login_required
 @hr_permission_required("view_user")
 def hr_permissions_users(request):
     company = _company_required(request)
     if not company:
         return redirect("accounts:login")
+
     users = (
         User.objects
         .filter(employee__company=company)
@@ -2100,27 +2006,14 @@ def hr_permissions_users(request):
         .order_by("username")
     )
 
-    return render(request, "hr/hr_permissions_users.html", {
-        "users": users,
-    })
-
-
-@login_required
-@hr_permission_required("change_user")
-def hr_permissions_page(request, user_id):
-    company = _company_required(request)
-    if not company:
-        return redirect("accounts:login")
-    selected_user = get_object_or_404(
-        User.objects.select_related("employee"),
-        id=user_id,
-        employee__company=company
+    return render(
+        request,
+        "hr/hr_permissions_users.html",
+        {
+            "users": users,
+        },
     )
 
-    permission_obj, created = HRPermission.objects.get_or_create(
-        company=company,
-        user=selected_user
-    )
 
 @login_required
 @hr_permission_required("change_user")
@@ -2132,16 +2025,19 @@ def hr_permissions_page(request, user_id):
     selected_user = get_object_or_404(
         User.objects.select_related("employee"),
         id=user_id,
-        employee__company=company
+        employee__company=company,
     )
 
     permission_obj, created = HRPermission.objects.get_or_create(
         company=company,
-        user=selected_user
+        user=selected_user,
     )
 
     if request.method == "POST":
-        form = HRPermissionForm(request.POST, instance=permission_obj)
+        form = HRPermissionForm(
+            request.POST,
+            instance=permission_obj,
+        )
 
         if form.is_valid():
             obj = form.save(commit=False)
@@ -2149,28 +2045,36 @@ def hr_permissions_page(request, user_id):
             obj.user = selected_user
             obj.save()
 
-            _sync_user_django_permissions_from_hrpermission(selected_user, obj)
+            _sync_user_django_permissions_from_hrpermission(
+                selected_user,
+                obj,
+            )
 
-            messages.success(request, "✅ تم الحفظ بنجاح")
+            messages.success(
+                request,
+                "✅ تم حفظ الصلاحيات بنجاح."
+            )
+
             return redirect("hr:hr_permissions_users")
 
     else:
         form = HRPermissionForm(instance=permission_obj)
 
-    return render(request, "hr/hr_permissions.html", {
-        "form": form,
-        "selected_user": selected_user,
-        "permission_obj": permission_obj,
-    })
+    return render(
+        request,
+        "hr/hr_permissions.html",
+        {
+            "form": form,
+            "selected_user": selected_user,
+            "permission_obj": permission_obj,
+        },
+    )
+
 @login_required
 def manage_user_permissions(request, employee_id):
     # جلب الشركة الحالية الخاصة بالمستخدم
     # إذا كانت الدالة _get_company موجودة في نفس ملف views.py هذا، استدعها مباشرة بدون self
-    try:
-        company = request.user.employee.company  # أو الطريقة التي تستخدمها دائماً لربط اليوزر بالشركة
-    except AttributeError:
-        company = None
-        
+    company = _get_company(request)        
     if not company:
         messages.error(request, "❌ لم يتم تحديد الشركة لهذا المستخدم.")
         return redirect('home')

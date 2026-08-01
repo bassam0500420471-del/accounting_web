@@ -29,31 +29,45 @@
         color: white !important;
     }
 
-    .product-cell {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        height: 60px;
+    .product-image-cell {
+        width: 80px;
+        min-width: 80px;
+        text-align: center;
+        vertical-align: middle;
     }
 
     .product-image-wrapper {
         position: relative;
         display: inline-block;
-        width: 50px;
-        height: 50px;
-        flex-shrink: 0;
+        width: 60px;
+        height: 60px;
     }
 
     .product-thumb {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         object-fit: cover;
-        border-radius: 4px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        background: #fff;
         cursor: pointer;
-        transition: transform 0.2s ease;
     }
 
+.product-name {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: 600;
+}
+
+.product-name div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+    text-align: center;
+    line-height: 1.4;
+    word-break: break-word;
+}
     .product-hover-popup {
         display: none;
         position: absolute;
@@ -144,28 +158,50 @@
         <table class="table table-hover text-center align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>{% trans "Product" %}</th>
+                    <th width="80">{% trans "Image" %}</th>
+                    <th>{% trans "Product Name" %}</th>
                     <th>{% trans "Price" %}</th>
                     <th>{% trans "Available Quantity" %}</th>
                     <th>{% trans "Type" %}</th>
                     <th>{% trans "Status" %}</th>
-                    <th>{% trans "Actions" %}</th>
+                    <th width="120">{% trans "Actions" %}</th>
                 </tr>
+
             </thead>
 
             <tbody>
                 {% for p in products %}
                 <tr>
-                    <td class="text-center product-cell">
+                    <td class="product-image-cell">
+
                         {% if p.image %}
-                        <div class="product-image-wrapper">
-                            <img src="{{ p.image.url }}" alt="{{ p.name }}" class="product-thumb">
-                            <div class="product-hover-popup">
-                                <img src="{{ p.image.url }}" alt="{{ p.name }}">
+
+                            <div class="product-image-wrapper">
+
+                                <img src="{{ p.image.url }}"
+                                     alt="{{ p.name }}"
+                                     class="product-thumb">
+
+                                <div class="product-hover-popup">
+                                    <img src="{{ p.image.url }}"
+                                         alt="{{ p.name }}">
+                                </div>
+
                             </div>
-                        </div>
+
+                        {% else %}
+
+                            <img src="{% static 'images/no-image.png' %}"
+                                 class="product-thumb"
+                                 alt="No Image">
+
                         {% endif %}
-                        <span>{{ p.name }}</span>
+
+                    </td>
+
+                    <td class="product-name">
+
+                        <div>{{ p.name }}</div>
                     </td>
 
                     <td class="price-cell">{{ p.sale_price }} {% trans "SAR" %}</td>
@@ -207,7 +243,7 @@
 
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-muted">{% trans "No products found" %}</td>
+                    <td colspan="7" class="text-muted">{% trans "No products found" %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

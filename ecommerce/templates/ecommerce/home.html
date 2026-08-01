@@ -1,4 +1,4 @@
-{% extends "ecommerce/base.html" %}
+{% extends "ecommerce/base_store.html" %}
 {% load static %}
 
 {% block title %}
@@ -63,17 +63,14 @@
                 {% if store.banner %}
 
                     <img src="{{ store.banner.url }}"
-                         alt="{{ store.name }}">
+                         alt="{{ store.name }}"
+                         class="hero-banner-image">
 
                 {% elif store.company.logo %}
 
                     <img src="{{ store.company.logo.url }}"
-                         alt="{{ store.company.name }}">
-
-                {% else %}
-
-                    <img src="{% static 'ecommerce/images/banner.png' %}"
-                         alt="Banner">
+                         alt="{{ store.name }}"
+                         class="hero-banner-image">
 
                 {% endif %}
 
@@ -87,62 +84,51 @@
 
 
 
+
 <!-- ===========================
-        CATEGORIES
+        OFFERS PRODUCTS
 =========================== -->
 
-<section id="categories"
-         class="categories-home">
+<section class="products-section" id="offers">
 
     <div class="container">
 
         <div class="section-title">
 
             <h2>
-
-                🛍 تصفح حسب التصنيف
-
+                🔥 العروض
             </h2>
 
-            <a href="#">
-
+            <a href="{% url 'ecommerce:products' store.slug %}">
                 عرض الكل
-
             </a>
 
         </div>
 
-        <div class="categories-grid">
 
-            {% for category in store_categories %}
+        <div class="products-slider">
 
-            <a class="category-card"
+            <div class="products-wrapper">
 
-               href="{% url 'ecommerce:category' store.slug category.slug %}">
+                {% for product in offer_products %}
 
-                <div class="category-icon">
+                    {% include "ecommerce/includes/product_card.html" with product=product %}
 
-                    <i class="bi bi-grid"></i>
+                {% empty %}
 
-                </div>
+                    <p>
+                        لا توجد عروض حالياً.
+                    </p>
 
-                <span>
+                {% endfor %}
 
-                    {{ category.name }}
-
-                </span>
-
-            </a>
-
-            {% endfor %}
+            </div>
 
         </div>
 
     </div>
 
 </section>
-
-
 
 <!-- ===========================
         FEATURED PRODUCTS
@@ -153,31 +139,34 @@
 
     <div class="container">
 
-        <div class="section-title">
+<div class="section-title">
 
-            <h2>
+    <h2>
 
-                🔥 منتجات مميزة
+        🔥 منتجات مميزة
 
-            </h2>
+    </h2>
 
-            <a href="#">
+<button class="view-all toggle-products"
+        data-target="featuredProducts">
 
-                عرض الكل
+    عرض الكل
 
-            </a>
+</button>
 
-        </div>
+</div>
 
         <div class="products-slider">
 
-            <button class="slider-arrow slider-prev">
+<button class="slider-arrow slider-prev"
+        data-target="featuredProducts">
 
-                <i class="bi bi-chevron-right"></i>
+    <i class="bi bi-chevron-right"></i>
 
-            </button>
+</button>
 
-            <div class="products-wrapper">
+<div class="products-wrapper collapsed-products"
+     id="featuredProducts">
 
                 {% for product in featured_products %}
 
@@ -195,11 +184,12 @@
 
             </div>
 
-            <button class="slider-arrow slider-next">
+<button class="slider-arrow slider-next"
+        data-target="featuredProducts">
 
-                <i class="bi bi-chevron-left"></i>
+    <i class="bi bi-chevron-left"></i>
 
-            </button>
+</button>
 
         </div>
 
@@ -210,25 +200,38 @@
         LATEST PRODUCTS
 =========================== -->
 
-<section class="products-section">
+<section class="products-section" id="new-products">
 
     <div class="container">
 
-        <div class="section-title">
+<div class="section-title">
 
-            <h2>🆕 وصل حديثًا</h2>
+    <h2>
 
-            <a href="#">عرض الكل</a>
+        🆕 وصل حديثًا
 
-        </div>
+    </h2>
+
+<button class="view-all toggle-products"
+        data-target="latestProducts">
+
+    عرض الكل
+
+</button>
+
+</div>
 
         <div class="products-slider">
 
-            <button class="slider-arrow slider-prev">
-                <i class="bi bi-chevron-right"></i>
-            </button>
+<button class="slider-arrow slider-prev"
+        data-target="latestProducts">
 
-            <div class="products-wrapper">
+    <i class="bi bi-chevron-right"></i>
+
+</button>
+
+<div class="products-wrapper collapsed-products"
+     id="latestProducts">
 
                 {% for product in latest_products %}
 
@@ -242,8 +245,75 @@
 
             </div>
 
+<button class="slider-arrow slider-next"
+        data-target="latestProducts">
+
+    <i class="bi bi-chevron-left"></i>
+
+</button>
+
+        </div>
+
+    </div>
+
+</section>
+{% for category in category_sections %}
+
+<section 
+    class="products-section"
+    {% if forloop.first %}id="categories"{% endif %}
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>
+
+                📦 {{ category.name }}
+
+            </h2>
+<p style="color:red">
+عدد المنتجات: {{ category.products|length }}
+</p>
+<button class="view-all toggle-products"
+        data-target="category-{{ category.id }}">
+
+    عرض الكل
+
+</button>
+
+        </div>
+
+        <div class="products-slider">
+
+            <button class="slider-arrow slider-prev">
+
+                <i class="bi bi-chevron-right"></i>
+
+            </button>
+
+<div class="products-wrapper collapsed-products"
+     id="category-{{ category.id }}">
+
+{% for product in category.products %}
+
+    {% include "ecommerce/includes/product_card.html" with product=product %}
+
+{% empty %}
+
+    <p>
+        لا توجد منتجات.
+    </p>
+
+{% endfor %}
+
+</div>
+
             <button class="slider-arrow slider-next">
+
                 <i class="bi bi-chevron-left"></i>
+
             </button>
 
         </div>
@@ -251,4 +321,7 @@
     </div>
 
 </section>
+
+{% endfor %}
+
 {% endblock %}

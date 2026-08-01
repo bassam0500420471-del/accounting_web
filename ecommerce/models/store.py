@@ -58,10 +58,84 @@ class Store(models.Model):
         verbose_name="البريد الإلكتروني",
     )
 
+
+    # =====================================================
+    # عنوان المتجر
+    # =====================================================
+
     address = models.TextField(
         blank=True,
+        default="",
         verbose_name="العنوان",
     )
+
+
+    country = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        verbose_name="الدولة",
+    )
+
+
+    city = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        verbose_name="المدينة",
+    )
+
+
+    district = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        verbose_name="الحي",
+    )
+
+
+    street = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        verbose_name="الشارع",
+    )
+
+
+    building_no = models.CharField(
+        max_length=50,
+        blank=True,
+        default="",
+        verbose_name="رقم المبنى",
+    )
+
+
+    unit_no = models.CharField(
+        max_length=50,
+        blank=True,
+        default="",
+        verbose_name="رقم الوحدة",
+    )
+
+
+    postal_code = models.CharField(
+        max_length=20,
+        blank=True,
+        default="",
+        verbose_name="الرمز البريدي",
+    )
+
+
+    google_map_url = models.URLField(
+        blank=True,
+        default="",
+        verbose_name="رابط خرائط Google",
+    )
+
+
+    # =====================================================
+    # إعدادات الشريط العلوي
+    # =====================================================
 
     top_bar_text = models.CharField(
         max_length=255,
@@ -70,31 +144,36 @@ class Store(models.Model):
         verbose_name="رسالة الشريط العلوي",
     )
 
+
     top_bar_enabled = models.BooleanField(
         default=True,
         verbose_name="إظهار الشريط العلوي",
     )
+
 
     is_active = models.BooleanField(
         default=True,
         verbose_name="نشط",
     )
 
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
+
 
     updated_at = models.DateTimeField(
         auto_now=True,
     )
 
+
     class Meta:
         verbose_name = "متجر إلكتروني"
         verbose_name_plural = "المتاجر الإلكترونية"
 
+
     def __str__(self):
         return self.name
-
 
 # =====================================================
 # تصميم المتجر

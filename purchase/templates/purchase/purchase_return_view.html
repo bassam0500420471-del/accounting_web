@@ -41,11 +41,11 @@
             {% for item in items %}
             <tr>
                 <td>{{ item.original_item.product.name }}</td>
-                <td>{{ item.qty_return }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.discount }}</td>
-                <td>{{ item.tax }}%</td>
-                <td>{{ item.total }}</td>
+                <td>{{ item.qty_return|floatformat:2 }}</td>
+                <td>{{ item.price|floatformat:2 }}</td>
+                <td>{{ item.discount|floatformat:2 }}</td>
+                <td>{{ item.tax|floatformat:2 }}%</td>
+                <td>{{ item.total|floatformat:2 }}</td>
             </tr>
             {% empty %}
             <tr>

@@ -69,12 +69,16 @@ class CustomerAddress(models.Model):
         auto_now_add=True,
     )
 
+
     class Meta:
+
         ordering = ["-id"]
         verbose_name = "عنوان عميل"
         verbose_name_plural = "عناوين العملاء"
 
+
     def __str__(self):
+
         return f"{self.full_name} - {self.city}"
 
 
@@ -85,13 +89,13 @@ class CustomerAddress(models.Model):
 
 class Cart(models.Model):
     """
-    سلة العميل
+    سلة العميل داخل متجر محدد
     """
 
-    customer = models.OneToOneField(
+    customer = models.ForeignKey(
         "auth.User",
         on_delete=models.CASCADE,
-        related_name="cart",
+        related_name="carts",
         verbose_name="العميل",
     )
 
@@ -110,15 +114,28 @@ class Cart(models.Model):
         auto_now=True,
     )
 
+    class Meta:
+
+        unique_together = [
+            "customer",
+            "store",
+        ]
+
+        verbose_name = "سلة مشتريات"
+        verbose_name_plural = "سلال المشتريات"
+
     def total_items(self):
-        return sum(
-            item.quantity
-            for item in self.items.all()
+
+        return int(
+            sum(
+                item.quantity
+                for item in self.items.all()
+            )
         )
 
     def __str__(self):
-        return f"Cart - {self.customer}"
 
+        return f"{self.customer} - {self.store}"
 
 
 # =====================================================
@@ -127,17 +144,20 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
 
+
     cart = models.ForeignKey(
         Cart,
         on_delete=models.CASCADE,
         related_name="items",
     )
 
+
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.PROTECT,
         verbose_name="المنتج",
     )
+
 
     variant = models.ForeignKey(
         "products.ProductVariant",
@@ -147,11 +167,13 @@ class CartItem(models.Model):
         verbose_name="الخيار",
     )
 
+
     quantity = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=1,
     )
+
 
     price = models.DecimalField(
         max_digits=10,
@@ -160,21 +182,38 @@ class CartItem(models.Model):
         verbose_name="السعر وقت الإضافة",
     )
 
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
 
+
+
     class Meta:
-        unique_together = [
-            "cart",
-            "product",
-            "variant",
+
+        constraints = [
+
+            models.UniqueConstraint(
+                fields=[
+                    "cart",
+                    "product",
+                    "variant",
+                ],
+                name="unique_cart_product_variant",
+            )
+
         ]
 
+
+
     def subtotal(self):
+
         return self.quantity * self.price
 
+
+
     def __str__(self):
+
         return f"{self.product} × {self.quantity}"
 
 
@@ -185,11 +224,13 @@ class CartItem(models.Model):
 
 class Wishlist(models.Model):
 
+
     customer = models.ForeignKey(
         "auth.User",
         on_delete=models.CASCADE,
         related_name="wishlist",
     )
+
 
     store = models.ForeignKey(
         "ecommerce.Store",
@@ -197,20 +238,36 @@ class Wishlist(models.Model):
         related_name="wishlists",
     )
 
+
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.CASCADE,
     )
 
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
 
+
+
     class Meta:
-        unique_together = [
-            "customer",
-            "product",
+
+        constraints = [
+
+            models.UniqueConstraint(
+                fields=[
+                    "customer",
+                    "store",
+                    "product",
+                ],
+                name="unique_customer_store_product_wishlist",
+            )
+
         ]
 
+
+
     def __str__(self):
+
         return str(self.product)

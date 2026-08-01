@@ -52,13 +52,15 @@
 
         <!-- الجهة -->
         <label class="fw-bold mb-1">{% trans "Party" %}</label>
-        <select id="partySelect" class="form-select mb-3" required>
+        <select id="partySelect" name="party" class="form-select mb-3" required>
             <option value="">{% trans "-- Select Party Type First --" %}</option>
         </select>
 
         <!-- hidden fields -->
         <input type="hidden" name="party_type" id="partyTypeInput">
         <input type="hidden" name="party_id" id="partyIdInput">
+        <input type="hidden" name="customer" id="customerInput">
+        <input type="hidden" name="supplier" id="supplierInput">
 
         <!-- الحساب -->
         <label class="fw-bold mb-1">{% trans "Cash / Bank Account" %}</label>
@@ -117,30 +119,64 @@
         });
     }
 
+
     $(document).ready(function(){
+
         initSelect2();
 
+
         $("#partyType").on("change", function(){
+
             const t = $(this).val();
 
-            $("#partyTypeInput").val("");
+            $("#partyTypeInput").val(t);
             $("#partyIdInput").val("");
 
+
             if (!t){
+
                 $("#partySelect")
                     .html('<option value="">{% trans "-- Select Party Type First --" %}</option>');
+
                 initSelect2();
+
                 return;
             }
 
+
             loadParties(t);
+
         });
+
+
 
         $("#partySelect").on("change", function(){
-            $("#partyTypeInput").val($("#partyType").val());
-            $("#partyIdInput").val($(this).val());
+
+            let type = $("#partyType").val();
+            let id = $(this).val();
+
+            $("#partyTypeInput").val(type);
+            $("#partyIdInput").val(id);
+
+            $("#customerInput").val("");
+            $("#supplierInput").val("");
+
+
+            if(type === "customer"){
+
+                $("#customerInput").val(id);
+
+            }
+
+
+            if(type === "supplier"){
+
+                $("#supplierInput").val(id);
+
+            }
+
         });
+
     });
 </script>
-
 {% endblock %}

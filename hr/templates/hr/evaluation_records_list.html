@@ -1,3 +1,4 @@
+```html
 {% extends "layout/base.html" %}
 {% load i18n %}
 
@@ -15,6 +16,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body table-responsive">
+
             <table class="table table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
@@ -25,13 +27,18 @@
                         <th>{% trans "Score" %}</th>
                         <th>{% trans "Evaluator" %}</th>
                         <th>{% trans "Role" %}</th>
+                        <th>{% trans "Notes" %}</th>
+                        <th>{% trans "Attachments" %}</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for r in records %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
+
                         <td>{{ r.target.evaluation.name }}</td>
+
                         <td>
                             {% if r.target.employee %}
                                 {{ r.target.employee.first_name_ar }} {{ r.target.employee.last_name_ar }}
@@ -39,8 +46,11 @@
                                 —
                             {% endif %}
                         </td>
+
                         <td>{{ r.criteria.name }}</td>
+
                         <td class="fw-bold">{{ r.value }}</td>
+
                         <td>
                             {% if r.evaluator %}
                                 {{ r.evaluator.first_name_ar }} {{ r.evaluator.last_name_ar }}
@@ -48,6 +58,7 @@
                                 —
                             {% endif %}
                         </td>
+
                         <td>
                             {% if r.role == "peer" %}
                                 {% trans "Peer" %}
@@ -57,18 +68,125 @@
                                 —
                             {% endif %}
                         </td>
+
+                        <!-- الملاحظات -->
+                        <td>
+                            {% if r.notes %}
+                                {{ r.notes }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+
+                        <!-- المرفقات -->
+                        <!-- المرفقات -->
+                        <td class="text-center">
+
+                            {% if r.attachment %}
+
+                                <img src="{{ r.attachment.url }}"
+                                     onclick="showAttachment('{{ r.attachment.url }}')"
+                                     style="
+                                        width:60px;
+                                        height:60px;
+                                        object-fit:cover;
+                                        border-radius:8px;
+                                        cursor:pointer;
+                                        border:1px solid #ddd;
+                                     "
+                                     title="{% trans 'Click to view' %}">
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
                     </tr>
+
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">
+                        <td colspan="9" class="text-center">
                             {% trans "No evaluation records yet" %}
                         </td>
                     </tr>
+
                     {% endfor %}
                 </tbody>
+
             </table>
+
         </div>
     </div>
 
 </div>
+
+
+<!-- نافذة عرض الصورة -->
+<div id="attachmentModal"
+     style="display:none;
+            position:fixed;
+            z-index:9999;
+            inset:0;
+            background:rgba(0,0,0,.7);
+            align-items:center;
+            justify-content:center;">
+
+    <div style="position:relative;
+                background:white;
+                padding:20px;
+                border-radius:10px;
+                max-width:90%;
+                max-height:90%;">
+
+        <button onclick="closeAttachment()"
+                style="position:absolute;
+                       left:10px;
+                       top:10px;
+                       background:red;
+                       color:white;
+                       border:none;
+                       width:35px;
+                       height:35px;
+                       border-radius:50%;
+                       font-size:22px;
+                       font-weight:bold;">
+            ×
+        </button>
+
+        <img id="attachmentImage"
+             src=""
+             style="max-width:80vw;
+                    max-height:80vh;
+                    object-fit:contain;">
+    </div>
+
+</div>
+
+
+<script>
+
+function showAttachment(url){
+
+    document.getElementById("attachmentImage").src = url;
+
+    document.getElementById("attachmentModal").style.display = "flex";
+
+}
+
+
+function closeAttachment(){
+
+    document.getElementById("attachmentModal").style.display = "none";
+
+    document.getElementById("attachmentImage").src = "";
+
+}
+
+</script>
+
+
 {% endblock %}
+```

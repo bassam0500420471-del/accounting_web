@@ -1,0 +1,347 @@
+{% extends "layout/base.html" %}
+{% block title %}
+لوحة تحكم المتجر
+{% endblock %}
+
+
+{% block content %}
+
+<div class="store-dashboard-header">
+
+    <h2>
+        🛒 لوحة تحكم المتجر الإلكتروني
+    </h2>
+
+    <p>
+        إدارة المنتجات والطلبات والعملاء وإعدادات المتجر
+    </p>
+
+</div>
+
+
+
+<div class="store-dashboard-cards">
+
+
+    <a href="#" class="store-card products-card">
+
+        <div class="card-icon">
+            📦
+        </div>
+
+        <div>
+            <h4>
+                المنتجات
+            </h4>
+
+            <span>
+                إدارة المنتجات والتصنيفات
+            </span>
+        </div>
+
+    </a>
+
+
+
+
+    <a href="{% url 'ecommerce:dashboard_orders' store_slug=store.slug %}" class="store-card orders-card">
+
+    <div class="card-icon">
+        🛒
+    </div>
+
+    <div>
+
+        <h4>
+            الطلبات
+        </h4>
+
+        <span>
+            متابعة طلبات العملاء
+        </span>
+
+    </div>
+
+</a>
+
+
+
+    <a href="#" class="store-card customers-card">
+
+        <div class="card-icon">
+            👥
+        </div>
+
+        <div>
+
+            <h4>
+                العملاء
+            </h4>
+
+            <span>
+                بيانات عملاء المتجر
+            </span>
+
+        </div>
+
+    </a>
+
+
+
+
+    <a href="#" class="store-card reports-card">
+
+        <div class="card-icon">
+            📊
+        </div>
+
+        <div>
+
+            <h4>
+                التقارير
+            </h4>
+
+            <span>
+                المبيعات والإحصائيات
+            </span>
+
+        </div>
+
+    </a>
+
+
+{% if store and store.slug %}
+
+<a href="{% url 'ecommerce:home' store_slug=store.slug %}"
+   class="store-card view-store-card"
+   target="_blank">
+
+{% else %}
+
+<a href="#"
+   class="store-card view-store-card"
+   onclick="return false;">
+
+{% endif %}
+
+
+    <div class="card-icon">
+        🛍️
+    </div>
+
+    <div>
+
+        <h4>
+            عرض المتجر
+        </h4>
+
+        <span>
+            شاهد متجرك كما يراه العميل
+        </span>
+
+    </div>
+
+
+</a>
+
+<a href="{% url 'ecommerce:dashboard_settings' store_slug=store.slug %}"
+   class="store-card settings-card">
+
+    <div class="card-icon">
+        ⚙️
+    </div>
+
+    <div>
+
+        <h4>
+            إعدادات المتجر
+        </h4>
+
+        <span>
+            التصميم والدفع والشحن
+        </span>
+
+    </div>
+
+</a>
+
+
+</div>
+
+
+
+<style>
+
+
+.store-dashboard-header{
+
+    background:#2D3033;
+    color:white;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:30px;
+}
+
+
+.store-dashboard-header h2{
+
+    margin:0;
+    font-weight:bold;
+
+}
+
+
+.store-dashboard-header p{
+
+    margin-top:10px;
+    opacity:.8;
+
+}
+
+
+
+
+.store-dashboard-cards{
+
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:25px;
+
+}
+
+
+
+.store-card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    text-decoration:none;
+
+    color:#333;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+    border-right:6px solid #ddd;
+
+}
+
+
+
+.store-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.15);
+
+}
+
+
+
+.card-icon{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:35px;
+
+    background:#f1f3f5;
+
+}
+
+
+
+.store-card h4{
+
+    margin:0;
+
+    font-weight:bold;
+
+}
+
+
+.store-card span{
+
+    color:#777;
+
+    font-size:14px;
+
+}
+
+
+
+/* ألوان الكروت */
+
+.products-card{
+
+    border-color:#0d6efd;
+
+}
+
+
+.orders-card{
+
+    border-color:#198754;
+
+}
+
+
+.customers-card{
+
+    border-color:#ffc107;
+
+}
+
+
+.reports-card{
+
+    border-color:#6f42c1;
+
+}
+
+
+.settings-card{
+
+    border-color:#dc3545;
+
+}
+
+
+
+
+html[dir="rtl"] .store-card{
+
+    direction:rtl;
+
+}
+
+
+
+</style>
+
+
+{% endblock %}

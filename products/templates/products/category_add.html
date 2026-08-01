@@ -1,48 +1,123 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Add Category" %}{% endblock %}
+{% block title %}
+{% if category %}
+    {% trans "Edit Category" %}
+{% else %}
+    {% trans "Add Category" %}
+{% endif %}
+{% endblock %}
 
 {% block content %}
 
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
+
             <div class="card shadow-sm">
+
                 <div class="card-header bg-primary text-white text-center">
-                    <h5 class="mb-0">{% trans "Add Category" %}</h5>
+                    <h5 class="mb-0">
+                        {% if category %}
+                            {% trans "Edit Category" %}
+                        {% else %}
+                            {% trans "Add Category" %}
+                        {% endif %}
+                    </h5>
                 </div>
+
                 <div class="card-body">
+
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <div class="mb-3">
-                            <label class="form-label">{% trans "Category Name" %}</label>
-                            <input type="text" name="name" class="form-control" required>
+                            <label class="form-label">
+                                {% trans "Category Name" %}
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                class="form-control"
+                                value="{{ category.name|default:'' }}"
+                                required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{% trans "Order" %}</label>
-                            <input type="number" name="sort_order" class="form-control" value="0">
+                            <label class="form-label">
+                                {% trans "Order" %}
+                            </label>
+
+                            <input
+                                type="number"
+                                name="sort_order"
+                                class="form-control"
+                                value="{{ category.sort_order|default:0 }}">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">{% trans "Image" %}</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <label class="form-label">
+                                {% trans "Image" %}
+                            </label>
+
+                            <input
+                                type="file"
+                                name="image"
+                                class="form-control"
+                                accept="image/*">
+
+                            {% if category and category.image %}
+                                <div class="mt-3">
+                                    <img src="{{ category.image.url }}"
+                                         class="img-thumbnail"
+                                         style="max-width:180px;">
+                                </div>
+                            {% endif %}
                         </div>
+
+                        {% if category %}
+                        <div class="form-check form-switch mb-3">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="active"
+                                name="active"
+                                {% if category.active %}checked{% endif %}>
+
+                            <label class="form-check-label" for="active">
+                                {% trans "Active" %}
+                            </label>
+                        </div>
+                        {% endif %}
 
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'products:category_list' %}" class="btn btn-secondary">
+
+                            <a href="{% url 'products:category_list' %}"
+                               class="btn btn-secondary">
                                 {% trans "Cancel" %}
                             </a>
-                            <button type="submit" class="btn btn-success">
-                                {% trans "Save" %}
+
+                            <button type="submit"
+                                    class="btn btn-success">
+
+                                {% if category %}
+                                    {% trans "Update" %}
+                                {% else %}
+                                    {% trans "Save" %}
+                                {% endif %}
+
                             </button>
+
                         </div>
 
                     </form>
+
                 </div>
+
             </div>
+
         </div>
     </div>
 </div>
