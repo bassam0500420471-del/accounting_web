@@ -348,6 +348,6 @@ def create_company_default_accounts(sender, instance, created, **kwargs):
 
     if created:
 
-        from accounting.services.default_accounts import create_default_accounts
+        from accounting.models.default_accounts import create_default_accounts
 
         create_default_accounts(instance)
