@@ -943,7 +943,7 @@ html[dir="ltr"] .gpt-chat-box{
     </div>
 
 <!-- ================= Ecommerce Store ================= -->
-
+{% if store %}
 <a href="{% url 'ecommerce:dashboard' store.slug %}" class="menu-btn">
 
     <span>
@@ -957,8 +957,8 @@ html[dir="ltr"] .gpt-chat-box{
     <span class="menu-arrow">
         ▶
     </span>
-
 </a>
+{% endif %}
 
     <!-- ================= Reports ================= -->
     <div class="menu-btn d-flex align-items-center justify-content-between" style="background:#3A3D40; border:1px solid #4a4a4a;">
