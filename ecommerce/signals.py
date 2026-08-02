@@ -31,13 +31,6 @@ def create_company_store(sender, instance, created, **kwargs):
             slug=f"store-{instance.id}"
         )
 
-        StoreTheme.objects.create(
-            store=store
-        )
-
-        StoreSetting.objects.create(
-            store=store
-        )
 
 
 
