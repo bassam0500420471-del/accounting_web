@@ -12,6 +12,7 @@ venv/
 db.sqlite3
 *.log
 staticfiles/
+media/
 
 # OS
 .DS_Store
