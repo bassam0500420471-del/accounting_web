@@ -150,7 +150,7 @@ table th, table td {
 </style>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
 let currentCell = null;
 const today = new Date().toISOString().split("T")[0];
@@ -242,4 +242,4 @@ function reloadSchedule() {
     window.location.href = `{% url 'hr:employee_schedule' %}?month=${month}&year=${year}&employee=${employee}`;
 }
 </script>
-{% endblock %}
+{% endblock extra_js %}

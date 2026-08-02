@@ -8,7 +8,25 @@
 <style>
 table th, table td { text-align:center; vertical-align:middle; }
 input.physical-qty { width:80px; text-align:right; }
-input.comment-cell { width:180px; text-align:left; background:#f7f7f7; border:none; }
+/* عمود الملاحظات */
+th.comment-col,
+td.comment-col{
+    width:420px !important;
+    min-width:420px;
+}
+
+/* حقل الملاحظات */
+.comment-cell{
+    width:100% !important;
+    min-width:390px;
+    height:40px;
+    direction:rtl;
+    text-align:right;
+    padding:8px 12px;
+    border:1px solid #ced4da;
+    background:#fff;
+    border-radius:6px;
+}
 .save-btn { background-color:#6c757d; color:white; border:none; padding:10px 20px; border-radius:5px; font-size:16px; cursor:pointer; }
 .save-btn:hover { background-color:#5a6268; }
 .alert-success { display:none; }
@@ -66,8 +84,11 @@ input.comment-cell { width:180px; text-align:left; background:#f7f7f7; border:no
                                    {% if view_only %}readonly{% endif %}>
                         </td>
                         <td>
-                            <input type="text" class="form-control comment-cell"
-                                   value="{{ row.comment|default:'' }}" readonly>
+                            <input type="text"
+                                   name="comment_{{ row.product.id }}"
+                                   class="form-control comment-cell"
+                                   value="{{ row.comment|default:'' }}"
+                                   placeholder="{% trans 'اكتب ملاحظة' %}">
                         </td>
                     </tr>
                     {% empty %}
@@ -86,7 +107,7 @@ input.comment-cell { width:180px; text-align:left; background:#f7f7f7; border:no
 </form>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -97,47 +118,79 @@ document.addEventListener("DOMContentLoaded", function() {
         const physicalInput = row.querySelector(".physical-qty");
         const commentCell = row.querySelector(".comment-cell");
 
-        if(physicalInput){
-            physicalInput.addEventListener("input", function() {
+        if (physicalInput) {
+
+            physicalInput.addEventListener("input", function () {
+
                 const physical = parseInt(this.value) || 0;
                 const diff = physical - currentStock;
 
-                if (diff === 0) commentCell.value = "{% trans 'Matched' %}";
-                else if (diff > 0) commentCell.value = "{% trans 'Over by' %} " + diff;
-                else commentCell.value = "{% trans 'Short by' %} " + Math.abs(diff);
+                if (commentCell.dataset.manual === "1") {
+                    return;
+                }
+
+                if (diff === 0)
+                    commentCell.value = "{% trans 'Matched' %}";
+                else if (diff > 0)
+                    commentCell.value = "{% trans 'Over by' %} " + diff;
+                else
+                    commentCell.value = "{% trans 'Short by' %} " + Math.abs(diff);
+
             });
+
+            commentCell.addEventListener("input", function () {
+                this.dataset.manual = "1";
+            });
+
         }
     });
 
     const stockForm = $("#stockTakeForm");
     if(stockForm.length){
-        stockForm.submit(function(e) {
-            e.preventDefault();
-            const formData = $(this).serialize();
+stockForm.submit(function(e) {
 
-            $.ajax({
-                url: "{% url 'products:stock_take_save' %}",
-                method: "POST",
-                data: formData,
-                success: function(response) {
-                    if(response.status === "ok" && response.redirect){
-                        $("#saveAlert").fadeIn().delay(1500).fadeOut(function() {
-                            window.location.href = response.redirect;
-                        });
-                    } else {
-                        alert("{% trans 'Error while saving' %}: " + (response.error || ""));
-                    }
-                },
-                error: function(xhr){
-                    let msg = "{% trans 'Error while saving' %}";
-                    if(xhr.responseJSON && xhr.responseJSON.error){
-                        msg += ": " + xhr.responseJSON.error;
-                    }
-                    alert(msg);
-                }
-            });
-        });
-    }
+    e.preventDefault();
+
+    const formData = $(this).serialize();
+
+$.ajax({
+    url: "{% url 'products:stock_take_save' %}",
+    method: "POST",
+    headers: {
+        "X-CSRFToken": $('[name=csrfmiddlewaretoken]').val()
+    },
+    data: formData,
+
+        success: function(response){
+
+            console.log(response);
+
+            if(response.status === "ok" && response.redirect){
+
+                $("#saveAlert").fadeIn().delay(1500).fadeOut(function(){
+                    window.location.href = response.redirect;
+                });
+
+            }else{
+
+                alert(JSON.stringify(response));
+
+            }
+
+        },
+
+        error: function(xhr){
+
+            alert(xhr.responseText);
+
+        }
+
+    });
+
 });
+
+} // <-- إغلاق if(stockForm.length)
+
+}); // <-- إغلاق document.addEventListener
 </script>
 {% endblock %}

@@ -340,14 +340,27 @@ def po_add(request):
 # =====================================================
 @login_required
 def purchase_return_from_invoice(request, pk):
+
+    print("ENTER PURCHASE RETURN FUNCTION", flush=True)
+
     company = _get_company(request)
-    invoice = get_object_or_404(PurchaseInvoice, pk=pk, company=company, is_po=False)
+
+    invoice = get_object_or_404(
+        PurchaseInvoice,
+        pk=pk,
+        company=company,
+        is_po=False
+    )
 
     if request.method == "POST":
+
         reason = request.POST.get("reason", "").strip()
+
         if not reason:
             messages.error(request, "❌ يجب إدخال سبب الإرجاع")
             return redirect(request.path)
+
+        has_items = False
 
         purchase_return = PurchaseReturn.objects.create(
             company=company,
@@ -360,14 +373,77 @@ def purchase_return_from_invoice(request, pk):
         total_tax = Decimal("0.00")
         total_after = Decimal("0.00")
 
+
         for item in invoice.items.all():
-            qty = _to_decimal(request.POST.get(f"qty_{item.id}", "0"))
+
+            qty = _to_decimal(
+                request.POST.get(f"qty_{item.id}", "0")
+            ).quantize(Decimal("0.01"))
+
+
             if qty <= 0:
                 continue
 
+            has_items = True
+
+            returned_qty = (
+                PurchaseReturnItem.objects
+                .filter(
+                    purchase_return__invoice_id=invoice.id,
+                    product_id=item.product_id
+                )
+                .aggregate(
+                    total=Sum("quantity")
+                )["total"] or Decimal("0.00")
+            )
+
+            returned_qty = Decimal(str(returned_qty)).quantize(
+                Decimal("0.01")
+            )
+
+
+            available_qty = (
+                Decimal(str(item.quantity)) - returned_qty
+            ).quantize(
+                Decimal("0.01")
+            )
+
+
+            print(
+                "PRODUCT:",
+                item.product.name,
+                "INVOICE:",
+                item.quantity,
+                "RETURNED:",
+                returned_qty,
+                "REQUEST:",
+                qty,
+                "AVAILABLE:",
+                available_qty
+            )
+
+            print("COMPARE:", repr(qty), repr(available_qty))
+
+
+            if qty.compare(available_qty) == 1:
+                messages.error(
+                    request,
+                    f"⚠ الكمية المتاحة للمنتج {item.product.name} هي {available_qty}"
+                )
+
+                purchase_return.delete()
+
+                return redirect(request.path)
             before_tax = qty * item.price
-            tax_value = (before_tax * item.tax_rate) / Decimal("100")
+
+            tax_value = (
+                before_tax * item.tax_rate
+            ) / Decimal("100")
+
+
             after_tax = before_tax + tax_value
+
+
 
             PurchaseReturnItem.objects.create(
                 purchase_return=purchase_return,
@@ -376,36 +452,91 @@ def purchase_return_from_invoice(request, pk):
                 price=item.price
             )
 
+
             total_before += before_tax
             total_tax += tax_value
             total_after += after_tax
 
+
+        if not has_items:
+            purchase_return.delete()
+
+            messages.error(
+                request,
+                "❌ لم يتم اختيار أي كمية للإرجاع"
+            )
+
+            return redirect(request.path)
+
+
         purchase_return.total_before_tax = total_before
         purchase_return.tax_value = total_tax
         purchase_return.total_after_tax = total_after
+
         purchase_return.save()
 
-        create_purchase_return_journal(purchase_return)
-        messages.success(request, "✅ تم حفظ مرتجع المشتريات بنجاح")
-        return redirect("purchase:purchase_returns_list")
+        create_purchase_return_journal(
+            purchase_return
+        )
+
+
+        messages.success(
+            request,
+            "✅ تم حفظ مرتجع المشتريات بنجاح"
+        )
+
+
+        return redirect(
+            "purchase:purchase_returns_list"
+        )
+
+
 
     items = []
+
     for item in invoice.items.all():
+
         returned_qty = PurchaseReturnItem.objects.filter(
             purchase_return__invoice=invoice,
             purchase_return__company=company,
-            product=item.product
-        ).aggregate(qty=Coalesce(Sum("quantity"), Decimal("0.00")))["qty"]
+            product_id=item.product_id
+        ).aggregate(
+            total=Coalesce(
+                Sum("quantity"),
+                Decimal("0.00")
+            )
+        )["total"]
 
-        remaining_qty = item.quantity - returned_qty
+
+        remaining_qty = (
+            item.quantity - returned_qty
+        ).quantize(
+            Decimal("0.01")
+        )
+
+
+        print("GET DEBUG RETURN")
+        print("PRODUCT:", item.product.name)
+        print("ORIGINAL:", item.quantity)
+        print("RETURNED:", returned_qty)
+        print("REMAINING:", remaining_qty)
+
+
         if remaining_qty > 0:
-            items.append({"item": item, "remaining_qty": remaining_qty})
 
-    return render(request, "purchase/return_from_invoice.html", {
-        "invoice": invoice,
-        "items": items,
-    })
+            items.append({
+                "item": item,
+                "remaining_qty": remaining_qty
+            })
 
+    return render(
+        request,
+        "purchase/return_from_invoice.html",
+        {
+            "invoice": invoice,
+            "items": items,
+        }
+    )
 
 # =====================================================
 # 📄 قائمة مرتجعات المشتريات
@@ -529,3 +660,91 @@ def api_invoices_by_supplier(request):
     ).values("id", "invoice_no", "total_after_tax", "date_invoice")
 
     return JsonResponse({"invoices": list(invoices)})
+
+# =====================================================
+# 💰 دفع فاتورة مشتريات
+# =====================================================
+@login_required
+def purchase_invoice_payment(request, pk):
+
+    company = _get_company(request)
+
+    invoice = get_object_or_404(
+        PurchaseInvoice,
+        id=pk,
+        company=company,
+        is_po=False
+    )
+
+
+    remaining = (
+        invoice.total_after_tax - invoice.paid_amount
+    ).quantize(
+        Decimal("0.01")
+    )
+
+
+    if request.method == "POST":
+
+        amount = _to_decimal(
+            request.POST.get("amount")
+        )
+
+
+        if amount <= 0:
+            messages.error(
+                request,
+                "❌ أدخل مبلغ صحيح"
+            )
+            return redirect(request.path)
+
+
+        if amount > remaining:
+            messages.error(
+                request,
+                f"❌ المبلغ المتبقي فقط {remaining}"
+            )
+            return redirect(request.path)
+
+
+        # تحديث المبلغ المدفوع
+        invoice.paid_amount += amount
+
+
+        # تحديث حالة السداد
+        if invoice.paid_amount >= invoice.total_after_tax:
+
+            invoice.paid_amount = invoice.total_after_tax
+            invoice.payment_status = "paid"
+
+        elif invoice.paid_amount > 0:
+
+            invoice.payment_status = "partial"
+
+        else:
+
+            invoice.payment_status = "unpaid"
+
+
+        invoice.save()
+
+
+        messages.success(
+            request,
+            "✅ تم تسجيل دفع فاتورة المشتريات بنجاح"
+        )
+
+
+        return redirect(
+            "purchase:purchase_invoices_list"
+        )
+
+
+    return render(
+        request,
+        "purchase/invoice_payment.html",
+        {
+            "invoice": invoice,
+            "remaining": remaining,
+        }
+    )

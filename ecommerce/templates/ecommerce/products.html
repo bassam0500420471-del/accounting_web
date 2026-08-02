@@ -1,0 +1,58 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+
+{% block title %}
+المنتجات
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<section class="products-section py-5">
+
+<div class="container">
+
+
+<div class="section-title">
+
+    <h2>
+        🛒 جميع المنتجات
+    </h2>
+
+</div>
+
+
+
+<div class="products-wrapper expanded-grid">
+
+
+{% for product in products %}
+
+
+    {% include "ecommerce/includes/product_card.html" with product=product %}
+
+
+{% empty %}
+
+
+    <p>
+        لا توجد منتجات حالياً.
+    </p>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+</div>
+
+</section>
+
+
+{% endblock %}

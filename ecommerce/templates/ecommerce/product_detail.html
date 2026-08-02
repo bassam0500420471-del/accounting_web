@@ -1,0 +1,82 @@
+{% extends "ecommerce/base.html" %}
+{% block title %}
+{{ product.name }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row">
+
+        <!-- صورة المنتج -->
+        <div class="col-md-5">
+
+            {% if product.image %}
+                <img src="{{ product.image.url }}"
+                     class="img-fluid rounded">
+            {% else %}
+                <div class="text-center p-5 border rounded">
+                    لا توجد صورة
+                </div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- بيانات المنتج -->
+        <div class="col-md-7">
+
+            <h2>
+                {{ product.name }}
+            </h2>
+
+
+            <p class="text-muted">
+                {{ product.description }}
+            </p>
+
+
+            <h4 class="text-primary">
+
+                {{ product.sale_price }}
+                
+            </h4>
+
+
+            <div class="mt-4">
+
+
+                <a href="{% url 'ecommerce:add_to_cart' store.slug product.id %}"
+                   class="btn btn-primary btn-lg">
+
+                    <i class="bi bi-cart-plus"></i>
+
+                    أضف للسلة
+
+                </a>
+
+
+
+                <a href="{% url 'ecommerce:toggle_wishlist' store.slug product.id %}"
+                   class="btn btn-outline-danger btn-lg">
+
+                    <i class="bi bi-heart"></i>
+
+                    المفضلة
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

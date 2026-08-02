@@ -1,0 +1,242 @@
+<footer id="contact" class="store-footer">
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+
+            <!-- معلومات المتجر -->
+
+            <div class="footer-column">
+
+                <h3 class="store-name">
+
+                    {{ store.name }}
+
+                </h3>
+
+
+                <p>
+
+                    {{ store.description }}
+
+                </p>
+
+
+{% if store.company.mobile %}
+<p class="contact-info">
+    <i class="bi bi-phone"></i>
+    {{ store.company.mobile }}
+</p>
+{% elif store.company.phone %}
+<p class="contact-info">
+    <i class="bi bi-telephone"></i>
+    {{ store.company.phone }}
+</p>
+{% endif %}
+
+{% if store.company.email %}
+<p class="contact-info">
+    <i class="bi bi-envelope"></i>
+    {{ store.company.email }}
+</p>
+{% endif %}
+
+
+            </div>
+
+
+
+
+
+            <!-- روابط سريعة -->
+
+            <div class="footer-column">
+
+                <h4>
+
+                    روابط سريعة
+
+                </h4>
+
+
+                <ul>
+
+                    <li>
+                        <a href="{% url 'ecommerce:home' store.slug %}">
+                            الرئيسية
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'ecommerce:products' store.slug %}">
+                            المنتجات
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'ecommerce:cart' store.slug %}">
+                            السلة
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'ecommerce:wishlist' store.slug %}">
+                            المفضلة
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="{% url 'ecommerce:account' store.slug %}">
+                            حسابي
+                        </a>
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+
+
+
+
+            <!-- خدمة العملاء -->
+
+            <div class="footer-column">
+
+                <h4>
+
+                    خدمة العملاء
+
+                </h4>
+
+
+                <ul>
+
+                    <li>
+                        <a href="#">
+                            سياسة الشحن
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            سياسة الاسترجاع
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            الشروط والأحكام
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            سياسة الخصوصية
+                        </a>
+                    </li>
+
+
+                </ul>
+
+
+            </div>
+
+
+
+
+
+            <!-- التواصل الاجتماعي -->
+
+            <div class="footer-column">
+
+                <h4>
+
+                    تابعنا
+
+                </h4>
+
+
+                <div class="footer-social">
+
+
+                    <a href="#">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+
+
+                    <a href="#">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+
+
+                    <a href="#">
+                        <i class="bi bi-twitter-x"></i>
+                    </a>
+
+
+                    <a href="#">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+
+
+                    <a href="#">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="footer-bottom">
+
+        <div class="container text-center">
+
+
+            © {% now "Y" %}
+
+            {{ store.company.name }}
+
+            -
+
+            جميع الحقوق محفوظة
+
+
+            <br>
+
+
+            متجر إلكتروني بواسطة
+
+            <strong>
+
+                نظام الرائد ERP
+
+            </strong>
+
+
+        </div>
+
+
+    </div>
+
+
+</footer>

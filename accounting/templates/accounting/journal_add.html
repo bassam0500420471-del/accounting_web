@@ -22,202 +22,558 @@
 .balance-ok { color:#198754; font-weight:bold; }
 .balance-bad { color:#dc3545; font-weight:bold; }
 
-.select2-container { width: 100% !important; }
+.select2-container { width:100% !important; }
 
 .select2-container--default .select2-selection--single {
-    height: 38px !important;
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
+    height:38px !important;
+    padding:4px 10px;
+    border-radius:6px;
+    border:1px solid #ced4da;
+    font-size:14px;
+    display:flex;
+    align-items:center;
 }
 </style>
+
 
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">{% trans "Add Manual Journal Entry" %}</h3>
+
+        <h3 class="fw-bold">
+            {% trans "Add Manual Journal Entry" %}
+        </h3>
 
         <a href="{% url 'accounting:journals_list' %}" class="btn-main">
             {% trans "Back" %}
         </a>
+
     </div>
 
+
     <form method="post" id="journalForm">
+
         {% csrf_token %}
 
+
         <div class="card mb-3">
+
             <div class="card-body">
+
                 <div class="row g-3">
 
+
                     <div class="col-md-3">
-                        <label class="fw-bold">{% trans "Date" %}</label>
-                        <input type="date" name="date" id="journalDate"
-                               class="form-control" required>
+
+                        <label class="fw-bold">
+                            {% trans "Date" %}
+                        </label>
+
+                        <input type="date"
+                               name="date"
+                               id="journalDate"
+                               class="form-control"
+                               required>
+
                     </div>
 
+
+
                     <div class="col-md-9">
-                        <label class="fw-bold">{% trans "Description" %}</label>
-                        <input type="text" name="description"
+
+                        <label class="fw-bold">
+                            {% trans "Description" %}
+                        </label>
+
+                        <input type="text"
+                               name="description"
                                class="form-control"
                                placeholder="{% trans 'Enter description' %}"
                                required>
+
                     </div>
 
+
                 </div>
+
             </div>
+
         </div>
 
+
+
         <div class="card">
+
             <div class="card-body p-0">
 
-                <table class="table table-bordered text-center align-middle mb-0" id="linesTable">
+
+                <table class="table table-bordered text-center align-middle mb-0"
+                       id="linesTable">
+
 
                     <thead class="table-light">
+
                         <tr>
+
                             <th>#</th>
-                            <th>{% trans "Account" %}</th>
-                            <th>{% trans "Debit" %}</th>
-                            <th>{% trans "Credit" %}</th>
+
+                            <th>
+                                {% trans "Account" %}
+                            </th>
+
+                            <th>
+                                {% trans "Debit" %}
+                            </th>
+
+                            <th>
+                                {% trans "Credit" %}
+                            </th>
+
+                            <th width="50">
+                                ×
+                            </th>
+
                         </tr>
+
                     </thead>
+
+
 
                     <tbody>
 
+
                         {% for i in "12"|make_list %}
+
                         {% if forloop.counter <= 2 %}
+
                         <tr>
-                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
                             <td class="text-start">
+
                                 <select name="row_{{ forloop.counter }}_account"
                                         class="form-select account-select">
-                                    <option value="">{% trans "Select Account" %}</option>
+
+                                    <option value="">
+                                        {% trans "Select Account" %}
+                                    </option>
+
+
                                     {% for a in accounts %}
-                                        <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+
+                                    <option value="{{ a.id }}">
+                                        {{ a.code }} - {{ a.name }}
+                                    </option>
+
                                     {% endfor %}
+
+
                                 </select>
+
                             </td>
-                            <td><input type="number" step="0.01"
+
+
+
+                            <td>
+
+                                <input type="number"
+                                       step="0.01"
                                        name="row_{{ forloop.counter }}_debit"
-                                       class="form-control debit"></td>
-                            <td><input type="number" step="0.01"
+                                       class="form-control debit">
+
+                            </td>
+
+
+
+                            <td>
+
+                                <input type="number"
+                                       step="0.01"
                                        name="row_{{ forloop.counter }}_credit"
-                                       class="form-control credit"></td>
+                                       class="form-control credit">
+
+                            </td>
+
+
+
+                            <td></td>
+
+
                         </tr>
+
+
                         {% endif %}
+
                         {% endfor %}
+
+
 
                     </tbody>
 
+
+
                     <tfoot>
+
                         <tr class="fw-bold">
-                            <td colspan="2">{% trans "Total" %}</td>
-                            <td id="totalDebit">0.00</td>
-                            <td id="totalCredit">0.00</td>
+
+                            <td colspan="2">
+                                {% trans "Total" %}
+                            </td>
+
+                            <td id="totalDebit">
+                                0.00
+                            </td>
+
+                            <td id="totalCredit">
+                                0.00
+                            </td>
+
+                            <td></td>
+
                         </tr>
+
                     </tfoot>
+
 
                 </table>
 
+
             </div>
+
         </div>
 
-        <input type="hidden" name="total_rows" id="totalRows" value="2">
+
+
+        <input type="hidden"
+               name="total_rows"
+               id="totalRows"
+               value="2">
+
+
 
         <div class="d-flex justify-content-between align-items-center mt-3">
 
-            <button type="button" class="btn-main" onclick="addRow()">
+
+            <button type="button"
+                    class="btn-main"
+                    onclick="addRow()">
+
                 ➕ {% trans "Add Row" %}
+
             </button>
+
 
             <div id="balanceMsg"></div>
 
-            <button type="submit" class="btn-main" id="saveBtn" disabled>
+
+
+            <button type="submit"
+                    class="btn-main"
+                    id="saveBtn"
+                    disabled>
+
                 💾 {% trans "Save Entry" %}
+
             </button>
+
 
         </div>
 
+
     </form>
+
+
 </div>
 
-<!-- Select2 (مرة واحدة فقط) -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"/>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
+
 <script>
+
 document.getElementById("journalDate").value =
     new Date().toISOString().split("T")[0];
 
+
 let totalRows = 2;
 
-function initSelect2() {
-    $('.account-select').select2({
-        width: '100%',
-        dir: '{% if LANGUAGE_CODE == "ar" %}rtl{% else %}ltr{% endif %}'
+
+
+function initSelect2(){
+
+    $('.account-select').each(function(){
+
+        if(!$(this).hasClass("select2-hidden-accessible")){
+
+            $(this).select2({
+
+                width:'100%',
+
+                dir:'{% if LANGUAGE_CODE == "ar" %}rtl{% else %}ltr{% endif %}'
+
+            });
+
+        }
+
     });
+
 }
 
-function addRow() {
-    totalRows++;
+
+
+
+
+function addRow(){
+
+
+    totalRows = document.querySelectorAll("#linesTable tbody tr").length + 1;
+
+
     document.getElementById("totalRows").value = totalRows;
+
+
 
     const tbody = document.querySelector("#linesTable tbody");
 
+
     const row = document.createElement("tr");
 
+
+
     row.innerHTML = `
-        <td>${totalRows}</td>
+
+        <td></td>
+
+
         <td class="text-start">
-            <select name="row_${totalRows}_account" class="form-select account-select">
-                <option value="">{% trans "Select Account" %}</option>
+
+            <select name="row_${totalRows}_account"
+                    class="form-select account-select">
+
+                <option value="">
+                    {% trans "Select Account" %}
+                </option>
+
+
                 {% for a in accounts %}
-                    <option value="{{ a.id }}">{{ a.code }} - {{ a.name }}</option>
+
+                <option value="{{ a.id }}">
+                    {{ a.code }} - {{ a.name }}
+                </option>
+
                 {% endfor %}
+
+
             </select>
+
+
         </td>
-        <td><input type="number" step="0.01" name="row_${totalRows}_debit" class="form-control debit"></td>
-        <td><input type="number" step="0.01" name="row_${totalRows}_credit" class="form-control credit"></td>
+
+
+        <td>
+
+            <input type="number"
+                   step="0.01"
+                   name="row_${totalRows}_debit"
+                   class="form-control debit">
+
+        </td>
+
+
+        <td>
+
+            <input type="number"
+                   step="0.01"
+                   name="row_${totalRows}_credit"
+                   class="form-control credit">
+
+        </td>
+
+
+
+        <td>
+
+            <button type="button"
+                    class="btn btn-sm btn-danger remove-row">
+
+                ×
+
+            </button>
+
+        </td>
+
+
     `;
 
+
+
     tbody.appendChild(row);
+
+
+    renumberRows();
+
+
     initSelect2();
+
+
 }
 
-function calculateBalance() {
-    let debit = 0, credit = 0;
 
-    document.querySelectorAll(".debit").forEach(i => debit += parseFloat(i.value) || 0);
-    document.querySelectorAll(".credit").forEach(i => credit += parseFloat(i.value) || 0);
 
-    document.getElementById("totalDebit").innerText = debit.toFixed(2);
-    document.getElementById("totalCredit").innerText = credit.toFixed(2);
+
+
+function renumberRows(){
+
+
+    document.querySelectorAll("#linesTable tbody tr")
+    .forEach(function(row,index){
+
+
+        row.cells[0].innerText = index + 1;
+
+
+    });
+
+
+
+    totalRows =
+        document.querySelectorAll("#linesTable tbody tr").length;
+
+
+    document.getElementById("totalRows").value = totalRows;
+
+
+}
+
+
+
+
+
+function calculateBalance(){
+
+
+    let debit = 0;
+    let credit = 0;
+
+
+
+    document.querySelectorAll(".debit")
+    .forEach(i => debit += parseFloat(i.value) || 0);
+
+
+
+    document.querySelectorAll(".credit")
+    .forEach(i => credit += parseFloat(i.value) || 0);
+
+
+
+    document.getElementById("totalDebit").innerText =
+        debit.toFixed(2);
+
+
+
+    document.getElementById("totalCredit").innerText =
+        credit.toFixed(2);
+
+
 
     const msg = document.getElementById("balanceMsg");
+
     const saveBtn = document.getElementById("saveBtn");
 
-    if (debit === 0 && credit === 0) {
+
+
+    if(debit === 0 && credit === 0){
+
         msg.innerHTML = "";
+
         saveBtn.disabled = true;
+
         return;
+
     }
 
-    if (debit !== credit) {
-        msg.innerHTML = `<span class="balance-bad">❌ {% trans "Not Balanced" %}</span>`;
+
+
+    if(debit !== credit){
+
+
+        msg.innerHTML =
+        `<span class="balance-bad">
+            ❌ {% trans "Not Balanced" %}
+        </span>`;
+
+
         saveBtn.disabled = true;
-    } else {
-        msg.innerHTML = `<span class="balance-ok">✔ {% trans "Balanced Entry" %}</span>`;
+
+
+    }else{
+
+
+        msg.innerHTML =
+        `<span class="balance-ok">
+            ✔ {% trans "Balanced Entry" %}
+        </span>`;
+
+
         saveBtn.disabled = false;
+
+
     }
+
+
 }
+
+
+
+
 
 document.addEventListener("input", calculateBalance);
 
-$(document).ready(function () {
-    initSelect2();
+
+
+document.addEventListener("click",function(e){
+
+
+    if(e.target.classList.contains("remove-row")){
+
+
+        e.target.closest("tr").remove();
+
+
+        renumberRows();
+
+
+        calculateBalance();
+
+
+    }
+
+
 });
+
+
+
+
+
+$(document).ready(function(){
+
+    initSelect2();
+
+});
+
+
+
 </script>
+
 
 {% endblock %}

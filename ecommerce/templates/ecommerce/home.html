@@ -1,0 +1,327 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+{{ store.name }}
+{% endblock %}
+
+{% block content %}
+
+<!-- ===========================
+        HERO SECTION
+=========================== -->
+
+<section class="hero">
+
+    <div class="container">
+
+        <div class="hero-slider">
+
+            <div class="hero-content">
+
+                <span class="hero-badge">
+                    🔥 عروض حصرية
+                </span>
+
+                <h1>
+
+                    مرحباً بكم في
+
+                    <br>
+
+                    {{ store.name }}
+
+                </h1>
+
+                <p>
+
+                    {{ store.description }}
+
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="#featured">
+
+                        تسوق الآن
+
+                    </a>
+
+                    <a href="#categories"
+                       class="hero-outline">
+
+                        تصفح الأقسام
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="hero-image">
+
+                {% if store.banner %}
+
+                    <img src="{{ store.banner.url }}"
+                         alt="{{ store.name }}"
+                         class="hero-banner-image">
+
+                {% elif store.company.logo %}
+
+                    <img src="{{ store.company.logo.url }}"
+                         alt="{{ store.name }}"
+                         class="hero-banner-image">
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+
+<!-- ===========================
+        OFFERS PRODUCTS
+=========================== -->
+
+<section class="products-section" id="offers">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>
+                🔥 العروض
+            </h2>
+
+            <a href="{% url 'ecommerce:products' store.slug %}">
+                عرض الكل
+            </a>
+
+        </div>
+
+
+        <div class="products-slider">
+
+            <div class="products-wrapper">
+
+                {% for product in offer_products %}
+
+                    {% include "ecommerce/includes/product_card.html" with product=product %}
+
+                {% empty %}
+
+                    <p>
+                        لا توجد عروض حالياً.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ===========================
+        FEATURED PRODUCTS
+=========================== -->
+
+<section id="featured"
+         class="products-section">
+
+    <div class="container">
+
+<div class="section-title">
+
+    <h2>
+
+        🔥 منتجات مميزة
+
+    </h2>
+
+<button class="view-all toggle-products"
+        data-target="featuredProducts">
+
+    عرض الكل
+
+</button>
+
+</div>
+
+        <div class="products-slider">
+
+<button class="slider-arrow slider-prev"
+        data-target="featuredProducts">
+
+    <i class="bi bi-chevron-right"></i>
+
+</button>
+
+<div class="products-wrapper collapsed-products"
+     id="featuredProducts">
+
+                {% for product in featured_products %}
+
+                    {% include "ecommerce/includes/product_card.html" %}
+
+                {% empty %}
+
+                    <p>
+
+                        لا توجد منتجات.
+
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+<button class="slider-arrow slider-next"
+        data-target="featuredProducts">
+
+    <i class="bi bi-chevron-left"></i>
+
+</button>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- ===========================
+        LATEST PRODUCTS
+=========================== -->
+
+<section class="products-section" id="new-products">
+
+    <div class="container">
+
+<div class="section-title">
+
+    <h2>
+
+        🆕 وصل حديثًا
+
+    </h2>
+
+<button class="view-all toggle-products"
+        data-target="latestProducts">
+
+    عرض الكل
+
+</button>
+
+</div>
+
+        <div class="products-slider">
+
+<button class="slider-arrow slider-prev"
+        data-target="latestProducts">
+
+    <i class="bi bi-chevron-right"></i>
+
+</button>
+
+<div class="products-wrapper collapsed-products"
+     id="latestProducts">
+
+                {% for product in latest_products %}
+
+                    {% include "ecommerce/includes/product_card.html" %}
+
+                {% empty %}
+
+                    <p>لا توجد منتجات.</p>
+
+                {% endfor %}
+
+            </div>
+
+<button class="slider-arrow slider-next"
+        data-target="latestProducts">
+
+    <i class="bi bi-chevron-left"></i>
+
+</button>
+
+        </div>
+
+    </div>
+
+</section>
+{% for category in category_sections %}
+
+<section 
+    class="products-section"
+    {% if forloop.first %}id="categories"{% endif %}
+>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>
+
+                📦 {{ category.name }}
+
+            </h2>
+<p style="color:red">
+عدد المنتجات: {{ category.products|length }}
+</p>
+<button class="view-all toggle-products"
+        data-target="category-{{ category.id }}">
+
+    عرض الكل
+
+</button>
+
+        </div>
+
+        <div class="products-slider">
+
+            <button class="slider-arrow slider-prev">
+
+                <i class="bi bi-chevron-right"></i>
+
+            </button>
+
+<div class="products-wrapper collapsed-products"
+     id="category-{{ category.id }}">
+
+{% for product in category.products %}
+
+    {% include "ecommerce/includes/product_card.html" with product=product %}
+
+{% empty %}
+
+    <p>
+        لا توجد منتجات.
+    </p>
+
+{% endfor %}
+
+</div>
+
+            <button class="slider-arrow slider-next">
+
+                <i class="bi bi-chevron-left"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endfor %}
+
+{% endblock %}

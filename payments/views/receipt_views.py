@@ -8,7 +8,10 @@ from django.core.exceptions import PermissionDenied
 
 from payments.models import ReceiptVoucher, VoucherAllocation
 from pos.models import PaymentMethod
-from payments.services.payment_journal_service import cancel_receipt_voucher
+from payments.services.payment_journal_service import (
+    cancel_receipt_voucher,
+    post_receipt_voucher,
+)
 from customers.models import Customer
 from suppliers.models import Supplier
 from cost_centers.models import CostCenter
@@ -42,35 +45,59 @@ def receipt_create(request):
     print("METHOD =", request.method)
 
     cash_accounts = Account.objects.filter(
+        company=company,
         is_active=True
-    ).filter(
-        models.Q(company=company) | models.Q(company__isnull=True)
     ).order_by("code")
 
     customers = Customer.objects.filter(company=company).order_by("name")
     suppliers = Supplier.objects.filter(company=company).order_by("commercial_name")
-    cost_centers = CostCenter.objects.filter(company=company, is_active=True).order_by("name")
-    other_accounts = Account.objects.filter(company=company, is_active=True).order_by("code")
+    cost_centers = CostCenter.objects.filter(
+        company=company,
+        is_active=True
+    ).order_by("name")
+
+    other_accounts = Account.objects.filter(
+        company=company,
+        is_active=True
+    ).order_by("code")
+
     payment_methods = PaymentMethod.objects.filter(
         company=company,
     ).order_by("name")
-
     if request.method == "POST":
         party_type = (request.POST.get("party_type") or "").strip()
         party_id = (request.POST.get("party_id") or "").strip()
-        customer_id = (request.POST.get("customer") or "").strip()
-        supplier_id = (request.POST.get("supplier") or "").strip()
+
+        customer_id = (
+            request.POST.get("customer")
+            or party_id
+        ).strip()
+
+        supplier_id = (
+            request.POST.get("supplier")
+            or party_id
+        ).strip()
         cost_center_id = (request.POST.get("cost_center") or "").strip()
         other_account_id = (request.POST.get("other_account") or "").strip()
-        payment_method_id = (request.POST.get("payment_method") or "").strip()
+        cash_account_id = (request.POST.get("cash_account") or "").strip()
+
+        if not cash_account_id or cash_account_id == "None":
+            messages.error(request, "الرجاء اختيار حساب الصندوق/البنك")
+            return redirect("payments:receipt_create")
+
+        if not cash_account_id.isdigit():
+            messages.error(request, "حساب الصندوق/البنك غير صحيح")
+            return redirect("payments:receipt_create")
+
         amount = (request.POST.get("amount") or "").strip()
         description = (request.POST.get("description") or "").strip()
         invoice_id = request.POST.get("invoice_id")
-
+        if invoice_id == "None" or invoice_id == "":
+            invoice_id = None
         if not party_type:
             messages.error(request, "الرجاء اختيار نوع الجهة")
             return redirect("payments:receipt_create")
-        if not payment_method_id:
+        if not cash_account_id:
             messages.error(request, "الرجاء اختيار حساب الصندوق/البنك")
             return redirect("payments:receipt_create")
         if not amount:
@@ -87,47 +114,40 @@ def receipt_create(request):
 
         
 
-        print("payment_method_id =", payment_method_id)
-        print("company =", company.id)
-
-        print(
-            list(
-                PaymentMethod.objects.filter(company=company).values(
-                    "id",
-                    "name",
-                    "company_id"
-                )
-            )
-        )
-
-        payment_method = PaymentMethod.objects.filter(
-            id=payment_method_id,
-            company=company
+        cash_account = Account.objects.filter(
+            id=cash_account_id,
+            company=company,
+            is_active=True
         ).first()
 
-        if not payment_method:
-            messages.error(request, "طريقة الدفع غير موجودة")
-            return redirect("payments:receipt_create")
-
-
-        cash_account = payment_method.account
-
-
         if not cash_account:
-            messages.error(request, "طريقة الدفع لا تحتوي على حساب مرتبط")
+            messages.error(request, "حساب الصندوق/البنك غير موجود")
             return redirect("payments:receipt_create")
-
         customer = supplier = cost_center = other_account = None
 
         if party_type == "customer":
-            selected_id = customer_id or party_id
-            customer = Customer.objects.filter(company=company, id=selected_id).first()
+
+            selected_id = customer_id
+
+            customer = Customer.objects.filter(
+                company=company,
+                id=selected_id
+            ).first()
+
+            if not customer:
+                messages.error(request, "العميل غير موجود")
+                return redirect("payments:receipt_create")
             if not customer:
                 messages.error(request, "العميل غير موجود")
                 return redirect("payments:receipt_create")
         elif party_type == "supplier":
-            selected_id = supplier_id or party_id
-            supplier = Supplier.objects.filter(company=company, id=selected_id).first()
+
+            selected_id = supplier_id
+
+            supplier = Supplier.objects.filter(
+                company=company,
+                id=selected_id
+            ).first()
             if not supplier:
                 messages.error(request, "المورد غير موجود")
                 return redirect("payments:receipt_create")
@@ -164,8 +184,8 @@ def receipt_create(request):
             created_by=request.user,
             status="posted"
         )
-
-        if invoice_id:
+        post_receipt_voucher(voucher)
+        if invoice_id and str(invoice_id).isdigit():
 
             # ==========================================
             # أولاً: محاولة ربطها بفاتورة مبيعات
@@ -177,21 +197,6 @@ def receipt_create(request):
                     company=company
                 )
 
-                VoucherAllocation.objects.create(
-                    receipt_voucher=voucher,
-                    sales_invoice=invoice,
-                    amount=amount_decimal
-                )
-
-                print("========== CHECK ==========")
-                print("Invoice :", invoice.invoice_no)
-                print("Voucher :", voucher.voucher_no)
-                print("Cash Account :", voucher.cash_account)
-                print(
-                    "Cash Account Name :",
-                    voucher.cash_account.name if voucher.cash_account else ""
-                )
-                print("===========================")
 
                 VoucherAllocation.objects.create(
                     receipt_voucher=voucher,

@@ -1,0 +1,148 @@
+<header class="store-header">
+
+    <div class="container">
+
+        <div class="row align-items-center gy-3">
+
+
+            <!-- Logo -->
+
+            <div class="col-lg-3 col-md-4 col-12">
+
+                <a href="{% url 'ecommerce:home' store.slug %}"
+                   class="store-logo">
+
+
+                    {% if store.logo %}
+
+                        <img
+                            src="{{ store.logo.url }}"
+                            alt="{{ store.name }}"
+                            class="store-logo-img">
+
+                    {% endif %}
+
+
+                    <span class="store-name">
+
+                        {{ store.name }}
+
+                    </span>
+
+
+                </a>
+
+            </div>
+
+
+
+
+            <!-- Search -->
+
+            <div class="col-lg-5 col-md-4 col-12">
+
+                {% include "ecommerce/includes/search.html" %}
+
+            </div>
+
+
+
+
+            <!-- Actions -->
+
+            <div class="col-lg-4 col-md-4 col-12">
+
+
+                <div class="store-actions">
+
+
+                    <!-- Cart -->
+
+                    <a href="{% url 'ecommerce:cart' store.slug %}"
+                       class="action-item"
+                       title="السلة">
+
+
+                        <i class="bi bi-cart3"></i>
+
+
+                        <span class="action-count">
+
+                            {{ cart_count|default:"0" }}
+
+                        </span>
+
+
+                    </a>
+
+
+
+
+<!-- Wishlist -->
+
+<a href="{% url 'ecommerce:wishlist' store.slug %}"
+   class="action-item"
+   title="المفضلة">
+
+
+    <i class="bi bi-heart"></i>
+
+
+    <span id="wishlistCount" class="action-count">
+
+        {{ wishlist_count|default:"0" }}
+
+    </span>
+
+
+</a>
+
+
+
+                    <!-- Account -->
+
+                    {% if user.is_authenticated %}
+
+
+                        <a href="{% url 'ecommerce:account' store.slug %}"
+                           class="action-item"
+                           title="حسابي">
+
+
+                            <i class="bi bi-person-circle"></i>
+
+
+                        </a>
+
+
+                    {% else %}
+
+
+                        <a href="{% url 'login' %}"
+                           class="action-item"
+                           title="تسجيل الدخول">
+
+
+                            <i class="bi bi-box-arrow-in-right"></i>
+
+
+                        </a>
+
+
+                    {% endif %}
+
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</header>

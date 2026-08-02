@@ -1,0 +1,636 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+
+{% block title %}
+طرق الدفع
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'ecommerce/css/payment_methods.css' %}">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
+	
+
+<!-- ================= STORE TOP BAR ================= -->
+
+<div class="store-top-bar">
+
+    <div>
+
+        <i class="bi bi-shop"></i>
+
+        <strong>
+            لوحة تحكم المتجر
+        </strong>
+
+        <span>
+            إدارة المتجر والإعدادات
+        </span>
+
+    </div>
+
+</div>
+
+
+<div class="container-fluid payment-page">
+
+<div class="container-fluid payment-page">
+
+
+
+<!-- ================= HEADER ================= -->
+
+
+<div class="payment-header">
+
+
+    <div>
+
+
+        <div class="payment-breadcrumb">
+
+
+            <a href="{% url 'ecommerce:dashboard_settings' store.slug %}">
+
+                إعدادات المتجر
+
+            </a>
+
+
+            <i class="bi bi-chevron-left"></i>
+
+
+            <span>
+
+                طرق الدفع
+
+            </span>
+
+
+        </div>
+
+
+
+
+
+        <h1>
+
+            <i class="bi bi-credit-card-2-front-fill"></i>
+
+            طرق الدفع
+
+        </h1>
+
+
+
+
+
+        <p>
+
+            اختر وسائل الدفع التي تريد إتاحتها لعملائك،
+            وقم بإدارة إعدادات كل وسيلة بسهولة.
+
+        </p>
+
+
+
+    </div>
+
+
+
+
+
+    <div class="payment-header-icon">
+
+        <i class="bi bi-wallet2"></i>
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- ================= PAYMENT CARDS ================= -->
+
+
+<div class="payment-card-grid">
+
+
+
+{% for method in payment_methods %}
+
+{% if method.payment_type != "card" and method.payment_type != "online" %}
+
+
+
+
+<div class="payment-card
+{% if method.payment_type == 'cash' %} payment-cod
+{% elif method.payment_type == 'bank' %} payment-bank
+{% elif method.payment_type == 'card' %} payment-cardpay
+{% elif method.payment_type == 'online' %} payment-stc
+{% endif %}
+">
+
+
+    <!-- ICON -->
+
+
+    <div class="payment-icon">
+
+
+        {% if method.payment_type == "cash" %}
+
+            <i class="bi bi-cash-stack"></i>
+
+
+        {% elif method.payment_type == "bank" %}
+
+            <i class="bi bi-bank"></i>
+
+
+        {% elif method.payment_type == "card" %}
+
+            <i class="bi bi-credit-card"></i>
+
+
+        {% elif method.payment_type == "online" %}
+
+            <i class="bi bi-globe"></i>
+
+
+        {% else %}
+
+            <i class="bi bi-wallet2"></i>
+
+
+        {% endif %}
+
+
+
+    </div>
+
+
+
+
+    <div class="payment-title">
+
+        <h4>
+
+            {{ method.name }}
+
+        </h4>
+
+    </div>
+
+
+
+    <div class="payment-description">
+    {% if method.payment_type == "cash" %}
+
+
+        <p>
+
+            يدفع العميل عند استلام الطلب.
+
+        </p>
+
+
+
+    {% elif method.payment_type == "bank" %}
+
+
+        <p>
+
+            تحويل بنكي مباشر إلى حساب المتجر.
+
+        </p>
+
+
+
+
+
+        <div class="bank-info mt-3">
+
+
+
+            {% if method.bank_name %}
+
+            <p>
+
+                <i class="bi bi-bank"></i>
+
+                البنك:
+
+                <strong>
+
+                    {{ method.bank_name }}
+
+                </strong>
+
+            </p>
+
+            {% endif %}
+
+
+
+
+
+
+            {% if method.account_name %}
+
+            <p>
+
+                <i class="bi bi-person"></i>
+
+                اسم الحساب:
+
+                <strong>
+
+                    {{ method.account_name }}
+
+                </strong>
+
+            </p>
+
+            {% endif %}
+
+
+
+
+
+
+            {% if method.account_number %}
+
+            <p>
+
+                <i class="bi bi-123"></i>
+
+                رقم الحساب:
+
+                <strong>
+
+                    {{ method.account_number }}
+
+                </strong>
+
+            </p>
+
+            {% endif %}
+
+
+
+
+
+
+            {% if method.iban %}
+
+            <p>
+
+                <i class="bi bi-credit-card"></i>
+
+                IBAN:
+
+                <strong>
+
+                    {{ method.iban }}
+
+                </strong>
+
+            </p>
+
+            {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+{% elif method.payment_type == "card" %}
+
+<p>
+    Visa - Mada - Mastercard.
+</p>
+
+<div class="bank-info mt-3">
+
+    {% if method.gateway_name %}
+    <p>
+        <i class="bi bi-credit-card"></i>
+        البوابة:
+        <strong>{{ method.gateway_name }}</strong>
+    </p>
+    {% endif %}
+
+    {% if method.gateway_key %}
+    <p>
+        <i class="bi bi-key"></i>
+        مفتاح البوابة (Gateway Key):
+        <strong>{{ method.gateway_key }}</strong>
+    </p>
+    {% endif %}
+
+</div>
+
+
+{% elif method.payment_type == "online" %}
+
+<p>
+    الدفع عبر بوابات الدفع الإلكترونية.
+</p>
+
+<div class="bank-info mt-3">
+
+    {% if method.gateway_name %}
+    <p>
+        <i class="bi bi-globe"></i>
+        المزود:
+        <strong>{{ method.gateway_name }}</strong>
+    </p>
+    {% endif %}
+
+    {% if method.gateway_key %}
+    <p>
+        <i class="bi bi-key"></i>
+        مفتاح البوابة (Gateway Key):
+        <strong>{{ method.gateway_key }}</strong>
+    </p>
+    {% endif %}
+
+</div>
+
+
+
+
+
+    {% else %}
+
+
+
+        <p>
+
+            وسيلة دفع إلكترونية.
+
+        </p>
+
+
+
+{% endif %}
+
+{% if method.payment_type != "cash" %}
+
+
+<div class="text-center mt-3">
+
+    <a href="{% url 'ecommerce:payment_method_edit' store.slug method.id %}"
+       class="btn btn-outline-primary btn-sm payment-settings-btn">
+
+        <i class="bi bi-gear-fill me-1"></i>
+
+        إعدادات
+
+    </a>
+
+
+</div>
+
+{% endif %}
+
+</div>
+
+
+<!-- ================= STATUS ================= -->
+<div class="payment-status {% if method.is_active %}enabled{% else %}disabled{% endif %}">
+
+    <i class="status-icon bi {% if method.is_active %}bi-check-circle-fill{% else %}bi-x-circle-fill{% endif %}"></i>
+
+    <span class="status-text">
+
+        {% if method.is_active %}
+            مفعل
+        {% else %}
+            غير مفعل
+        {% endif %}
+
+    </span>
+
+</div>
+
+
+
+
+<!-- ================= FOOTER ================= -->
+
+
+<div class="payment-footer">
+
+
+<form method="post"
+
+      action="{% url 'ecommerce:payment_method_toggle' store.slug %}"
+
+      class="payment-toggle-form">
+
+
+{% csrf_token %}
+
+
+
+
+        <input type="hidden"
+
+               name="method_id"
+
+               value="{{ method.id }}">
+
+
+
+
+
+
+<div class="pm-switch">
+
+
+<input
+    type="checkbox"
+    class="payment-toggle"
+    name="is_active"
+    {% if method.is_active %}
+    checked
+    {% endif %}
+>
+
+<span class="pm-slider"></span>
+
+
+
+
+</div>
+
+
+
+
+    </form>
+
+
+
+</div>
+
+
+</div>
+
+
+{% endif %}
+
+
+{% empty %}
+
+
+
+<!-- ================= EMPTY ================= -->
+
+
+<div class="payment-empty">
+
+
+    <i class="bi bi-credit-card"></i>
+
+
+    <h4>
+
+        لا توجد طرق دفع
+
+    </h4>
+
+
+    <p>
+
+        لا توجد طرق دفع مضافة لهذا المتجر حالياً.
+
+    </p>
+
+
+
+</div>
+
+
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+{% endblock %}
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".payment-toggle").forEach(function(toggle){
+
+        toggle.addEventListener("change", function(){
+
+            const form = this.closest("form");
+
+            const card = this.closest(".payment-card");
+
+            const status = card.querySelector(".payment-status");
+
+            const text = card.querySelector(".status-text");
+
+            const icon = card.querySelector(".status-icon");
+
+            const formData = new FormData(form);
+
+            fetch(form.action,{
+
+                method:"POST",
+
+                body:formData,
+
+                headers:{
+                    "X-Requested-With":"XMLHttpRequest"
+                }
+
+            })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if(data.success){
+
+                    if(data.is_active){
+
+                        status.classList.remove("disabled");
+
+                        status.classList.add("enabled");
+
+                        text.textContent = "مفعل";
+
+                        icon.className = "status-icon bi bi-check-circle-fill";
+
+                    }else{
+
+                        status.classList.remove("enabled");
+
+                        status.classList.add("disabled");
+
+                        text.textContent = "غير مفعل";
+
+                        icon.className = "status-icon bi bi-x-circle-fill";
+
+                    }
+
+                }
+
+            });
+
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

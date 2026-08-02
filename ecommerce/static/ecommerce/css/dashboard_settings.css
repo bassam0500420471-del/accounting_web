@@ -1,0 +1,1160 @@
+/*==================================================
+            ALRAED ERP - SETTINGS
+==================================================*/
+
+:root{
+
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+
+    --success:#16a34a;
+
+    --warning:#f59e0b;
+
+    --danger:#dc2626;
+
+    --gray:#6b7280;
+
+    --border:#e5e7eb;
+
+    --light:#f8fafc;
+
+    --card:#ffffff;
+
+    --shadow:0 10px 30px rgba(15,23,42,.08);
+
+    --radius:18px;
+
+}
+
+
+/*==================================================
+                    PAGE
+==================================================*/
+
+.settings-header{
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:35px;
+
+    margin-bottom:30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+.settings-header h1{
+
+    font-size:32px;
+
+    font-weight:700;
+
+    margin-top:10px;
+
+    margin-bottom:10px;
+
+}
+
+
+.settings-header p{
+
+    color:var(--gray);
+
+    font-size:15px;
+
+    margin:0;
+
+}
+
+
+.header-icon{
+
+    width:95px;
+    height:95px;
+
+    border-radius:24px;
+
+    background:linear-gradient(
+        135deg,
+        #374151,
+        #9ca3af
+    );
+
+    color:#fff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:42px;
+
+}
+
+
+.breadcrumb-nav{
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+    font-size:14px;
+
+    color:var(--gray);
+
+}
+
+
+.breadcrumb-nav a{
+
+    color:var(--primary);
+
+    text-decoration:none;
+
+}
+
+.breadcrumb-nav a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/*==================================================
+                    CARD
+==================================================*/
+
+.premium-card{
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:var(--shadow);
+
+    transition:.30s;
+
+}
+
+
+.premium-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+    0 18px 40px rgba(0,0,0,.08);
+
+}
+
+
+.card-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:25px;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+
+.card-title i{
+
+    color:var(--primary);
+
+    font-size:24px;
+
+}
+/*==================================================
+                FORM
+==================================================*/
+
+.form-group{
+
+    margin-bottom:25px;
+
+}
+
+.form-group label{
+
+    display:block;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    margin-bottom:10px;
+
+    color:#1f2937;
+
+}
+
+.input-icon{
+
+    position:relative;
+
+}
+
+.input-icon i{
+
+    position:absolute;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    right:18px;
+
+    color:#9ca3af;
+
+    font-size:18px;
+
+    transition:.25s;
+
+    z-index:2;
+
+}
+
+.input-icon .form-control{
+
+    padding-right:52px;
+
+}
+
+.form-control{
+
+    height:58px;
+
+    border-radius:16px;
+
+    border:1px solid var(--border);
+
+    background:#fff;
+
+    font-size:15px;
+
+    transition:.25s;
+
+    box-shadow:none;
+
+}
+
+.form-control:hover{
+
+    border-color:#cbd5e1;
+
+}
+
+.form-control:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+
+}
+
+.input-icon:focus-within i{
+
+    color:var(--primary);
+
+}
+
+
+/*==================================================
+                PREVIEW
+==================================================*/
+
+.preview-card{
+
+    position:sticky;
+
+    top:20px;
+
+}
+
+.store-preview{
+
+    text-align:center;
+
+}
+
+.preview-icon{
+
+    width:90px;
+
+    height:90px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:38px;
+
+    margin-bottom:20px;
+
+}
+
+.store-preview h5{
+
+    font-size:24px;
+
+    font-weight:700;
+
+    margin-bottom:25px;
+
+}
+
+.preview-address{
+
+    background:#f8fafc;
+
+    border:1px dashed #d1d5db;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    text-align:right;
+
+}
+
+.preview-address p{
+
+    margin-bottom:12px;
+
+    color:#374151;
+
+    font-size:15px;
+
+}
+
+.preview-address p:last-child{
+
+    margin-bottom:0;
+
+}
+
+.btn-map{
+
+    margin-top:20px;
+
+    width:100%;
+
+    height:52px;
+
+    border-radius:14px;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    border:none;
+
+    transition:.25s;
+
+}
+
+.btn-map:hover{
+
+    background:#1d4ed8;
+
+    color:#fff;
+
+}
+/*==================================================
+        ALRAED ERP SETTINGS PRO ENHANCEMENT
+==================================================*/
+
+
+body{
+
+    background:#f1f5f9;
+
+}
+
+
+/* MAIN SETTINGS GRID */
+
+.settings-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:30px;
+
+    align-items:start;
+
+}
+
+
+
+/* SECTION HEADER */
+
+.settings-section{
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:30px;
+
+}
+
+
+.settings-section-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding-bottom:20px;
+
+    margin-bottom:25px;
+
+    border-bottom:1px solid #eef2f7;
+
+}
+
+
+.settings-section-header h3{
+
+    margin:0;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+
+
+.settings-section-header i{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:14px;
+
+    background:#eff6ff;
+
+    color:var(--primary);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:20px;
+
+}
+
+
+
+/* BUTTONS */
+
+.btn-primary{
+
+    height:52px;
+
+    padding:0 28px;
+
+    border-radius:14px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    border:none;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+
+
+.btn-primary:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(37,99,235,.25);
+
+}
+
+
+
+/* SWITCH */
+
+.switch{
+
+    position:relative;
+
+    display:inline-block;
+
+    width:55px;
+
+    height:30px;
+
+}
+
+
+.switch input{
+
+    display:none;
+
+}
+
+
+.slider{
+
+    position:absolute;
+
+    inset:0;
+
+    background:#cbd5e1;
+
+    border-radius:30px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+.slider:before{
+
+    content:"";
+
+    position:absolute;
+
+    width:24px;
+
+    height:24px;
+
+    right:3px;
+
+    top:3px;
+
+    background:white;
+
+    border-radius:50%;
+
+    transition:.3s;
+
+    box-shadow:0 2px 5px #999;
+
+}
+
+
+
+.switch input:checked + .slider{
+
+    background:#2563eb;
+
+}
+
+
+.switch input:checked + .slider:before{
+
+    transform:translateX(-25px);
+
+}
+
+
+
+/* INFO BOX */
+
+.info-box{
+
+    background:#eff6ff;
+
+    border:1px solid #dbeafe;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    color:#1e40af;
+
+    display:flex;
+
+    gap:12px;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+/* IMAGE UPLOAD */
+
+.logo-upload{
+
+    border:2px dashed #cbd5e1;
+
+    border-radius:20px;
+
+    height:180px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-direction:column;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+.logo-upload:hover{
+
+    border-color:var(--primary);
+
+    background:#eff6ff;
+
+}
+
+
+.logo-upload i{
+
+    font-size:40px;
+
+    color:#94a3b8;
+
+    margin-bottom:10px;
+
+}
+
+
+
+/* TABLE SETTINGS */
+
+.settings-table{
+
+    width:100%;
+
+    border-collapse:separate;
+
+    border-spacing:0 12px;
+
+}
+
+
+.settings-table tr{
+
+    background:white;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.04);
+
+}
+
+
+.settings-table td{
+
+    padding:18px;
+
+}
+
+
+.settings-table td:first-child{
+
+    border-radius:15px 0 0 15px;
+
+}
+
+
+.settings-table td:last-child{
+
+    border-radius:0 15px 15px 0;
+
+}
+
+
+
+/* MOBILE */
+
+@media(max-width:992px){
+
+
+.settings-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+
+.settings-header{
+
+    flex-direction:column;
+
+    text-align:center;
+
+    gap:20px;
+
+}
+
+
+.header-icon{
+
+    width:75px;
+
+    height:75px;
+
+    font-size:32px;
+
+}
+
+
+}
+
+/*==================================================
+              STORE TOP BAR
+==================================================*/
+
+.store-top-bar{
+
+    background:#111827;
+
+    color:#ffffff;
+
+    padding:25px 35px;   /* زودنا الارتفاع والعرض الداخلي */
+
+    border-radius:0 0 22px 22px;
+
+    margin-bottom:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center; /* يخلي المحتوى في المنتصف */
+
+    gap:15px;
+
+    width:100%;            /* يمتد بعرض الصفحة */
+
+    min-height:75px;       /* ارتفاع أكبر */
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.18);
+
+    font-size:20px;
+
+}
+
+
+.store-top-bar i{
+
+    font-size:30px;
+
+}
+
+
+.store-top-bar span{
+
+    color:#cbd5e1;
+
+    font-size:16px;
+
+    margin-right:10px;
+
+    font-weight:400;
+
+}
+
+/* SETTINGS BOX PRO */
+
+.settings-box{
+
+    min-height:260px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+
+.settings-box .card-title{
+
+    font-size:24px;
+
+}
+
+
+.settings-box p{
+
+    color:#64748b;
+
+    line-height:2;
+
+    margin-bottom:30px;
+
+}
+
+
+.settings-box .btn{
+
+    width:160px;
+
+}
+
+/*==================================================
+        SETTINGS CARDS COLORFUL PRO
+==================================================*/
+
+
+.settings-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+
+    gap:28px;
+
+}
+
+
+
+/* جميع الكروت */
+
+.settings-box{
+
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:240px;
+
+    padding:30px;
+
+    border-radius:24px;
+
+    background:#ffffff;
+
+    box-shadow:0 15px 35px rgba(15,23,42,.10);
+
+    border-top:6px solid transparent;
+
+    transition:.35s;
+
+}
+
+
+
+/* حركة */
+
+.settings-box:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 25px 50px rgba(15,23,42,.15);
+
+}
+
+
+
+
+/* دوائر خلفية */
+
+.settings-box::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:150px;
+
+    height:150px;
+
+    border-radius:50%;
+
+    left:-50px;
+
+    top:-50px;
+
+    opacity:.35;
+
+}
+
+
+
+
+
+/* عنوان المتجر */
+
+/*==================================================
+        GRAY SETTINGS CARDS
+==================================================*/
+
+
+.address-card{
+
+    border-top-color:#64748b;
+
+}
+
+
+.address-card::after{
+
+    background:#cbd5e1;
+
+}
+
+
+
+.address-card .card-title i{
+
+    background:linear-gradient(
+        135deg,
+        #64748b,
+        #94a3b8
+    );
+
+    color:white;
+
+}
+
+
+
+
+
+/* طرق الدفع */
+
+.payment-settings-card{
+
+    border-top-color:#475569;
+
+}
+
+
+
+.payment-settings-card::after{
+
+    background:#cbd5e1;
+
+}
+
+
+
+
+.payment-settings-card .card-title i{
+
+    background:linear-gradient(
+        135deg,
+        #475569,
+        #94a3b8
+    );
+
+    color:white;
+
+}
+
+
+
+
+ /* طريقة الدفع - رمادي */
+
+.payment-settings-card{
+
+    border-top-color:#64748b;
+
+}
+
+
+.payment-settings-card::after{
+
+    background:#cbd5e1;
+
+}
+
+
+
+.payment-settings-card .card-title i{
+
+    background:linear-gradient(
+        135deg,
+        #64748b,
+        #94a3b8
+    );
+
+    color:white;
+
+}
+
+
+
+/* العنوان */
+
+.settings-box .card-title{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:25px;
+
+}
+
+
+
+
+
+.settings-box p{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:16px;
+
+    color:#475569;
+
+}
+
+
+
+
+
+.settings-box .btn{
+
+    position:relative;
+
+    z-index:2;
+
+    width:180px;
+
+    justify-content:center;
+
+    height:50px;
+
+}
+
+
+
+
+
+/* زر العنوان */
+
+.address-card .btn{
+
+    background:linear-gradient(
+        135deg,
+        #64748b,
+        #475569
+    );
+
+}
+
+
+
+
+
+/* زر الدفع */
+
+.payment-settings-card .btn{
+
+    background:linear-gradient(
+        135deg,
+        #64748b,
+        #475569
+    );
+
+}
+
+
+
+/* ICON CIRCLE */
+
+.card-title i{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+
+
+
+@media(max-width:768px){
+
+.settings-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+
+.settings-box{
+
+    min-height:220px;
+
+}
+
+
+}

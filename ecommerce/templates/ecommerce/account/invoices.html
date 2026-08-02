@@ -1,0 +1,66 @@
+{% extends "ecommerce/base_store.html" %}
+
+{% block title %}
+فواتيري
+{% endblock %}
+
+
+{% block content %}
+
+<section class="account-page py-5">
+
+<div class="container">
+
+    <h2 class="mb-4">
+        🧾 فواتيري
+    </h2>
+
+
+    {% if invoices %}
+
+        <div class="table-responsive">
+
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>رقم الفاتورة</th>
+                        <th>التاريخ</th>
+                        <th>المبلغ</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for invoice in invoices %}
+
+                    <tr>
+                        <td>{{ invoice.invoice_no }}</td>
+                        <td>{{ invoice.date }}</td>
+                        <td>{{ invoice.total }}</td>
+                        <td>{{ invoice.status }}</td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-info">
+            لا توجد فواتير حالياً
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+</section>
+
+{% endblock %}

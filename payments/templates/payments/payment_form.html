@@ -55,6 +55,7 @@
         </select>
 
         <!-- hidden fields -->
+        <input type="hidden" name="party_type" id="partyTypeInput">
         <input type="hidden" name="supplier" id="supplierInput">
         <input type="hidden" name="customer" id="customerInput">
 
@@ -114,38 +115,57 @@
     }
 
     $(document).ready(function(){
+
         initSelect2();
 
         $("#partyType").on("change", function(){
+
             const t = $(this).val();
+
+            $("#partyTypeInput").val(t);
 
             $("#supplierInput").val("");
             $("#customerInput").val("");
 
             if (!t){
+
                 $("#partySelect")
                     .html('<option value="">{% trans "-- Select Party Type First --" %}</option>');
+
                 initSelect2();
+
                 return;
             }
 
             loadParties(t);
+
         });
 
+
         $("#partySelect").on("change", function(){
+
             const partyId = $(this).val();
             const partyType = $("#partyType").val();
+
+            $("#partyTypeInput").val(partyType);
 
             $("#supplierInput").val("");
             $("#customerInput").val("");
 
             if (partyType === "supplier"){
+
                 $("#supplierInput").val(partyId);
+
             } else if (partyType === "customer"){
+
                 $("#customerInput").val(partyId);
+
             }
+
         });
+
     });
+
 </script>
 
 {% endblock %}

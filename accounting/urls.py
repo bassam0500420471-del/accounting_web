@@ -13,6 +13,8 @@ from accounting.views.account_views import (
     account_view,
     account_ledger,
     add_child_account,
+    account_edit,
+    account_delete,
 )
 
 app_name = "accounting"
@@ -25,6 +27,7 @@ urlpatterns = [
     path("chart/", chart_tree_page, name="chart_tree"),
     path("api/chart/", chart_tree_api, name="chart_tree_api"),
 
+
     # =========================
     # 📘 القيود اليومية
     # =========================
@@ -33,10 +36,36 @@ urlpatterns = [
     path("journals/<int:pk>/", journal_view, name="journal_view"),
     path("journals/<int:pk>/post/", journal_post, name="journal_post"),
 
+
     # =========================
     # 👁️ عرض الحساب
     # =========================
-    path("accounts/<int:pk>/view/", account_view, name="account_view"),
+    path(
+        "accounts/<int:pk>/view/",
+        account_view,
+        name="account_view",
+    ),
+
+
+    # =========================
+    # ✏️ تعديل الحساب
+    # =========================
+    path(
+        "accounts/<int:pk>/edit/",
+        account_edit,
+        name="account_edit",
+    ),
+
+
+    # =========================
+    # 🗑️ حذف الحساب
+    # =========================
+    path(
+        "accounts/<int:pk>/delete/",
+        account_delete,
+        name="account_delete",
+    ),
+
 
     # =========================
     # 📊 حركة الحساب
@@ -46,6 +75,7 @@ urlpatterns = [
         account_ledger,
         name="account_ledger",
     ),
+
 
     # =========================
     # ➕ إضافة حساب فرعي

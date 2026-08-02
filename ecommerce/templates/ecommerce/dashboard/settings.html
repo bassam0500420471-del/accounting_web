@@ -1,0 +1,247 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+
+{% block title %}
+إعدادات المتجر
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'ecommerce/css/dashboard_settings.css' %}">
+
+{% endblock %}
+
+
+
+
+
+{% block content %}
+
+
+<div class="container-fluid settings-page">
+
+
+    <!-- STORE TOP BAR -->
+
+    <div class="store-top-bar">
+
+        <i class="fa-solid fa-truck-fast"></i>
+
+        <strong>
+            شحن سريع وآمن
+        </strong>
+
+        <span>
+            إدارة متجرك الإلكتروني بسهولة واحترافية
+        </span>
+
+    </div>
+
+
+
+
+
+    <!-- HEADER -->
+
+    <div class="settings-header">
+
+
+        <div>
+
+
+            <!-- Breadcrumb -->
+
+            <div class="breadcrumb-nav">
+
+
+                <a href="#">
+                    لوحة التحكم
+                </a>
+
+
+                <i class="fa-solid fa-angle-left"></i>
+
+
+                <span>
+                    إعدادات المتجر
+                </span>
+
+
+            </div>
+
+
+
+
+
+            <h1>
+
+                <i class="fa-solid fa-gear"></i>
+
+                إعدادات المتجر
+
+            </h1>
+
+
+
+
+
+            <p>
+
+                إدارة إعدادات المتجر الإلكتروني والتخصيص والدفع والشحن
+
+            </p>
+
+
+
+        </div>
+
+
+
+
+
+        <div class="header-icon">
+
+            <i class="fa-solid fa-store"></i>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+    <!-- SETTINGS CARDS -->
+
+
+    <div class="settings-grid">
+
+
+
+
+
+        <!-- عنوان المتجر -->
+
+
+        <div class="premium-card settings-card address-card settings-box">
+
+
+            <div class="card-title">
+
+
+                <i class="fa-solid fa-location-dot"></i>
+
+
+                <span>
+                    عنوان المتجر
+                </span>
+
+
+            </div>
+
+
+
+
+
+            <p>
+
+                إدارة عنوان المتجر والموقع الذي يظهر للعملاء
+
+            </p>
+
+
+
+
+
+            <a href="{% url 'ecommerce:store_address' store_slug=store.slug %}"
+
+               class="btn btn-primary">
+
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                فتح الإعدادات
+
+
+            </a>
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <!-- طرق الدفع -->
+
+
+        <div class="premium-card settings-card payment-settings-card settings-box">
+
+
+            <div class="card-title">
+
+
+                <i class="fa-solid fa-credit-card"></i>
+
+
+                <span>
+                    طرق الدفع
+                </span>
+
+
+            </div>
+
+
+
+
+
+            <p>
+
+                إدارة وسائل الدفع التي تظهر للعملاء
+
+            </p>
+
+
+
+
+
+            <a href="{% url 'ecommerce:payment_methods' store_slug=store.slug %}"
+
+               class="btn btn-success">
+
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                فتح الإعدادات
+
+
+            </a>
+
+
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}

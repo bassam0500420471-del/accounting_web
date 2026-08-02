@@ -1,0 +1,96 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}
+{% trans "دفع فاتورة مشتريات" %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="fw-bold mb-4">
+        💰 {% trans "دفع فاتورة مشتريات" %}
+    </h3>
+
+
+    <div class="card p-4">
+
+
+        <p>
+            {% trans "رقم الفاتورة" %}:
+            <strong>{{ invoice.invoice_no }}</strong>
+        </p>
+
+
+        <p>
+            {% trans "المورد" %}:
+            <strong>{{ invoice.supplier.commercial_name }}</strong>
+        </p>
+
+
+        <p>
+            {% trans "إجمالي الفاتورة" %}:
+            <strong>
+                {{ invoice.total_after_tax|floatformat:2 }}
+            </strong>
+        </p>
+
+
+        <p>
+            {% trans "المدفوع سابقاً" %}:
+            <strong>
+                {{ invoice.paid_amount|floatformat:2 }}
+            </strong>
+        </p>
+
+
+        <p>
+            {% trans "المتبقي" %}:
+            <strong class="text-danger">
+                {{ remaining|floatformat:2 }}
+            </strong>
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <div class="mb-3">
+
+                <label class="form-label fw-bold">
+                    {% trans "المبلغ المراد دفعه" %}
+                </label>
+
+
+                <input 
+                    type="number"
+                    name="amount"
+                    step="0.01"
+                    min="0.01"
+                    max="{{ remaining }}"
+                    value="{{ remaining }}"
+                    class="form-control"
+                    placeholder="{% trans 'اكتب المبلغ' %}"
+                    required
+                >
+
+            </div>
+
+
+            <button type="submit" class="btn btn-success">
+                💰 {% trans "تأكيد الدفع" %}
+            </button>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

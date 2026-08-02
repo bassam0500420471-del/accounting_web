@@ -1,0 +1,792 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+
+{% block title %}
+عنوان المتجر
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'ecommerce/css/dashboard_settings.css' %}">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="store-top-bar"
+style="background:#111827;color:white;padding:20px;border-radius:15px;margin-bottom:25px;">
+
+    <i class="bi bi-shop"></i>
+
+    <strong>
+        لوحة تحكم المتجر
+    </strong>
+
+    <span>
+        إدارة المتجر والإعدادات
+    </span>
+
+</div>
+
+
+
+<div class="container-fluid settings-page">
+
+
+
+<div class="settings-header">
+
+
+<div>
+
+
+<nav class="breadcrumb-nav">
+
+
+<a href="{% url 'ecommerce:dashboard' store.slug %}">
+لوحة التحكم
+</a>
+
+
+<i class="bi bi-chevron-left"></i>
+
+
+<a href="{% url 'ecommerce:dashboard_settings' store.slug %}">
+إعدادات المتجر
+</a>
+
+
+<i class="bi bi-chevron-left"></i>
+
+
+<span>
+عنوان المتجر
+</span>
+
+
+</nav>
+
+
+
+
+<h1>
+
+<i class="bi bi-geo-alt-fill"></i>
+
+عنوان المتجر
+
+</h1>
+
+
+
+<p>
+أدخل عنوان متجرك الذي سيشاهده العملاء أثناء التسوق.
+</p>
+
+
+
+</div>
+
+
+
+<div class="header-icon">
+
+<i class="bi bi-shop-window"></i>
+
+</div>
+
+
+</div>
+
+
+
+
+<form method="post">
+
+{% csrf_token %}
+
+
+
+<div class="settings-grid">
+
+
+<div>
+
+
+<div class="premium-card">
+
+
+<div class="card-title">
+
+<i class="bi bi-pin-map-fill"></i>
+
+<span>
+بيانات عنوان المتجر
+</span>
+
+</div>
+
+
+
+<div class="row g-3">
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+الدولة
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-globe2"></i>
+
+
+<input
+type="text"
+name="country"
+value="{{ store.country|default:'' }}"
+placeholder="المملكة العربية السعودية"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+
+<label>
+المدينة
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-buildings"></i>
+
+
+<input
+type="text"
+name="city"
+value="{{ store.city|default:'' }}"
+placeholder="مثال : جدة"
+class="form-control">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- الحي -->
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+الحي
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-signpost"></i>
+
+
+<input
+type="text"
+name="district"
+value="{{ store.district|default:'' }}"
+placeholder="اسم الحي"
+class="form-control">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- الشارع -->
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+الشارع
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-map"></i>
+
+
+<input
+type="text"
+name="street"
+value="{{ store.street|default:'' }}"
+placeholder="اسم الشارع"
+class="form-control">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<!-- رقم المبنى -->
+
+<div class="col-md-4">
+
+<div class="form-group">
+
+<label>
+رقم المبنى
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-123"></i>
+
+
+<input
+type="text"
+name="building_no"
+value="{{ store.building_no|default:'' }}"
+placeholder="اختياري"
+class="form-control">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+<!-- رقم الوحدة -->
+
+<div class="col-md-4">
+
+<div class="form-group">
+
+<label>
+رقم الوحدة
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-door-open"></i>
+
+
+<input
+type="text"
+name="unit_no"
+value="{{ store.unit_no|default:'' }}"
+placeholder="اختياري"
+class="form-control">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+<!-- الرمز البريدي -->
+
+<div class="col-md-4">
+
+<div class="form-group">
+
+<label>
+الرمز البريدي
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-mailbox"></i>
+
+
+<input
+type="text"
+name="postal_code"
+value="{{ store.postal_code|default:'' }}"
+placeholder="12345"
+class="form-control">
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+<!-- رابط الخريطة -->
+
+<div class="col-12">
+
+
+<div class="form-group">
+
+
+<label>
+رابط خرائط Google
+</label>
+
+
+<div class="input-icon">
+
+
+<i class="bi bi-geo-alt"></i>
+
+
+<input
+type="url"
+name="google_map_url"
+value="{{ store.google_map_url|default:'' }}"
+placeholder="https://maps.google.com/..."
+class="form-control">
+
+
+</div>
+
+
+<small class="text-muted">
+
+اختياري، لإظهار زر عرض الموقع للعملاء.
+
+</small>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+<!-- معاينة العميل -->
+
+<div>
+
+
+<div class="premium-card preview-card">
+
+
+<div class="card-title">
+
+<i class="bi bi-phone-fill"></i>
+
+<span>
+معاينة للعميل
+</span>
+
+</div>
+
+
+
+<div class="store-preview">
+
+
+
+<div class="preview-icon">
+
+<i class="bi bi-shop"></i>
+
+</div>
+
+
+
+
+<h5 id="preview_store_name">
+
+{{ store.name }}
+
+</h5>
+
+
+
+
+<div class="preview-address">
+
+
+<p>
+
+<i class="bi bi-globe2"></i>
+
+{{ store.country|default:"الدولة" }}
+
+</p>
+
+
+
+<p>
+
+<i class="bi bi-buildings"></i>
+
+{{ store.city|default:"المدينة" }}
+
+</p>
+
+
+
+<p>
+
+<i class="bi bi-signpost"></i>
+
+{{ store.district|default:"الحي" }}
+
+</p>
+
+
+
+<p>
+
+<i class="bi bi-map"></i>
+
+{{ store.street|default:"الشارع" }}
+
+</p>
+
+
+
+<p>
+
+<i class="bi bi-mailbox"></i>
+
+{{ store.postal_code|default:"الرمز البريدي" }}
+
+</p>
+
+
+</div>
+
+
+
+
+
+{% if store.google_map_url %}
+
+
+<a
+
+href="{{ store.google_map_url }}"
+
+target="_blank"
+
+class="btn-map d-flex align-items-center justify-content-center text-decoration-none">
+
+
+<i class="bi bi-geo-alt-fill"></i>
+
+
+عرض على الخريطة
+
+
+</a>
+
+
+
+{% else %}
+
+
+
+<button
+
+type="button"
+
+class="btn-map"
+
+onclick="alert('لم يتم إضافة رابط خرائط Google للمتجر')">
+
+
+<i class="bi bi-geo-alt-fill"></i>
+
+
+عرض على الخريطة
+
+
+</button>
+
+
+{% endif %}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- خيارات الظهور -->
+
+
+<div class="premium-card mt-4">
+
+
+<div class="card-title">
+
+<i class="bi bi-eye-fill"></i>
+
+
+<span>
+خيارات الظهور
+</span>
+
+</div>
+
+
+
+
+
+<div class="row g-3">
+
+
+
+<div class="col-12">
+
+
+<div class="setting-box">
+
+
+<div>
+
+<h6>
+إظهار العنوان
+</h6>
+
+
+<small>
+سيظهر عنوان المتجر داخل صفحة المتجر.
+</small>
+
+
+</div>
+
+
+
+<div class="form-check form-switch m-0">
+
+
+<input
+
+class="form-check-input"
+
+type="checkbox"
+
+id="show_address"
+
+name="show_address"
+
+checked>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-12">
+
+
+<div class="setting-box">
+
+
+<div>
+
+<h6>
+إظهار الخريطة
+</h6>
+
+
+<small>
+إظهار زر عرض الموقع على Google Maps.
+</small>
+
+
+</div>
+
+
+
+<div class="form-check form-switch m-0">
+
+
+<input
+
+class="form-check-input"
+
+type="checkbox"
+
+id="show_map"
+
+name="show_map"
+
+checked>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+</div>
+
+
+<!-- شريط الحفظ -->
+
+<div class="save-bar">
+
+
+
+<a
+
+href="{% url 'ecommerce:dashboard_settings' store.slug %}"
+
+class="btn btn-light btn-lg">
+
+
+<i class="bi bi-arrow-right"></i>
+
+
+رجوع
+
+
+</a>
+
+
+
+
+
+<button
+
+type="submit"
+
+name="save_address"
+
+class="btn btn-primary btn-lg">
+
+
+<i class="bi bi-check-circle-fill"></i>
+
+
+حفظ عنوان المتجر
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% if store.top_bar_enabled %}
+<div class="store-topbar">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-6">
+
+                <small>
+                    <i class="bi bi-megaphone"></i>
+
+                    {{ store.top_bar_text|default:"🚚 شحن سريع إلى جميع المناطق" }}
+                </small>
+
+            </div>
+
+            <div class="col-lg-6 text-end">
+
+                {% if store.phone %}
+                    <small class="me-3">
+                        <i class="bi bi-telephone"></i>
+                        {{ store.phone }}
+                    </small>
+                {% endif %}
+
+                {% if store.email %}
+                    <small>
+                        <i class="bi bi-envelope"></i>
+                        {{ store.email }}
+                    </small>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endif %}

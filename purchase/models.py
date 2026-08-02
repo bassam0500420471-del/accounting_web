@@ -22,7 +22,6 @@ class PurchaseInvoice(models.Model):
         verbose_name="الشركة"
     )
 
-    # ✅ دعم أوامر الشراء
     is_po = models.BooleanField(default=False, verbose_name="أمر شراء")
 
     invoice_no = models.IntegerField()
@@ -48,19 +47,40 @@ class PurchaseInvoice(models.Model):
         related_name="purchase_invoices"
     )
 
-    # ✅ المجاميع
     total_before_tax = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
+
     total_tax = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
+
     total_after_tax = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal("0.00")
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
 
+    # 👇 هنا بالضبط
+    paid_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
+    PAYMENT_STATUS = (
+        ("unpaid", "غير مدفوعة"),
+        ("partial", "مدفوعة جزئياً"),
+        ("paid", "مدفوعة"),
+    )
+
+    payment_status = models.CharField(
+        max_length=20,
+        choices=PAYMENT_STATUS,
+        default="unpaid"
+    )
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         ordering = ["-id"]
         constraints = [

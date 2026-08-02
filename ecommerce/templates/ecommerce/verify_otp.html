@@ -1,0 +1,230 @@
+{% extends "ecommerce/base_store.html" %}
+
+{% block title %}
+التحقق من الدفع
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h3 class="text-center mb-4">
+                    🔐 التحقق من العملية
+                </h3>
+
+
+                <div class="alert alert-info">
+
+                    رقم الطلب:
+                    <strong>
+                        {{ order.order_no }}
+                    </strong>
+
+                    <br>
+
+                    المبلغ:
+
+                    <strong>
+                        {{ order.total }}
+                        ريال
+                    </strong>
+
+                    <hr>
+
+                    تم إرسال رمز التحقق (OTP) إلى رقم الهاتف
+                    المسجل لدى البنك.
+
+                </div>
+
+
+
+                <form id="otpForm">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label>
+                            رمز التحقق OTP
+                        </label>
+
+                        <input
+                            type="text"
+                            name="otp"
+                            class="form-control"
+                            placeholder="******"
+                            maxlength="6"
+                            autocomplete="one-time-code"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <button
+                        class="btn btn-primary w-100"
+                        type="submit">
+
+                        تأكيد الدفع
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        const form = document.getElementById(
+
+            "otpForm"
+
+        );
+
+
+
+        form.addEventListener(
+
+            "submit",
+
+            function(e){
+
+                e.preventDefault();
+
+
+
+                const csrf = document.querySelector(
+
+                    "[name=csrfmiddlewaretoken]"
+
+                ).value;
+
+
+
+                const otp = document.querySelector(
+
+                    '[name="otp"]'
+
+                ).value;
+
+
+
+                fetch(
+
+                    window.location.pathname,
+
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken": csrf,
+
+                            "Content-Type":
+
+                            "application/x-www-form-urlencoded",
+
+                        },
+
+                        body:
+
+                        "otp=" +
+
+                        encodeURIComponent(otp)
+
+                    }
+
+                )
+
+                .then(
+
+                    response => response.json()
+
+                )
+
+                .then(
+
+                    data => {
+
+                        if(
+
+                            data.success
+
+                        ){
+
+                            window.location.href =
+
+                            data.redirect;
+
+                            return;
+
+                        }
+
+
+
+                        alert(
+
+                            data.message ||
+
+                            "رمز التحقق غير صحيح"
+
+                        );
+
+                    }
+
+                )
+
+                .catch(
+
+                    error => {
+
+                        console.error(error);
+
+                        alert(
+
+                            "حدث خطأ في الاتصال"
+
+                        );
+
+                    }
+
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+</script>
+
+{% endblock %}

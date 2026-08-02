@@ -337,3 +337,17 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, "profile"):
         pass
+
+
+# ==========================================================
+# إنشاء الحسابات الافتراضية للشركة
+# ==========================================================
+
+@receiver(post_save, sender=Company)
+def create_company_default_accounts(sender, instance, created, **kwargs):
+
+    if created:
+
+        from accounting.services.default_accounts import create_default_accounts
+
+        create_default_accounts(instance)

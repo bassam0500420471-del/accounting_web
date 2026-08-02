@@ -1,0 +1,259 @@
+{% extends "ecommerce/base_store.html" %}
+
+{% block title %}
+الدفع بالبطاقة
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h3 class="text-center mb-4">
+                    💳 الدفع بالبطاقة
+                </h3>
+
+                <div class="alert alert-info">
+
+                    رقم الطلب:
+                    <strong>
+                        {{ order.order_no }}
+                    </strong>
+
+                    <br>
+
+                    المبلغ:
+
+                    <strong>
+                        {{ order.total }}
+                        ريال
+                    </strong>
+
+                </div>
+
+
+                <form
+                    id="cardPaymentForm"
+                    method="post">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label>
+                            رقم البطاقة
+                        </label>
+
+                        <input
+                            type="text"
+                            name="card_number"
+                            class="form-control"
+                            placeholder="xxxx xxxx xxxx xxxx"
+                            maxlength="19"
+                            autocomplete="cc-number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+                                تاريخ الانتهاء
+                            </label>
+
+                            <input
+                                type="text"
+                                name="expiry"
+                                class="form-control"
+                                placeholder="MM / YY"
+                                maxlength="5"
+                                autocomplete="cc-exp"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+                                CVV
+                            </label>
+
+                            <input
+                                type="password"
+                                name="cvv"
+                                class="form-control"
+                                placeholder="***"
+                                maxlength="4"
+                                autocomplete="cc-csc"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="btn btn-primary w-100"
+                        type="submit">
+
+                        دفع الآن
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        const form = document.getElementById(
+
+            "cardPaymentForm"
+
+        );
+
+
+        form.addEventListener(
+
+            "submit",
+
+            function(e){
+
+                e.preventDefault();
+
+
+                const csrf = document.querySelector(
+
+                    "[name=csrfmiddlewaretoken]"
+
+                ).value;
+
+
+                const formData = new URLSearchParams(
+
+                    new FormData(form)
+
+                );
+
+
+                fetch(
+
+                    window.location.pathname,
+
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken": csrf,
+
+                            "Content-Type":
+
+                            "application/x-www-form-urlencoded",
+
+                        },
+
+                        body: formData
+
+                    }
+
+                )
+
+                .then(
+
+                    response => response.json()
+
+                )
+
+                .then(
+
+                    data => {
+
+                        if(
+
+                            data.success &&
+
+                            data.redirect
+
+                        ){
+
+                            window.location.href =
+
+                            data.redirect;
+
+                            return;
+
+                        }
+
+
+                        alert(
+
+                            data.message ||
+
+                            "تعذر إتمام العملية"
+
+                        );
+
+                    }
+
+                )
+
+                .catch(
+
+                    error => {
+
+                        console.error(error);
+
+                        alert(
+
+                            "حدث خطأ في الاتصال"
+
+                        );
+
+                    }
+
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+</script>
+
+{% endblock %}

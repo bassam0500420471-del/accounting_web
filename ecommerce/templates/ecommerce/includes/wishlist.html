@@ -1,0 +1,90 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+
+{% block title %}
+المفضلة
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<section class="products-section wishlist-page">
+
+<div class="container">
+
+
+<div class="section-title">
+
+    <h2>
+        ❤️ المنتجات المفضلة
+    </h2>
+
+
+    <button class="view-all toggle-products"
+            data-target="wishlistProducts">
+
+        عرض الكل
+
+    </button>
+
+
+</div>
+
+
+
+<div class="products-slider">
+
+
+<button class="slider-arrow slider-prev">
+
+    <i class="bi bi-chevron-right"></i>
+
+</button>
+
+
+
+<div class="products-wrapper collapsed-products"
+     id="wishlistProducts">
+
+
+{% for product in products %}
+
+
+    {% include "ecommerce/includes/product_card.html" with product=product %}
+
+
+{% empty %}
+
+
+    <p>
+        لا توجد منتجات في المفضلة.
+    </p>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+
+<button class="slider-arrow slider-next">
+
+    <i class="bi bi-chevron-left"></i>
+
+</button>
+
+
+</div>
+
+
+</div>
+
+</section>
+
+
+{% endblock %}

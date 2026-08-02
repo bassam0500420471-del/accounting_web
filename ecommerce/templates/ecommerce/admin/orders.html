@@ -1,0 +1,797 @@
+{% extends "ecommerce/admin/base_admin.html" %}
+{% load static %}
+
+{% block title %}
+إدارة الطلبات
+{% endblock %}
+
+
+{% block content %}
+
+<div class="orders-page" dir="rtl">
+
+
+    <!-- =========================
+         Header
+    ========================== -->
+
+    <div class="page-header">
+
+        <div>
+            <h1>
+                🛒 إدارة الطلبات
+            </h1>
+
+            <p>
+                متابعة ومعالجة طلبات العملاء
+            </p>
+        </div>
+
+
+        <div class="header-actions">
+
+            <button class="btn btn-dark"
+                    onclick="window.print()">
+
+                🖨 طباعة
+
+            </button>
+
+
+            <a href="?export=excel"
+               class="btn btn-success">
+
+                📊 تصدير Excel
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         Statistics Cards
+    ========================== -->
+
+
+    <div class="orders-statistics">
+
+
+        <div class="stat-card">
+
+            <div class="icon">
+                📦
+            </div>
+
+            <div>
+
+                <span>
+                    إجمالي الطلبات
+                </span>
+
+                <strong>
+                    {{ statistics.total|default:0 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card new">
+
+            <div class="icon">
+                🆕
+            </div>
+
+            <div>
+
+                <span>
+                    الطلبات الجديدة
+                </span>
+
+                <strong>
+                    {{ statistics.pending|default:0 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+
+        <div class="stat-card processing">
+
+            <div class="icon">
+                ⚙️
+            </div>
+
+            <div>
+
+                <span>
+                    قيد التجهيز
+                </span>
+
+                <strong>
+                    {{ statistics.processing|default:0 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+
+        <div class="stat-card shipped">
+
+            <div class="icon">
+                🚚
+            </div>
+
+            <div>
+
+                <span>
+                    تم الشحن
+                </span>
+
+                <strong>
+                    {{ statistics.shipped|default:0 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="stat-card delivered">
+
+            <div class="icon">
+                ✅
+            </div>
+
+            <div>
+
+                <span>
+                    تم التسليم
+                </span>
+
+                <strong>
+                    {{ statistics.delivered|default:0 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="stat-card cancelled">
+
+            <div class="icon">
+                ❌
+            </div>
+
+            <div>
+
+                <span>
+                    الملغاة
+                </span>
+
+                <strong>
+                    {{ statistics.cancelled|default:0 }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+    <!-- =========================
+         Filters
+    ========================== -->
+
+
+    <div class="orders-filter-box">
+
+
+        <form method="get"
+              id="ordersFilterForm">
+
+
+            <div class="filter-grid">
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        بحث
+                    </label>
+
+
+                    <input type="text"
+                           name="q"
+                           value="{{ request.GET.q }}"
+                           placeholder="رقم الطلب أو اسم العميل">
+
+                </div>
+
+
+
+
+
+                <div class="form-group">
+
+
+                    <label>
+                        الحالة
+                    </label>
+
+
+                    <select name="status">
+
+
+                        <option value="">
+                            كل الحالات
+                        </option>
+
+
+                        {% for value,label in status_choices %}
+
+                        <option value="{{ value }}"
+                        {% if request.GET.status == value %}
+                            selected
+                        {% endif %}
+                        >
+
+                            {{ label }}
+
+                        </option>
+
+
+                        {% endfor %}
+
+
+                    </select>
+
+
+                </div>
+
+
+
+
+
+
+                <div class="form-group">
+
+
+                    <label>
+                        الدفع
+                    </label>
+
+
+                    <select name="payment_method">
+
+
+                        <option value="">
+                            كل طرق الدفع
+                        </option>
+
+
+                        {% for payment in payment_methods %}
+
+                        <option value="{{ payment.id }}"
+                        {% if request.GET.payment_method == payment.id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                        >
+
+                            {{ payment.name }}
+
+                        </option>
+
+
+                        {% endfor %}
+
+
+                    </select>
+
+
+                </div>
+
+
+
+
+
+
+                <div class="form-group">
+
+
+                    <label>
+                        من تاريخ
+                    </label>
+
+
+                    <input type="date"
+                           name="date_from"
+                           value="{{ request.GET.date_from }}">
+
+
+                </div>
+
+
+
+
+
+
+                <div class="form-group">
+
+
+                    <label>
+                        إلى تاريخ
+                    </label>
+
+
+                    <input type="date"
+                           name="date_to"
+                           value="{{ request.GET.date_to }}">
+
+
+                </div>
+
+
+
+
+
+                <div class="filter-buttons">
+
+
+                    <button class="btn btn-primary">
+
+                        🔍 بحث
+
+                    </button>
+
+
+
+                    <a href="{% url 'dashboard_orders' %}"
+                       class="btn btn-light">
+
+                        إعادة ضبط
+
+                    </a>
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+
+
+
+
+
+    <!-- =========================
+         Orders Table
+    ========================== -->
+
+
+
+    <div class="orders-table-card">
+
+
+        <div class="table-responsive">
+
+
+            <table class="orders-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+
+                        <th>
+                            رقم الطلب
+                        </th>
+
+
+                        <th>
+                            العميل
+                        </th>
+
+
+                        <th>
+                            المنتجات
+                        </th>
+
+
+                        <th>
+                            الدفع
+                        </th>
+
+
+                        <th>
+                            الحالة
+                        </th>
+
+
+                        <th>
+                            الإجمالي
+                        </th>
+
+
+                        <th>
+                            التاريخ
+                        </th>
+
+
+                        <th>
+                            العمليات
+                        </th>
+
+
+                    </tr>
+
+                </thead>
+
+
+
+
+                <tbody>
+
+
+
+                {% for order in orders %}
+
+
+                    <tr>
+
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+
+
+                        <td>
+
+                            <strong>
+                                #{{ order.id }}
+                            </strong>
+
+                        </td>
+
+
+
+
+
+                        <td>
+
+
+                            {% if order.customer %}
+
+                                {{ order.customer.name }}
+
+                            {% else %}
+
+                                زائر
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+
+
+
+                        <td>
+
+
+                            <div class="products-list">
+
+
+                            {% for item in order.items.all|slice:":3" %}
+
+                                <span>
+
+                                    {{ item.product.name }}
+
+                                </span>
+
+
+                            {% endfor %}
+
+
+                            </div>
+
+
+                        </td>
+
+
+
+
+
+
+
+                        <td>
+
+
+                            {{ order.payment_method|default:"غير محدد" }}
+
+
+                        </td>
+
+
+
+
+
+
+
+                        <td>
+
+
+                            {% if order.status == "pending" %}
+
+                                <span class="badge pending">
+                                    جديد
+                                </span>
+
+
+                            {% elif order.status == "processing" %}
+
+                                <span class="badge processing">
+                                    قيد التجهيز
+                                </span>
+
+
+                            {% elif order.status == "shipped" %}
+
+                                <span class="badge shipped">
+                                    تم الشحن
+                                </span>
+
+
+                            {% elif order.status == "delivered" %}
+
+                                <span class="badge delivered">
+                                    تم التسليم
+                                </span>
+
+
+                            {% elif order.status == "cancelled" %}
+
+                                <span class="badge cancelled">
+                                    ملغي
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+
+
+
+                        <td>
+
+                            {{ order.total|default:0 }}
+
+                            ر.س
+
+                        </td>
+
+
+
+
+
+
+                        <td>
+
+
+                            {{ order.created_at|date:"Y-m-d H:i" }}
+
+
+                        </td>
+
+
+
+
+
+
+
+                        <td>
+
+
+                            <div class="actions">
+
+
+                                <a href="{% url 'order_detail' order.id %}"
+                                   class="view">
+
+                                    👁
+
+                                </a>
+
+
+
+                                <a href="{% url 'order_update' order.id %}"
+                                   class="edit">
+
+                                    ✏️
+
+                                </a>
+
+
+
+                                <button class="delete"
+                                        onclick="confirmDelete('{{ order.id }}')">
+
+                                    🗑
+
+                                </button>
+
+
+                            </div>
+
+
+
+                        </td>
+
+
+
+
+
+                    </tr>
+
+
+                {% empty %}
+
+
+                    <tr>
+
+                        <td colspan="9"
+                            class="empty">
+
+                            لا توجد طلبات
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+
+                </tbody>
+
+
+            </table>
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- =========================
+         Pagination
+    ========================== -->
+
+
+    {% if orders.has_other_pages %}
+
+
+    <div class="pagination">
+
+
+        {% if orders.has_previous %}
+
+            <a href="?page={{ orders.previous_page_number }}&{{ request.GET.urlencode }}">
+                السابق
+            </a>
+
+        {% endif %}
+
+
+
+        {% for num in orders.paginator.page_range %}
+
+
+            {% if orders.number == num %}
+
+                <span class="active">
+                    {{ num }}
+                </span>
+
+
+            {% else %}
+
+
+                <a href="?page={{ num }}&{{ request.GET.urlencode }}">
+                    {{ num }}
+                </a>
+
+
+            {% endif %}
+
+
+
+        {% endfor %}
+
+
+
+
+        {% if orders.has_next %}
+
+            <a href="?page={{ orders.next_page_number }}&{{ request.GET.urlencode }}">
+                التالي
+            </a>
+
+        {% endif %}
+
+
+
+    </div>
+
+
+    {% endif %}
+
+
+
+
+
+</div>
+
+
+
+<script src="{% static 'ecommerce/js/orders.js' %}"></script>
+
+
+{% endblock %}

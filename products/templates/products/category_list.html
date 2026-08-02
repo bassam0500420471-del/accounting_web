@@ -8,34 +8,47 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">{% trans "Category Management" %}</h4>
-        <a href="{% url 'products:category_add' %}" class="btn btn-primary">➕ {% trans "Add Category" %}</a>
+        <a href="{% url 'products:category_add' %}" class="btn btn-primary">
+            ➕ {% trans "Add Category" %}
+        </a>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body p-0">
-            <table class="table table-bordered table-striped mb-0">
+            <table class="table table-bordered table-striped align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th width="60">#</th>
                         <th>{% trans "Name" %}</th>
-                        <th>{% trans "Order" %}</th>
-                        <th>{% trans "Status" %}</th>
+                        <th width="90">{% trans "Order" %}</th>
+                        <th width="120">{% trans "Status" %}</th>
                         <th>{% trans "Products" %}</th>
+                        <th width="80" class="text-center">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for cat in categories %}
                     <tr>
+
                         <td>{{ forloop.counter }}</td>
+
                         <td>{{ cat.name }}</td>
+
                         <td>{{ cat.sort_order }}</td>
+
                         <td>
                             {% if cat.active %}
-                                <span class="badge bg-success">{% trans "Active" %}</span>
+                                <span class="badge bg-success">
+                                    {% trans "Active" %}
+                                </span>
                             {% else %}
-                                <span class="badge bg-secondary">{% trans "Inactive" %}</span>
+                                <span class="badge bg-secondary">
+                                    {% trans "Inactive" %}
+                                </span>
                             {% endif %}
                         </td>
+
                         <td>
                             {% if cat.products.exists %}
                                 <ul class="mb-0 ps-3">
@@ -44,14 +57,68 @@
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <span class="text-muted">{% trans "No products" %}</span>
+                                <span class="text-muted">
+                                    {% trans "No products" %}
+                                </span>
                             {% endif %}
                         </td>
+
+                        <td class="text-center">
+
+                            <div class="dropdown">
+
+                                <button
+                                    class="btn btn-sm btn-outline-secondary"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    ⋮
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-menu-end shadow">
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'products:category_detail' cat.id %}">
+                                            👁️ {% trans "View" %}
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'products:category_edit' cat.id %}">
+                                            ✏️ {% trans "Edit" %}
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                           href="{% url 'products:category_delete' cat.id %}"
+                                           onclick="return confirm('{% trans "Are you sure you want to delete this category?" %}')">
+                                            🗑️ {% trans "Delete" %}
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        </td>
+
                     </tr>
+
                     {% empty %}
+
                     <tr>
-                        <td colspan="5" class="text-center text-muted">{% trans "No categories found" %}</td>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            {% trans "No categories found" %}
+                        </td>
                     </tr>
+
                     {% endfor %}
                 </tbody>
             </table>

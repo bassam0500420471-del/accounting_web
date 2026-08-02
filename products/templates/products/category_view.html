@@ -1,0 +1,88 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Category Details" %}{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h4 class="mb-0">
+                {% trans "Category Details" %}
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    {% trans "Name" %}
+                </div>
+                <div class="col-md-9">
+                    {{ category.name }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    {% trans "Order" %}
+                </div>
+                <div class="col-md-9">
+                    {{ category.sort_order }}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    {% trans "Status" %}
+                </div>
+                <div class="col-md-9">
+                    {% if category.active %}
+                        <span class="badge bg-success">
+                            {% trans "Active" %}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            {% trans "Inactive" %}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if category.image %}
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    {% trans "Image" %}
+                </div>
+                <div class="col-md-9">
+                    <img src="{{ category.image.url }}"
+                         class="img-thumbnail"
+                         style="max-width:220px;">
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="card-footer text-end">
+
+            <a href="{% url 'products:category_edit' category.id %}"
+               class="btn btn-warning">
+                ✏️ {% trans "Edit" %}
+            </a>
+
+            <a href="{% url 'products:category_list' %}"
+               class="btn btn-secondary">
+                ↩ {% trans "Back" %}
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

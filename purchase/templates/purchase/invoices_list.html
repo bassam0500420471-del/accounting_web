@@ -114,17 +114,22 @@
             </td>
 
             <td>
-                {% if invoice.total_after_tax > 0 %}
-                    <span class="badge" style="background:#6c757d;color:white">
+                {% if invoice.payment_status == "paid" %}
+                    <span class="badge" style="background:#198754;color:white">
                         {% trans "Paid" %}
                     </span>
+
+                {% elif invoice.payment_status == "partial" %}
+                    <span class="badge" style="background:#ffc107;color:black">
+                        {% trans "مدفوعة جزئياً" %}
+                    </span>
+
                 {% else %}
-                    <span class="badge" style="background:#6c757d;color:white">
+                    <span class="badge" style="background:#dc3545;color:white">
                         {% trans "Unpaid" %}
                     </span>
                 {% endif %}
             </td>
-
             <td>
                 <div class="dropdown">
                     <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
@@ -149,7 +154,12 @@
         🖨️ {% trans "Print" %}
     </a>
 </li>
-
+<li>
+    <a class="dropdown-item text-success fw-bold"
+       href="{% url 'purchase:purchase_invoice_payment' invoice.id %}">
+        💰 {% trans "دفع" %}
+    </a>
+</li>
 <li>
     <a class="dropdown-item text-warning fw-bold"
        href="{% url 'purchase:purchase_return_from_invoice' invoice.id %}">

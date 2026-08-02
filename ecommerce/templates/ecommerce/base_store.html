@@ -1,0 +1,342 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'ar' }}"
+      dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>
+        {% block title %}
+            {{ store.name|default:"المتجر الإلكتروني" }}
+        {% endblock %}
+    </title>
+
+    <meta name="description"
+          content="{% block description %}{{ store.description|default:'' }}{% endblock %}">
+
+    <meta name="theme-color"
+          content="{{ store_theme.primary_color|default:'#0d6efd' }}">
+
+    <meta name="csrf-token"
+          content="{{ csrf_token }}">
+
+    {% block meta %}{% endblock %}
+
+    <!-- SEO -->
+
+    <link rel="canonical"
+          href="{{ request.build_absolute_uri }}">
+
+    <meta property="og:type"
+          content="website">
+
+    <meta property="og:title"
+          content="{{ store.name }}">
+
+    <meta property="og:description"
+          content="{{ store.description }}">
+
+    {% if store.logo %}
+    <meta property="og:image"
+          content="{{ request.scheme }}://{{ request.get_host }}{{ store.logo.url }}">
+    {% endif %}
+
+    <meta name="twitter:card"
+          content="summary_large_image">
+
+    <meta name="twitter:title"
+          content="{{ store.name }}">
+
+    <meta name="twitter:description"
+          content="{{ store.description }}">
+
+    {% if store.favicon %}
+        <link rel="icon"
+              href="{{ store.favicon.url }}">
+    {% endif %}
+
+    <!-- PWA -->
+
+    <link rel="manifest"
+          href="{% static 'ecommerce/manifest.json' %}">
+
+    <meta name="apple-mobile-web-app-capable"
+          content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="default">
+
+    <!-- Fonts -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Bootstrap -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="{% static 'ecommerce/css/store.css' %}">
+
+    <style>
+
+        :root{
+
+            --primary-color: {{ store_theme.primary_color|default:"#0d6efd" }};
+            --secondary-color: {{ store_theme.secondary_color|default:"#6c757d" }};
+            --font-family:'Cairo',Tahoma,sans-serif;
+
+        }
+
+        body{
+
+            font-family:var(--font-family);
+            opacity:0;
+            transition:.25s;
+
+        }
+
+        body.loaded{
+
+            opacity:1;
+
+        }
+
+    </style>
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body
+
+class="{% if store_theme.dark_mode %}dark-mode{% else %}light-mode{% endif %}"
+
+data-store-id="{{ store.id }}"
+
+data-store-slug="{{ store.slug }}"
+
+data-language="{{ LANGUAGE_CODE }}"
+
+data-currency="{{ store.currency.symbol|default:'SAR' }}">
+
+    <!-- Loader -->
+
+    {% include "ecommerce/includes/loader.html" %}
+
+    <!-- Topbar -->
+
+    {% include "ecommerce/includes/topbar.html" %}
+
+    <!-- Header -->
+
+    {% include "ecommerce/includes/header.html" %}
+
+    <!-- Navbar -->
+
+    {% include "ecommerce/includes/navbar.html" %}
+
+    <!-- Messages -->
+
+    {% include "ecommerce/includes/messages.html" %}
+
+    <!-- Main -->
+
+    <main>
+
+        {% block breadcrumbs %}
+        {% endblock %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+
+    {% include "ecommerce/includes/footer.html" %}
+
+    <!-- Toast -->
+
+    <div id="toastContainer"
+         class="toast-container position-fixed bottom-0 end-0 p-3">
+    </div>
+
+    <!-- Global Loading -->
+
+    <div id="globalLoading"></div>
+
+    <!-- Cart Drawer -->
+
+    <div id="cartDrawer"></div>
+
+    <!-- Wishlist Drawer -->
+
+    <div id="wishlistDrawer"></div>
+
+    <!-- Search Modal -->
+
+    <div id="searchModal"></div>
+
+    <!-- Login Modal -->
+
+    <div id="loginModal"></div>
+
+    <!-- Dynamic Modals -->
+
+    <div id="modalContainer"></div>
+
+    <!-- Scroll Top -->
+
+    <button id="scrollTop"
+            class="btn btn-primary rounded-circle shadow">
+
+        <i class="bi bi-arrow-up"></i>
+
+    </button>
+
+    <!-- Bootstrap -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <!-- Store JS -->
+
+<script>
+
+function getCookie(name){
+
+    let cookieValue = null;
+
+    if(document.cookie && document.cookie !== ""){
+
+        const cookies = document.cookie.split(";");
+
+        for(let i=0;i<cookies.length;i++){
+
+            const cookie = cookies[i].trim();
+
+            if(cookie.substring(0,name.length+1)===name+"="){
+
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length+1)
+                );
+
+                break;
+
+            }
+
+        }
+
+    }
+
+    return cookieValue;
+
+}
+
+
+const csrftoken = getCookie("csrftoken");
+
+</script>
+
+
+<script src="{% static 'ecommerce/js/store.js' %}">
+</script>
+
+    {% include "ecommerce/includes/scripts.html" %}
+
+    <script>
+
+        window.addEventListener("load",function(){
+
+            document.body.classList.add("loaded");
+
+        });
+
+        document.addEventListener("DOMContentLoaded",function(){
+
+            document.querySelectorAll("img").forEach(function(img){
+
+                img.loading="lazy";
+
+            });
+
+        });
+
+        if("serviceWorker" in navigator){
+
+            window.addEventListener("load",function(){
+
+                navigator.serviceWorker
+                    .register("/service-worker.js")
+                    .catch(function(e){
+
+                        console.log(e);
+
+                    });
+
+            });
+
+        }
+
+        const scrollBtn=document.getElementById("scrollTop");
+
+        window.addEventListener("scroll",function(){
+
+            if(window.scrollY>300){
+
+                scrollBtn.style.display="flex";
+
+            }else{
+
+                scrollBtn.style.display="none";
+
+            }
+
+        });
+
+        scrollBtn.addEventListener("click",function(){
+
+            window.scrollTo({
+
+                top:0,
+
+                behavior:"smooth"
+
+            });
+
+        });
+
+    </script>
+
+    {% block extra_js %}
+    {% endblock %}
+
+    {% block body_end %}
+    {% endblock %}
+
+</body>
+
+</html>

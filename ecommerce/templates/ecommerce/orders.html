@@ -1,0 +1,90 @@
+{% extends "ecommerce/base_store.html" %}
+
+
+{% block title %}
+طلباتي
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="container py-5">
+
+
+<h3 class="mb-4">
+🛒 طلباتي
+</h3>
+
+
+
+{% for order in orders %}
+
+
+<div class="card shadow-sm mb-3">
+
+
+<div class="card-body">
+
+
+<h5>
+رقم الطلب:
+{{ order.order_no }}
+</h5>
+
+
+<p>
+الحالة:
+{{ order.get_status_display }}
+</p>
+
+<p>
+حالة الدفع:
+{{ order.get_payment_status_display }}
+</p>
+
+<p>
+الإجمالي:
+{{ order.total }} ر.س
+</p>
+
+
+<hr>
+
+
+{% for item in order.items.all %}
+
+<div>
+{{ item.product.name }}
+×
+{{ item.quantity }}
+</div>
+
+
+{% endfor %}
+
+
+</div>
+
+
+</div>
+
+
+{% empty %}
+
+
+<div class="alert alert-info">
+
+لا توجد طلبات حالياً
+
+</div>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+{% endblock %}

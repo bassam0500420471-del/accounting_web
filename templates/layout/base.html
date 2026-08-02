@@ -4,7 +4,15 @@
 <html lang="{{ CURRENT_LANGUAGE }}" dir="{% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
+    
     <title>{% block title %}{% trans "Accounting System ERP" %}{% endblock %}</title>
+
+    {% if request.user.is_authenticated and request.user.profile.company.logo %}
+        <link rel="icon" href="{{ request.user.profile.company.logo.url }}">
+    {% else %}
+        <link rel="icon" href="{% static 'images/favicon.ico' %}">
+    {% endif %}
+
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,15 +21,58 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
 <style>
+/* ===== Sidebar Footer ===== */
+
+.sidebar-footer{
+    margin-top:30px;
+    padding:20px 0;
+    border-top:1px solid #555;
+    text-align:center;
+    color:#e5e5e5;
+}
+
+.sidebar-company-logo{
+    width:130px;
+    height:auto;
+    object-fit:contain;
+    background:#fff;
+    border-radius:10px;
+    padding:6px;
+    margin-bottom:10px;
+}
+
+.sidebar-footer small{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:#f1f1f1;
+    line-height:1.8;
+}
+
+.company-phone{
+    display:block;
+    margin-top:6px;
+    font-size:15px;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:1px;
+}
+
 /* ===== Box sizing for all elements ===== */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
-body {
-    background: #f0f0f0;
-    font-family: Tahoma, sans-serif;
-    margin: 0;
+html,
+body{
+    height:100%;
+    margin:0;
+    overflow:hidden;
+}
+
+body{
+    background:#f0f0f0;
+    font-family:Tahoma,sans-serif;
 }
 
 html[dir="rtl"] body {
@@ -34,9 +85,10 @@ html[dir="ltr"] body {
     text-align: left;
 }
 
-.layout {
+.layout{
     display:flex;
-    min-height:100vh;
+    height:100vh;
+    overflow:hidden;
     position:relative;
 }
 
@@ -49,13 +101,17 @@ html[dir="ltr"] .layout {
 }
 
 /* ===== Sidebar ===== */
-.sidebar {
-    width: 260px;
-    background: #2D3033;
-    color: #fff;
-    padding: 20px;
-    overflow-y: auto;
-    flex-shrink: 0;
+.sidebar{
+    width:260px;
+    background:#2D3033;
+    color:#fff;
+    padding:20px;
+    flex-shrink:0;
+
+    height:100vh;
+
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 
 .sidebar h4 {
@@ -121,17 +177,25 @@ html[dir="ltr"] .layout {
 }
 
 /* ===== Content ===== */
-.content-wrapper {
-    flex: 1 1 auto;
-    padding: 25px;
-    min-width: 0;
+.content-wrapper{
+    flex:1;
+    min-width:0;
+
+    height:100vh;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    padding:25px;
 }
 
-.page-box {
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    max-width: 100%;
+.page-box{
+    background:#fff;
+    padding:25px;
+    border-radius:10px;
+    max-width:100%;
+
+    min-height:calc(100vh - 50px);
 }
 
 /* ===== Tables inside page-box ===== */
@@ -211,6 +275,46 @@ html[dir="ltr"] .profile-float {
 .profile-float img {
     width: 40px;
     height: 40px;
+}
+
+.profile-badge{
+
+    position:absolute;
+
+    bottom:-8px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    min-width:18px;
+
+    height:18px;
+
+    padding:0 5px;
+
+    background:#dc3545;
+
+    color:#fff;
+
+    border-radius:999px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+    line-height:1;
+
+    border:2px solid #fff;
+
+    z-index:100;
+
 }
 
 /* ---- Profile Panel ---- */
@@ -420,7 +524,7 @@ html[dir="ltr"] .gpt-float {
 
 /* ===== Floating Buttons Fix ===== */
 
-..profile-float {
+.profile-float {
     position: fixed !important;
     top: 20px;
     width: 62px;
@@ -499,19 +603,131 @@ html[dir="ltr"] .gpt-chat-box{
     left:auto;
 }
 
+/* ================= Notifications ================= */
+
+.notification-float{
+    position: fixed !important;
+    top: 95px;
+    left: 20px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    cursor: pointer;
+    z-index: 2147483647;
+    font-size: 26px;
+}
+
+.notification-badge{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    min-width:22px;
+    height:22px;
+    background:red;
+    color:#fff;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.notification-panel{
+    position:fixed;
+    top:165px;
+    left:20px;
+    width:320px;
+    max-height:420px;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+    display:none;
+    z-index:2147483647;
+}
+
+.notification-panel.show{
+    display:block;
+}
+
+.notification-header{
+    padding:12px;
+    font-weight:bold;
+    border-bottom:1px solid #eee;
+}
+
+.notification-item{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+.notification-item p{
+    margin:5px 0 0;
+    color:#666;
+    font-size:13px;
+}
+
+.notification-empty{
+    padding:20px;
+    text-align:center;
+    color:#777;
+}
+
+.profile-notification{
+
+    position:relative;
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:#f8f9fa;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    cursor:pointer;
+
+    font-size:20px;
+
+    margin-right:10px;
+
+    flex-shrink:0;
+
+}
+
+.profile-notification:hover{
+
+    background:#ececec;
+
+}
 </style>
 
 {% block head %}{% endblock %}
-</head>
 
+
+{% block extra_css %}{% endblock %}
+
+</head>
 <body>
 
 <div class="layout">
 
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
-    <h4>{% trans "Accounting System" %}</h4>
-    <h5>{% trans "ERP" %}</h5>
+    <h4>{% trans "" %}</h4>
+    <h5>{% trans "" %}</h5>
 
     <a href="/dashboard/" class="menu-btn">
         <span>{% trans "Dashboard" %}</span>
@@ -726,6 +942,24 @@ html[dir="ltr"] .gpt-chat-box{
         </div>
     </div>
 
+<!-- ================= Ecommerce Store ================= -->
+
+<a href="{% url 'ecommerce:dashboard' store.slug %}" class="menu-btn">
+
+    <span>
+        {% if CURRENT_LANGUAGE == "ar" %}
+            المتجر الإلكتروني
+        {% else %}
+            Online Store
+        {% endif %}
+    </span>
+
+    <span class="menu-arrow">
+        ▶
+    </span>
+
+</a>
+
     <!-- ================= Reports ================= -->
     <div class="menu-btn d-flex align-items-center justify-content-between" style="background:#3A3D40; border:1px solid #4a4a4a;">
         <a href="{% url 'reports:dashboard' %}" style="flex:1; color:#fff; text-decoration:none;">{% trans "Reports" %}</a>
@@ -747,7 +981,23 @@ html[dir="ltr"] .gpt-chat-box{
     </span>
     <span class="menu-arrow">▶</span>
 </a>
+
+<!-- Footer داخل القائمة -->
+<div class="sidebar-footer">
+
+    <img src="{% static 'images/logo.png' %}"
+         alt="شركة نظام الرائد"
+         class="sidebar-company-logo">
+
+    <small>جميع الحقوق محفوظة</small>
+
+    <small>شركة نظام الرائد ERP</small>
+
+    <span class="company-phone">📞 0500420471</span>
+
 </div>
+</div> <!-- نهاية sidebar -->
+<!-- ================= Footer Sidebar ================= -->
 
 <!-- ================= CONTENT ================= -->
 <div class="content-wrapper">
@@ -804,17 +1054,78 @@ document.addEventListener("submit", function (e) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-{% block scripts %}{% endblock %}
-
+{% block extra_js %}{% endblock %}
 
 {% if user.is_authenticated %}
 
 <div class="profile-float" id="profileFloatBtn">
+
     {% if request.user.profile.company.logo %}
         <img src="{{ request.user.profile.company.logo.url }}">
     {% else %}
         <img src="{% static 'images/user-circle.png' %}">
     {% endif %}
+
+    {% if notifications_count %}
+        <span class="notification-badge profile-badge">
+            {{ notifications_count }}
+        </span>
+    {% endif %}
+
+</div>
+
+
+<div class="notification-panel" id="notificationPanel">
+
+<div class="notification-header d-flex justify-content-between align-items-center">
+
+    <span>
+        الإشعارات
+    </span>
+
+    <button
+        type="button"
+        class="btn-close"
+        onclick="document.getElementById('notificationPanel').classList.remove('show')">
+    </button>
+
+</div>
+
+{% for notification in notifications %}
+
+{% if notification.order_id %}
+
+<a href="{% url 'notifications:mark_read' notification.id %}?next={% url 'ecommerce:order_detail' store_slug=notification.order.store.slug pk=notification.order.id %}"
+
+   class="notification-item text-decoration-none d-block">
+
+{% else %}
+
+<a href="/store/{{ store.slug }}/dashboard/orders/"
+   class="notification-item text-decoration-none d-block">
+
+{% endif %}
+
+
+    <strong>
+        {{ notification.title }}
+    </strong>
+
+
+    <p>
+        {{ notification.message }}
+    </p>
+
+
+    <small class="text-muted">
+        {{ notification.created_at }}
+    </small>
+
+
+</a>
+
+{% endfor %}
+
 </div>
 
 <div class="profile-panel" id="profilePanel">
@@ -836,36 +1147,53 @@ document.addEventListener("submit", function (e) {
 
     <div class="profile-panel-body">
 
-        <div class="profile-user">
+<div class="profile-user">
 
-            {% if request.user.profile.company.logo %}
+    {% if request.user.profile.company.logo %}
 
-                <img class="profile-avatar"
-                     src="{{ request.user.profile.company.logo.url }}">
+        <img class="profile-avatar"
+             src="{{ request.user.profile.company.logo.url }}">
 
-            {% else %}
+    {% else %}
 
-                <img class="profile-avatar"
-                     src="{% static 'images/user-circle.png' %}">
+        <img class="profile-avatar"
+             src="{% static 'images/user-circle.png' %}">
 
-            {% endif %}
+    {% endif %}
 
+    <div class="profile-user-meta">
 
-            <div class="profile-user-meta">
+        <div class="d-flex align-items-center justify-content-between">
+
+            <div>
 
                 <p class="profile-user-name">
                     {{ request.user.username }}
                 </p>
 
+                <p class="profile-user-sub">
+                    {{ request.user.profile.company.name }}
+                </p>
 
-        <p class="profile-user-sub">
-            {{ request.user.profile.company.name }}
-        </p>
+            </div>
+
+            <div class="profile-notification" id="notificationFloatBtn">
+
+                🔔
+
+                {% if notifications_count %}
+                    <span class="notification-badge">
+                        {{ notifications_count }}
+                    </span>
+                {% endif %}
 
             </div>
 
         </div>
 
+    </div>
+
+</div>
 
         <div class="mb-3">
 
@@ -1087,7 +1415,31 @@ document.addEventListener("DOMContentLoaded", function() {
     const gptChat = document.getElementById("gptChatBox");
 
 
+const notificationBtn =
+document.getElementById("notificationFloatBtn");
 
+
+const notificationPanel =
+document.getElementById("notificationPanel");
+
+const notificationSound =
+document.getElementById("notificationSound");
+
+        if (notificationBtn) {
+
+    notificationBtn.onclick = function () {
+
+        notificationPanel.classList.toggle("show");
+
+
+        if (notificationSound) {
+            notificationSound.currentTime = 0;
+            notificationSound.play().catch(function(){});
+        }
+
+    };
+
+} 
 
     /* ===== Profile Button ===== */
 
@@ -1178,6 +1530,10 @@ if(gptChat.classList.contains("show")){
 });
 
 </script>
+
+<audio id="notificationSound" preload="auto">
+    <source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
+</audio>
 
 </body>
 </html>

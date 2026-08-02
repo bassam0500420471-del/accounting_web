@@ -214,7 +214,11 @@
                 + {% trans "Add Component" %}
             </button>
 
-            <input type="hidden" id="bundle_count" value="{{ components|length|default:0 }}">
+            <input
+    type="hidden"
+    id="bundle_count"
+    name="bundle_count"
+    value="{{ components|length|default:0 }}">
         </div>
 
         <div class="text-end mt-3">
@@ -227,12 +231,136 @@
 </div>
 
 <script>
-$(document).ready(function () {
-    $('.account-select, .category-select').select2({
-        placeholder: "{% trans 'Search...' %}",
-        allowClear: true,
-        width: '100%'
+document.addEventListener("DOMContentLoaded", function () {
+
+    const hidden = document.getElementById("product_type");
+
+    const tabNormal = document.getElementById("tab-normal");
+    const tabBundle = document.getElementById("tab-bundle");
+    const tabService = document.getElementById("tab-service");
+
+    const bundleArea = document.getElementById("bundle_area");
+    const bundleContainer = document.getElementById("bundle_container");
+    const addBtn = document.getElementById("add_component");
+    const bundleCount = document.getElementById("bundle_count");
+    const form = document.querySelector("form");
+
+    function activate(type){
+
+        hidden.value = type;
+
+        tabNormal.classList.remove("active");
+        tabBundle.classList.remove("active");
+        tabService.classList.remove("active");
+
+        bundleArea.style.display = "none";
+
+        if(type==="normal"){
+            tabNormal.classList.add("active");
+        }
+
+        if(type==="bundle"){
+            tabBundle.classList.add("active");
+            bundleArea.style.display="block";
+        }
+
+        if(type==="service"){
+            tabService.classList.add("active");
+        }
+
+    }
+
+    tabNormal.onclick=function(e){
+        e.preventDefault();
+        activate("normal");
+    };
+
+    tabBundle.onclick=function(e){
+        e.preventDefault();
+        activate("bundle");
+    };
+
+    tabService.onclick=function(e){
+        e.preventDefault();
+        activate("service");
+    };
+
+    let counter = parseInt(bundleCount.value || "0");
+
+    addBtn.addEventListener("click", function(){
+
+        counter++;
+        bundleCount.value = counter;
+
+        bundleContainer.insertAdjacentHTML("beforeend", `
+            <div class="row mb-2 bundle-row">
+                <div class="col-md-6 text-end">
+                    <select name="component_${counter}" class="form-select" required>
+                        <option value="">اختر المنتج</option>
+
+                        {% for p in products %}
+                            <option value="{{ p.id }}">{{ p.name }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="col-md-4 text-end">
+                    <input
+                        type="number"
+                        name="qty_${counter}"
+                        class="form-control"
+                        min="1"
+                        value="1"
+                        required>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="btn btn-danger w-100 remove-row">
+                        حذف
+                    </button>
+                </div>
+            </div>
+        `);
+
     });
+
+    bundleContainer.addEventListener("click", function(e){
+
+        if(e.target.classList.contains("remove-row")){
+
+            e.target.closest(".bundle-row").remove();
+
+            bundleCount.value =
+                bundleContainer.querySelectorAll(".bundle-row").length;
+
+        }
+
+    });
+
+    form.addEventListener("submit", function(e){
+
+        if(hidden.value==="bundle"){
+
+            const rows =
+                bundleContainer.querySelectorAll(".bundle-row");
+
+            if(rows.length===0){
+
+                e.preventDefault();
+
+                alert("يجب إضافة مكون واحد على الأقل.");
+
+                return false;
+            }
+
+        }
+
+    });
+
+    activate(hidden.value || "normal");
+
 });
 </script>
 {% endblock %}

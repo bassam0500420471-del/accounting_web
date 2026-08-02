@@ -4,91 +4,484 @@
 
 {% block title %}{{ role_label }}{% endblock %}
 
+
 {% block content %}
+
+<style>
+
+.evaluation-table {
+    width:100%;
+    table-layout:fixed;
+    font-size:14px;
+}
+
+
+.evaluation-table th {
+    background:#f8f9fa;
+    font-weight:bold;
+    text-align:center;
+    padding:10px;
+}
+
+
+.evaluation-table td {
+    padding:8px;
+    vertical-align:middle;
+}
+
+
+/* رقم */
+.col-number {
+    width:5%;
+}
+
+
+/* المعيار */
+.col-criteria {
+    width:18%;
+}
+
+
+/* الوزن */
+.col-weight {
+    width:8%;
+}
+
+
+/* الدرجة */
+.col-score {
+    width:10%;
+}
+
+
+/* الملاحظات */
+.col-notes {
+    width:39%;
+}
+
+
+/* المرفقات */
+.col-files {
+    width:20%;
+}
+
+
+
+.notes-box {
+
+    width:100%;
+    height:90px;
+    resize:vertical;
+    font-size:14px;
+
+}
+
+
+
+.score-box {
+
+    width:90px;
+    margin:auto;
+    text-align:center;
+
+}
+
+
+
+.weight-text {
+
+    font-weight:bold;
+
+}
+
+
+
+.file-box {
+
+    font-size:13px;
+
+}
+
+
+</style>
+
+
+
 <div class="container-fluid mt-4">
 
+
     <h3 class="fw-bold mb-3">
+
         📝 {{ role_label }} - {{ evaluation.name }}
+
     </h3>
 
+
+
     <div class="card shadow-sm mb-4">
+
         <div class="card-body row">
+
+
             <div class="col-md-4">
-                <strong>{% trans "Target Employee:" %}</strong><br>
+
+                <strong>
+                    {% trans "Target Employee:" %}
+                </strong>
+
+                <br>
+
                 {% if target.employee %}
-                    {{ target.employee.first_name_ar }} {{ target.employee.last_name_ar }}
+
+                    {{ target.employee.first_name_ar }}
+                    {{ target.employee.last_name_ar }}
+
                 {% else %}
+
                     —
+
                 {% endif %}
+
             </div>
+
+
+
             <div class="col-md-4">
-                <strong>{% trans "Department:" %}</strong><br>
+
+                <strong>
+                    {% trans "Department:" %}
+                </strong>
+
+                <br>
+
+
                 {% if target.employee and target.employee.department %}
+
                     {{ target.employee.department }}
+
                 {% else %}
+
                     —
+
                 {% endif %}
+
+
             </div>
+
+
+
             <div class="col-md-4">
-                <strong>{% trans "Period:" %}</strong><br>
-                {{ evaluation.start_date }} → {{ evaluation.end_date }}
+
+                <strong>
+                    {% trans "Period:" %}
+                </strong>
+
+                <br>
+
+                {{ evaluation.start_date }}
+                →
+                {{ evaluation.end_date }}
+
             </div>
+
+
         </div>
+
     </div>
 
-    <form method="post" class="card shadow-sm">
+
+
+
+    <form method="post"
+          enctype="multipart/form-data"
+          class="card shadow-sm">
+
+
         {% csrf_token %}
 
+
+
         <div class="card-header fw-bold">
+
             ✅ {% trans "Enter Scores" %}
+
         </div>
 
+
+
+
         <div class="card-body">
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
+
+
+
+            <table class="table table-bordered align-middle evaluation-table">
+
+
+
+                <thead>
+
+
                     <tr>
-                        <th style="width:60px;">#</th>
-                        <th>{% trans "Criteria" %}</th>
-                        <th style="width:140px;">{% trans "Weight" %}</th>
-                        <th style="width:200px;">{% trans "Score" %}</th>
+
+
+                        <th class="col-number">
+
+                            #
+
+                        </th>
+
+
+
+                        <th class="col-criteria">
+
+                            {% trans "Criteria" %}
+
+                        </th>
+
+
+
+
+                        <th class="col-weight">
+
+                            {% trans "Weight" %}
+
+                        </th>
+
+
+
+
+                        <th class="col-score">
+
+                            {% trans "Score" %}
+
+                        </th>
+
+
+
+
+
+                        <th class="col-notes">
+
+                            {% trans "Notes" %}
+
+                        </th>
+
+
+
+
+
+                        <th class="col-files">
+
+                            {% trans "Attachments" %}
+
+                        </th>
+
+
                     </tr>
+
+
                 </thead>
+
+
+
+
+
                 <tbody>
-                    {% for c in criteria %}
+
+
+
+
+                {% for c in criteria %}
+
+
+
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ c.name }}</td>
-                        <td>{{ c.weight }}%</td>
+
+
+
+                        <td class="text-center">
+
+                            {{ forloop.counter }}
+
+                        </td>
+
+
+
+
+
                         <td>
+
+                            <strong>
+
+                                {{ c.name }}
+
+                            </strong>
+
+                        </td>
+
+
+
+
+
+                        <td class="text-center">
+
+                            <span class="weight-text">
+
+                                {{ c.weight }}%
+
+                            </span>
+
+                        </td>
+
+
+
+
+
+                        <td class="text-center">
+
+
                             <input
                                 type="number"
                                 step="0.01"
                                 min="0"
                                 max="100"
-                                class="form-control"
+                                class="form-control score-box"
                                 name="score_{{ c.id }}"
                                 value="{{ existing_scores|get_item:c.id|default_if_none:'' }}"
                                 placeholder="{% trans '0 - 100' %}">
+
+
+
                         </td>
+
+
+
+
+
+                        <td>
+
+                            <textarea
+                                class="form-control notes-box"
+                                name="notes_{{ c.id }}"
+                                placeholder="اكتب ملاحظات لهذا المعيار...">{{ existing_notes|get_item:c.id|default_if_none:'' }}</textarea>
+
+                        </td>
+
+
+
+
+                        <td>
+
+
+                            <input
+
+                                type="file"
+
+                                class="form-control file-box"
+
+                                name="attachment_{{ c.id }}"
+
+                                multiple>
+
+
+
+                        </td>
+
+
+
+
                     </tr>
-                    {% empty %}
+
+
+
+                {% empty %}
+
+
+
                     <tr>
-                        <td colspan="4" class="text-center">{% trans "No criteria for this evaluation" %}</td>
+
+
+                        <td colspan="6"
+                            class="text-center">
+
+
+                            {% trans "No criteria for this evaluation." %}
+
+
+                        </td>
+
+
                     </tr>
-                    {% endfor %}
+
+
+
+                {% endfor %}
+
+
+
+
                 </tbody>
+
+
+
             </table>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-success fw-bold">
+
+
+
+
+
+            <div class="mt-4 d-flex gap-2">
+
+
+
+                <button
+
+                    type="submit"
+
+                    class="btn btn-success fw-bold">
+
+
                     💾 {% trans "Save" %}
+
+
                 </button>
-                <a href="{% url 'hr:evaluation_detail' evaluation.id %}" class="btn btn-secondary fw-bold">
+
+
+
+
+
+                <a
+
+                    href="{% url 'hr:evaluation_detail' evaluation.id %}"
+
+                    class="btn btn-secondary fw-bold">
+
+
+
                     {% trans "Back" %}
+
+
+
                 </a>
+
+
+
+
             </div>
+
+
+
         </div>
+
+
+
     </form>
 
+
+
 </div>
+
+
+
 {% endblock %}

@@ -1,0 +1,23 @@
+<div id="page-loader">
+    <div class="loader-content">
+
+        {% if store.logo %}
+            <img
+                src="{{ store.logo.url }}"
+                alt="{{ store.name }}"
+                class="loader-logo">
+        {% else %}
+            <h3 class="loader-title">
+                {{ store.name }}
+            </h3>
+        {% endif %}
+
+        <div class="spinner-border text-primary"
+             role="status">
+            <span class="visually-hidden">
+                Loading...
+            </span>
+        </div>
+
+    </div>
+</div>
