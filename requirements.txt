@@ -9,6 +9,7 @@ colorama==0.4.6
 cryptography==48.0.0
 cssselect2==0.9.0
 Django==5.2.14
+django-environ==0.12.0
 django-extensions==4.1
 fonttools==4.63.0
 freetype-py==2.5.1

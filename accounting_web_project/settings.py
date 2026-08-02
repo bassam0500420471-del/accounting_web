@@ -5,12 +5,16 @@ Production settings for Render
 
 from pathlib import Path
 import os
+import environ
 from django.utils.translation import gettext_lazy as _
 
 # ============================================================
 # BASE DIR
 # ============================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / '.env')
 
 # ============================================================
 # ============================================================
@@ -66,13 +70,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # ============================================================
-# DATABASE - SQLite مؤقت للسيرفر
+# DATABASE
 # ============================================================
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 
 # ============================================================

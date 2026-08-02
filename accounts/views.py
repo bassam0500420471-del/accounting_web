@@ -34,6 +34,10 @@ def landing_page(request):
 
 
 def login_page(request):
+    from django.conf import settings
+    print(f"==============================")
+    print(f"DATABASE ENGINE IN USE: {settings.DATABASES['default']['ENGINE']}")
+    print(f"==============================")
 
     if request.method == "POST":
 
