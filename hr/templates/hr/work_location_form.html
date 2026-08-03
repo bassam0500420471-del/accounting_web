@@ -1,0 +1,852 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+
+{% block title %}
+موقع العمل
+{% endblock %}
+
+
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'ecommerce/css/dashboard_settings.css' %}">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<!-- LOCATION TEMPLATE TEST 99999 -->
+<div class="store-top-bar"
+style="background:#111827;color:white;padding:20px;border-radius:15px;margin-bottom:25px;">
+
+    <i class="bi bi-building"></i>
+
+    <strong>
+        إدارة مواقع العمل
+    </strong>
+
+    <span>
+        بيانات موقع العمل ومقر الشركة
+    </span>
+
+</div>
+
+
+
+
+<div class="container-fluid settings-page">
+
+
+
+<div class="settings-header">
+
+
+<div>
+
+
+
+<nav class="breadcrumb-nav">
+
+
+<a href="{% url 'hr:work_locations' %}">
+مواقع العمل
+</a>
+
+
+<i class="bi bi-chevron-left"></i>
+
+
+<span>
+إضافة موقع عمل
+</span>
+
+
+</nav>
+
+
+
+
+<h1>
+
+<i class="bi bi-geo-alt-fill"></i>
+
+موقع العمل
+
+</h1>
+
+
+
+<p>
+أدخل بيانات موقع العمل الذي سيتم استخدامه داخل نظام الموارد البشرية.
+</p>
+
+
+
+</div>
+
+
+
+<div class="header-icon">
+
+<i class="bi bi-building"></i>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<form method="post">
+
+    {% csrf_token %}
+
+
+
+{% csrf_token %}
+
+
+
+<div class="settings-grid">
+
+
+
+<div>
+
+
+
+<div class="premium-card">
+
+
+
+<div class="card-title">
+
+<i class="bi bi-pin-map-fill"></i>
+
+<span>
+بيانات موقع العمل
+</span>
+
+</div>
+
+
+
+
+<div class="row g-3">
+
+
+
+
+
+<!-- اسم الموقع -->
+
+<div class="col-12">
+
+<div class="form-group">
+
+<label>
+اسم موقع العمل
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-building"></i>
+
+
+<input
+type="text"
+name="name"
+value="{{ work_location.name|default:'' }}"
+placeholder="مثال: المقر الرئيسي"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+<!-- الدولة -->
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+الدولة
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-globe2"></i>
+
+
+<input
+type="text"
+name="country"
+value="{{ work_location.country|default:'' }}"
+placeholder="المملكة العربية السعودية"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- المدينة -->
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+المدينة
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-buildings"></i>
+
+
+<input
+type="text"
+name="city"
+value="{{ work_location.city|default:'' }}"
+placeholder="مثال: جدة"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- الحي -->
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+الحي
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-signpost"></i>
+
+
+<input
+type="text"
+name="district"
+value="{{ work_location.district|default:'' }}"
+placeholder="اسم الحي"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- الشارع -->
+
+<div class="col-md-6">
+
+<div class="form-group">
+
+<label>
+الشارع
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-map"></i>
+
+
+<input
+type="text"
+name="street"
+value="{{ work_location.street|default:'' }}"
+placeholder="اسم الشارع"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- رقم المبنى -->
+
+<div class="col-md-4">
+
+<div class="form-group">
+
+<label>
+رقم المبنى
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-123"></i>
+
+
+<input
+type="text"
+name="building_no"
+value="{{ work_location.building_no|default:'' }}"
+placeholder="رقم المبنى"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- رقم الوحدة -->
+
+<div class="col-md-4">
+
+<div class="form-group">
+
+<label>
+رقم الوحدة
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-door-open"></i>
+
+
+<input
+type="text"
+name="unit_no"
+value="{{ work_location.unit_no|default:'' }}"
+placeholder="اختياري"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- الرمز البريدي -->
+
+<div class="col-md-4">
+
+<div class="form-group">
+
+<label>
+الرمز البريدي
+</label>
+
+
+<div class="input-icon">
+
+<i class="bi bi-mailbox"></i>
+
+
+<input
+type="text"
+name="postal_code"
+value="{{ work_location.postal_code|default:'' }}"
+placeholder="12345"
+class="form-control">
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+<!-- رابط الخريطة -->
+
+<div class="col-12">
+
+
+<div class="form-group">
+
+
+<label>
+رابط موقع العمل في Google Maps
+</label>
+
+<!-- نصف قطر السماح -->
+
+<div class="col-md-6">
+
+    <div class="form-group">
+
+        <label>
+            نصف قطر السماح (بالمتر)
+        </label>
+
+        <div class="input-icon">
+
+            <i class="bi bi-bullseye"></i>
+
+            <input
+                type="number"
+                name="allowed_radius"
+                value="{{ work_location.allowed_radius|default:100 }}"
+                min="10"
+                max="1000"
+                step="1"
+                class="form-control"
+                placeholder="100">
+
+        </div>
+
+        <small class="text-muted">
+
+            يسمح للموظفين بتسجيل الحضور إذا كانوا داخل هذا النطاق من موقع العمل.
+
+        </small>
+
+    </div>
+
+</div>
+<div class="col-md-6">
+
+    <div class="form-group">
+
+        <label>خط العرض (Latitude)</label>
+
+        <div class="input-icon">
+
+            <i class="bi bi-crosshair"></i>
+
+            <input
+                type="text"
+                name="latitude"
+                value="{{ work_location.latitude|default:'' }}"
+                class="form-control"
+                placeholder="21.543333">
+
+        </div>
+
+    </div>
+
+</div>
+<div class="col-md-6">
+
+    <div class="form-group">
+
+        <label>خط الطول (Longitude)</label>
+
+        <div class="input-icon">
+
+            <i class="bi bi-crosshair2"></i>
+
+            <input
+                type="text"
+                name="longitude"
+                value="{{ work_location.longitude|default:'' }}"
+                class="form-control"
+                placeholder="39.172779">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="input-icon">
+
+
+<i class="bi bi-geo-alt"></i>
+
+
+<input
+type="url"
+name="google_map_url"
+value="{{ work_location.google_map_url|default:'' }}"
+placeholder="https://maps.google.com/..."
+class="form-control">
+
+
+</div>
+
+
+<small class="text-muted">
+
+اختياري لإظهار موقع مقر العمل.
+
+</small>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+<!-- معاينة موقع العمل -->
+
+<div>
+
+
+<div class="premium-card preview-card">
+
+
+<div class="card-title">
+
+<i class="bi bi-building-check"></i>
+
+<span>
+معاينة موقع العمل
+</span>
+
+</div>
+
+
+
+
+<div class="store-preview">
+
+
+
+<div class="preview-icon">
+
+<i class="bi bi-building"></i>
+
+</div>
+
+
+
+
+
+<h5>
+
+{{ work_location.name|default:"اسم موقع العمل" }}
+
+</h5>
+
+
+
+
+
+<div class="preview-address">
+
+
+
+<p>
+
+<i class="bi bi-globe2"></i>
+
+{{ work_location.country|default:"الدولة" }}
+
+</p>
+
+
+
+
+
+<p>
+
+<i class="bi bi-buildings"></i>
+
+{{ work_location.city|default:"المدينة" }}
+
+</p>
+
+
+
+
+
+<p>
+
+<i class="bi bi-signpost"></i>
+
+{{ work_location.district|default:"الحي" }}
+
+</p>
+
+
+
+
+
+<p>
+
+<i class="bi bi-map"></i>
+
+{{ work_location.street|default:"الشارع" }}
+
+</p>
+
+
+
+
+
+<p>
+
+<i class="bi bi-mailbox"></i>
+
+{{ work_location.postal_code|default:"الرمز البريدي" }}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+<button
+type="button"
+class="btn-map"
+onclick="openGoogleMap()">
+
+    <i class="bi bi-geo-alt-fill"></i>
+    عرض موقع العمل على الخريطة
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- بيانات إضافية -->
+
+
+<div class="premium-card mt-4">
+
+
+<div class="card-title">
+
+<i class="bi bi-info-circle-fill"></i>
+
+
+<span>
+معلومات موقع العمل
+</span>
+
+
+</div>
+
+
+
+
+<div class="setting-box">
+
+
+<div>
+
+<h6>
+الحالة
+</h6>
+
+
+<small>
+تحديد إذا كان موقع العمل فعالاً ويمكن استخدامه للموظفين.
+</small>
+
+
+</div>
+
+
+
+<div class="form-check form-switch m-0">
+
+
+<input
+
+class="form-check-input"
+
+type="checkbox"
+
+name="active"
+
+id="active"
+
+checked>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- شريط الحفظ -->
+
+<div class="save-bar">
+
+
+
+
+
+<a
+
+href="{% url 'hr:work_locations' %}"
+
+class="btn btn-light btn-lg">
+
+
+<i class="bi bi-arrow-right"></i>
+
+
+رجوع
+
+
+</a>
+
+
+
+
+
+
+<button
+
+type="submit"
+
+class="btn btn-primary btn-lg">
+
+
+<i class="bi bi-check-circle-fill"></i>
+
+
+حفظ موقع العمل
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+</form>
+
+
+
+</div>
+
+<script>
+function openGoogleMap() {
+
+    const url = document.querySelector('[name="google_map_url"]').value.trim();
+
+    if (!url) {
+        alert("لم يتم إضافة رابط خرائط Google لموقع العمل");
+        return;
+    }
+
+    window.open(url, "_blank");
+}
+</script>
+
+{% endblock %}

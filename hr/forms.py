@@ -15,6 +15,7 @@ from .models import (
     EvaluationType,
     Department,
     HRPermission,
+    WorkLocation,
 )
 
 # ==========================
@@ -85,6 +86,8 @@ class EmployeeForm(forms.ModelForm):
             "active",
             "department",
             "branch",
+        "work_location",
+
             "job_title",
             "employee_type",
             "supervisor",
@@ -118,6 +121,7 @@ class EmployeeForm(forms.ModelForm):
             "active": _("Active"),
             "department": _("Department"),
             "branch": _("Branch"),
+          "work_location": _("Work Location"),
             "job_title": _("Job Title"),
             "employee_type": _("Employee Type"),
             "supervisor": _("Direct Supervisor"),
@@ -177,6 +181,9 @@ class EmployeeForm(forms.ModelForm):
             "active": forms.CheckboxInput(attrs={"class": "form-check-input"}),
             "department": forms.Select(attrs={"class": "form-control"}),
             "branch": forms.Select(attrs={"class": "form-control"}),
+          "work_location": forms.Select(attrs={
+          "class": "form-control"
+         }),
             "job_title": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": _("Job title")
@@ -414,79 +421,6 @@ class EvaluationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["start_date"].initial = timezone.now().date()
         self.fields["end_date"].initial = timezone.now().date()
-# ==========================
-# نموذج التقييم
-# ==========================
-
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-
-class EvaluationForm(forms.ModelForm):
-
-    attachments = forms.FileField(
-        label=_("Attachments"),
-        required=False,
-        widget=MultipleFileInput(attrs={
-            "class": "form-control",
-        })
-    )
-
-    class Meta:
-        model = Evaluation
-        fields = [
-            "name",
-            "evaluation_type",
-            "department",
-            "status",
-            "start_date",
-            "end_date",
-            "employee",
-            "comment",
-            "notes",
-        ]
-
-        widgets = {
-            "name": forms.TextInput(attrs={
-                "class": "form-control",
-                "placeholder": _("Evaluation name")
-            }),
-            "evaluation_type": forms.Select(attrs={
-                "class": "form-control"
-            }),
-            "department": forms.Select(attrs={
-                "class": "form-control"
-            }),
-            "status": forms.Select(attrs={
-                "class": "form-control"
-            }),
-            "start_date": forms.DateInput(attrs={
-                "class": "form-control",
-                "type": "date"
-            }),
-            "end_date": forms.DateInput(attrs={
-                "class": "form-control",
-                "type": "date"
-            }),
-            "employee": forms.Select(attrs={
-                "class": "form-control"
-            }),
-            "comment": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 3,
-                "placeholder": _("Comment")
-            }),
-            "notes": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 4,
-                "placeholder": _("Additional Notes")
-            }),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["start_date"].initial = timezone.now().date()
-        self.fields["end_date"].initial = timezone.now().date()
 
 # ==========================
 # نموذج معايير التقييم
@@ -544,6 +478,102 @@ class DepartmentForm(forms.ModelForm):
             }),
         }
 
+
+# ==========================
+# نموذج مواقع العمل
+# ==========================
+class WorkLocationForm(forms.ModelForm):
+    class Meta:
+        model = WorkLocation
+
+        fields = [
+            "name",
+            "country",
+            "city",
+            "district",
+            "street",
+            "building_no",
+            "unit_no",
+            "postal_code",
+            "google_map_url",
+            "latitude",
+            "longitude",
+            "allowed_radius",
+            "active",
+        ]
+
+        labels = {
+            "name": _("Work Location Name"),
+            "country": _("Country"),
+            "city": _("City"),
+            "district": _("District"),
+            "street": _("Street"),
+            "building_no": _("Building Number"),
+            "unit_no": _("Unit Number"),
+            "postal_code": _("Postal Code"),
+            "google_map_url": _("Google Maps URL"),
+            "latitude": _("Latitude"),
+            "longitude": _("Longitude"),
+            "allowed_radius": _("Allowed Radius (Meters)"),
+            "active": _("Active"),
+        }
+
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": _("Enter work location name"),
+            }),
+
+            "country": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "city": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "district": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "street": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "building_no": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "unit_no": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "postal_code": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+
+            "google_map_url": forms.URLInput(attrs={
+                "class": "form-control",
+            }),
+
+            "latitude": forms.NumberInput(attrs={
+                "class": "form-control",
+                "step": "0.0000001",
+            }),
+
+            "longitude": forms.NumberInput(attrs={
+                "class": "form-control",
+                "step": "0.0000001",
+            }),
+
+            "allowed_radius": forms.NumberInput(attrs={
+                "class": "form-control",
+            }),
+
+            "active": forms.CheckboxInput(attrs={
+                "class": "form-check-input",
+            }),
+        }
 
 # ==========================
 # نموذج درجات التقييم

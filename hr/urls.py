@@ -22,6 +22,14 @@ urlpatterns = [
     path('departments/delete/<int:dept_id>/', views.delete_department, name='delete_department'),
 
     # ==========================
+    # إدارة مواقع العمل
+    # ==========================
+    path('work-locations/', views.work_locations_list, name='work_locations'),
+    path('work-locations/add/', views.add_work_location, name='add_work_location'),
+    path('work-locations/edit/<int:location_id>/', views.edit_work_location, name='edit_work_location'),
+    path('work-locations/delete/<int:location_id>/', views.delete_work_location, name='delete_work_location'),
+
+    # ==========================
     # إدارة الشفتات
     # ==========================
     path('shifts/', views.shifts_view, name='shifts'),

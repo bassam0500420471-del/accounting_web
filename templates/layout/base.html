@@ -754,16 +754,27 @@ html[dir="ltr"] .gpt-chat-box{
 
         <!-- Employee Schedule Management -->
         <div class="menu-btn d-flex align-items-center justify-content-between">
-            <a href="{% url 'hr:employee_schedule' %}">{% trans "Employee Schedule Management" %}</a>
-            <button class="add-icon-btn" onclick="goAdd('{% url 'hr:add_employee_schedule' %}')">+</button>
+            <a href="{% url 'hr:employee_schedule' %}">
+                {% trans "Employee Schedule Management" %}
+            </a>
+            <button
+                class="add-icon-btn"
+                onclick="goAdd('{% url 'hr:add_employee_schedule' %}')">
+                +
+            </button>
         </div>
 
         <!-- Attendance and Departure Log -->
         <div class="menu-btn d-flex align-items-center justify-content-between">
-            <a href="{% url 'hr:attendance_page' %}">{% trans "Attendance and Departure Log" %}</a>
-            <button class="add-icon-btn" onclick="window.location.href='{% url 'hr:attendance_check_page' %}'">+</button>
+            <a href="{% url 'hr:attendance_page' %}">
+                {% trans "Attendance and Departure Log" %}
+            </a>
+            <button
+                class="add-icon-btn"
+                onclick="window.location.href='{% url 'hr:attendance_check_page' %}'">
+                +
+            </button>
         </div>
-
         <!-- Leave Management -->
         <div class="menu-btn d-flex align-items-center justify-content-between">
             <a href="{% url 'hr:leaves' %}">{% trans "Leave Management" %}</a>
@@ -793,6 +804,18 @@ html[dir="ltr"] .gpt-chat-box{
             <button class="add-icon-btn" onclick="window.location.href='{% url 'hr:hr_permissions_users' %}'">+</button>
         </div>
 
+<!-- Work Locations -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
+    <a href="{% url 'hr:work_locations' %}">
+        {% trans "موقع العمل" %}
+    </a>
+
+    <button
+        class="add-icon-btn"
+        onclick="goAdd('{% url 'hr:add_work_location' %}')">
+        +
+    </button>
+</div>
         <!-- Reports -->
         <div class="menu-btn">
             <a href="{% url 'hr:reports' %}">{% trans "Reports" %}</a>

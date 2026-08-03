@@ -12,6 +12,13 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required 
 from django.http import HttpResponse
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+
+from .models import WorkLocation
+from .forms import WorkLocationForm
+
+
 # ✅ استيراد الـ Decorator المخصص لجدولك بدلاً من الافتراضي
 from .decorators import hr_permission_required
 
@@ -830,7 +837,187 @@ def delete_department(request, dept_id):
     department = get_object_or_404(Department, company=company, id=dept_id)
     department.delete()
     return redirect("hr:departments")
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
+from .models import WorkLocation
+from .forms import WorkLocationForm
+
+# ==========================
+# إدارة مواقع العمل
+# ==========================
+
+@login_required
+@hr_permission_required("worklocations_view")
+def work_locations_list(request):
+
+    company = _company_required(request)
+    if not company:
+        return redirect("accounts:login")
+
+    print("COMPANY ID:", company.id)
+
+    print(
+        "ALL LOCATIONS:",
+        list(
+            WorkLocation.objects.values(
+                "id",
+                "name",
+                "company_id"
+            )
+        )
+    )
+
+    print(
+        "FILTER LOCATIONS:",
+        list(
+            WorkLocation.objects.filter(company=company).values(
+                "id",
+                "name",
+                "company_id"
+            )
+        )
+    )
+
+    locations = (
+        WorkLocation.objects
+        .filter(company=company)
+        .order_by("name")
+    )
+    return render(
+        request,
+        "hr/work_locations_list.html",
+        {
+            "locations": locations,
+        },
+    )
+
+
+@login_required
+@hr_permission_required("worklocations_add")
+def add_work_location(request):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    if request.method == "POST":
+
+        form = WorkLocationForm(request.POST)
+
+        if form.is_valid():
+
+            location = form.save(commit=False)
+            location.company = company
+            location.save()
+
+            messages.success(
+                request,
+                "✅ تمت إضافة موقع العمل بنجاح."
+            )
+
+            return redirect("hr:work_locations")
+
+        else:
+
+            messages.error(
+                request,
+                "❌ البيانات غير صالحة، يرجى مراجعة الأخطاء."
+            )
+
+    else:
+
+        form = WorkLocationForm()
+
+
+    return render(
+        request,
+        "hr/work_location_form.html",
+        {
+            "form": form,
+        },
+    )
+
+@login_required
+@hr_permission_required("worklocations_edit")
+def edit_work_location(request, location_id):
+
+    company = _company_required(request)
+    if not company:
+        return redirect("accounts:login")
+
+
+    location = get_object_or_404(
+        WorkLocation,
+        id=location_id,
+        company=company
+    )
+
+
+    if request.method == "POST":
+
+        form = WorkLocationForm(
+            request.POST,
+            instance=location
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "✅ تم تعديل موقع العمل."
+            )
+
+            return redirect("hr:work_locations")
+
+
+    else:
+
+        form = WorkLocationForm(
+            instance=location
+        )
+
+
+    return render(
+        request,
+        "hr/work_location_form.html",
+        {
+            "form": form,
+            "title": "تعديل موقع العمل",
+            "work_location": location,
+        },
+    )
+
+
+
+@login_required
+@hr_permission_required("worklocations_delete")
+def delete_work_location(request, location_id):
+
+    company = _company_required(request)
+    if not company:
+        return redirect("accounts:login")
+
+
+    location = get_object_or_404(
+        WorkLocation,
+        id=location_id,
+        company=company
+    )
+
+    location.delete()
+
+
+    messages.success(
+        request,
+        "✅ تم حذف موقع العمل."
+    )
+
+
+    return redirect("hr:work_locations")
 
 # ==========================
 # الحضور (الإدارة)
@@ -888,6 +1075,7 @@ def attendance_page(request):
     return render(request, "hr/attendance_page.html", context)
 
 
+
 @login_required
 @hr_permission_required("change_attendance")
 def attendance_check_in_ajax(request, employee_id):
@@ -896,6 +1084,7 @@ def attendance_check_in_ajax(request, employee_id):
         return JsonResponse({"success": False, "error": "لا توجد شركة للمستخدم"})
 
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
+
         today = timezone.now().date()
         now = timezone.now()
 
@@ -907,84 +1096,108 @@ def attendance_check_in_ajax(request, employee_id):
             date=today
         )
 
+        # يسجل أول حضور فقط
         if not attendance.check_in:
             attendance.check_in = now
-            schedule = (
-                EmployeeSchedule.objects
-                .filter(company=company, employee=employee, date=today)
-                .select_related("shift")
-                .first()
-            )
-            if schedule and schedule.shift:
-                attendance.shift = schedule.shift
-                shift_start = datetime.combine(today, schedule.shift.start_time)
-                if now > timezone.make_aware(shift_start):
-                    diff = now - timezone.make_aware(shift_start)
-                    attendance.late_minutes = int(diff.total_seconds() // 60)
-
             attendance.save()
 
         return JsonResponse({
             "success": True,
-            "check_in": attendance.check_in.strftime("%H:%M") if attendance.check_in else "",
-            "late_minutes": attendance.late_minutes
+            "check_in": attendance.check_in.strftime("%H:%M")
         })
 
-    return JsonResponse({"success": False, "error": "طلب غير صالح"})
-
-
+    return JsonResponse({
+        "success": False,
+        "error": "طلب غير صالح"
+    })
 @login_required
 @hr_permission_required("change_attendance")
 def attendance_check_out_ajax(request, attendance_id):
+
     company = _company_required(request)
+
     if not company:
-        return JsonResponse({"success": False, "error": "لا توجد شركة للمستخدم"})
+        return JsonResponse({
+            "success": False,
+            "error": "لا توجد شركة للمستخدم"
+        })
+
 
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        attendance = get_object_or_404(Attendance, company=company, id=attendance_id)
-        if not attendance.check_out:
-            attendance.check_out = timezone.now()
-            attendance.save()
+
+        attendance = get_object_or_404(
+            Attendance,
+            company=company,
+            id=attendance_id
+        )
+
+        attendance.check_out = timezone.now()
+        attendance.save()
+
 
         return JsonResponse({
             "success": True,
-            "check_out": attendance.check_out.strftime("%H:%M") if attendance.check_out else ""
+            "check_out": attendance.check_out.strftime("%H:%M")
         })
 
-    return JsonResponse({"success": False, "error": "طلب غير صالح"})
 
-
+    return JsonResponse({
+        "success": False,
+        "error": "طلب غير صالح"
+    })
 # ==========================
 # صفحة تسجيل الدخول والخروج السريع
 # ==========================
 @hr_permission_required()
 def attendance_check_page(request):
-    company = _company_required(request)
-    if not company:
-        return redirect("accounts:login")
+
+    employee = None
+    last_attendance = None
+
+    if hasattr(request.user, "employee"):
+        employee = request.user.employee
+
+    if employee:
+        last_attendance = (
+            Attendance.objects
+            .filter(employee=employee)
+            .order_by("-date", "-check_in")
+            .first()
+        )
+
+    if employee and employee.company:
+        company = employee.company
+    else:
+        company = Company.objects.first()
 
     today = timezone.now().date()
     now = timezone.now()
     message = ""
     next_action = _("Check In")
-    last_attendance = None
+
     employee = _get_logged_employee(request, company)
 
     if not employee:
-        message = "الموظف غير مرتبط بحساب المستخدم أو ليس من نفس الشركة."
         return render(request, "hr/attendance_check.html", {
             "employee": None,
+            "company": company,
             "attendance": None,
-            "message": message,
+            "message": "الموظف غير مرتبط بحساب المستخدم أو ليس من نفس الشركة.",
             "next_action": next_action,
-            "last_attendance": None
+            "last_attendance": None,
         })
 
-    attendance, created = Attendance.objects.get_or_create(company=company, employee=employee, date=today)
+    attendance, created = Attendance.objects.get_or_create(
+        company=company,
+        employee=employee,
+        date=today
+    )
+
     last_attendance = attendance
 
     can_toggle = True
     last_time = attendance.check_out if attendance.check_out else attendance.check_in
+
     if last_time:
         elapsed = (now - last_time).total_seconds()
         if elapsed < 60:
@@ -994,27 +1207,29 @@ def attendance_check_page(request):
     next_action = _("Check Out") if attendance.check_in and not attendance.check_out else _("Check In")
 
     if request.method == "POST" and can_toggle:
-        if not attendance.check_in or attendance.check_out:
-            attendance.check_in = now
-            attendance.check_out = None
-            attendance.save()
-            message = _("Checked out successfully.")
-        else:
-            attendance.check_out = now
-            attendance.save()
-            message = "تم تسجيل الخروج بنجاح."
 
+        if not attendance.check_in:
+
+            attendance.check_in = now
+            message = "تم تسجيل الحضور بنجاح."
+
+        else:
+
+            attendance.check_out = now
+            message = "تم تحديث وقت الانصراف بنجاح."
+
+
+        attendance.save()
         return redirect("hr:attendance_check_page")
 
     return render(request, "hr/attendance_check.html", {
         "employee": employee,
-        "attendance": last_attendance,
+        "company": company,
+        "attendance": attendance,
         "message": message,
         "next_action": next_action,
-        "last_attendance": last_attendance
+        "last_attendance": attendance,
     })
-
-
 # ==========================
 # الرواتب
 # ==========================
@@ -1390,7 +1605,7 @@ def evaluation_fill_peer(request, eval_id, target_id):
                 target=target,
                 criteria=c,
                 evaluator=evaluator_emp,
-                role="manager",
+                role="peer",
                 defaults={
                     "value": v,
                     "notes": notes,
@@ -1483,7 +1698,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 target=target,
                 criteria=c,
                 evaluator=evaluator_emp,
-                role="peer",
+                role="manager",
                 defaults={
                     "value": v,
                     "notes": notes,
@@ -1923,6 +2138,12 @@ def _sync_user_django_permissions_from_hrpermission(user, permission_obj):
         "add_departments": ["hr.add_department"],
         "edit_departments": ["hr.change_department"],
         "delete_departments": ["hr.delete_department"],
+
+        # مواقع العمل
+        "worklocations_view": ["hr.view_worklocation"],
+        "worklocations_add": ["hr.add_worklocation"],
+        "worklocations_edit": ["hr.change_worklocation"],
+        "worklocations_delete": ["hr.delete_worklocation"],
 
         # الحضور
         "view_attendance": ["hr.view_attendance"],

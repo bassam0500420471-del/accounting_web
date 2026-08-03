@@ -10,6 +10,8 @@ from datetime import timedelta
 
 from accounts.models import Company
 
+
+
 # ================= الأقسام والفروع =================
 class Department(models.Model):
     company = models.ForeignKey(
@@ -54,6 +56,93 @@ class Branch(models.Model):
     def __str__(self):
         return self.name
 
+
+# ================= مواقع العمل =================
+class WorkLocation(models.Model):
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="hr_work_locations",
+        verbose_name=_("Company"),
+        null=True,
+        blank=True,
+    )
+
+    name = models.CharField(max_length=150)
+
+    country = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    city = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    district = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    street = models.CharField(
+        max_length=150,
+        blank=True
+    )
+
+    building_no = models.CharField(
+        max_length=30,
+        blank=True
+    )
+
+    unit_no = models.CharField(
+        max_length=30,
+        blank=True
+    )
+
+    postal_code = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    google_map_url = models.URLField(
+        max_length=1500,
+        blank=True
+    )
+
+    latitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True
+    )
+
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True
+    )
+
+    allowed_radius = models.PositiveIntegerField(
+        default=100,
+        blank=True,
+        help_text=_("Allowed radius in meters")
+    )
+
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "name"],
+                name="hr_uniq_work_location_per_company"
+            )
+        ]
+
+    def __str__(self):
+        return self.name
 
 # ================= الموظفين =================
 class Employee(models.Model):
@@ -109,7 +198,13 @@ class Employee(models.Model):
         blank=True,
         on_delete=models.SET_NULL
     )
-
+    work_location = models.ForeignKey(
+        WorkLocation,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Work Location")
+    )
     job_title = models.CharField(max_length=100, blank=True)
     employee_type = models.CharField(max_length=50, default=_("Full-time Employee"))
 
@@ -352,33 +447,54 @@ class Evaluation(models.Model):
     )
 
     name = models.CharField(max_length=200)
+
     evaluation_type = models.ForeignKey(
         EvaluationType,
         null=True,
         blank=True,
         on_delete=models.SET_NULL
     )
-    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
+
+    department = models.ForeignKey(
+        Department,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
     status = models.CharField(
         max_length=20,
-        choices=(("draft", _("Draft")), ("active", _("Active")), ("closed", _("Closed"))),
+        choices=(
+            ("draft", _("Draft")),
+            ("active", _("Active")),
+            ("closed", _("Closed"))
+        ),
         default="draft"
     )
+
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
-    employee = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.SET_NULL)
-    comment = models.TextField(blank=True)
-    notes = models.TextField(
-    blank=True,
-    verbose_name=_("Notes")
+
+    employee = models.ForeignKey(
+        Employee,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
     )
+
+    comment = models.TextField(blank=True)
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
+
     class Meta:
         ordering = ["-start_date"]
 
-def __str__(self):
-    return f"{self.name} - {self.department} - {self.status}"
-
-
+    def __str__(self):
+        return f"{self.name} - {self.department} - {self.status}"
+# ================= مرفقات التقييم =================
 class EvaluationAttachment(models.Model):
     company = models.ForeignKey(
         Company,
@@ -419,25 +535,63 @@ class Attendance(models.Model):
         ("absent", _("Absent")),
     )
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name=_("Employee"))
-    date = models.DateField(default=timezone.now, verbose_name=_("Date"))
-    shift = models.ForeignKey(Shift, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("Shift"))
-    check_in = models.DateTimeField(null=True, blank=True, verbose_name=_("Check In Time"))
-    check_out = models.DateTimeField(null=True, blank=True, verbose_name=_("Check Out Time"))
-    late_minutes = models.PositiveIntegerField(default=0, verbose_name=_("Late Minutes"))
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="present", verbose_name=_("Status"))
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        verbose_name=_("Employee")
+    )
+
+    date = models.DateField(
+        default=timezone.now,
+        verbose_name=_("Date")
+    )
+
+    shift = models.ForeignKey(
+        Shift,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Shift")
+    )
+
+    check_in = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Check In Time")
+    )
+
+    check_out = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Check Out Time")
+    )
+
+    late_minutes = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Late Minutes")
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="present",
+        verbose_name=_("Status")
+    )
 
     class Meta:
         verbose_name = _("Attendance Record")
         verbose_name_plural = _("Attendance Records")
         ordering = ["-date"]
+
         constraints = [
-            models.UniqueConstraint(fields=["company", "employee", "date"], name="hr_uniq_attendance_per_company")
+            models.UniqueConstraint(
+                fields=["company", "employee", "date"],
+                name="hr_uniq_attendance_per_company"
+            )
         ]
 
     def __str__(self):
         return f"{self.employee} - {self.date}"
-
 
 # ================= تحديث جدول الموظف عند الموافقة على الإجازة =================
 @receiver(post_save, sender=Leave)
@@ -580,6 +734,26 @@ class HRPermission(models.Model):
     departments_add = models.BooleanField(default=True, verbose_name=_("Add Department"))
     departments_edit = models.BooleanField(default=True, verbose_name=_("Edit Department"))
     departments_delete = models.BooleanField(default=True, verbose_name=_("Delete Department"))
+    # مواقع العمل
+    worklocations_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Work Locations")
+    )
+
+    worklocations_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Add Work Location")
+    )
+
+    worklocations_edit = models.BooleanField(
+        default=True,
+        verbose_name=_("Edit Work Location")
+    )
+
+    worklocations_delete = models.BooleanField(
+        default=True,
+        verbose_name=_("Delete Work Location")
+    )
 
     # الحضور والانصراف
     attendance_view = models.BooleanField(default=True, verbose_name=_("View Attendance"))

@@ -1,84 +1,306 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
+{% load static %}
 
-{% block title %}{% trans "Quick Check In and Check Out" %}{% endblock %}
+{% block title %}
+لوحة الحضور والانصراف
+{% endblock %}
 
 {% block content %}
-<div class="container d-flex flex-column align-items-center justify-content-center" style="height: 70vh;">
+<div class="container-fluid main-wrapper px-2 px-md-4 py-3" style="min-height: 100vh; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); direction: rtl; text-align: right;">
+    
+    <!-- حاوية رئيسية متجاوبة تتوسط الشاشة وتناسب الجوال -->
+    <div class="container mx-auto" style="max-width: 480px;">
 
-    <h3 class="mb-4">{% trans "Quick Check In and Check Out" %}</h3>
+        <!-- شريط الحالة العلوي المصغر (داخل الإطار الجوال) -->
+        <div class="d-flex justify-content-between align-items-center px-3 py-2 text-white mb-3 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #374151 0%, #1f2937 100%); font-size: 11px;">
+            <span class="fw-bold" id="live-clock">03:06</span>
+            <div class="d-flex gap-2">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
 
-    <!-- رسالة تحذير أو عدم وجود موظف مرتبط -->
-    <div id="alert-container" class="mb-3">
-        {% if not employee %}
-            <div class="alert alert-danger">{% trans "Employee is not linked to the user account." %}</div>
-        {% elif message %}
-            <div class="alert alert-warning">{{ message }}</div>
-        {% endif %}
+        <!-- شريط التنقل العلوي الفاخر -->
+        <header class="app-header d-flex align-items-center justify-content-between px-3 py-3 mb-3 shadow-sm rounded-4" style="background: #ffffff; border: 1px solid #e5e7eb;">
+            <div class="d-flex align-items-center gap-2 text-secondary fw-bold" style="font-size: 14px;">
+                <i class="fas fa-bars fa-lg text-dark"></i>
+                <span>القائمة</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 fs-6">
+                <i class="fas fa-search text-muted"></i>
+                <i class="fas fa-file-alt text-muted"></i>
+                <i class="fas fa-plus text-secondary"></i>
+                <div class="position-relative">
+                    <i class="fas fa-bell text-secondary"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- بطاقة الترحيب بالموظف (صورة حقيقية للموظف وتحية زمنية دقيقة) -->
+        <div class="profile-card card mb-3 p-3 shadow-lg border-0 rounded-4 position-relative overflow-hidden" style="background: linear-gradient(to right, #ffffff, #f9fafb); border-left: 5px solid #4b5563 !important;">
+            <div class="row align-items-center g-2">
+                <div class="col-3 text-center">
+                    {% if employee and employee.photo and employee.photo.url %}
+                        <img src="{{ employee.photo.url }}"
+                             alt="{{ employee.get_full_name }}"
+                             class="rounded-circle shadow-md border border-2 border-white"
+                             style="width:60px;height:60px;object-fit:cover;">
+                    {% else %}
+                        <!-- بديل احترافي حقيقي في حال لم تتوفر صورة للموظف (يعرض أول حرفين من اسمه) -->
+                        <div class="rounded-circle shadow-md border border-2 border-white d-flex align-items-center justify-content-center text-white fw-bold mx-auto"
+                             style="width:60px;height:60px; background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%); font-size: 20px;">
+                            {{ employee.get_full_name|slice:":2"|default:"مو" }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-9" style="font-size: 14px;">
+                    <span class="fw-bold" id="dynamic-greeting" style="color: #4b5563; font-size: 16px;">أهلاً بك</span>، 
+                    <span class="fw-bold text-dark">{{ employee.get_full_name|default:"زائر" }}</span><br>
+                    <span class="text-muted" style="font-size: 12px;">سعدنا برؤيتك مجدداً 👋</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة شعار الشركة الحقيقي (شعار حقيقي من قاعدة البيانات) -->
+        <div class="logo-card card mb-3 p-4 text-center shadow-lg border-0 rounded-4" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+            <div class="d-flex justify-content-center align-items-center flex-column">
+                {% if company and company.logo and company.logo.url %}
+                    <img src="{{ company.logo.url }}"
+                         alt="{{ company.name_ar|default:'شعار الشركة' }}"
+                         style="width: 120px;
+                                height: 120px;
+                                object-fit: cover;
+                                border-radius: 50%;
+                                border: 3px solid #e5e7eb;
+                                filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));">
+                {% elif company and company.logo_url %}
+                     <img src="{{ company.logo_url }}" alt="{{ company.name_ar|default:'شعار الشركة' }}" style="max-width: 120px; height: auto; max-height: 60px; object-fit: contain; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));">
+                {% else %}
+                    <!-- بديل حقيقي يعرض أول حروف من اسم الشركة في حال عدم وجود شعار مرفوع -->
+                    <div class="fw-bold text-secondary" style="font-size: 36px; letter-spacing: 2px;">
+                        {{ company.name_ar|slice:":4"|default:"شركة" }}
+                    </div>
+                {% endif %}
+                <h5 class="mt-2 fw-bold text-dark" style="letter-spacing: 0.5px;">{{ company.name_ar|default:company.name|default:_("لوحة العمل") }}</h5>
+            </div>
+        </div>
+
+        <!-- بطاقة تسجيل الحضور والانصراف (تصميم 3D وتدرجات رمادية متناسقة) -->
+        <div class="card attendance-card shadow-lg p-3 p-md-4 mb-4 border-0 rounded-4 position-relative" style="background: #ffffff;">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3 text-muted" style="font-size: 16px;">
+                <i class="fas fa-globe"></i>
+                <i class="fas fa-redo-alt text-dark" onclick="location.reload();" style="cursor: pointer;" title="Refresh"></i>
+            </div>
+
+            <div class="row align-items-center g-3">
+                
+                <!-- معلومات آخر تسجيل -->
+                <div class="col-12 col-sm-7">
+                    {% if last_attendance %}
+                        <div class="last-record-box mb-2 p-2 px-3 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border-left: 4px solid #374151;">
+                            <span class="d-flex align-items-center text-secondary small fw-bold mb-1" style="font-size: 11px;">
+                                <i class="fas fa-sign-in-alt me-1 ms-1"></i> آخر عملية
+                            </span>
+                            <span class="d-block fw-bold text-dark" style="font-size: 0.95rem;">
+                                {% if last_attendance.check_out %}
+                                    انصراف: {{ last_attendance.check_out|date:"Y-m-d H:i:s" }}
+                                {% else %}
+                                    حضور: {{ last_attendance.check_in|date:"Y-m-d H:i:s" }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="text-muted small mb-2 alert alert-light border text-center py-2">
+                            لا توجد عمليات حضور أو انصراف لهذا اليوم.
+                        </div>
+                    {% endif %}
+
+                    <!-- الوقت المحسوب منذ آخر عملية -->
+                    {% if last_attendance and last_attendance.check_in %}
+                        <div class="d-flex align-items-center text-muted small p-2 rounded-3 shadow-sm" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
+                            <i class="far fa-clock me-2 ms-2 text-secondary fs-5"></i>
+                            <div class="d-flex flex-column">
+                                <span class="text-muted" style="font-size: 10px;">المدة منذ آخر عملية</span>
+                                <span class="fw-bold text-dark" id="time-since-last" style="font-size: 0.9rem;">--:--:--</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- الزر الدائري الأسطوري بتأثير 3D وتدرج رمادي مذهل -->
+                <div class="col-12 col-sm-5 d-flex justify-content-center align-items-center my-2">
+                    <form method="post" id="attendance-form" action="">
+                        {% csrf_token %}
+                        <button type="submit"
+                                id="attendance-btn"
+                                class="btn rounded-circle d-flex flex-column align-items-center justify-content-center text-center btn-3d-glow"
+                                style="width: 130px; height: 130px; 
+                                       border: 6px solid #cbd5e1;
+                                       background: linear-gradient(145deg, #4b5563 0%, #111827 100%);
+                                       color: #ffffff;
+                                       transition: all 0.2s ease-in-out;">
+                            <i class="fas fa-power-off mb-1" style="font-size: 26px; text-shadow: 0 2px 4px rgba(0,0,0,0.4);"></i>
+                            <span style="font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                            <span style="font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                                {% if last_attendance and last_attendance.check_in %}
+                                    انصراف
+                                {% else %}
+                                    حضور
+                                {% endif %}
+                            </span>
+                            </span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- رسالة تحذير أو خطأ -->
+        <div id="alert-container" class="mb-4">
+            {% if not employee %}
+                <div class="alert alert-danger text-center shadow-sm rounded-3 py-2" style="font-size: 13px;">الموظف غير مرتبط بحساب مستخدم.</div>
+            {% elif message %}
+                <div class="alert alert-warning text-center shadow-sm rounded-3 py-2" style="font-size: 13px;">{{ message }}</div>
+            {% endif %}
+        </div>
+
     </div>
 
-    <!-- الزر الدائري دائمًا ظاهر -->
-    <form method="post" id="attendance-form">
-        {% csrf_token %}
-        <button type="submit"
-                id="attendance-btn"
-                class="btn rounded-circle d-flex align-items-center justify-content-center glow"
-                style="width: 160px; height: 160px; font-size: 20px;
-                       border: 5px solid #666666;
-                       background-color: #888888;
-                       color: #fff;
-                       transition: all 0.2s;">
-            {{ next_action|default:_("Check In") }}
-        </button>
-    </form>
-
-    <!-- آخر تسجيل -->
-    {% if last_attendance %}
-        <div class="mt-4 text-center" style="color: #333;">
-            <p>{% trans "Last record:" %}
-                {% if last_attendance.check_out %}
-                    {% trans "Checked out at" %} {{ last_attendance.check_out|time:"H:i" }}
-                {% else %}
-                    {% trans "Checked in at" %} {{ last_attendance.check_in|time:"H:i" }}
-                {% endif %}
-            </p>
-        </div>
-    {% endif %}
+    <!-- شريط التنقل السفلي المتجاوب (Bottom Navigation Bar) -->
+    <footer class="app-footer fixed-bottom d-flex justify-content-around align-items-center py-2 shadow-lg" style="background-color: #111827; color: #9ca3af; border-top: 1px solid #374151; backdrop-filter: blur(5px);">
+        <a href="#" class="nav-item text-center text-decoration-none" style="color: inherit;">
+            <i class="fas fa-cog fa-lg d-block mb-1"></i>
+            <span style="font-size: 10px;">الإعدادات</span>
+        </a>
+        <a href="#" class="nav-item text-center text-decoration-none" style="color: inherit;">
+            <i class="far fa-star fa-lg d-block mb-1"></i>
+            <span style="font-size: 10px;">الطلبات</span>
+        </a>
+        <a href="#" class="nav-item text-center text-decoration-none" style="color: inherit;">
+            <i class="fas fa-th-large fa-lg d-block mb-1"></i>
+            <span style="font-size: 10px;">النشاط</span>
+        </a>
+        <a href="#" class="nav-item text-center text-decoration-none active" style="color: #60a5fa;">
+            <i class="fas fa-home fa-lg d-block mb-1"></i>
+            <span style="font-size: 10px;">الرئيسية</span>
+        </a>
+    </footer>
 
 </div>
 
 <style>
     body {
-        background: #f5f5f5;
-        color: #333;
+        font-family: 'Cairo', sans-serif;
+        background-color: #f3f4f6;
+        color: #111827;
+        padding-bottom: 70px;
     }
-    h3 {
+
+    /* تأثير الـ 3D والتوهج الأسطوري للزر الدائري */
+    .btn-3d-glow {
+        box-shadow: 0 10px 25px rgba(31, 41, 55, 0.4), 
+                    0 6px 10px rgba(0, 0, 0, 0.2),
+                    inset 0 4px 6px rgba(255, 255, 255, 0.3), 
+                    inset 0 -4px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-3d-glow:hover {
+        background: linear-gradient(145deg, #374151 0%, #030712 100%) !important;
+        border-color: #9ca3af !important;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(31, 41, 55, 0.5), 
+                    inset 0 4px 8px rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-3d-glow:active {
+        transform: translateY(4px) scale(0.97);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), 
+                    inset 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    /* تحسين إضافي لتجاوب البطاقات على الجوال */
+    .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .app-footer .nav-item.active {
+        color: #60a5fa !important;
         font-weight: bold;
-        color: #333;
-    }
-    .alert {
-        width: 300px;
-        text-align: center;
-    }
-
-    /* تأثير الهالة / الظل للزر */
-    .glow {
-        box-shadow: 0 0 15px rgba(0,0,0,0.3), 
-                    0 0 20px rgba(255,255,255,0.2) inset, 
-                    0 0 25px rgba(255,255,255,0.1);
-    }
-
-    #attendance-btn:active {
-        transform: translateY(4px); /* إحساس بالضغط */
-        box-shadow: 0 0 10px rgba(0,0,0,0.3), 0 0 15px rgba(255,255,255,0.1) inset;
     }
 </style>
 
 <script>
-    // منع الضغط المتكرر قبل دقيقة
-    let lastClickTime = 0;
-    const waitTime = 60000; // دقيقة واحدة
+    document.addEventListener('DOMContentLoaded', function() {
+        // تحديث رسالة التحية والساعة بناءً على التوقيت المحلي للجهاز بدقة
+        function updateGreetingAndClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            const greetingEl = document.getElementById('dynamic-greeting');
+            const clockEl = document.getElementById('live-clock');
 
+            // تحديد التحية العربية حسب الوقت
+            if (hours >= 4 && hours < 12) {
+                greetingEl.textContent = "صباح الخير";
+            } else if (hours >= 12 && hours < 17) {
+                greetingEl.textContent = "نهارك سعيد";
+            } else {
+                greetingEl.textContent = "مساء الخير";
+            }
+
+            // تحديث شريط الساعة العلوي المصغر
+            if (clockEl) {
+                const hh = String(hours).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                clockEl.textContent = hh + ":" + mm;
+            }
+        }
+
+        updateGreetingAndClock();
+        setInterval(updateGreetingAndClock, 30000); // تحديث دوري كل نصف دقيقة
+
+        // حساب الوقت المنقضي منذ آخر عملية حضور/انصراف
+        const timeSinceLastEl = document.getElementById('time-since-last');
+        if (timeSinceLastEl) {
+            {% if last_attendance %}
+                {% if last_attendance.check_out %}
+                   const lastRecordTimeStr = "{{ last_attendance.check_out|date:'c' }}";
+                {% else %}
+                   const lastRecordTimeStr = "{{ last_attendance.check_in|date:'c' }}";
+                {% endif %}
+
+                const lastRecordTime = new Date(lastRecordTimeStr);
+
+                function updateElapsedTime() {
+                    const now = new Date();
+                    let diff = Math.floor((now - lastRecordTime) / 1000);
+                    if (diff < 0) {
+                        timeSinceLastEl.textContent = "00:00:00";
+                        return;
+                    }
+                    let hours = Math.floor(diff / 3600);
+                    diff -= hours * 3600;
+                    let minutes = Math.floor(diff / 60);
+                    diff -= minutes * 60;
+                    let seconds = diff;
+
+                    timeSinceLastEl.textContent = 
+                        String(hours).padStart(2, '0') + ":" +
+                        String(minutes).padStart(2, '0') + ":" +
+                        String(seconds).padStart(2, '0');
+                }
+                updateElapsedTime();
+                setInterval(updateElapsedTime, 1000);
+            {% endif %}
+        }
+    });
+
+    let lastClickTime = 0;
+    const waitTime = 60000;
     const form = document.getElementById('attendance-form');
     if(form){
         form.addEventListener('submit', function(e){
@@ -87,17 +309,11 @@
 
             if(now - lastClickTime < waitTime){
                 e.preventDefault();
-                alertContainer.innerHTML = '<div class="alert alert-warning">{% trans "Please wait before making a new record!" %}</div>';
+                alertContainer.innerHTML = '<div class="alert alert-warning text-center shadow-sm rounded-3 py-2" style="font-size: 13px;">الرجاء الانتظار قليلاً قبل تسجيل حركة جديدة!</div>';
                 return false;
             }
-
             lastClickTime = now;
-            // إزالة أي رسالة قديمة
-            if(employee) {
-                alertContainer.innerHTML = '';
-            }
         });
     }
 </script>
-
 {% endblock %}

@@ -35,10 +35,27 @@
 
     </div>
 
-    <div style="display:flex; gap:20px;">
+    <div class="pos-layout">
+        <!-- Invoice Panel -->
+
+        <div class="pos-invoice-panel">
+
+
+
+            <div id="invoice-tabs"
+
+                 class="d-flex gap-1 mb-2 flex-wrap"></div>
+
+
+
+            <div id="invoice-contents"></div>
+
+
+
+        </div>
 
         <!-- Products -->
-        <div style="flex:2;">
+        <div class="pos-products">
 
             <h4>{% trans "Categories" %}</h4>
 
@@ -140,18 +157,6 @@
 
         </div>
 
-        <!-- Invoice Panel -->
-        <div style="flex:1;
-                    border:1px solid #ddd;
-                    padding:10px;
-                    border-radius:5px;">
-
-            <div id="invoice-tabs"
-                 class="d-flex gap-1 mb-2 flex-wrap"></div>
-
-            <div id="invoice-contents"></div>
-
-        </div>
 
     </div>
 
@@ -263,25 +268,38 @@ function createInvoice(id = null, name = null){
 
     content.innerHTML = `
 
-        <div class="mb-2">
+<div class="mb-2">
 
-            <label>{% trans "Select Customer" %}</label>
+    <label>{% trans "Select Customer" %}</label>
 
-            <select class="form-select customer-select">
+    <div class="d-flex gap-2">
 
-                <option value="">
-                    {% trans "Cash Customer" %}
-                </option>
+        <select class="form-select customer-select">
 
-                {% for cust in customers %}
-                <option value="{{ cust.id }}">
-                    {{ cust.name }}
-                </option>
-                {% endfor %}
+            <option value="">
+                {% trans "Cash Customer" %}
+            </option>
 
-            </select>
+            {% for cust in customers %}
+            <option value="{{ cust.id }}">
+                {{ cust.name }}
+            </option>
+            {% endfor %}
 
-        </div>
+        </select>
+
+
+        <button type="button"
+                class="btn btn-danger clear-invoice-btn"
+                style="white-space:nowrap;">
+
+            🗑️ تفريغ
+
+        </button>
+
+    </div>
+
+</div>
 
         <table class="table table-bordered">
 
@@ -436,6 +454,13 @@ function createInvoice(id = null, name = null){
     content.querySelector(".customer-select").addEventListener("change", function(){
         invoices[id].customer_id = this.value || null;
     });
+content.querySelector(".clear-invoice-btn")
+.addEventListener("click", function(){
+
+    clearInvoice(id);
+
+});
+
 if(invoices[id].customer_id){
     content.querySelector(".customer-select").value = invoices[id].customer_id;
 }
@@ -784,6 +809,46 @@ function updateTax(invoiceId, pid, value){
     invoices[invoiceId].items[pid].tax = parseFloat(value) || 0;
 
     renderInvoice(invoiceId);
+
+}
+
+// ===================== Clear Invoice =====================
+
+function clearInvoice(id){
+
+    const inv = invoices[id];
+
+
+    if(!confirm("هل تريد تفريغ الفاتورة؟")){
+
+        return;
+
+    }
+
+
+    inv.items = {};
+
+    inv.total = 0;
+
+    inv.customer_id = null;
+
+    inv.negativeAlertShown = {};
+
+
+
+    const customer = document.querySelector(
+        `.invoice-content[data-id='${id}'] .customer-select`
+    );
+
+
+    if(customer){
+
+        customer.value = "";
+
+    }
+
+
+    renderInvoice(id);
 
 }
 
@@ -1195,24 +1260,53 @@ fetch("{% url 'pos:add_payment_method' %}", {
 }
 
 .invoice-item-name{
-    width:220px;
-    min-width:220px;
-    max-width:220px;
+
+    width:90px;
+    min-width:90px;
+    max-width:90px;
+
+    vertical-align:top;
+
 }
+
 
 .invoice-item-text{
+
     width:100%;
+
+    display:block;
+
     overflow:hidden;
+
     white-space:nowrap;
+
     text-overflow:ellipsis;
+
     cursor:pointer;
+
+    font-size:12px;
+
+    line-height:22px;
+
 }
 
+
 .invoice-item-text.expanded{
+
     white-space:normal;
-    word-break:break-word;
+
     overflow:visible;
+
+    word-break:break-word;
+
+    background:#fff;
+
+    position:relative;
+
+    z-index:5;
+
 }
+
 </style>
 <div class="modal fade" id="imagePreviewModal" tabindex="-1">
 
