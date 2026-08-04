@@ -7,95 +7,464 @@
 
 {% block content %}
 
-<div class="container mt-4">
-    <h3 class="mb-4">{% trans "Attendance Log" %}</h3>
+<div class="container-fluid attendance-page mt-4">
 
-    <!-- ===== فلتر الموظف و التاريخ ===== -->
-    <form method="get" class="mb-3 d-flex align-items-center gap-2">
-        <label>{% trans "Employee:" %}</label>
-        <select name="employee" class="form-select" style="width:200px;">
-            <option value="all" {% if selected_employee == "all" %}selected{% endif %}>
-                {% trans "Show All" %}
-            </option>
-            {% for emp in all_employees %}
-                <option value="{{ emp.id }}" {% if selected_employee|add:'' == emp.id|add:'' %}selected{% endif %}>
-                    {{ emp.get_full_name }}
-                </option>
-            {% endfor %}
-        </select>
+    <div class="attendance-card">
 
-        <label>{% trans "From:" %}</label>
-        <input type="date" name="start_date" value="{{ start_date_str }}" class="form-control" style="width:150px;">
+        <div class="page-header">
+            <div>
+                <h3>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    {% trans "Attendance Log" %}
+                </h3>
+                <p>{% trans "Employee attendance and departure records" %}</p>
+            </div>
+        </div>
 
-        <label>{% trans "To:" %}</label>
-        <input type="date" name="end_date" value="{{ end_date_str }}" class="form-control" style="width:150px;">
 
-        <button type="submit" class="btn btn-secondary" style="background-color:#ccc; color:black;">
-            {% trans "Search" %}
-        </button>
+        <!-- FILTER -->
+        <form method="get" class="attendance-filter">
 
-        <a href="{% url 'hr:attendance_page' %}" class="btn btn-light" style="background-color:#eee; color:black;">
-            {% trans "Reset" %}
-        </a>
-    </form>
+            <div class="filter-item">
+                <label>{% trans "Employee" %}</label>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped text-center align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>{% trans "Employee" %}</th>
-                    <th>{% trans "Date" %}</th>
-                    <th>{% trans "Check In Time" %}</th>
-                    <th>{% trans "Check Out Time" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for emp in employees %}
-                    {% for day in start_date|until:end_date %}
-                        {% with att=attendance_map|dict_get:emp.id|dict_get:day %}
-                        <tr id="row-{{ emp.id }}-{{ day|date:'Ymd' }}">
-                            <td>{{ emp.get_full_name }}</td>
-                            <td>{{ day|date:"d-m-Y" }}</td>
+                <select name="employee" class="form-select">
 
-                            <td class="check-in">
-                                {% if att and att.check_in %}
-                                    {{ att.check_in|date:"H:i" }}
-                                {% else %}
-                                    ---
-                                {% endif %}
-                            </td>
+                    <option value="all">
+                        {% trans "Show All" %}
+                    </option>
 
-                            <td class="check-out">
-                                {% if att and att.check_out %}
-                                    {{ att.check_out|date:"H:i" }}
-                                {% else %}
-                                    ---
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endwith %}
+                    {% for emp in all_employees %}
+                    <option value="{{ emp.id }}"
+                    {% if selected_employee|add:'' == emp.id|add:'' %}selected{% endif %}>
+                        {{ emp.get_full_name }}
+                    </option>
                     {% endfor %}
+
+                </select>
+
+            </div>
+
+
+
+            <div class="filter-item">
+                <label>{% trans "From" %}</label>
+                <input type="date"
+                       name="start_date"
+                       value="{{ start_date_str }}"
+                       class="form-control">
+            </div>
+
+
+
+            <div class="filter-item">
+                <label>{% trans "To" %}</label>
+                <input type="date"
+                       name="end_date"
+                       value="{{ end_date_str }}"
+                       class="form-control">
+            </div>
+
+
+
+            <button class="btn-search">
+                <i class="fa-solid fa-search"></i>
+                {% trans "Search" %}
+            </button>
+
+
+            <a href="{% url 'hr:attendance_page' %}" class="btn-reset">
+                <i class="fa-solid fa-rotate"></i>
+                {% trans "Reset" %}
+            </a>
+
+
+        </form>
+
+
+
+
+        <div class="table-box">
+
+            <table class="attendance-table">
+
+                <thead>
+                    <tr>
+                        <th>{% trans "Employee" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Check In Time" %}</th>
+                        <th>{% trans "Check Out Time" %}</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                {% for emp in employees %}
+
+                    {% for day in start_date|until:end_date %}
+
+                    {% with att=attendance_map|dict_get:emp.id|dict_get:day %}
+
+                    <tr>
+
+                        <td>
+                            <div class="employee-name">
+                                <i class="fa-solid fa-user"></i>
+                                {{ emp.get_full_name }}
+                            </div>
+                        </td>
+
+
+                        <td>
+                            {{ day|date:"d-m-Y" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if att and att.check_in %}
+
+                            <span class="time-in">
+                                {{ att.check_in|date:"H:i" }}
+                            </span>
+
+                            {% else %}
+                                <span class="empty">---</span>
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if att and att.check_out %}
+
+                            <span class="time-out">
+                                {{ att.check_out|date:"H:i" }}
+                            </span>
+
+                            {% else %}
+                                <span class="empty">---</span>
+                            {% endif %}
+
+                        </td>
+
+
+                    </tr>
+
+                    {% endwith %}
+                    {% endfor %}
+
                 {% endfor %}
-            </tbody>
-        </table>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
+
 </div>
 
 <style>
-    body {
-        background: #f5f5f5;
-        color: #333;
-    }
-    h3 {
-        font-weight: bold;
-        color: #333;
-    }
-    .table th, .table td {
-        vertical-align: middle;
-    }
-    .form-select, .form-control {
-        height: calc(1.5em + .75rem + 2px);
-    }
+body{
+    background:#eeeeee;
+}
+
+
+.attendance-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d9d9d9
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+
+.attendance-card{
+
+    background:#ffffff;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 10px 35px rgba(0,0,0,.12);
+
+}
+
+
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.page-header h3{
+
+    font-size:26px;
+
+    font-weight:800;
+
+    color:#444;
+
+}
+
+
+
+.page-header p{
+
+    color:#777;
+
+}
+
+
+
+
+
+.attendance-filter{
+
+    background:
+    linear-gradient(
+        120deg,
+        #eeeeee,
+        #fafafa
+    );
+
+    padding:20px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    align-items:end;
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.filter-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+
+.filter-item label{
+
+    font-weight:700;
+
+    color:#555;
+
+}
+
+
+
+.form-control,
+.form-select{
+
+    border-radius:12px;
+
+    border:1px solid #ccc;
+
+}
+
+
+
+
+
+.btn-search{
+
+    background:#555;
+
+    color:white;
+
+    border:0;
+
+    padding:10px 22px;
+
+    border-radius:12px;
+
+}
+
+
+
+.btn-reset{
+
+    background:#ddd;
+
+    color:#333;
+
+    padding:10px 22px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+}
+
+
+
+
+
+.table-box{
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+}
+
+
+
+.attendance-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+.attendance-table thead{
+
+    background:
+
+    linear-gradient(
+        90deg,
+        #555,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+
+.attendance-table th{
+
+    padding:18px;
+
+    font-size:15px;
+
+}
+
+
+
+.attendance-table td{
+
+    padding:16px;
+
+    border-bottom:1px solid #eee;
+
+}
+
+
+
+.attendance-table tbody tr{
+
+    transition:.3s;
+
+}
+
+
+
+.attendance-table tbody tr:hover{
+
+    background:#f1f1f1;
+
+}
+
+
+
+
+.employee-name{
+
+    font-weight:700;
+
+    color:#444;
+
+}
+
+
+
+.employee-name i{
+
+    margin-right:8px;
+
+    color:#777;
+
+}
+
+
+
+.time-in{
+
+    background:#e8f5e9;
+
+    color:#2e7d32;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+}
+
+
+
+.time-out{
+
+    background:#eeeeee;
+
+    color:#555;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+}
+
+
+
+.empty{
+
+    color:#aaa;
+
+}
 </style>
 
 {% endblock %}

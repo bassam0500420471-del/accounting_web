@@ -11,9 +11,9 @@ from django.utils.formats import date_format
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required 
 from django.http import HttpResponse
+from decimal import Decimal
+from django.shortcuts import redirect, render
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 
 from .models import WorkLocation
 from .forms import WorkLocationForm
@@ -134,7 +134,12 @@ def _get_logged_employee(request, company):
         return None
     except Employee.DoesNotExist:
         return None
+def _is_hr_admin(request):
 
+    if request.user.is_superuser:
+        return True
+
+    return request.user.is_staff
 
 def _create_or_update_employee_user(employee, use_user_account, username="", password=""):
     """
@@ -429,18 +434,31 @@ def edit_employee(request, emp_id):
 @login_required
 @hr_permission_required("employees_delete")
 def delete_employee(request, emp_id):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    employee = get_object_or_404(Employee, company=company, id=emp_id)
+    employee = get_object_or_404(
+        Employee,
+        company=company,
+        id=emp_id
+    )
 
     if getattr(employee, "user_id", None):
-        User.objects.filter(id=employee.user_id).delete()
+        user = employee.user
+        user.is_active = False
+        user.save()
 
     employee.delete()
-    return redirect("hr:employee_list")
 
+    messages.success(
+        request,
+        "✅ تم حذف الموظف بنجاح."
+    )
+
+    return redirect("hr:employee_list")
 
 # ==========================
 # إدارة الشفتات
@@ -691,9 +709,36 @@ def leaves_list(request):
     if not company:
         return redirect("accounts:login")
 
-    leaves = Leave.objects.filter(company=company).select_related("employee").order_by("-created_at")
-    return render(request, "hr/leaves_list.html", {"leaves": leaves})
+    if _is_hr_admin(request):
 
+        leaves = (
+            Leave.objects
+            .filter(company=company)
+            .select_related("employee")
+            .order_by("-created_at")
+        )
+
+    else:
+
+        employee = _get_logged_employee(request, company)
+
+        leaves = (
+            Leave.objects
+            .filter(
+                company=company,
+                employee=employee,
+            )
+            .select_related("employee")
+            .order_by("-created_at")
+        )
+
+    return render(
+        request,
+        "hr/leaves_list.html",
+        {
+            "leaves": leaves,
+        },
+    )
 
 @login_required
 @hr_permission_required("leaves_add")
@@ -840,8 +885,6 @@ def delete_department(request, dept_id):
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-from .models import WorkLocation
-from .forms import WorkLocationForm
 
 # ==========================
 # إدارة مواقع العمل
@@ -1025,55 +1068,200 @@ def delete_work_location(request, location_id):
 @login_required
 @hr_permission_required("attendance_view")
 def attendance_page(request):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
+
     today = timezone.now().date()
-    all_employees = Employee.objects.filter(company=company, active=True).order_by("employee_number")
-    selected_employee = request.GET.get("employee", "all")
-    start_date_str = request.GET.get("start_date", "")
-    end_date_str = request.GET.get("end_date", "")
+
+
+    if _is_hr_admin(request):
+
+        all_employees = Employee.objects.filter(
+            company=company,
+            active=True
+        ).order_by("employee_number")
+
+        employee = None
+
+
+    else:
+
+        employee = _get_logged_employee(request, company)
+
+        if not employee:
+            return render(
+                request,
+                "hr/attendance_page.html",
+                {
+                    "all_employees": Employee.objects.none(),
+                    "employees": Employee.objects.none(),
+                    "attendance_map": {},
+                }
+            )
+
+
+        all_employees = Employee.objects.filter(
+            id=employee.id
+        )
+
+
+
+    selected_employee = request.GET.get(
+        "employee",
+        "all"
+    )
+
+
+    start_date_str = request.GET.get(
+        "start_date",
+        ""
+    )
+
+    end_date_str = request.GET.get(
+        "end_date",
+        ""
+    )
+
+
 
     try:
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else today.replace(day=1)
+
+        start_date = (
+            datetime.strptime(
+                start_date_str,
+                "%Y-%m-%d"
+            ).date()
+            if start_date_str
+            else today.replace(day=1)
+        )
+
     except ValueError:
+
         start_date = today.replace(day=1)
 
+
+
     try:
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else today
+
+        end_date = (
+            datetime.strptime(
+                end_date_str,
+                "%Y-%m-%d"
+            ).date()
+            if end_date_str
+            else today
+        )
+
     except ValueError:
+
         end_date = today
 
+
+
     employees = all_employees
+
+
+
+    # فلترة الموظف في القائمة
+
     if selected_employee != "all":
+
         try:
-            employees = employees.filter(id=int(selected_employee))
+
+            employees = employees.filter(
+                id=int(selected_employee)
+            )
+
         except ValueError:
+
             selected_employee = "all"
 
-    attendances = Attendance.objects.filter(company=company, date__range=(start_date, end_date))
-    if selected_employee != "all":
-        attendances = attendances.filter(employee_id=selected_employee)
+
+
+    # جلب سجلات الحضور
+
+    attendances = Attendance.objects.filter(
+        company=company,
+        date__range=(
+            start_date,
+            end_date
+        )
+    )
+
+
+
+    # الموظف العادي يرى حضوره فقط
+
+    if not _is_hr_admin(request):
+
+        attendances = attendances.filter(
+            employee=employee
+        )
+
+
+
+    # مدير الموارد يستطيع اختيار موظف
+
+    else:
+
+        if selected_employee != "all":
+
+            attendances = attendances.filter(
+                employee_id=selected_employee
+            )
+
+
 
     attendance_map = {}
+
+
     for att in attendances:
-        attendance_map.setdefault(att.employee_id, {})
+
+        attendance_map.setdefault(
+            att.employee_id,
+            {}
+        )
+
         attendance_map[att.employee_id][att.date] = att
 
-    context = {
-        "all_employees": all_employees,
-        "employees": employees,
-        "attendance_map": attendance_map,
-        "today": today,
-        "start_date": start_date,
-        "end_date": end_date,
-        "selected_employee": selected_employee,
-        "start_date_str": start_date.strftime("%Y-%m-%d"),
-        "end_date_str": end_date.strftime("%Y-%m-%d"),
-    }
-    return render(request, "hr/attendance_page.html", context)
 
+
+    context = {
+
+        "all_employees": all_employees,
+
+        "employees": employees,
+
+        "attendance_map": attendance_map,
+
+        "today": today,
+
+        "start_date": start_date,
+
+        "end_date": end_date,
+
+        "selected_employee": selected_employee,
+
+        "start_date_str": start_date.strftime(
+            "%Y-%m-%d"
+        ),
+
+        "end_date_str": end_date.strftime(
+            "%Y-%m-%d"
+        ),
+
+    }
+
+
+    return render(
+        request,
+        "hr/attendance_page.html",
+        context
+    )
 
 
 @login_required
@@ -1148,7 +1336,7 @@ def attendance_check_out_ajax(request, attendance_id):
 # ==========================
 # صفحة تسجيل الدخول والخروج السريع
 # ==========================
-@hr_permission_required()
+@hr_permission_required("change_attendance")
 def attendance_check_page(request):
 
     employee = None
@@ -1230,19 +1418,169 @@ def attendance_check_page(request):
         "next_action": next_action,
         "last_attendance": attendance,
     })
+@login_required
+@hr_permission_required("view_attendance")
+def attendance_report_page(request):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+
+    today = timezone.now().date()
+
+    employee = None
+
+    if not _is_hr_admin(request):
+        employee = request.user.employee
+
+
+
+    all_employees = Employee.objects.filter(
+        company=company
+    )
+
+
+
+    selected_employee = request.GET.get("employee", "all")
+    start_date_str = request.GET.get("start_date", "")
+    end_date_str = request.GET.get("end_date", "")
+
+
+
+    try:
+        start_date = (
+            datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            if start_date_str
+            else today.replace(day=1)
+        )
+
+    except ValueError:
+        start_date = today.replace(day=1)
+
+
+
+    try:
+        end_date = (
+            datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            if end_date_str
+            else today
+        )
+
+    except ValueError:
+        end_date = today
+
+
+
+    employees = all_employees
+
+
+
+    # فلترة قائمة الموظفين
+    if selected_employee != "all":
+
+        try:
+            employees = employees.filter(
+                id=int(selected_employee)
+            )
+
+        except ValueError:
+            selected_employee = "all"
+
+
+
+    # جلب سجلات الحضور
+    attendances = Attendance.objects.filter(
+        company=company,
+        date__range=(start_date, end_date)
+    )
+
+
+
+    # الموظف العادي يرى سجله فقط
+    if not _is_hr_admin(request):
+
+        attendances = attendances.filter(
+            employee=employee
+        )
+
+
+
+    # مدير HR يستطيع اختيار موظف
+    elif selected_employee != "all":
+
+        attendances = attendances.filter(
+            employee_id=selected_employee
+        )
+
+
+
+    attendance_map = {}
+
+    for att in attendances:
+
+        attendance_map.setdefault(
+            att.employee_id,
+            {}
+        )
+
+        attendance_map[att.employee_id][att.date] = att
+
+
+
+    context = {
+
+        "all_employees": all_employees,
+
+        "employees": employees,
+
+        "attendance_map": attendance_map,
+
+        "today": today,
+
+        "start_date": start_date,
+
+        "end_date": end_date,
+
+        "selected_employee": selected_employee,
+
+        "start_date_str": start_date.strftime("%Y-%m-%d"),
+
+        "end_date_str": end_date.strftime("%Y-%m-%d"),
+
+    }
+
+
+
+    return render(
+        request,
+        "hr/attendance_page.html",
+        context
+    )
 # ==========================
 # الرواتب
 # ==========================
 @login_required
 @hr_permission_required("view_payroll")
 def payroll_list(request):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    payrolls = Payroll.objects.all()
-    if hasattr(Payroll, "company_id"):
-        payrolls = payrolls.filter(company=company)
+    payrolls = Payroll.objects.filter(
+        company=company
+    )
+
+    if not _is_hr_admin(request):
+
+        employee = _get_logged_employee(request, company)
+
+        payrolls = payrolls.filter(
+            employee=employee
+        )
 
     payrolls = payrolls.order_by("-id")
 
@@ -1250,38 +1588,50 @@ def payroll_list(request):
         "payrolls": payrolls
     })
 
-
 @login_required
 @hr_permission_required("add_payroll")
+@login_required
 def add_payroll(request):
+
     company = _company_required(request)
     if not company:
         return redirect("accounts:login")
 
-    from django.forms import modelform_factory
-
-    exclude = []
-    if hasattr(Payroll, "company_id"):
-        exclude.append("company")
-
-    PayrollForm = modelform_factory(Payroll, exclude=tuple(exclude))
+    employees = Employee.objects.filter(company=company)
 
     if request.method == "POST":
-        form = PayrollForm(request.POST)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            if hasattr(obj, "company_id"):
-                obj.company = company
-            obj.save()
-            messages.success(request, "✅ تم حفظ مسير الرواتب بنجاح.")
-            return redirect("hr:payrolls")
-    else:
-        form = PayrollForm()
 
-    return render(request, "hr/add_payroll.html", {
-        "form": form
-    })
+        payroll_date = request.POST.get("date")
 
+        for employee in employees:
+
+            prefix = f"emp_{employee.id}_"
+
+            Payroll.objects.update_or_create(
+                employee=employee,
+                date=payroll_date,
+                defaults={
+                    "base_salary": Decimal(request.POST.get(prefix + "base_salary", "0") or "0"),
+                    "allowances": Decimal(request.POST.get(prefix + "allowances", "0") or "0"),
+                    "overtime": Decimal(request.POST.get(prefix + "overtime", "0") or "0"),
+                    "advance_deduction": Decimal(request.POST.get(prefix + "advance_deduction", "0") or "0"),
+                    "absence_deduction": Decimal(request.POST.get(prefix + "absence_deduction", "0") or "0"),
+                    "other_deductions": Decimal(request.POST.get(prefix + "other_deductions", "0") or "0"),
+                    "notes": request.POST.get(prefix + "notes", ""),
+                }
+            )
+
+        messages.success(request, "تم حفظ مسير الرواتب بنجاح.")
+        return redirect("hr:payrolls")
+
+    return render(
+        request,
+        "hr/add_payroll.html",
+        {
+            "employees": employees,
+            "today": timezone.now().date(),
+        },
+    )
 
 # ==========================
 # Seed: أنواع تقييمات جاهزة (لكل شركة)
@@ -1706,7 +2056,10 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 }
             )
 
-        messages.success(request, "✅ تم حفظ تقييم الزميل بنجاح.")
+        messages.success(
+    request,
+    "✅ تم حفظ تقييم المدير بنجاح."
+)
         return redirect("hr:evaluation_records_list")
 
     existing_scores = {

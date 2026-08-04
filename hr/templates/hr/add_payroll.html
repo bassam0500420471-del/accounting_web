@@ -1,0 +1,610 @@
+{% extends "layout/base.html" %}
+
+{% load static %}
+
+{% block title %}
+الرواتب
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+<div class="payroll-card">
+
+<div class="payroll-header">
+
+<h2>
+
+<i class="fa-solid fa-money-check-dollar"></i>
+
+الرواتب
+
+</h2>
+
+<p>
+
+إنشاء مسير الرواتب لجميع الموظفين
+
+</p>
+
+</div>
+
+<form method="post">
+
+{% csrf_token %}
+
+<div class="row mb-4">
+
+<div class="col-md-3">
+
+<label class="form-label">
+
+تاريخ مسير الرواتب
+
+</label>
+
+<input
+type="date"
+name="date"
+value="{{ today|date:'Y-m-d' }}"
+class="form-control">
+
+</div>
+
+</div>
+
+<div class="table-responsive payroll-table">
+
+<table class="table table-bordered align-middle text-center">
+
+<thead>
+
+<tr>
+
+<th style="width:70px">
+
+#
+
+</th>
+
+<th style="min-width:230px">
+
+الموظف
+
+</th>
+
+<th>
+
+الراتب الأساسي
+
+</th>
+
+<th>
+
+بدل الساعات الإضافية
+
+</th>
+
+<th>
+
+البدلات
+
+</th>
+
+<th>
+
+خصم السلفة
+
+</th>
+
+<th>
+
+خصم الغياب
+
+</th>
+
+<th>
+
+خصومات أخرى
+
+</th>
+
+<th style="min-width:260px">
+
+الملاحظات
+
+</th>
+
+<th>
+
+صافي الراتب
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for employee in employees %}
+
+<tr>
+
+<td>
+
+{{ forloop.counter }}
+
+</td>
+
+<td class="employee-name">
+
+<strong>
+
+{{ employee }}
+
+</strong>
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+min="0"
+class="salary-input form-control"
+
+name="emp_{{ employee.id }}_base_salary">
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+min="0"
+class="salary-input form-control"
+
+name="emp_{{ employee.id }}_overtime">
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+min="0"
+class="salary-input form-control"
+
+name="emp_{{ employee.id }}_allowances">
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+min="0"
+class="salary-input form-control"
+
+name="emp_{{ employee.id }}_advance_deduction">
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+min="0"
+class="salary-input form-control"
+
+name="emp_{{ employee.id }}_absence_deduction">
+
+</td>
+
+<td>
+
+<input
+type="number"
+step="0.01"
+min="0"
+class="salary-input form-control"
+
+name="emp_{{ employee.id }}_other_deductions">
+
+</td>
+
+<td>
+
+<input
+type="text"
+class="form-control"
+
+name="emp_{{ employee.id }}_notes">
+
+</td>
+
+<td>
+
+<div
+
+class="employee-total"
+
+data-id="{{ employee.id }}">
+
+0.00
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+<tfoot>
+
+<tr>
+
+<th colspan="2">
+
+الإجماليات
+
+</th>
+
+<th id="sum_base">
+
+0.00
+
+</th>
+
+<th id="sum_overtime">
+
+0.00
+
+</th>
+
+<th id="sum_allowances">
+
+0.00
+
+</th>
+
+<th id="sum_advance">
+
+0.00
+
+</th>
+
+<th id="sum_absence">
+
+0.00
+
+</th>
+
+<th id="sum_other">
+
+0.00
+
+</th>
+
+<th>
+
+-
+
+</th>
+
+<th id="grand_total">
+
+0.00
+
+</th>
+
+</tr>
+
+</tfoot>
+
+</table>
+
+</div>
+
+<div class="text-end mt-4">
+
+<button
+
+class="btn btn-save btn-lg">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+حفظ مسير الرواتب
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+<style>
+
+body{
+
+    background:#efefef;
+
+}
+
+.payroll-card{
+
+    background:linear-gradient(180deg,#fdfdfd,#e6e6e6);
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.18),
+        inset 0 2px 2px rgba(255,255,255,.9);
+
+}
+
+.payroll-header{
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+}
+
+.payroll-header h2{
+
+    font-weight:900;
+
+    color:#444;
+
+}
+
+.payroll-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+.payroll-table{
+
+    border-radius:18px;
+
+    overflow:auto;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
+
+}
+
+.payroll-table table{
+
+    margin:0;
+
+    min-width:1800px;
+
+}
+
+.payroll-table thead th{
+
+    background:linear-gradient(#7b7b7b,#4b4b4b);
+
+    color:#fff;
+
+    font-size:15px;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    white-space:nowrap;
+
+}
+
+.payroll-table tbody td{
+
+    background:linear-gradient(#ffffff,#f1f1f1);
+
+    vertical-align:middle;
+
+}
+
+.payroll-table tbody tr:hover td{
+
+    background:linear-gradient(#fafafa,#ececec);
+
+}
+
+.payroll-table input{
+
+    text-align:center;
+
+    border-radius:10px;
+
+    border:1px solid #d3d3d3;
+
+    background:linear-gradient(#ffffff,#f4f4f4);
+
+    box-shadow:
+        inset 0 2px 3px rgba(255,255,255,.9),
+        0 2px 6px rgba(0,0,0,.08);
+
+}
+
+.employee-name{
+
+    font-weight:800;
+
+    color:#444;
+
+}
+
+.employee-total{
+
+    background:linear-gradient(#5f5f5f,#303030);
+
+    color:#fff;
+
+    border-radius:10px;
+
+    padding:10px;
+
+    min-width:120px;
+
+    font-weight:900;
+
+    box-shadow:
+        inset 0 2px 2px rgba(255,255,255,.25),
+        0 8px 15px rgba(0,0,0,.20);
+
+}
+
+tfoot th,
+tfoot td{
+
+    background:linear-gradient(#666,#333);
+
+    color:#fff !important;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+.btn-save{
+
+    background:linear-gradient(#666,#2d2d2d);
+
+    color:#fff;
+
+    border:none;
+
+    padding:14px 40px;
+
+    border-radius:14px;
+
+    font-weight:bold;
+
+    box-shadow:
+        0 8px 0 #222,
+        0 15px 25px rgba(0,0,0,.20);
+
+}
+
+.btn-save:hover{
+
+    color:#fff;
+
+    transform:translateY(2px);
+
+    box-shadow:
+        0 5px 0 #222,
+        0 10px 18px rgba(0,0,0,.20);
+
+}
+
+</style>
+
+<script>
+
+function number(v){
+
+    let n=parseFloat(v);
+
+    if(isNaN(n)) return 0;
+
+    return n;
+
+}
+
+function calc(){
+
+    let sumBase=0;
+
+    let sumOt=0;
+
+    let sumAllow=0;
+
+    let sumAdvance=0;
+
+    let sumAbsence=0;
+
+    let sumOther=0;
+
+    let grand=0;
+
+    document.querySelectorAll("tbody tr").forEach(function(row){
+
+        let base=number(row.querySelector("[name$='base_salary']").value);
+
+        let ot=number(row.querySelector("[name$='overtime']").value);
+
+        let allow=number(row.querySelector("[name$='allowances']").value);
+
+        let adv=number(row.querySelector("[name$='advance_deduction']").value);
+
+        let abs=number(row.querySelector("[name$='absence_deduction']").value);
+
+        let other=number(row.querySelector("[name$='other_deductions']").value);
+
+        let total=base+ot+allow-adv-abs-other;
+
+        row.querySelector(".employee-total").innerHTML=total.toFixed(2);
+
+        sumBase+=base;
+
+        sumOt+=ot;
+
+        sumAllow+=allow;
+
+        sumAdvance+=adv;
+
+        sumAbsence+=abs;
+
+        sumOther+=other;
+
+        grand+=total;
+
+    });
+
+    document.getElementById("sum_base").innerHTML=sumBase.toFixed(2);
+
+    document.getElementById("sum_overtime").innerHTML=sumOt.toFixed(2);
+
+    document.getElementById("sum_allowances").innerHTML=sumAllow.toFixed(2);
+
+    document.getElementById("sum_advance").innerHTML=sumAdvance.toFixed(2);
+
+    document.getElementById("sum_absence").innerHTML=sumAbsence.toFixed(2);
+
+    document.getElementById("sum_other").innerHTML=sumOther.toFixed(2);
+
+    document.getElementById("grand_total").innerHTML=grand.toFixed(2);
+
+}
+
+document.querySelectorAll(".salary-input").forEach(function(input){
+
+    input.addEventListener("input",calc);
+
+});
+
+calc();
+
+</script>
+
+{% endblock %}

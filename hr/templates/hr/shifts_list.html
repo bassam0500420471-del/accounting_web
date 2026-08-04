@@ -1,80 +1,458 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Shift Management" %}{% endblock %}
+{% block title %}
+{% trans "Shift Management" %}
+{% endblock %}
+
 
 {% block content %}
-<div class="container mt-3">
-    <h3 class="mb-3">{% trans "Shift Management" %}</h3>
 
-    <!-- زر إضافة شفت جديد -->
-    <div class="mb-3">
-        <a href="{% url 'hr:add_shift' %}" class="btn btn-secondary">
-            + {% trans "Add New Shift" %}
-        </a>
+
+<div class="container-fluid shifts-page mt-4">
+
+
+    <div class="shift-card">
+
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+                    <i class="fa-solid fa-clock"></i>
+                    {% trans "Shift Management" %}
+                </h3>
+
+                <p>
+                    {% trans "Manage employee working shifts" %}
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'hr:add_shift' %}" class="add-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add New Shift" %}
+
+            </a>
+
+
+        </div>
+
+
+
+
+
+        <div class="table-box">
+
+
+            <table class="shift-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>{% trans "Shift Order" %}</th>
+
+                        <th>{% trans "Shift Name" %}</th>
+
+                        <th>{% trans "Start Time" %}</th>
+
+                        <th>{% trans "End Time" %}</th>
+
+                        <th>{% trans "Break From" %}</th>
+
+                        <th>{% trans "Break To" %}</th>
+
+                        <th>{% trans "Notes" %}</th>
+
+                        <th>{% trans "Actions" %}</th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                {% for shift in shifts %}
+
+
+                    <tr>
+
+
+                        <td>
+                            <span class="order-badge">
+                                {{ shift.shift_order }}
+                            </span>
+                        </td>
+
+
+                        <td class="shift-name">
+
+                            <i class="fa-solid fa-business-time"></i>
+
+                            {{ shift.shift_name }}
+
+                        </td>
+
+
+                        <td>
+                            {{ shift.start_time|time:"H:i" }}
+                        </td>
+
+
+                        <td>
+                            {{ shift.end_time|time:"H:i" }}
+                        </td>
+
+
+                        <td>
+                            {{ shift.break_start|time:"H:i"|default:"-" }}
+                        </td>
+
+
+                        <td>
+                            {{ shift.break_end|time:"H:i"|default:"-" }}
+                        </td>
+
+
+                        <td>
+                            {{ shift.notes|default:"-" }}
+                        </td>
+
+
+
+                        <td>
+
+
+                            <div class="dropdown">
+
+
+                                <button class="action-btn dropdown-toggle"
+                                        data-bs-toggle="dropdown">
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Actions" %}
+
+                                </button>
+
+
+
+                                <ul class="dropdown-menu">
+
+
+                                    <li>
+
+                                        <a class="dropdown-item"
+                                           href="{% url 'hr:edit_shift' shift.id %}">
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                            {% trans "Edit" %}
+
+                                        </a>
+
+                                    </li>
+
+
+
+                                    <li>
+
+                                        <a class="dropdown-item"
+                                           href="{% url 'hr:delete_shift' shift.id %}"
+                                           onclick="return confirm('{% trans "Are you sure you want to delete this shift?" %}');">
+
+
+                                            <i class="fa-solid fa-trash"></i>
+
+                                            {% trans "Delete" %}
+
+
+                                        </a>
+
+                                    </li>
+
+
+                                </ul>
+
+
+                            </div>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% empty %}
+
+
+                    <tr>
+
+                        <td colspan="8" class="empty">
+
+                            {% trans "No data available" %}
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
     </div>
 
-    <!-- جدول عرض المناوبات -->
-    <table class="table table-bordered table-striped">
-        <thead class="table-light">
-            <tr>
-                <th>{% trans "Shift Order" %}</th>
-                <th>{% trans "Shift Name" %}</th>
-                <th>{% trans "Start Time" %}</th>
-                <th>{% trans "End Time" %}</th>
-                <th>{% trans "Break From" %}</th>
-                <th>{% trans "Break To" %}</th>
-                <th>{% trans "Notes" %}</th>
-                <th>{% trans "Actions" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for shift in shifts %}
-                <tr>
-                    <td>{{ shift.shift_order }}</td>
-                    <td>{{ shift.shift_name }}</td>
 
-                    <!-- تنسيق الوقت -->
-                    <td>{{ shift.start_time|time:"H:i" }}</td>
-                    <td>{{ shift.end_time|time:"H:i" }}</td>
-                    <td>{{ shift.break_start|time:"H:i"|default:"-" }}</td>
-                    <td>{{ shift.break_end|time:"H:i"|default:"-" }}</td>
-
-                    <td>{{ shift.notes|default:"-" }}</td>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-secondary dropdown-toggle"
-                                    type="button"
-                                    id="dropdownMenuButton{{ shift.id }}"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="bi bi-gear"></i> {% trans "Actions" %}
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ shift.id }}">
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'hr:edit_shift' shift.id %}">
-                                        <i class="bi bi-pencil-square"></i> {% trans "Edit" %}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item"
-                                       href="{% url 'hr:delete_shift' shift.id %}"
-                                       onclick="return confirm('{% trans "Are you sure you want to delete this shift?" %}');">
-                                        <i class="bi bi-trash"></i> {% trans "Delete" %}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="8" class="text-center">
-                        {% trans "No data available" %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
+
+
+
+<style>
+
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+
+.shifts-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+
+.shift-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+}
+
+
+
+.page-header p{
+
+    color:#777;
+
+}
+
+
+
+.add-btn{
+
+    background:#555;
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+}
+
+
+
+.table-box{
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+}
+
+
+
+.shift-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+.shift-table thead{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+
+.shift-table th{
+
+    padding:17px;
+
+}
+
+
+
+.shift-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+}
+
+
+
+.shift-table tbody tr{
+
+    transition:.3s;
+
+}
+
+
+
+.shift-table tbody tr:hover{
+
+    background:#f1f1f1;
+
+}
+
+
+
+.shift-name{
+
+    font-weight:700;
+
+}
+
+
+
+.shift-name i{
+
+    color:#777;
+
+}
+
+
+
+.order-badge{
+
+    background:#ddd;
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+}
+
+
+
+.action-btn{
+
+    background:#666;
+
+    color:white;
+
+    border:0;
+
+    padding:8px 16px;
+
+    border-radius:10px;
+
+}
+
+
+
+.dropdown-menu{
+
+    border-radius:12px;
+
+}
+
+
+
+.empty{
+
+    padding:30px;
+
+    color:#999;
+
+}
+
+
+
+</style>
+
+
 {% endblock %}

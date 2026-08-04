@@ -1,47 +1,465 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Departments List" %}{% endblock %}
+
+{% block title %}
+{% trans "Departments List" %}
+{% endblock %}
+
+
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">{% trans "Departments List" %}</h2>
 
-    <a href="{% url 'hr:add_department' %}" class="btn btn-primary mb-3">
-        {% trans "Add New Department" %}
-    </a>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>{% trans "Department Name" %}</th>
-                <th>{% trans "Actions" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for dept in departments %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ dept.name }}</td>
-                <td>
-                    <a href="{% url 'hr:edit_department' dept.id %}" class="btn btn-sm btn-warning">
-                        {% trans "Edit" %}
-                    </a>
-                    <a href="{% url 'hr:delete_department' dept.id %}" class="btn btn-sm btn-danger" 
-                       onclick="return confirm('{% trans "Are you sure you want to delete?" %}')">
-                        {% trans "Delete" %}
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center">
-                    {% trans "No departments found" %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container-fluid departments-page mt-4">
+
+
+    <div class="department-card">
+
+
+
+        <div class="page-header">
+
+
+            <div>
+
+                <h3>
+                    <i class="fa-solid fa-building"></i>
+                    {% trans "Departments List" %}
+                </h3>
+
+                <p>
+                    {% trans "Manage company departments" %}
+                </p>
+
+            </div>
+
+
+
+            <a href="{% url 'hr:add_department' %}" class="add-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add New Department" %}
+
+            </a>
+
+
+        </div>
+
+
+
+
+
+        <div class="table-box">
+
+
+            <table class="department-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>
+                            {% trans "Department Name" %}
+                        </th>
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
+                    </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+
+                {% for dept in departments %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            <span class="number-badge">
+                                {{ forloop.counter }}
+                            </span>
+
+                        </td>
+
+
+
+                        <td class="dept-name">
+
+                            <i class="fa-solid fa-sitemap"></i>
+
+                            {{ dept.name }}
+
+                        </td>
+
+
+
+                        <td>
+
+
+                            <div class="actions">
+
+
+                                <a href="{% url 'hr:edit_department' dept.id %}"
+                                   class="edit-btn">
+
+                                    <i class="fa-solid fa-pen"></i>
+
+                                    {% trans "Edit" %}
+
+                                </a>
+
+
+
+                                <a href="{% url 'hr:delete_department' dept.id %}"
+                                   class="delete-btn"
+                                   onclick="return confirm('{% trans "Are you sure you want to delete?" %}')">
+
+
+                                    <i class="fa-solid fa-trash"></i>
+
+                                    {% trans "Delete" %}
+
+
+                                </a>
+
+
+
+                            </div>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+
+                {% empty %}
+
+
+                    <tr>
+
+                        <td colspan="3" class="empty">
+
+                            {% trans "No departments found" %}
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
 </div>
+
+
+
+
+<style>
+
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+
+.departments-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #fafafa,
+        #d6d6d6
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+
+
+.department-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+}
+
+
+
+
+.page-header p{
+
+    color:#777;
+
+}
+
+
+
+
+
+.add-btn{
+
+    background:#555;
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+}
+
+
+
+
+.table-box{
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+}
+
+
+
+
+.department-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+
+.department-table thead{
+
+    background:
+
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+
+
+.department-table th{
+
+    padding:17px;
+
+}
+
+
+
+
+.department-table td{
+
+    padding:16px;
+
+    text-align:center;
+
+    border-bottom:1px solid #eee;
+
+}
+
+
+
+
+.department-table tbody tr{
+
+    transition:.3s;
+
+}
+
+
+
+
+.department-table tbody tr:hover{
+
+    background:#f1f1f1;
+
+}
+
+
+
+
+.number-badge{
+
+    background:#ddd;
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+}
+
+
+
+
+.dept-name{
+
+    font-weight:700;
+
+    color:#444;
+
+}
+
+
+
+
+.dept-name i{
+
+    color:#777;
+
+    margin-right:8px;
+
+}
+
+
+
+
+.actions{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+}
+
+
+
+
+.edit-btn{
+
+    background:#777;
+
+    color:white;
+
+    padding:8px 15px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+}
+
+
+
+
+.delete-btn{
+
+    background:#444;
+
+    color:white;
+
+    padding:8px 15px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+}
+
+
+
+
+.empty{
+
+    padding:30px;
+
+    color:#999;
+
+}
+
+
+
+</style>
+
+
+
 {% endblock %}

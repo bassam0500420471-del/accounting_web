@@ -228,30 +228,64 @@ class Employee(models.Model):
         related_name="employee"
     )
 
-    # ================= الرواتب =================
-    base_salary = models.FloatField(default=0)
-    housing_allowance = models.FloatField(default=0)
-    transport_allowance = models.FloatField(default=0)
-    clothing_allowance = models.FloatField(default=0)
-    other_allowances = models.FloatField(default=0)
-
     # ================= الإجازات السنوية =================
-    annual_leave_entitlement = models.IntegerField(default=0, verbose_name=_("Annual Leave Entitlement"))
-    current_annual_leave = models.IntegerField(default=0, verbose_name=_("Current Annual Leave"))
-    compensatory_leave = models.IntegerField(default=0, verbose_name=_("Compensatory Leave"))
+    annual_leave_entitlement = models.IntegerField(
+        default=0,
+        verbose_name=_("Annual Leave Entitlement")
+    )
+
+    current_annual_leave = models.IntegerField(
+        default=0,
+        verbose_name=_("Current Annual Leave")
+    )
+
+    compensatory_leave = models.IntegerField(
+        default=0,
+        verbose_name=_("Compensatory Leave")
+    )
 
     # ================= ملفات الموظف =================
-    photo = models.ImageField(upload_to="employee_photos/", blank=True, null=True, verbose_name=_("Employee Photo"))
-    national_id_file = models.FileField(upload_to="employee_docs/", blank=True, null=True, verbose_name=_("National ID File"))
+    photo = models.ImageField(
+        upload_to="employee_photos/",
+        blank=True,
+        null=True,
+        verbose_name=_("Employee Photo")
+    )
+
+    national_id_file = models.FileField(
+        upload_to="employee_docs/",
+        blank=True,
+        null=True,
+        verbose_name=_("National ID File")
+    )
+
     passport_number = models.CharField(
         max_length=20,
         blank=True,
         null=True,
         verbose_name=_("Passport Number")
     )
-    passport_file = models.FileField(upload_to="employee_docs/", blank=True, null=True, verbose_name=_("Passport File"))
-    contract_file = models.FileField(upload_to="employee_docs/", blank=True, null=True, verbose_name=_("Contract File"))
-    other_files = models.FileField(upload_to="employee_docs/", blank=True, null=True, verbose_name=_("Other Files"))
+
+    passport_file = models.FileField(
+        upload_to="employee_docs/",
+        blank=True,
+        null=True,
+        verbose_name=_("Passport File")
+    )
+
+    contract_file = models.FileField(
+        upload_to="employee_docs/",
+        blank=True,
+        null=True,
+        verbose_name=_("Contract File")
+    )
+
+    other_files = models.FileField(
+        upload_to="employee_docs/",
+        blank=True,
+        null=True,
+        verbose_name=_("Other Files")
+    )
 
     class Meta:
         ordering = ["employee_number"]
@@ -393,6 +427,7 @@ class EmployeeSchedule(models.Model):
 
 # ================= الرواتب =================
 class Payroll(models.Model):
+
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
@@ -402,15 +437,91 @@ class Payroll(models.Model):
         blank=True
     )
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
+
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        verbose_name=_("Employee")
+    )
+
+
+    date = models.DateField(
+        default=timezone.now
+    )
+
+
+    # الراتب الأساسي
+    base_salary = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+
+    # البدلات
+    allowances = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+
+    # العمل الإضافي
+    overtime = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+
+    # خصم الغياب
+    absence_deduction = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+
+    # راتب مدفوع مقدماً
+    advance_deduction = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+
+    # خصومات أخرى
+    other_deductions = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+
+
+    notes = models.TextField(
+        blank=True
+    )
+
+
+    @property
+    def net_salary(self):
+
+        return (
+            self.base_salary
+            + self.allowances
+            + self.overtime
+            - self.absence_deduction
+            - self.advance_deduction
+            - self.other_deductions
+        )
+
 
     class Meta:
         ordering = ["-date"]
 
+
     def __str__(self):
-        return f"{self.employee} - {self.amount} - {self.date}"
+        return f"{self.employee} - {self.date}"
 
 
 # ================= نوع التقييم الجديد =================

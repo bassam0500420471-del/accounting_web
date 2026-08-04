@@ -1,0 +1,484 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}
+{% trans "إدارة الرواتب" %}
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+.payroll-page {
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #d6d6d6
+    );
+    min-height: 100vh;
+    padding: 30px;
+}
+
+
+/* العنوان */
+
+.payroll-header {
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    background:linear-gradient(
+        145deg,
+        #ffffff,
+        #dcdcdc
+    );
+
+    padding:25px;
+
+    border-radius:20px;
+
+    box-shadow:
+    8px 8px 15px #bcbcbc,
+    -8px -8px 15px #ffffff;
+
+    margin-bottom:30px;
+
+}
+
+
+.payroll-header h3 {
+
+    margin:0;
+    font-weight:800;
+    color:#444;
+
+}
+
+
+
+/* زر الاضافة */
+
+.add-payroll-btn {
+
+    background:#6c757d;
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:15px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    box-shadow:
+    5px 5px 10px #aaa,
+    -3px -3px 8px white;
+
+    transition:.3s;
+
+}
+
+
+.add-payroll-btn:hover {
+
+    transform:translateY(-3px);
+    color:white;
+
+}
+
+
+
+
+/* الجدول */
+
+.payroll-card {
+
+    background:linear-gradient(
+        145deg,
+        #ffffff,
+        #e2e2e2
+    );
+
+    border-radius:25px;
+
+    padding:20px;
+
+    box-shadow:
+
+    10px 10px 20px #bcbcbc,
+    -10px -10px 20px #ffffff;
+
+}
+
+
+
+.table {
+
+    margin:0;
+
+}
+
+
+.table thead th {
+
+    background:#6c757d;
+
+    color:white;
+
+    border:none;
+
+    white-space:nowrap;
+
+}
+
+
+
+.table tbody tr {
+
+    transition:.3s;
+
+}
+
+
+.table tbody tr:hover {
+
+    background:#eeeeee;
+
+    transform:scale(1.01);
+
+}
+
+
+
+
+.money {
+
+    font-weight:bold;
+    color:#444;
+
+}
+
+
+
+.action-btn {
+
+    border-radius:10px;
+
+}
+
+
+
+</style>
+
+
+
+<div class="container-fluid payroll-page">
+
+
+
+<div class="payroll-header">
+
+
+<h3>
+💰 {% trans "إضافة مسير رواتب" %}
+</h3>
+
+
+<a href="{% url 'hr:add_payroll' %}" 
+class="add-payroll-btn">
+
+➕ {% trans "إضافة مرتبات" %}
+
+</a>
+
+
+</div>
+
+
+
+
+
+<div class="payroll-card">
+
+
+<div class="table-responsive">
+
+
+<table class="table table-bordered text-center align-middle">
+
+
+<thead>
+
+
+<tr>
+
+<th>#</th>
+
+<th>
+{% trans "اسم الموظف" %}
+</th>
+
+
+<th>
+{% trans "الرقم الوظيفي" %}
+</th>
+
+
+<th>
+{% trans "الراتب الأساسي" %}
+</th>
+
+
+<th>
+{% trans "البدلات" %}
+</th>
+
+
+<th>
+{% trans "بدل العمل الإضافي" %}
+</th>
+
+
+<th>
+{% trans "خصم الغياب" %}
+</th>
+
+
+<th>
+{% trans "خصم السلف" %}
+</th>
+
+
+<th>
+{% trans "خصومات أخرى" %}
+</th>
+
+
+<th>
+{% trans "صافي الراتب" %}
+</th>
+
+
+<th>
+{% trans "الملاحظات" %}
+</th>
+
+
+<th>
+{% trans "الإجراءات" %}
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+
+{% for payroll in payrolls %}
+
+
+
+<tr>
+
+
+<td>
+{{ forloop.counter }}
+</td>
+
+
+
+<td>
+
+<strong>
+
+{{ payroll.employee.get_full_name }}
+
+</strong>
+
+</td>
+
+
+
+<td>
+
+{{ payroll.employee.employee_number }}
+
+</td>
+
+
+
+<td class="money">
+
+{{ payroll.basic_salary }}
+
+</td>
+
+
+
+<td class="money">
+
+{{ payroll.allowances }}
+
+</td>
+
+
+
+<td class="money">
+
+{{ payroll.overtime_amount }}
+
+</td>
+
+
+
+<td class="money text-danger">
+
+{{ payroll.absence_deduction }}
+
+</td>
+
+
+
+<td class="money text-danger">
+
+{{ payroll.advance_deduction }}
+
+</td>
+
+
+
+<td class="money text-danger">
+
+{{ payroll.other_deductions }}
+
+</td>
+
+
+
+<td class="money text-success">
+
+{{ payroll.net_salary }}
+
+</td>
+
+
+
+<td>
+
+{{ payroll.notes|default:"-" }}
+
+</td>
+
+
+
+
+<td>
+
+
+<div class="dropdown">
+
+
+<button class="btn btn-secondary btn-sm dropdown-toggle"
+data-bs-toggle="dropdown">
+
+⚙️
+
+</button>
+
+
+
+<ul class="dropdown-menu">
+
+
+<li>
+
+<a class="dropdown-item"
+href="#">
+
+✏️ {% trans "تعديل" %}
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a class="dropdown-item text-danger"
+href="#"
+onclick="return confirm('هل أنت متأكد من حذف مسير الرواتب؟');">
+
+🗑 {% trans "حذف" %}
+
+</a>
+
+</li>
+
+
+</ul>
+
+
+</div>
+
+
+
+</td>
+
+
+
+</tr>
+
+
+
+{% empty %}
+
+
+
+<tr>
+
+<td colspan="12"
+class="text-center py-4">
+
+
+{% trans "لا توجد سجلات رواتب" %}
+
+
+</td>
+
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+</tbody>
+
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+{% endblock %}
