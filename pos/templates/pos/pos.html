@@ -811,7 +811,6 @@ function updateTax(invoiceId, pid, value){
     renderInvoice(invoiceId);
 
 }
-
 // ===================== Clear Invoice =====================
 
 function clearInvoice(id){
@@ -835,7 +834,6 @@ function clearInvoice(id){
     inv.negativeAlertShown = {};
 
 
-
     const customer = document.querySelector(
         `.invoice-content[data-id='${id}'] .customer-select`
     );
@@ -851,7 +849,6 @@ function clearInvoice(id){
     renderInvoice(id);
 
 }
-
 // ===================== Save Invoice =====================
 function saveInvoice(id){
 
@@ -1274,11 +1271,12 @@ fetch("{% url 'pos:add_payment_method' %}", {
 
     width:100%;
 
-    display:block;
+    display:-webkit-box;
+
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
 
     overflow:hidden;
-
-    white-space:nowrap;
 
     text-overflow:ellipsis;
 
@@ -1286,18 +1284,23 @@ fetch("{% url 'pos:add_payment_method' %}", {
 
     font-size:12px;
 
-    line-height:22px;
+    line-height:20px;
+
+    height:60px;
+
+    word-break:break-word;
 
 }
 
-
 .invoice-item-text.expanded{
 
-    white-space:normal;
+    display:block;
+
+    height:auto;
+
+    max-height:120px;
 
     overflow:visible;
-
-    word-break:break-word;
 
     background:#fff;
 
@@ -1306,7 +1309,6 @@ fetch("{% url 'pos:add_payment_method' %}", {
     z-index:5;
 
 }
-
 </style>
 <div class="modal fade" id="imagePreviewModal" tabindex="-1">
 

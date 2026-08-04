@@ -54,20 +54,100 @@
     }
 
 .product-name {
+    position: relative;
     text-align: center;
     vertical-align: middle;
     font-weight: 600;
+    max-width: 220px;
 }
 
-.product-name div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.product-name-text {
+    position: relative;
+    display: block;
+    width: 100%;
     min-height: 60px;
-    text-align: center;
-    line-height: 1.4;
-    word-break: break-word;
+    line-height: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
 }
+
+.product-name-popup {
+
+    display: none;
+
+    position: absolute;
+
+    top: 100%;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    margin-top: 6px;
+
+    background: #ffffff;
+
+    color: #212529;
+
+    border: 1px solid #ced4da;
+
+    border-radius: 8px;
+
+    padding: 8px 12px;
+
+    min-width: 220px;
+
+    max-width: 350px;
+
+    white-space: normal;
+
+    word-break: break-word;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+
+    z-index: 99999;
+
+}
+
+.product-name-text:hover .product-name-popup {
+
+    display: block;
+
+}
+.product-popup {
+
+    position: fixed;
+
+    display: none;
+
+    background: #ffffff;
+
+    color: #212529;
+
+    border: 1px solid #dcdcdc;
+
+    border-radius: 10px;
+
+    padding: 10px 14px;
+
+    max-width: 350px;
+
+    box-shadow: 0 12px 25px rgba(0,0,0,.18);
+
+    z-index: 999999;
+
+    font-weight: 600;
+
+    white-space: normal;
+
+    word-break: break-word;
+
+    pointer-events: none;
+
+}
+
     .product-hover-popup {
         display: none;
         position: absolute;
@@ -199,11 +279,17 @@
 
                     </td>
 
-                    <td class="product-name">
+<td class="product-name">
 
-                        <div>{{ p.name }}</div>
-                    </td>
+    <div class="product-name-text"
+         title="{{ p.name }}">
 
+
+        {{ p.name }}
+
+    </div>
+
+</td>
                     <td class="price-cell">{{ p.sale_price }} {% trans "SAR" %}</td>
                     <td class="qty-cell">{{ p.current_stock }}</td>
 
@@ -268,5 +354,44 @@
             popup.style.display = 'none';
         });
     });
+</script>
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const popup = document.createElement("div");
+
+    popup.className = "product-popup";
+
+    document.body.appendChild(popup);
+
+    document.querySelectorAll(".product-name-text").forEach(function (item) {
+
+        item.addEventListener("mouseenter", function () {
+
+            popup.innerText = this.dataset.fullName;
+
+            const rect = this.getBoundingClientRect();
+
+            popup.style.display = "block";
+
+            popup.style.left =
+                (rect.left + rect.width / 2 - popup.offsetWidth / 2) + "px";
+
+            popup.style.top =
+                (rect.bottom + 10) + "px";
+
+        });
+
+        item.addEventListener("mouseleave", function () {
+
+            popup.style.display = "none";
+
+        });
+
+    });
+
+});
+
 </script>
 {% endblock %}
