@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         item.addEventListener("mouseenter", function () {
 
-            popup.innerText = this.dataset.fullName;
+            popup.innerText = this.textContent.trim();
 
             const rect = this.getBoundingClientRect();
 
