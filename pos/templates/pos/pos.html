@@ -646,11 +646,9 @@ totalTax += taxAmount;
             <tr>
 
                 <td class="invoice-item-name">
-    <div class="invoice-item-text"
-         title="${item.name}"
-         onclick="this.classList.toggle('expanded'); event.stopPropagation();">
-        ${item.name}
-    </div>
+<div class="invoice-item-text">
+    ${item.name}
+</div>
 </td>
 
                 <td>
@@ -1088,6 +1086,9 @@ document.querySelectorAll(".product-card").forEach(card => {
 </div>
 
 <script>
+
+
+
 document.querySelectorAll(".product-preview").forEach(function(img){
 
     img.addEventListener("click", function(e){
@@ -1270,44 +1271,102 @@ fetch("{% url 'pos:add_payment_method' %}", {
 .invoice-item-text{
 
     width:100%;
-
-    display:-webkit-box;
-
-    -webkit-line-clamp:3;
-    -webkit-box-orient:vertical;
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
-    cursor:pointer;
-
     font-size:12px;
-
     line-height:20px;
 
-    height:60px;
-
+    white-space:normal;
+    overflow:visible;
     word-break:break-word;
 
+    height:auto;
+}
+/* تكبير عمود الصنف */
+.invoice-item-name{
+    width:180px !important;
+    min-width:180px !important;
+    max-width:180px !important;
 }
 
-.invoice-item-text.expanded{
 
-    display:block;
+/* تصغير عمود الخصم */
+.invoice-content th:nth-child(4),
+.invoice-content td:nth-child(4){
+    width:90px !important;
+    min-width:90px !important;
+    max-width:90px !important;
+}
 
-    height:auto;
 
-    max-height:120px;
+/* تصغير حقول الخصم */
+.invoice-content td:nth-child(4) input{
+    width:45px !important;
+}
 
-    overflow:visible;
+.invoice-content td:nth-child(4) select{
+    width:45px !important;
+}
+/* تنسيق أعمدة جدول الفاتورة */
+.invoice-content table{
+    width:100%;
+    table-layout:fixed;
+}
 
-    background:#fff;
+/* عمود الصنف */
+.invoice-content table th:nth-child(1),
+.invoice-content table td:nth-child(1){
+    width:35%;
+}
 
-    position:relative;
+/* الكمية */
+.invoice-content table th:nth-child(2),
+.invoice-content table td:nth-child(2){
+    width:10%;
+    text-align:center;
+}
 
-    z-index:5;
+/* السعر */
+.invoice-content table th:nth-child(3),
+.invoice-content table td:nth-child(3){
+    width:10%;
+    text-align:center;
+}
 
+/* الخصم */
+.invoice-content table th:nth-child(4),
+.invoice-content table td:nth-child(4){
+    width:10%;
+    text-align:center;
+}
+
+/* الضريبة */
+.invoice-content table th:nth-child(5),
+.invoice-content table td:nth-child(5){
+    width:10%;
+    text-align:center;
+}
+
+/* الإجمالي */
+.invoice-content table th:nth-child(6),
+.invoice-content table td:nth-child(6){
+    width:15%;
+    text-align:center;
+}
+
+/* حذف */
+.invoice-content table th:nth-child(7),
+.invoice-content table td:nth-child(7){
+    width:10%;
+    text-align:center;
+}
+
+
+/* اسم الصنف يظهر كامل بدون قص */
+.invoice-item-text{
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    white-space:normal !important;
+    word-break:break-word;
 }
 </style>
 <div class="modal fade" id="imagePreviewModal" tabindex="-1">
