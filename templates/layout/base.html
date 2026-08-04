@@ -71,7 +71,11 @@ body{
 }
 
 body{
-    background:#f0f0f0;
+    background: linear-gradient(
+        135deg,
+        #eeeeee,
+        #d9dde2
+    );
     font-family:Tahoma,sans-serif;
 }
 
@@ -190,14 +194,21 @@ html[dir="ltr"] .layout {
 }
 
 .page-box{
-    background:#fff;
+
+    background:#ffffff;
+
     padding:25px;
-    border-radius:10px;
+
+    border-radius:22px;
+
     max-width:100%;
 
     min-height:calc(100vh - 50px);
-}
 
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.18);
+
+}
 /* ===== Tables inside page-box ===== */
 .table-responsive {
     overflow-x: auto;
@@ -221,6 +232,7 @@ html[dir="ltr"] .page-box table {
 .page-box table td {
     white-space: nowrap;
 }
+
 
 /* Banner TEST DASHBOARD */
 .dashboard-banner {
