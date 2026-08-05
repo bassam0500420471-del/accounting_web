@@ -86,7 +86,10 @@
     <!-- New Type -->
     <div class="col-md-6" id="custom_reason_wrapper" style="display:none;">
         <label class="form-label">{% trans "New Type" %}</label>
-        <input type="text" id="custom_reason" class="form-control">
+        <input type="text"
+       id="custom_reason"
+       name="reason_name"
+       class="form-control">
         <button type="button" class="btn btn-info mt-2" id="openModal">
             {% trans "Add New Type" %}
         </button>
@@ -173,24 +176,42 @@ $(document).ready(function () {
         }
     });
 
-    $('#openModal').click(function () {
-        if (!$('#custom_reason').val()) {
-            alert("{% trans 'Enter new type first' %}");
-            return;
-        }
-        new bootstrap.Modal(document.getElementById('addTypeModal')).show();
-    });
+$('#openModal').click(function () {
 
-    $('#saveNewType').click(function () {
-        const val = $('#new_type').val();
-        if (!val) {
-            alert("{% trans 'Enter new type' %}");
-            return;
-        }
-        $('#reason_id').append(new Option(val, val)).val(val);
-        bootstrap.Modal.getInstance(document.getElementById('addTypeModal')).hide();
-    });
+    const val = $('#custom_reason').val().trim();
+
+    if (!val) {
+        alert("{% trans 'Enter new type first' %}");
+        return;
+    }
+
+    $('#new_type').val(val);
+
+    new bootstrap.Modal(
+        document.getElementById('addTypeModal')
+    ).show();
 
 });
+$('#saveNewType').click(function () {
+
+    const val = $('#new_type').val().trim();
+
+    if (!val) {
+        alert("{% trans 'Enter new type' %}");
+        return;
+    }
+
+    // وضع الاسم داخل الحقل المرسل للسيرفر
+    $('#custom_reason').val(val);
+
+    // إبقاء القيمة OTHER حتى يعرف Django أنه سبب جديد
+    $('#reason_id').val('OTHER');
+
+    bootstrap.Modal.getInstance(
+        document.getElementById('addTypeModal')
+    ).hide();
+
+});
+
 </script>
 {% endblock %}

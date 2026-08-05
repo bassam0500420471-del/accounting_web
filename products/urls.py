@@ -37,7 +37,6 @@ urlpatterns = [
     # =========================
     path("categories/", category_list, name="category_list"),
     path("categories/add/", category_add, name="category_add"),
-
     path("categories/<int:pk>/", category_detail, name="category_detail"),
     path("categories/<int:pk>/edit/", category_edit, name="category_edit"),
     path("categories/<int:pk>/delete/", category_delete, name="category_delete"),
@@ -59,7 +58,7 @@ urlpatterns = [
     # =========================
     # عمليات المخزون اليدوية
     # =========================
+    path("stock/adjust/view/<int:move_id>/", stock_adjust_view, name="stock_adjust_view"),
     path("stock/adjust/edit/<int:move_id>/", stock_adjust_edit, name="stock_adjust_edit"),
     path("stock/adjust/delete/<int:move_id>/", stock_adjust_delete, name="stock_adjust_delete"),
-    path("stock/adjust/view/<int:move_id>/", stock_adjust_view, name="stock_adjust_view"),
 ]

@@ -27,8 +27,15 @@ def stock_adjust(request):
         messages.error(request, "لا يمكن تعديل المخزون قبل ربط المستخدم بشركة.")
         return redirect("/")
 
-    products = Product.objects.filter(company=request.company, active=True).order_by("name")
-    reasons = StockAdjustReason.objects.filter(company=request.company, active=True).order_by("sort_order", "name")
+    products = Product.objects.filter(
+        company=request.company,
+        active=True
+    ).order_by("name")
+
+    reasons = StockAdjustReason.objects.filter(
+        company=request.company,
+        active=True
+    ).order_by("sort_order", "name")
 
     DEFAULT_REASONS = ["جرد", "بيع", "تالف", "هدية"]
     for r_name in DEFAULT_REASONS:
@@ -39,6 +46,7 @@ def stock_adjust(request):
         )
 
     if request.method == "POST":
+
         product_id = request.POST.get("product_id")
         qty_delta = request.POST.get("qty_delta")
         sign = request.POST.get("qty_sign")
@@ -52,10 +60,37 @@ def stock_adjust(request):
             return redirect("products:stock_adjust")
 
         reason_id = request.POST.get("reason_id")
+        reason_name = request.POST.get("reason_name", "").strip()
         note = request.POST.get("note", "").strip()
 
-        product = get_object_or_404(Product, id=product_id, company=request.company)
-        reason = get_object_or_404(StockAdjustReason, id=reason_id, company=request.company)
+        product = get_object_or_404(
+            Product,
+            id=product_id,
+            company=request.company
+        )
+
+        if reason_id == "OTHER":
+
+            if not reason_name:
+                messages.error(request, "يرجى إدخال اسم النوع الجديد.")
+                return redirect("products:stock_adjust")
+
+            reason, _ = StockAdjustReason.objects.get_or_create(
+                company=request.company,
+                name=reason_name,
+                defaults={
+                    "sort_order": 999,
+                    "active": True,
+                }
+            )
+
+        else:
+
+            reason = get_object_or_404(
+                StockAdjustReason,
+                id=int(reason_id),
+                company=request.company
+            )
 
         apply_stock_movement(
             product=product,
@@ -74,7 +109,6 @@ def stock_adjust(request):
         "products": products,
         "reasons": reasons,
     })
-
 
 # ======================================
 # 2) سجل عمليات المخزون

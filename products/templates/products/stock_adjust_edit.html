@@ -1,39 +1,91 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Edit Stock Take" %}{% endblock %}
+{% block title %}{% trans "Edit Stock Movement" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <h4 class="mb-3">{% trans "Edit Stock Take Sheet" %}</h4>
+<div class="container mt-4">
 
-    <form method="post">
-        {% csrf_token %}
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">{% trans "Edit Stock Movement" %}</h4>
+        </div>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>{% trans "Item" %}</th>
-                    <th>{% trans "Physical Quantity" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in items %}
-                <tr>
-                    <td>{{ row.product.name }}</td>
-                    <td>
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">{% trans "Product" %}</label>
+                    <input type="text"
+                           class="form-control"
+                           value="{{ move.product.name }}"
+                           readonly>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <label class="form-label">{% trans "Sign" %}</label>
+                        <select name="qty_sign" class="form-select">
+                            <option value="+" {% if move.qty_delta >= 0 %}selected{% endif %}>+</option>
+                            <option value="-" {% if move.qty_delta < 0 %}selected{% endif %}>-</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-9">
+                        <label class="form-label">{% trans "Quantity" %}</label>
                         <input type="number"
-                               name="qty_{{ row.id }}"
-                               value="{{ row.physical_qty }}"
-                               class="form-control">
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                               step="0.01"
+                               min="0"
+                               name="qty_delta"
+                               class="form-control"
+                               value="{{ move.qty_delta|floatformat:'-2'|cut:'-' }}">
+                    </div>
 
-        <button type="submit" class="btn btn-success">{% trans "Save Changes" %}</button>
-        <a href="{% url 'stock_adjust_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
-    </form>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label">{% trans "Reason" %}</label>
+
+                    <select name="reason_id" class="form-select">
+
+                        {% for reason in reasons %}
+                            <option value="{{ reason.id }}"
+                                {% if reason.id == move.reason.id %}selected{% endif %}>
+                                {{ reason.name }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label">{% trans "Notes" %}</label>
+
+                    <textarea name="note"
+                              rows="4"
+                              class="form-control">{{ move.note }}</textarea>
+                </div>
+
+                <div class="mt-4">
+
+                    <button class="btn btn-success" type="submit">
+                        {% trans "Save Changes" %}
+                    </button>
+
+                    <a href="{% url 'products:stock_ledger' %}"
+                       class="btn btn-secondary">
+                        {% trans "Cancel" %}
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
 </div>
 {% endblock %}
