@@ -100,6 +100,7 @@ def stock_adjust(request):
             ref_app="products",
             ref_model="manual_adjust",
             note=note,
+          user=request.user,
         )
 
         messages.success(request, "تم تعديل المخزون بنجاح")

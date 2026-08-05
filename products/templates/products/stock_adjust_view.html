@@ -1,35 +1,63 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Stock Take View" %}{% endblock %}
+{% block title %}{% trans "Stock Movement Details" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <h4 class="mb-3">{% trans "Stock Take Sheet View" %}</h4>
+<div class="container mt-4">
 
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>{% trans "Item" %}</th>
-                <th>{% trans "System Quantity" %}</th>
-                <th>{% trans "Physical Quantity" %}</th>
-                <th>{% trans "Difference" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in items %}
-            <tr>
-                <td>{{ row.product.name }}</td>
-                <td>{{ row.system_qty }}</td>
-                <td>{{ row.physical_qty }}</td>
-                <td>{{ row.diff }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">{% trans "Stock Movement Details" %}</h4>
+        </div>
 
-    <a href="{% url 'stock_adjust_list' %}" class="btn btn-secondary">
-        {% trans "Back" %}
-    </a>
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <tr>
+                    <th width="30%">{% trans "Movement No." %}</th>
+                    <td>{{ move.id }}</td>
+                </tr>
+
+                <tr>
+                    <th>{% trans "Product" %}</th>
+                    <td>{{ move.product.name }}</td>
+                </tr>
+
+                <tr>
+                    <th>{% trans "Type" %}</th>
+                    <td>{{ move.reason.name }}</td>
+                </tr>
+
+                <tr>
+                    <th>{% trans "Quantity" %}</th>
+                    <td>{{ move.qty_delta }}</td>
+                </tr>
+
+                <tr>
+                    <th>{% trans "Notes" %}</th>
+                    <td>{{ move.note|default:"-" }}</td>
+                </tr>
+
+                <tr>
+                    <th>{% trans "Created At" %}</th>
+                    <td>{{ move.created_at }}</td>
+                </tr>
+
+                <tr>
+                    <th>{% trans "Created By" %}</th>
+                    <td>{{ move.created_by|default:"-" }}</td>
+                </tr>
+
+            </table>
+
+            <a href="{% url 'products:stock_ledger' %}" class="btn btn-secondary">
+                {% trans "Back" %}
+            </a>
+
+        </div>
+    </div>
+
 </div>
 {% endblock %}
