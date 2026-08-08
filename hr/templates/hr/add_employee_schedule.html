@@ -1,242 +1,644 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Monthly Employee Schedule" %}{% endblock %}
-
-{% block content %}
-<div class="container mt-4">
-    <h3 class="mb-4">
-        {% if create_mode %}
-            {% trans "Create New Schedule" %}
-        {% else %}
-            {% trans "Employee Schedule" %}
-        {% endif %}
-    </h3>
-
-    <form id="employee-schedule-form" method="post" action="{% url 'hr:add_employee_schedule_ajax' %}">
-        {% csrf_token %}
-
-        <!-- Month & Year -->
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <label class="form-label">{% trans "Month" %}</label>
-                <select name="month" class="form-select" required>
-                    {% for month_num in "1,2,3,4,5,6,7,8,9,10,11,12"|split:"," %}
-                        <option value="{{ month_num }}" {% if month_num|int == month %}selected{% endif %}>
-                            {{ month_num }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label">{% trans "Year" %}</label>
-                <select name="year" class="form-select" required>
-                    {% for y_num in year|add:"0"|int|range:year|add:5 %}
-                        <option value="{{ y_num }}" {% if y_num == year %}selected{% endif %}>
-                            {{ y_num }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            {% if not create_mode %}
-            <div class="col-md-4">
-                <label class="form-label">{% trans "Employee" %}</label>
-                <select name="employee" class="form-select">
-                    <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>
-                        {% trans "All" %}
-                    </option>
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% for emp in employees %}
-                    <option value="{{ emp.id }}" {% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
-                        {% if LANGUAGE_CODE == "ar" %}
-                            {{ emp.first_name_ar }} {{ emp.last_name_ar }}
-                        {% else %}
-                            {{ emp.first_name_en }} {{ emp.last_name_en }}
-                        {% endif %}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Table -->
-        <table class="table table-bordered text-center">
-            <thead>
-                <tr>
-                    <th>{% trans "Day" %}</th>
-                    <th>{% trans "Date" %}</th>
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% for emp in employees %}
-                        <th>
-                            {% if LANGUAGE_CODE == "ar" %}
-                                {{ emp.first_name_ar }} {{ emp.last_name_ar }}
-                            {% else %}
-                                {{ emp.first_name_en }} {{ emp.last_name_en }}
-                            {% endif %}
-                        </th>
-                    {% endfor %}
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for day in schedule_list %}
-                <tr>
-                    <td>{{ day.day_name }}</td>
-                    <td>{{ day.date }}</td>
-
-                    {% for shift in day.shifts %}
-                        <td>
-                            {% if create_mode %}
-                                <input type="hidden" name="shift_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" value="">
-
-                                <button type="button"
-                                        class="btn btn-light w-100 text-start shift-btn"
-                                        data-day="{{ day.date }}"
-                                        data-emp-id="{{ shift.emp_id }}">
-                                    {% if shift.shift_name != '--' %}
-                                        {% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}
-                                            {% trans "Off Day" %}
-                                        {% else %}
-                                            {{ shift.shift_name }}
-                                        {% endif %}
-                                    {% else %}
-                                        {% trans "Select Shift" %}
-                                    {% endif %}
-                                </button>
-                            {% else %}
-                                {% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}
-                                    {% trans "Off Day" %}
-                                {% else %}
-                                    {{ shift.shift_name }}
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% if create_mode %}
-        <div class="mt-3">
-            <button type="submit" class="btn btn-secondary">
-                {% trans "Save" %}
-            </button>
-
-            <a href="{% url 'hr:employee_schedule' %}" class="btn btn-secondary ms-2">
-                {% trans "Cancel" %}
-            </a>
-        </div>
-        {% endif %}
-    </form>
-
-    <div id="form-message" class="mt-3"></div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="shiftModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">{% trans "Select Shift" %}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <ul class="list-group">
-                    <li class="list-group-item list-group-item-action"
-                        onclick="selectShift('', '{% trans "Off Day" %}')">
-                        {% trans "Off Day" %}
-                    </li>
-
-                    {% for shift in shifts %}
-                    <li class="list-group-item list-group-item-action"
-                        onclick="selectShift('{{ shift.id }}', '{% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}{% trans "Off Day" %}{% else %}{{ shift.shift_name }}{% endif %} ({{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }})')">
-                        {% if shift.shift_name == "عطلة" or shift.shift_name == "Off Day" %}
-                            {% trans "Off Day" %}
-                        {% else %}
-                            {{ shift.shift_name }}
-                        {% endif %}
-                        <small class="text-muted">
-                            ({{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }})
-                        </small>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-        </div>
-    </div>
-</div>
+{% block title %}
+{% trans "Monthly Employee Schedule" %}
 {% endblock %}
 
-{% block scripts %}
-<script>
-let currentBtn = null;
 
-document.querySelectorAll(".shift-btn").forEach(btn => {
-    btn.addEventListener("click", function() {
-        currentBtn = this;
-        let modal = new bootstrap.Modal(document.getElementById("shiftModal"));
-        modal.show();
-    });
-});
+{% block content %}
 
-function selectShift(id, text) {
-    if (currentBtn) {
-        let hiddenInput = currentBtn.previousElementSibling;
-        hiddenInput.value = id;
-        currentBtn.innerText = text;
-    }
-    let modal = bootstrap.Modal.getInstance(document.getElementById("shiftModal"));
-    modal.hide();
+<style>
+
+
+.hr-page-card{
+
+    background:#ffffff;
+
+    border-radius:25px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.18);
+
 }
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+
+
+/* Header */
+
+.hr-page-header{
+
+    text-align:right;
+
+    margin-bottom:30px;
+
 }
 
-document.getElementById("employee-schedule-form").addEventListener("submit", function(e){
-    e.preventDefault();
-    let form = e.target;
-    let data = new FormData(form);
 
-    fetch(form.action, {
-        method: "POST",
-        body: data,
-        headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            "X-CSRFToken": getCookie('csrftoken')
-        }
-    })
-    .then(response => response.json())
-    .then(result => {
-        let msgDiv = document.getElementById("form-message");
-        if (result.success) {
-            msgDiv.innerHTML = `<div class="alert alert-success">{% trans "Saved successfully" %}</div>`;
-        } else {
-            msgDiv.innerHTML = `<div class="alert alert-danger">{% trans "Error" %}: ${result.error}</div>`;
-        }
-    })
-    .catch(() => {
-        document.getElementById("form-message").innerHTML =
-            `<div class="alert alert-danger">{% trans "Unexpected error" %}</div>`;
-    });
-});
-</script>
+.hr-page-header h3{
+
+    margin:0;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:#343a40;
+
+}
+
+
+.hr-page-header p{
+
+    color:#6c757d;
+
+    margin-top:8px;
+
+}
+
+
+
+/* Form */
+
+.hr-form label{
+
+    font-weight:600;
+
+    color:#343a40;
+
+}
+
+
+
+.hr-form select{
+
+    width:100%;
+
+    padding:12px 15px;
+
+    border-radius:14px;
+
+    border:1px solid #ddd;
+
+    background:#f8f9fa;
+
+}
+
+
+
+/* Table */
+
+.hr-table{
+
+    width:100%;
+
+    border-collapse:separate;
+
+    border-spacing:0;
+
+    overflow:hidden;
+
+    border-radius:15px;
+
+}
+
+
+
+.hr-table thead th{
+
+    background:linear-gradient(
+        145deg,
+        #444,
+        #666
+    );
+
+    color:white;
+
+    padding:15px;
+
+    text-align:center;
+
+    font-weight:600;
+
+}
+
+
+
+.hr-table tbody td{
+
+    padding:12px;
+
+    text-align:center;
+
+    border-bottom:1px solid #eee;
+
+    color:#343a40;
+
+}
+
+
+
+.hr-table tbody tr:hover{
+
+    background:#f8f9fa;
+
+}
+
+
+
+
+
+/* Shift Button */
+
+.shift-btn{
+
+    border-radius:12px !important;
+
+    background:#f1f1f1 !important;
+
+    border:1px solid #ddd !important;
+
+    padding:10px !important;
+
+    color:#444 !important;
+
+}
+
+
+
+.shift-btn:hover{
+
+    background:#e2e2e2 !important;
+
+}
+
+
+
+
+
+/* Buttons */
+
+
+.hr-action{
+
+    background:#5c5c5c;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 25px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    display:inline-block;
+
+    box-shadow:3px 3px 8px #ccc;
+
+}
+
+
+
+.hr-action:hover{
+
+    background:#333;
+
+    color:white;
+
+}
+
+
+
+.hr-cancel{
+
+    background:#eee;
+
+    color:#444;
+
+    padding:10px 25px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+}
+
+
+
+.hr-cancel:hover{
+
+    background:#ddd;
+
+    color:#222;
+
+}
+
+
+</style>
+
+
+
+
+
+<div class="container-fluid mt-4">
+
+
+<div class="hr-page-card">
+
+
+
+
+
+<div class="hr-page-header">
+
+
+<h3>
+
+<i class="fa-solid fa-calendar-days"></i>
+
+{% if create_mode %}
+
+{% trans "Create New Schedule" %}
+
+{% else %}
+
+{% trans "Employee Schedule" %}
+
+{% endif %}
+
+
+</h3>
+
+
+<p>
+Manage monthly employee shifts
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<form id="employee-schedule-form"
+method="post"
+action="{% url 'hr:add_employee_schedule_ajax' %}">
+
+
+{% csrf_token %}
+
+
+
+
+
+<div class="row mb-4">
+
+
+
+<div class="col-md-3 mb-3">
+
+
+<label>
+
+{% trans "Month" %}
+
+</label>
+
+
+<select name="month"
+class="form-select"
+required>
+
+
+{% for month_num in "1,2,3,4,5,6,7,8,9,10,11,12"|split:"," %}
+
+
+<option value="{{ month_num }}"
+{% if month_num|int == month %}selected{% endif %}>
+
+
+{{ month_num }}
+
+
+</option>
+
+
+{% endfor %}
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+<div class="col-md-3 mb-3">
+
+
+<label>
+
+{% trans "Year" %}
+
+</label>
+
+
+<select name="year"
+class="form-select"
+required>
+
+
+{% for y_num in year|add:"0"|int|range:year|add:5 %}
+
+
+<option value="{{ y_num }}"
+{% if y_num == year %}selected{% endif %}>
+
+
+{{ y_num }}
+
+
+</option>
+
+
+{% endfor %}
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+{% if not create_mode %}
+
+
+<div class="col-md-4 mb-3">
+
+
+<label>
+
+{% trans "Employee" %}
+
+</label>
+
+
+<select name="employee"
+class="form-select">
+
+
+<option value="all">
+
+{% trans "All" %}
+
+</option>
+
+
+
+{% for emp in employees %}
+
+<option value="{{ emp.id }}">
+
+
+{{ emp }}
+
+
+</option>
+
+
+{% endfor %}
+
+
+</select>
+
+
+</div>
+
+
+{% endif %}
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<table class="hr-table">
+
+
+<thead>
+
+<tr>
+
+
+<th>{% trans "Day" %}</th>
+
+<th>{% trans "Date" %}</th>
+
+
+{% for emp in employees %}
+
+<th>
+
+{{ emp }}
+
+</th>
+
+{% endfor %}
+
+
+</tr>
+
+</thead>
+
+
+
+
+
+<tbody>
+
+
+{% for day in schedule_list %}
+
+
+<tr>
+
+
+<td>
+
+<strong>
+
+{{ day.day_name }}
+
+</strong>
+
+
+</td>
+
+
+<td>
+
+{{ day.date }}
+
+</td>
+
+
+
+
+
+{% for shift in day.shifts %}
+
+
+<td>
+
+
+{% if create_mode %}
+
+
+<input type="hidden"
+name="shift_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}"
+value="">
+
+
+
+<button type="button"
+class="btn shift-btn w-100 text-center"
+data-day="{{ day.date }}"
+data-emp-id="{{ shift.emp_id }}">
+
+
+{% if shift.shift_name != '--' %}
+
+
+{{ shift.shift_name }}
+
+
+{% else %}
+
+
+{% trans "Select Shift" %}
+
+
+{% endif %}
+
+
+</button>
+
+
+{% else %}
+
+
+{{ shift.shift_name }}
+
+
+{% endif %}
+
+
+</td>
+
+
+{% endfor %}
+
+
+
+</tr>
+
+
+{% endfor %}
+
+
+</tbody>
+
+
+</table>
+
+
+
+
+
+
+
+{% if create_mode %}
+
+
+<div class="mt-4">
+
+
+<button type="submit"
+class="hr-action">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+{% trans "Save" %}
+
+</button>
+
+
+
+
+<a href="{% url 'hr:employee_schedule' %}"
+class="hr-cancel ms-2">
+
+<i class="fa-solid fa-xmark"></i>
+
+{% trans "Cancel" %}
+
+</a>
+
+
+
+</div>
+
+
+{% endif %}
+
+
+
+
+</form>
+
+
+
+
+
+<div id="form-message"
+class="mt-3">
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- Modal يبقى كما هو عندك -->
+
+
 {% endblock %}

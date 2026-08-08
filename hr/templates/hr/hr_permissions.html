@@ -4,128 +4,548 @@
 {% block title %}{% trans "Edit Permissions" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <h3 class="mb-4">{% trans "Edit Permissions:" %} {{ selected_user.username }}</h3>
 
-            <form method="post">
-                {% csrf_token %}
+<style>
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Employees" %}</h5>
-                        {% for field in form %}
-                            {% if "employees_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+.permission-page{
 
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Departments" %}</h5>
-                        {% for field in form %}
-                            {% if "departments_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+    background:linear-gradient(135deg,#f4f5f8,#eceff4);
 
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Attendance" %}</h5>
-                        {% for field in form %}
-                            {% if "attendance_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+    border-radius:28px;
 
-                <hr>
+    padding:30px;
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Leaves" %}</h5>
-                        {% for field in form %}
-                            {% if "leaves_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+    box-shadow:0 18px 45px rgba(0,0,0,.08);
 
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Evaluations" %}</h5>
-                        {% for field in form %}
-                            {% if "evaluations_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+}
 
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Payroll" %}</h5>
-                        {% for field in form %}
-                            {% if "payroll_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+.permission-header{
 
-                <hr>
+    background:linear-gradient(135deg,#575757,#777);
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <h5 class="mb-3">{% trans "Reports" %}</h5>
-                        {% for field in form %}
-                            {% if "reports_" in field.name %}
-                            <div class="form-check mb-2">
-                                {{ field }}
-                                <label class="form-check-label me-2" for="{{ field.id_for_label }}">
-                                    {{ field.label }}
-                                </label>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+    border-radius:22px;
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success">💾 {% trans "Save Changes" %}</button>
-                    <a href="{% url 'hr:hr_permissions_users' %}" class="btn btn-secondary">{% trans "Back" %}</a>
-                </div>
-            </form>
-        </div>
-    </div>
+    padding:28px;
+
+    color:#fff;
+
+    margin-bottom:30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+}
+
+.permission-title{
+
+    font-size:30px;
+
+    font-weight:700;
+
+    margin:0;
+
+}
+
+.permission-user{
+
+    font-size:16px;
+
+    opacity:.9;
+
+    margin-top:8px;
+
+}
+
+.permission-card{
+
+    background:#fff;
+
+    border:none;
+
+    border-radius:22px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    transition:.35s;
+
+    height:100%;
+
+}
+
+.permission-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 18px 40px rgba(0,0,0,.12);
+
+}
+
+.permission-card .card-header{
+
+    background:linear-gradient(135deg,#616161,#818181);
+
+    color:#fff;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    border:none;
+
+    border-radius:22px 22px 0 0;
+
+    padding:16px 20px;
+
+}
+
+.permission-card .card-body{
+
+    padding:20px;
+
+}
+
+.form-check{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:12px 18px;
+
+    padding-left:22px;
+
+    margin-bottom:10px;
+
+    border-radius:12px;
+
+    background:#f8f9fb;
+
+    transition:.25s;
+
+    overflow:hidden;
+
+}
+
+.form-check:hover{
+
+    background:#eceff4;
+
+    transform:translateX(-3px);
+
+}
+
+.form-check-input{
+
+    width:1.3rem;
+
+    height:1.3rem;
+
+    cursor:pointer;
+
+}
+
+.form-check-label{
+
+    font-weight:600;
+
+    margin-right:10px;
+
+    cursor:pointer;
+
+}
+
+.permission-footer{
+
+    margin-top:35px;
+
+    display:flex;
+
+    justify-content:end;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+}
+
+.btn-save{
+
+    background:linear-gradient(135deg,#4f8f58,#6ab46f);
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px 28px;
+
+    color:#fff;
+
+    font-weight:bold;
+
+}
+
+.btn-back{
+
+    background:linear-gradient(135deg,#5d6470,#7b8493);
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px 28px;
+
+    color:#fff;
+
+    text-decoration:none;
+
+}
+
+.btn-back:hover,
+.btn-save:hover{
+
+    color:#fff;
+
+    transform:translateY(-2px);
+
+}
+
+</style>
+
+<div class="container-fluid">
+
+<div class="permission-page">
+
+<div class="permission-header">
+
+<div>
+
+<h2 class="permission-title">
+
+🛡️ تعديل صلاحيات المستخدم
+
+
+</h2>
+
+<div class="permission-user">
+
+{{ selected_user.username }}
+
 </div>
+
+</div>
+
+<div>
+
+<span class="badge bg-light text-dark fs-6">
+
+{{ selected_user.email|default:"No Email" }}
+
+</span>
+
+</div>
+
+</div>
+
+<form method="post">
+
+{% csrf_token %}
+
+<div class="row">
+<div class="row g-4">
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="permission-card">
+
+            <div class="card-header">
+                👥 {% trans "Employees" %}
+            </div>
+
+            <div class="card-body">
+
+                {% for field in form %}
+                    {% if "employees_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="permission-card">
+
+            <div class="card-header">
+                🏢 {% trans "Departments" %}
+            </div>
+
+            <div class="card-body">
+
+                {% for field in form %}
+                    {% if "departments_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="permission-card">
+
+            <div class="card-header">
+                🕒 {% trans "Attendance" %}
+            </div>
+
+            <div class="card-body">
+
+                {% for field in form %}
+                    {% if "attendance_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="permission-card">
+
+            <div class="card-header">
+                🏖️ {% trans "Leaves" %}
+            </div>
+
+            <div class="card-body">
+
+                {% for field in form %}
+                    {% if "leaves_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="permission-card">
+
+            <div class="card-header">
+                ⭐ {% trans "Evaluations" %}
+            </div>
+
+            <div class="card-body">
+
+                {% for field in form %}
+                    {% if "evaluations_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+
+        <div class="permission-card">
+
+            <div class="card-header">
+                💰 {% trans "Payroll" %}
+            </div>
+
+            <div class="card-body">
+
+                {% for field in form %}
+                    {% if "payroll_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+                {% for field in form %}
+                    {% if "reports_" in field.name %}
+
+                    <div class="form-check form-switch">
+
+                        {{ field }}
+
+                        <label class="form-check-label"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field.label }}
+
+                        </label>
+
+                    </div>
+
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="permission-footer">
+
+    <button type="submit" class="btn btn-save">
+
+        💾 {% trans "Save Changes" %}
+
+    </button>
+
+    <a href="{% url 'hr:hr_permissions_users' %}" class="btn btn-back">
+
+        ↩ {% trans "Back" %}
+
+    </a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+document.querySelectorAll(".form-check").forEach(function(item){
+
+    item.addEventListener("mouseenter",function(){
+
+        this.style.transform="translateX(-5px)";
+
+    });
+
+    item.addEventListener("mouseleave",function(){
+
+        this.style.transform="translateX(0px)";
+
+    });
+
+});
+
+document.querySelectorAll(".permission-card").forEach(function(card){
+
+    card.addEventListener("mouseenter",function(){
+
+        this.style.transform="translateY(-8px)";
+
+    });
+
+    card.addEventListener("mouseleave",function(){
+
+        this.style.transform="translateY(0px)";
+
+    });
+
+});
+
+</script>
+
 {% endblock %}

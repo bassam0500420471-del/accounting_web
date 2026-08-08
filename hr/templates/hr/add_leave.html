@@ -1,86 +1,491 @@
+```html
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Add Leave" %}{% endblock %}
+{% block title %}
+{% trans "Add Leave" %}
+{% endblock %}
+
 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="mb-4">{% trans "Add Leave" %}</h3>
 
-    <form method="post">
-        {% csrf_token %}
+<style>
 
-        <!-- اختيار الموظف -->
-        <div class="mb-3">
-            <label class="form-label">{{ form.employee.label }}</label>
 
-            {% if employee %}
-                <!-- الموظف مرتبط بحسابك، اجعل الحقل مخفي -->
-                {{ form.employee.as_hidden }}
-                <input type="text" class="form-control" value="{{ employee }}" disabled>
-            {% else %}
-                <!-- الموظف غير مرتبط، يمكن اختياره -->
-                {{ form.employee }}
-                {% if form.employee.errors %}
-                    <div class="text-danger small">{{ form.employee.errors|striptags }}</div>
-                {% endif %}
-            {% endif %}
-        </div>
+.hr-page-card{
 
-        <!-- نوع الإجازة -->
-        <div class="mb-3">
-            <label class="form-label">{{ form.leave_type.label }}</label>
-            {{ form.leave_type }}
-            {% if form.leave_type.errors %}
-                <div class="text-danger small">{{ form.leave_type.errors|striptags }}</div>
-            {% endif %}
-        </div>
+    background:#ffffff;
 
-        <!-- التواريخ -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">{{ form.start_date.label }}</label>
-                {{ form.start_date }}
-                {% if form.start_date.errors %}
-                    <div class="text-danger small">{{ form.start_date.errors|striptags }}</div>
-                {% endif %}
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">{{ form.end_date.label }}</label>
-                {{ form.end_date }}
-                {% if form.end_date.errors %}
-                    <div class="text-danger small">{{ form.end_date.errors|striptags }}</div>
-                {% endif %}
-            </div>
-        </div>
+    border-radius:25px;
 
-        <!-- السبب -->
-        <div class="mb-3">
-            <label class="form-label">{{ form.reason.label }}</label>
-            {{ form.reason }}
-            {% if form.reason.errors %}
-                <div class="text-danger small">{{ form.reason.errors|striptags }}</div>
-            {% endif %}
-        </div>
+    padding:30px;
 
-        <!-- الحالة -->
-        <div class="mb-3">
-            <label class="form-label">{{ form.status.label }}</label>
-            {{ form.status }}
-            {% if form.status.errors %}
-                <div class="text-danger small">{{ form.status.errors|striptags }}</div>
-            {% endif %}
-        </div>
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.18);
 
-        <!-- الأزرار -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-secondary">
-                {% trans "Save" %}
-            </button>
-            <a href="{% url 'hr:leaves' %}" class="btn btn-secondary">
-                {% trans "Cancel" %}
-            </a>
-        </div>
-    </form>
+}
+
+
+
+/* Header */
+
+.hr-page-header{
+
+    margin-bottom:30px;
+
+    text-align:right;
+
+}
+
+
+.hr-page-header h3{
+
+    margin:0;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:#343a40;
+
+}
+
+
+.hr-page-header p{
+
+    color:#6c757d;
+
+    margin-top:8px;
+
+}
+
+
+
+/* Form */
+
+.hr-form label{
+
+    font-weight:600;
+
+    color:#343a40;
+
+    margin-bottom:8px;
+
+}
+
+
+.hr-form input,
+.hr-form select,
+.hr-form textarea{
+
+    width:100%;
+
+    padding:12px 15px;
+
+    border-radius:14px;
+
+    border:1px solid #ddd;
+
+    background:#f8f9fa;
+
+    transition:.3s;
+
+}
+
+
+
+.hr-form input:focus,
+.hr-form select:focus,
+.hr-form textarea:focus{
+
+    background:white;
+
+    border-color:#666;
+
+    box-shadow:0 0 8px rgba(0,0,0,.15);
+
+    outline:none;
+
+}
+
+
+
+.hr-form textarea{
+
+    min-height:120px;
+
+    resize:none;
+
+}
+
+
+
+/* Errors */
+
+.form-error{
+
+    color:#dc3545;
+
+    font-size:13px;
+
+    margin-top:5px;
+
+}
+
+
+
+/* Buttons */
+
+.hr-action{
+
+    background:#5c5c5c;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 25px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    display:inline-block;
+
+    box-shadow:3px 3px 8px #ccc;
+
+    transition:.3s;
+
+}
+
+
+
+.hr-action:hover{
+
+    background:#333;
+
+    color:white;
+
+}
+
+
+
+</style>
+
+
+
+<div class="container-fluid mt-4">
+
+
+<div class="hr-page-card">
+
+
+
+<div class="hr-page-header">
+
+
+<h3>
+
+<i class="fa-solid fa-calendar-plus"></i>
+
+{% trans "Add Leave" %}
+
+</h3>
+
+
+<p>
+Create a new employee leave request
+</p>
+
+
 </div>
+
+
+
+
+<form method="post" class="hr-form">
+
+{% csrf_token %}
+
+
+
+<!-- الموظف -->
+
+<div class="mb-3">
+
+
+<label>
+
+{{ form.employee.label }}
+
+</label>
+
+
+{% if employee %}
+
+
+{{ form.employee.as_hidden }}
+
+
+<input type="text"
+class="form-control"
+value="{{ employee }}"
+disabled>
+
+
+{% else %}
+
+
+{{ form.employee }}
+
+
+{% if form.employee.errors %}
+
+<div class="form-error">
+
+{{ form.employee.errors|striptags }}
+
+</div>
+
+{% endif %}
+
+
+{% endif %}
+
+
+</div>
+
+
+
+
+
+<!-- نوع الإجازة -->
+
+
+<div class="mb-3">
+
+
+<label>
+
+{{ form.leave_type.label }}
+
+</label>
+
+
+{{ form.leave_type }}
+
+
+{% if form.leave_type.errors %}
+
+<div class="form-error">
+
+{{ form.leave_type.errors|striptags }}
+
+</div>
+
+{% endif %}
+
+
+</div>
+
+
+
+
+
+
+
+<!-- التواريخ -->
+
+
+<div class="row">
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{{ form.start_date.label }}
+
+</label>
+
+
+{{ form.start_date }}
+
+
+{% if form.start_date.errors %}
+
+<div class="form-error">
+
+{{ form.start_date.errors|striptags }}
+
+</div>
+
+{% endif %}
+
+
+
+</div>
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{{ form.end_date.label }}
+
+</label>
+
+
+{{ form.end_date }}
+
+
+{% if form.end_date.errors %}
+
+<div class="form-error">
+
+{{ form.end_date.errors|striptags }}
+
+</div>
+
+{% endif %}
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- السبب -->
+
+
+<div class="mb-3">
+
+
+<label>
+
+{{ form.reason.label }}
+
+</label>
+
+
+{{ form.reason }}
+
+
+
+{% if form.reason.errors %}
+
+<div class="form-error">
+
+{{ form.reason.errors|striptags }}
+
+</div>
+
+{% endif %}
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- الحالة -->
+
+
+<div class="mb-3">
+
+
+<label>
+
+{{ form.status.label }}
+
+</label>
+
+
+{{ form.status }}
+
+
+
+{% if form.status.errors %}
+
+<div class="form-error">
+
+{{ form.status.errors|striptags }}
+
+</div>
+
+{% endif %}
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- Buttons -->
+
+
+<div class="mt-4">
+
+
+<button type="submit"
+class="hr-action">
+
+<i class="fa-solid fa-check"></i>
+
+{% trans "Save" %}
+
+</button>
+
+
+
+
+<a href="{% url 'hr:leaves' %}"
+class="hr-action">
+
+
+<i class="fa-solid fa-xmark"></i>
+
+{% trans "Cancel" %}
+
+
+</a>
+
+
+</div>
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+</div>
+
+
 {% endblock %}
+```

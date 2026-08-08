@@ -1,54 +1,472 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Leave Management" %}{% endblock %}
+{% block title %}
+{% trans "Leave Management" %}
+{% endblock %}
+
 
 {% block content %}
-<h3 class="mb-4">{% trans "Leave Management" %}</h3>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>{% trans "Employee" %}</th>
-            <th>{% trans "Leave Type" %}</th>
-            <th>{% trans "From" %}</th>
-            <th>{% trans "To" %}</th>
-            <th>{% trans "Reason" %}</th>
-            <th>{% trans "Status" %}</th>
-            <th>{% trans "Action" %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for leave in leaves %}
-        <tr>
-            <td>{{ leave.employee }}</td>
-            <td>{{ leave.get_leave_type_display }}</td>
-            <td>{{ leave.start_date }}</td>
-            <td>{{ leave.end_date }}</td>
-            <td>{{ leave.reason }}</td>
-            <td>
-                {% if leave.status == 'pending' %}
-                    <span class="badge bg-warning">{% trans "Pending" %}</span>
-                {% elif leave.status == 'approved' %}
-                    <span class="badge bg-success">{% trans "Approved" %}</span>
-                {% else %}
-                    <span class="badge bg-danger">{% trans "Rejected" %}</span>
-                {% endif %}
-            </td>
-            <td>
-                {% if leave.status == 'pending' %}
-                    <a href="{% url 'hr:approve_leave' leave.id %}" class="btn btn-sm btn-success">✔</a>
-                    <a href="{% url 'hr:reject_leave' leave.id %}" class="btn btn-sm btn-danger">✖</a>
-                {% else %}
-                    ---
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7" class="text-center">{% trans "No leaves found" %}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+<style>
+
+.hr-page-card{
+
+    background:#ffffff;
+
+    border-radius:25px;
+
+    padding:25px;
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.18);
+
+}
+
+
+/* Header */
+
+.hr-page-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.hr-page-header h3{
+
+    margin:0;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:#343a40;
+
+}
+
+
+.hr-page-header p{
+
+    margin-top:6px;
+
+    color:#6c757d;
+
+}
+
+
+
+/* Table */
+
+.hr-table{
+
+    width:100%;
+
+    border-collapse:separate;
+
+    border-spacing:0;
+
+    overflow:hidden;
+
+    border-radius:15px;
+
+}
+
+
+
+.hr-table thead th{
+
+    background:linear-gradient(
+        145deg,
+        #444,
+        #666
+    );
+
+    color:white;
+
+    padding:16px;
+
+    text-align:center;
+
+    font-weight:600;
+
+}
+
+
+
+.hr-table tbody td{
+
+    padding:14px;
+
+    text-align:center;
+
+    border-bottom:1px solid #eee;
+
+    color:#343a40;
+
+}
+
+
+
+.hr-table tbody tr{
+
+    transition:.25s;
+
+}
+
+
+
+.hr-table tbody tr:hover{
+
+    background:#f8f9fa;
+
+    transform:scale(1.01);
+
+}
+
+
+
+/* Status */
+
+.status-approved{
+
+    background:#198754;
+
+    color:white;
+
+    padding:6px 15px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+}
+
+
+
+.status-pending{
+
+    background:#ffc107;
+
+    color:#333;
+
+    padding:6px 15px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+}
+
+
+
+.status-rejected{
+
+    background:#dc3545;
+
+    color:white;
+
+    padding:6px 15px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+}
+
+
+
+/* Buttons */
+
+.hr-action{
+
+    background:#5c5c5c;
+
+    color:white;
+
+    border:none;
+
+    padding:8px 18px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    display:inline-block;
+
+    margin:2px;
+
+    box-shadow:
+    3px 3px 8px #ccc;
+
+}
+
+
+
+.hr-action:hover{
+
+    background:#333;
+
+    color:white;
+
+}
+
+
+
+</style>
+
+
+
+<div class="container-fluid mt-4">
+
+
+<div class="hr-page-card">
+
+
+
+<div class="hr-page-header">
+
+
+<div>
+
+<h3>
+
+<i class="fa-solid fa-calendar-days"></i>
+
+{% trans "Leave Management" %}
+
+</h3>
+
+
+<p>
+
+Manage employee leave requests and approvals
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<table class="hr-table">
+
+
+<thead>
+
+<tr>
+
+<th>
+{% trans "Employee" %}
+</th>
+
+
+<th>
+{% trans "Leave Type" %}
+</th>
+
+
+<th>
+{% trans "From" %}
+</th>
+
+
+<th>
+{% trans "To" %}
+</th>
+
+
+<th>
+{% trans "Reason" %}
+</th>
+
+
+<th>
+{% trans "Status" %}
+</th>
+
+
+<th>
+{% trans "Action" %}
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+{% for leave in leaves %}
+
+
+<tr>
+
+
+<td>
+
+<strong>
+{{ leave.employee }}
+</strong>
+
+</td>
+
+
+
+<td>
+
+{{ leave.get_leave_type_display }}
+
+</td>
+
+
+
+<td>
+
+{{ leave.start_date }}
+
+</td>
+
+
+
+<td>
+
+{{ leave.end_date }}
+
+</td>
+
+
+
+<td>
+
+{{ leave.reason|default:"-" }}
+
+</td>
+
+
+
+
+<td>
+
+
+{% if leave.status == 'pending' %}
+
+
+<span class="status-pending">
+
+{% trans "Pending" %}
+
+</span>
+
+
+{% elif leave.status == 'approved' %}
+
+
+<span class="status-approved">
+
+{% trans "Approved" %}
+
+</span>
+
+
+{% else %}
+
+
+<span class="status-rejected">
+
+{% trans "Rejected" %}
+
+</span>
+
+
+{% endif %}
+
+
+</td>
+
+
+
+
+<td>
+
+
+{% if leave.status == 'pending' %}
+
+
+<a href="{% url 'hr:approve_leave' leave.id %}"
+class="hr-action">
+
+✔ {% trans "Approve" %}
+
+</a>
+
+
+
+<a href="{% url 'hr:reject_leave' leave.id %}"
+class="hr-action">
+
+✖ {% trans "Reject" %}
+
+</a>
+
+
+
+{% else %}
+
+---
+
+{% endif %}
+
+
+</td>
+
+
+
+</tr>
+
+
+
+{% empty %}
+
+
+<tr>
+
+<td colspan="7">
+
+{% trans "No leaves found" %}
+
+</td>
+
+</tr>
+
+
+{% endfor %}
+
+
+
+</tbody>
+
+
 </table>
+
+
+</div>
+
+
+</div>
+
+
 {% endblock %}

@@ -4,6 +4,8 @@ from django.contrib import messages  # لإظهار رسائل
 
 from accounting.models import Account   # ⭐ الحسابات
 from .models import Product, BundleComponent, Category  # ✅ إضافة Category
+from django.db.models.deletion import ProtectedError
+from django.db import IntegrityError
 
 
 # ================================
@@ -190,23 +192,69 @@ def product_edit(request, pk):
 def product_delete(request, pk):
 
     if not getattr(request, "company", None):
-        messages.error(request, "لا يمكن حذف منتج قبل ربط المستخدم بشركة.")
+        messages.error(
+            request,
+            "لا يمكن حذف منتج قبل ربط المستخدم بشركة."
+        )
         return redirect("/")
 
-    product = get_object_or_404(Product, pk=pk, company=request.company)
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        company=request.company
+    )
 
-    linked_components = BundleComponent.objects.filter(component=product).exists()
+    # -----------------------------------------
+    # التأكد أن المنتج ليس مكوّناً لمنتج مركب
+    # -----------------------------------------
+    linked_components = BundleComponent.objects.filter(
+        component=product
+    ).exists()
+
     if linked_components:
-        messages.error(request, "لا يمكن حذف المنتج لأنه مرتبط بمنتجات مركبة أو عمليات أخرى.")
+        messages.error(
+            request,
+            "لا يمكن حذف المنتج لأنه مستخدم كمكوّن في منتج مركب."
+        )
         return redirect("/products/")
 
     try:
         product.delete()
-        messages.success(request, "تم حذف المنتج بنجاح.")
-    except:
-        messages.error(request, "حدث خطأ أثناء الحذف.")
-    return redirect("/products/")
 
+        messages.success(
+            request,
+            "تم حذف المنتج بنجاح."
+        )
+
+    except ProtectedError as e:
+        print("========== PRODUCT DELETE PROTECTED ERROR ==========")
+        print(e)
+
+        messages.error(
+            request,
+            "لا يمكن حذف المنتج لأنه مرتبط بسجلات أخرى في النظام."
+        )
+
+    except IntegrityError as e:
+        print("========== PRODUCT DELETE INTEGRITY ERROR ==========")
+        print(e)
+
+        messages.error(
+            request,
+            "لا يمكن حذف المنتج بسبب وجود سجلات مرتبطة به."
+        )
+
+    except Exception as e:
+        print("========== PRODUCT DELETE ERROR ==========")
+        print(type(e).__name__)
+        print(e)
+
+        messages.error(
+            request,
+            f"حدث خطأ أثناء حذف المنتج: {e}"
+        )
+
+    return redirect("/products/")
 
 # ================================
 #   عرض منتج

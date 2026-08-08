@@ -2,229 +2,854 @@
 {% load i18n %}
 
 {% block title %}{% trans "Dashboard" %}{% endblock %}
+
 {% block extra_head %}
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-.chart-container canvas {
-    height: 300px !important;
+/* خلفية الصفحة */
+.container-fluid{
+    background: linear-gradient(135deg,#f1f3f6,#dfe3e8);
+    padding:25px;
+    border-radius:25px;
 }
 
-.indicator {
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    font-weight: bold;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
+
+/* كروت المؤشرات العلوية */
+.indicator{
+
+    min-height:90px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:linear-gradient(145deg,#ffffff,#d9dde3)!important;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    text-align:center;
+
+    font-weight:700;
+
+    font-size:18px;
+
+    color:#343a40;
+
+    box-shadow:
+    12px 12px 25px rgba(0,0,0,.20),
+    -10px -10px 25px rgba(255,255,255,.9);
+
+    transition:.3s;
+
 }
 
-.section-title {
-    font-weight: bold;
-    margin-bottom: 15px;
+
+.indicator:hover{
+
+    transform:translateY(-8px);
+
 }
 
-.card table th, .card table td {
-    vertical-align: middle;
+
+
+/* كل الكروت */
+.card,
+.chart-container{
+
+    background:
+    linear-gradient(145deg,#ffffff,#e1e5ea)!important;
+
+    border-radius:25px!important;
+
+    border:none!important;
+
+    box-shadow:
+
+    15px 15px 35px rgba(0,0,0,.18),
+
+    -12px -12px 25px rgba(255,255,255,.9)!important;
+
+    transition:.3s;
+
 }
+
+
+
+.card:hover,
+.chart-container:hover{
+
+    transform:translateY(-8px);
+
+}
+
+
+
+/* عناوين الأقسام */
+.section-title{
+
+    font-weight:800;
+
+    color:#343a40;
+
+    font-size:22px;
+
+    padding-bottom:10px;
+
+    text-shadow:
+
+    1px 2px 3px rgba(0,0,0,.15);
+
+}
+
+
+
+/* الجداول */
+
+.table{
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+}
+
+
+
+.table thead th{
+
+    background:#343a40;
+
+    color:white;
+
+    border:none;
+
+}
+
+
+
+.table tbody tr{
+
+    transition:.2s;
+
+}
+
+
+
+.table tbody tr:hover{
+
+    background:#f0f2f5;
+
+    transform:scale(1.01);
+
+}
+
+
+
+/* الشارت */
+
+.chart-container canvas{
+
+    height:320px!important;
+
+}
+
+
+
+/* تحسين الموبايل */
+
+@media(max-width:768px){
+
+.container-fluid{
+
+    padding:15px;
+
+}
+
+
+.indicator{
+
+    font-size:15px;
+
+}
+
+
+.section-title{
+
+    font-size:18px;
+
+}
+
+}
+
+
+.container-fluid .table{
+
+    background:transparent;
+
+}
+
+
+.container-fluid canvas{
+
+    padding:10px;
+
+}
+
 </style>
-{% endblock %}
 
+{% endblock %}
 {% block content %}
+
 <div class="container-fluid">
 
     <!-- Top Indicators -->
     <div class="row mb-4">
+
         <div class="col-md-3 col-6">
-            <div class="indicator">{% trans "Employees" %}:
- {{ total_employees|default:0 }}</div>
+            <div class="indicator">
+                {% trans "Employees" %}:
+                {{ total_employees|default:0 }}
+            </div>
         </div>
+
+
         <div class="col-md-3 col-6">
-            <div class="indicator">{% trans "Today's Attendance" %}:
- {{ total_attendance_today|default:0 }}</div>
+            <div class="indicator">
+                {% trans "Today's Attendance" %}:
+                {{ total_attendance_today|default:0 }}
+            </div>
         </div>
+
+
         <div class="col-md-3 col-6">
-            <div class="indicator">{% trans "Invoices" %}:
- {{ total_invoices|default:0 }}</div>
+            <div class="indicator">
+                {% trans "Invoices" %}:
+                {{ total_invoices|default:0 }}
+            </div>
         </div>
+
+
         <div class="col-md-3 col-6">
-            <div class="indicator">{% trans "Leaves" %}: {{ total_leaves|default:0 }}</div>
+            <div class="indicator">
+                {% trans "Leaves" %}:
+                {{ total_leaves|default:0 }}
+            </div>
         </div>
+
     </div>
+
+
 
     <!-- Charts -->
+
     <div class="row">
+
         <div class="col-md-6 col-12">
-            <div class="chart-container p-3 bg-white rounded shadow-sm">
-                <h2 class="section-title">{% trans "Monthly Sales Invoices" %}
-</h2>
+
+            <div class="chart-container p-4">
+
+                <h2 class="section-title">
+                    {% trans "Monthly Sales Invoices" %}
+                </h2>
+
                 <canvas id="salesChart"></canvas>
+
             </div>
+
         </div>
+
+
+
         <div class="col-md-6 col-12">
-            <div class="chart-container p-3 bg-white rounded shadow-sm">
-                <h2 class="section-title">{% trans "Monthly Purchase Invoices" %}
-</h2>
+
+            <div class="chart-container p-4">
+
+                <h2 class="section-title">
+                    {% trans "Monthly Purchase Invoices" %}
+                </h2>
+
                 <canvas id="purchaseChart"></canvas>
+
             </div>
+
         </div>
+
     </div>
+
+
+
 
     <!-- Daily Attendance Table -->
+
     <div class="row mt-4">
+
         <div class="col-12">
-            <h2 class="section-title">{% trans "Daily Attendance Table" %}</h2>
-            <div class="card p-3 bg-white rounded shadow-sm table-responsive">
+
+
+            <h2 class="section-title">
+                {% trans "Daily Attendance Table" %}
+            </h2>
+
+
+
+            <div class="card p-3 table-responsive">
+
+
                 <table class="table table-striped table-hover">
+
+
                     <thead>
+
                         <tr>
+
                             <th>#</th>
-                            <th>{% trans "Employee Number" %}
-</th>
-                            <th>{% trans "Employee" %}
-</th>
-                            <th>{% trans "Date" %}
-</th>
-                            <th>{% trans "Status" %}
-</th>
-                            <th>{% trans "Notes" %}</th>
+
+                            <th>
+                                {% trans "Employee Number" %}
+                            </th>
+
+                            <th>
+                                {% trans "Employee" %}
+                            </th>
+
+                            <th>
+                                {% trans "Date" %}
+                            </th>
+
+                            <th>
+                                {% trans "Status" %}
+                            </th>
+
+                            <th>
+                                {% trans "Check In" %}
+                            </th>
+
+                            <th>
+                                {% trans "Check Out" %}
+                            </th>
+
+                            <th>
+                                {% trans "Notes" %}
+                            </th>
                         </tr>
+
                     </thead>
+
+
+
                     <tbody>
-                        {% for att in attendance_data %}
+
+
+                    {% for att in attendance_data %}
+
+
                         <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ att.employee_number }}</td>
+
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+
+                            <td>
+                                {{ att.employee_number }}
+                            </td>
+
+
+
                             {% get_current_language as LANGUAGE_CODE %}
 
-<td>
-    {% if LANGUAGE_CODE == "ar" %}
-        {{ att.employee.first_name_ar }} {{ att.employee.last_name_ar }}
-    {% else %}
-        {{ att.employee.first_name_en }} {{ att.employee.last_name_en }}
-    {% endif %}
-</td>
-                            <td>{{ att.date }}</td>
-<td>
-    {% if att.status == "absent" or att.status == "Absent" or att.status == "غياب" %}
-        {% trans "Absent" %}
-    {% elif att.status == "present" or att.status == "Present" or att.status == "حضور" %}
-        {% trans "Present" %}
-    {% else %}
-        {{ att.status }}
-    {% endif %}
-</td>
-                            <td>{{ att.notes|default:"-" }}</td>
+
+                            <td>
+
+                                {% if LANGUAGE_CODE == "ar" %}
+
+                                    {{ att.employee.first_name_ar }}
+                                    {{ att.employee.last_name_ar }}
+
+                                {% else %}
+
+                                    {{ att.employee.first_name_en }}
+                                    {{ att.employee.last_name_en }}
+
+                                {% endif %}
+
+                            </td>
+
+
+
+
+                            <td>
+                                {{ att.date }}
+                            </td>
+
+
+
+
+                            <td>
+
+                                {% if att.status == "absent" or att.status == "Absent" or att.status == "غياب" %}
+
+                                    {% trans "Absent" %}
+
+
+                                {% elif att.status == "present" or att.status == "Present" or att.status == "حضور" %}
+
+                                    {% trans "Present" %}
+
+
+                                {% else %}
+
+                                    {{ att.status }}
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {% if att.check_in != "-" %}
+                                    {{ att.check_in|time:"g:i A" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+
+                            <td>
+                                {% if att.check_out != "-" %}
+                                    {{ att.check_out|time:"g:i A" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ att.notes|default:"-" }}
+                            </td>
+
                         </tr>
-                        {% empty %}
+
+
+                    {% empty %}
+
+
                         <tr>
-                            <td colspan="6">{% trans "No attendance data today" %}</td>
+
+                            <td colspan="8">
+
+                                {% trans "No attendance data today" %}
+
+                            </td>
+
                         </tr>
-                        {% endfor %}
+
+
+                    {% endfor %}
+
+
+
                     </tbody>
+
+
                 </table>
+
+
             </div>
+
+
         </div>
+
+
     </div>
+
+
+
+
 
     <!-- Top Products & Low Stock -->
+
+
     <div class="row mt-4">
+
+
+
         <!-- Top Products -->
+
+
         <div class="col-md-6 col-12">
-            <div class="card p-3 bg-white rounded shadow-sm table-responsive">
-                <h2 class="section-title">{% trans "Top Selling Products" %}</h2>
+
+
+            <div class="card p-3 table-responsive">
+
+
+                <h2 class="section-title">
+
+                    {% trans "Top Selling Products" %}
+
+                </h2>
+
+
+
                 <table class="table table-striped table-hover">
+
+
                     <thead>
+
                         <tr>
+
                             <th>#</th>
-                            <th>{% trans "Product Name" %}
-</th>
-                            <th>{% trans "Sales" %}
-</th>
+
+                            <th>
+                                {% trans "Product Name" %}
+                            </th>
+
+                            <th>
+                                {% trans "Sales" %}
+                            </th>
+
+
                         </tr>
+
+
                     </thead>
+
+
+
                     <tbody>
-                        {% for p in top_products %}
+
+
+                    {% for p in top_products %}
+
+
                         <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ p.name }}</td>
-                            <td>{{ p.total_sold|default:0 }}</td>
+
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <td>
+                                {{ p.name }}
+                            </td>
+
+
+                            <td>
+                                {{ p.total_sold|default:0 }}
+                            </td>
+
+
                         </tr>
-                        {% empty %}
+
+
+                    {% empty %}
+
+
                         <tr>
-                            <td colspan="3">{% trans "No sales data" %}
-</td>
+
+                            <td colspan="3">
+
+                                {% trans "No sales data" %}
+
+                            </td>
+
                         </tr>
-                        {% endfor %}
+
+
+                    {% endfor %}
+
+
                     </tbody>
+
+
                 </table>
+
+
             </div>
+
+
         </div>
+
+
+
+
 
         <!-- Low Stock -->
+
+
         <div class="col-md-6 col-12">
-            <div class="card p-3 bg-white rounded shadow-sm table-responsive">
-                <h2 class="section-title">{% trans "Low Stock" %}</h2>
+
+
+            <div class="card p-3 table-responsive">
+
+
+                <h2 class="section-title">
+
+                    {% trans "Low Stock" %}
+
+                </h2>
+
+
+
                 <table class="table table-striped table-hover">
+
+
                     <thead>
+
                         <tr>
+
                             <th>#</th>
-                            <th>{% trans "Product Name" %}</th>
-                            <th>{% trans "Stock" %}</th>
+
+                            <th>
+                                {% trans "Product Name" %}
+                            </th>
+
+                            <th>
+                                {% trans "Stock" %}
+                            </th>
+
+
                         </tr>
+
+
                     </thead>
+
+
+
                     <tbody>
-                        {% for p in low_stock_products %}
+
+
+                    {% for p in low_stock_products %}
+
+
                         <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ p.name }}</td>
-                            <td>{{ p.current_stock|default:0 }}</td>
+
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <td>
+                                {{ p.name }}
+                            </td>
+
+
+                            <td>
+                                {{ p.current_stock|default:0 }}
+                            </td>
+
+
                         </tr>
-                        {% empty %}
+
+
+                    {% empty %}
+
+
                         <tr>
-                            <td colspan="3">{% trans "No stock data" %}</td>
+
+                            <td colspan="3">
+
+                                {% trans "No stock data" %}
+
+                            </td>
+
+
                         </tr>
-                        {% endfor %}
+
+
+                    {% endfor %}
+
+
                     </tbody>
+
+
                 </table>
+
+
             </div>
+
+
         </div>
+
+
+
     </div>
 
+
 </div>
+
+
 {% endblock %}
-
 {% block extra_js %}
+
 <script>
-    const salesLabels = [{% for inv in top_sales %}"{{ inv.date_invoice|date:'d-m' }}",{% endfor %}];
-    const salesData = [{% for inv in top_sales %}{{ inv.total_after_tax|default:0 }},{% endfor %}];
-    const salesPaidData = [{% for inv in top_sales %}{{ inv.paid_amount|default:0 }},{% endfor %}];
 
-    new Chart(document.getElementById('salesChart'), {
-        type: 'bar',
-        data: {
-            labels: salesLabels,
-            datasets: [
-                { label: "{% trans 'Total Invoice' %}", data: salesData, backgroundColor: '#007bff' },
-                { label: "{% trans 'Payments' %}", data: salesPaidData, backgroundColor: '#28a745' }
-            ]
-        }
-    });
 
-    const purchaseLabels = [{% for inv in top_purchases %}"{{ inv.date_invoice|date:'d-m' }}",{% endfor %}];
-    const purchaseData = [{% for inv in top_purchases %}{{ inv.total_after_tax|default:0 }},{% endfor %}];
-    const purchasePaidData = [{% for inv in top_purchases %}{{ inv.paid_amount|default:0 }},{% endfor %}];
+const salesLabels = [
+{% for inv in top_sales %}
+"{{ inv.date_invoice|date:'d-m' }}",
+{% endfor %}
+];
 
-    new Chart(document.getElementById('purchaseChart'), {
-        type: 'bar',
-        data: {
-            labels: purchaseLabels,
-            datasets: [
-                { label: "{% trans 'Total Invoice' %}", data: purchaseData, backgroundColor: '#007bff' },
-                { label: "{% trans 'Payments' %}", data: purchasePaidData, backgroundColor: '#ffc107' }
-            ]
-        }
-    });
+
+const salesData = [
+{% for inv in top_sales %}
+{{ inv.total_after_tax|default:0 }},
+{% endfor %}
+];
+
+
+const salesPaidData = [
+{% for inv in top_sales %}
+{{ inv.paid_amount|default:0 }},
+{% endfor %}
+];
+
+
+
+new Chart(document.getElementById('salesChart'), {
+
+    type:'bar',
+
+    data:{
+
+        labels:salesLabels,
+
+
+        datasets:[
+
+            {
+
+                label:"{% trans 'Total Invoice' %}",
+
+                data:salesData,
+
+                backgroundColor:'rgba(52,58,64,0.85)',
+
+                borderRadius:10
+
+            },
+
+
+            {
+
+                label:"{% trans 'Payments' %}",
+
+                data:salesPaidData,
+
+                backgroundColor:'rgba(40,167,69,0.85)',
+
+                borderRadius:10
+
+            }
+
+        ]
+
+    }
+
+});
+
+
+
+
+
+
+const purchaseLabels = [
+{% for inv in top_purchases %}
+"{{ inv.date_invoice|date:'d-m' }}",
+{% endfor %}
+];
+
+
+
+const purchaseData = [
+{% for inv in top_purchases %}
+{{ inv.total_after_tax|default:0 }},
+{% endfor %}
+];
+
+
+
+const purchasePaidData = [
+{% for inv in top_purchases %}
+{{ inv.paid_amount|default:0 }},
+{% endfor %}
+];
+
+
+
+
+
+new Chart(document.getElementById('purchaseChart'), {
+
+
+    type:'bar',
+
+
+    data:{
+
+
+        labels:purchaseLabels,
+
+
+        datasets:[
+
+
+            {
+
+
+                label:"{% trans 'Total Invoice' %}",
+
+
+                data:purchaseData,
+
+
+                backgroundColor:'rgba(52,58,64,0.85)',
+
+
+                borderRadius:10
+
+
+            },
+
+
+
+            {
+
+
+                label:"{% trans 'Payments' %}",
+
+
+                data:purchasePaidData,
+
+
+                backgroundColor:'rgba(255,193,7,0.85)',
+
+
+                borderRadius:10
+
+
+            }
+
+
+        ]
+
+
+    }
+
+
+});
+
+
+
 </script>
+
+
 {% endblock %}

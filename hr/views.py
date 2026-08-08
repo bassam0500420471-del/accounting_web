@@ -11,14 +11,7 @@ from django.utils.formats import date_format
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required 
 from django.http import HttpResponse
-from decimal import Decimal
-from django.shortcuts import redirect, render
-
-
-from .models import WorkLocation
-from .forms import WorkLocationForm
-
-
+from .models import Attendance
 # ✅ استيراد الـ Decorator المخصص لجدولك بدلاً من الافتراضي
 from .decorators import hr_permission_required
 
@@ -28,9 +21,22 @@ import calendar
 
 from accounts.models import Company
 from .models import (
-    Employee, Shift, EmployeeSchedule, Attendance, Leave, Department, Branch,
-    Evaluation, EvaluationCriteria, EvaluationTarget, EvaluationScore, EvaluationType,
-    Payroll, HRPermission
+    Employee,
+    Shift,
+    EmployeeSchedule,
+    Attendance,
+    AttendanceLog,
+    Leave,
+    Department,
+    Branch,
+    WorkLocation,
+    Evaluation,
+    EvaluationCriteria,
+    EvaluationTarget,
+    EvaluationScore,
+    EvaluationType,
+    Payroll,
+    HRPermission,
 )
 from .forms import (
     EmployeeForm,
@@ -134,12 +140,7 @@ def _get_logged_employee(request, company):
         return None
     except Employee.DoesNotExist:
         return None
-def _is_hr_admin(request):
 
-    if request.user.is_superuser:
-        return True
-
-    return request.user.is_staff
 
 def _create_or_update_employee_user(employee, use_user_account, username="", password=""):
     """
@@ -253,7 +254,82 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
             "use_user_account",
         ]
     )
+
     return user, created_user, False
+
+    # ==========================
+    # لو لا يوجد user مرتبط، نبحث باسم المستخدم
+    # ==========================
+    existing_by_username = User.objects.filter(username__iexact=username).first()
+    if existing_by_username:
+        linked_emp = getattr(existing_by_username, "employee", None)
+        if linked_emp and linked_emp.id != employee.id:
+            raise ValueError("❌ اسم المستخدم هذا مربوط بموظف آخر.")
+
+        existing_by_username.email = email
+        existing_by_username.first_name = employee.first_name_en or employee.first_name_ar or ""
+        existing_by_username.last_name = employee.last_name_en or employee.last_name_ar or ""
+        existing_by_username.is_active = True
+
+        if password:
+            existing_by_username.set_password(password)
+
+        existing_by_username.save()
+
+
+        employee.user = existing_by_username
+        employee.use_user_account = True
+        employee.save(update_fields=["user", "use_user_account"])
+
+        return existing_by_username, False, False
+
+    else:
+        # ==========================
+        # إنشاء مستخدم جديد
+        # ==========================
+        if User.objects.filter(username__iexact=username).exists():
+            raise ValueError(
+                "❌ اسم المستخدم مستخدم بالفعل."
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=employee.first_name_en or employee.first_name_ar or "",
+            last_name=employee.last_name_en or employee.last_name_ar or ""
+        )
+
+        # ==========================
+        # ربط المستخدم بالشركة والفرع
+        # ==========================
+    print("========== PROFILE LINK ==========")
+    print("EMPLOYEE COMPANY:", employee.company)
+    print("USER:", user.username)
+
+    profile = user.profile
+    profile.company = employee.company
+    profile.branch = employee.branch
+    profile.role = "staff"
+    profile.save()
+
+    print("PROFILE COMPANY AFTER SAVE:", profile.company)
+    print("PROFILE BRANCH AFTER SAVE:", profile.branch)
+
+    print("PROFILE COMPANY AFTER SAVE:", user.profile.company)
+
+    employee.user = user
+    employee.use_user_account = True
+    employee.save(
+        update_fields=[
+            "user",
+            "use_user_account",
+        ]
+    )
+
+    return user, created_user, False
+	
+# ==========================
 # ==========================
 # عرض قائمة الموظفين
 # ==========================
@@ -434,31 +510,18 @@ def edit_employee(request, emp_id):
 @login_required
 @hr_permission_required("employees_delete")
 def delete_employee(request, emp_id):
-
     company = _company_required(request)
-
     if not company:
         return redirect("accounts:login")
 
-    employee = get_object_or_404(
-        Employee,
-        company=company,
-        id=emp_id
-    )
+    employee = get_object_or_404(Employee, company=company, id=emp_id)
 
     if getattr(employee, "user_id", None):
-        user = employee.user
-        user.is_active = False
-        user.save()
+        User.objects.filter(id=employee.user_id).delete()
 
     employee.delete()
-
-    messages.success(
-        request,
-        "✅ تم حذف الموظف بنجاح."
-    )
-
     return redirect("hr:employee_list")
+
 
 # ==========================
 # إدارة الشفتات
@@ -531,28 +594,11 @@ def delete_shift(request, shift_id):
     shift.delete()
     return redirect("hr:shifts")
 
-@login_required
-@hr_permission_required("attendance_view")
+from django.shortcuts import render
+
 def shifts_view(request):
-    company = _company_required(request)
-    if not company:
-        return redirect("accounts:login")
-
-    _ensure_default_shifts(company)
-
-    shifts = (
-        Shift.objects
-        .filter(company=company)
-        .order_by("shift_order", "id")
-    )
-
-    return render(
-        request,
-        "hr/shifts_list.html",
-        {
-            "shifts": shifts
-        }
-    )
+    shifts = Shift.objects.all()
+    return render(request, "hr/shifts_list.html", {"shifts": shifts})
 # ==========================
 # جدول الموظفين
 # ==========================
@@ -709,36 +755,9 @@ def leaves_list(request):
     if not company:
         return redirect("accounts:login")
 
-    if _is_hr_admin(request):
+    leaves = Leave.objects.filter(company=company).select_related("employee").order_by("-created_at")
+    return render(request, "hr/leaves_list.html", {"leaves": leaves})
 
-        leaves = (
-            Leave.objects
-            .filter(company=company)
-            .select_related("employee")
-            .order_by("-created_at")
-        )
-
-    else:
-
-        employee = _get_logged_employee(request, company)
-
-        leaves = (
-            Leave.objects
-            .filter(
-                company=company,
-                employee=employee,
-            )
-            .select_related("employee")
-            .order_by("-created_at")
-        )
-
-    return render(
-        request,
-        "hr/leaves_list.html",
-        {
-            "leaves": leaves,
-        },
-    )
 
 @login_required
 @hr_permission_required("leaves_add")
@@ -882,183 +901,147 @@ def delete_department(request, dept_id):
     department = get_object_or_404(Department, company=company, id=dept_id)
     department.delete()
     return redirect("hr:departments")
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-
 
 # ==========================
-# إدارة مواقع العمل
+# مواقع العمل
 # ==========================
 
 @login_required
-@hr_permission_required("worklocations_view")
+@hr_permission_required("attendance_view")
 def work_locations_list(request):
-
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    print("COMPANY ID:", company.id)
+    work_locations = WorkLocation.objects.filter(
+        company=company
+    ).order_by("name")
 
-    print(
-        "ALL LOCATIONS:",
-        list(
-            WorkLocation.objects.values(
-                "id",
-                "name",
-                "company_id"
-            )
-        )
-    )
-
-    print(
-        "FILTER LOCATIONS:",
-        list(
-            WorkLocation.objects.filter(company=company).values(
-                "id",
-                "name",
-                "company_id"
-            )
-        )
-    )
-
-    locations = (
-        WorkLocation.objects
-        .filter(company=company)
-        .order_by("name")
-    )
     return render(
         request,
-        "hr/work_locations_list.html",
+        "hr/work_locations.html",
         {
-            "locations": locations,
-        },
+            "work_locations": work_locations,
+        }
     )
 
 
 @login_required
-@hr_permission_required("worklocations_add")
+@hr_permission_required("attendance_edit")
 def add_work_location(request):
-
     company = _company_required(request)
 
     if not company:
         return redirect("accounts:login")
 
     if request.method == "POST":
+        name = (request.POST.get("name") or "").strip()
+        address = (request.POST.get("address") or "").strip()
+        latitude = request.POST.get("latitude") or None
+        longitude = request.POST.get("longitude") or None
+        allowed_radius = request.POST.get("allowed_radius") or 100
 
-        form = WorkLocationForm(request.POST)
+        if not name:
+            messages.error(request, "❌ اسم موقع العمل مطلوب.")
+            return render(request, "hr/add_work_location.html")
 
-        if form.is_valid():
+        try:
+            allowed_radius = int(allowed_radius)
+        except (TypeError, ValueError):
+            allowed_radius = 100
 
-            location = form.save(commit=False)
-            location.company = company
-            location.save()
+        WorkLocation.objects.create(
+            company=company,
+            name=name,
+            address=address,
+            latitude=latitude,
+            longitude=longitude,
+            allowed_radius=allowed_radius,
+        )
 
-            messages.success(
-                request,
-                "✅ تمت إضافة موقع العمل بنجاح."
-            )
+        messages.success(request, "✅ تم إضافة موقع العمل بنجاح.")
+        return redirect("hr:work_locations")
 
-            return redirect("hr:work_locations")
-
-        else:
-
-            messages.error(
-                request,
-                "❌ البيانات غير صالحة، يرجى مراجعة الأخطاء."
-            )
-
-    else:
-
-        form = WorkLocationForm()
-
-
-    return render(
-        request,
-        "hr/work_location_form.html",
-        {
-            "form": form,
-        },
-    )
-
+    return render(request, "hr/add_work_location.html")
 @login_required
-@hr_permission_required("worklocations_edit")
+@hr_permission_required("attendance_edit")
 def edit_work_location(request, location_id):
-
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-
     location = get_object_or_404(
         WorkLocation,
-        id=location_id,
-        company=company
+        company=company,
+        id=location_id
     )
 
-
     if request.method == "POST":
+        name = (request.POST.get("name") or "").strip()
+        address = (request.POST.get("address") or "").strip()
+        latitude = request.POST.get("latitude") or None
+        longitude = request.POST.get("longitude") or None
+        allowed_radius = request.POST.get("allowed_radius") or 100
 
-        form = WorkLocationForm(
-            request.POST,
-            instance=location
-        )
+        if not name:
+            messages.error(request, "❌ اسم موقع العمل مطلوب.")
 
-        if form.is_valid():
-
-            form.save()
-
-            messages.success(
+            return render(
                 request,
-                "✅ تم تعديل موقع العمل."
+                "hr/add_work_location.html",
+                {
+                    "location": location,
+                    "edit_mode": True,
+                }
             )
 
-            return redirect("hr:work_locations")
+        try:
+            allowed_radius = int(allowed_radius)
+        except (TypeError, ValueError):
+            allowed_radius = 100
 
+        location.name = name
+        location.address = address
+        location.latitude = latitude
+        location.longitude = longitude
+        location.allowed_radius = allowed_radius
 
-    else:
+        location.save()
 
-        form = WorkLocationForm(
-            instance=location
+        messages.success(
+            request,
+            "✅ تم تحديث موقع العمل بنجاح."
         )
 
+        return redirect("hr:work_locations")
 
     return render(
         request,
-        "hr/work_location_form.html",
+        "hr/add_work_location.html",
         {
-            "form": form,
-            "title": "تعديل موقع العمل",
-            "work_location": location,
-        },
+            "location": location,
+            "edit_mode": True,
+        }
     )
-
-
-
 @login_required
-@hr_permission_required("worklocations_delete")
+@hr_permission_required("attendance_edit")
 def delete_work_location(request, location_id):
-
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-
     location = get_object_or_404(
         WorkLocation,
-        id=location_id,
-        company=company
+        company=company,
+        id=location_id
     )
 
     location.delete()
 
-
-    messages.success(
-        request,
-        "✅ تم حذف موقع العمل."
-    )
-
+    messages.success(request, "✅ تم حذف موقع العمل بنجاح.")
 
     return redirect("hr:work_locations")
 
@@ -1068,200 +1051,54 @@ def delete_work_location(request, location_id):
 @login_required
 @hr_permission_required("attendance_view")
 def attendance_page(request):
-
     company = _company_required(request)
-
     if not company:
         return redirect("accounts:login")
 
-
     today = timezone.now().date()
-
-
-    if _is_hr_admin(request):
-
-        all_employees = Employee.objects.filter(
-            company=company,
-            active=True
-        ).order_by("employee_number")
-
-        employee = None
-
-
-    else:
-
-        employee = _get_logged_employee(request, company)
-
-        if not employee:
-            return render(
-                request,
-                "hr/attendance_page.html",
-                {
-                    "all_employees": Employee.objects.none(),
-                    "employees": Employee.objects.none(),
-                    "attendance_map": {},
-                }
-            )
-
-
-        all_employees = Employee.objects.filter(
-            id=employee.id
-        )
-
-
-
-    selected_employee = request.GET.get(
-        "employee",
-        "all"
-    )
-
-
-    start_date_str = request.GET.get(
-        "start_date",
-        ""
-    )
-
-    end_date_str = request.GET.get(
-        "end_date",
-        ""
-    )
-
-
+    all_employees = Employee.objects.filter(company=company, active=True).order_by("employee_number")
+    selected_employee = request.GET.get("employee", "all")
+    start_date_str = request.GET.get("start_date", "")
+    end_date_str = request.GET.get("end_date", "")
 
     try:
-
-        start_date = (
-            datetime.strptime(
-                start_date_str,
-                "%Y-%m-%d"
-            ).date()
-            if start_date_str
-            else today.replace(day=1)
-        )
-
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else today.replace(day=1)
     except ValueError:
-
         start_date = today.replace(day=1)
 
-
-
     try:
-
-        end_date = (
-            datetime.strptime(
-                end_date_str,
-                "%Y-%m-%d"
-            ).date()
-            if end_date_str
-            else today
-        )
-
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else today
     except ValueError:
-
         end_date = today
 
-
-
     employees = all_employees
-
-
-
-    # فلترة الموظف في القائمة
-
     if selected_employee != "all":
-
         try:
-
-            employees = employees.filter(
-                id=int(selected_employee)
-            )
-
+            employees = employees.filter(id=int(selected_employee))
         except ValueError:
-
             selected_employee = "all"
 
-
-
-    # جلب سجلات الحضور
-
-    attendances = Attendance.objects.filter(
-        company=company,
-        date__range=(
-            start_date,
-            end_date
-        )
-    )
-
-
-
-    # الموظف العادي يرى حضوره فقط
-
-    if not _is_hr_admin(request):
-
-        attendances = attendances.filter(
-            employee=employee
-        )
-
-
-
-    # مدير الموارد يستطيع اختيار موظف
-
-    else:
-
-        if selected_employee != "all":
-
-            attendances = attendances.filter(
-                employee_id=selected_employee
-            )
-
-
+    attendances = Attendance.objects.filter(company=company, date__range=(start_date, end_date))
+    if selected_employee != "all":
+        attendances = attendances.filter(employee_id=selected_employee)
 
     attendance_map = {}
-
-
     for att in attendances:
-
-        attendance_map.setdefault(
-            att.employee_id,
-            {}
-        )
-
+        attendance_map.setdefault(att.employee_id, {})
         attendance_map[att.employee_id][att.date] = att
 
-
-
     context = {
-
         "all_employees": all_employees,
-
         "employees": employees,
-
         "attendance_map": attendance_map,
-
         "today": today,
-
         "start_date": start_date,
-
         "end_date": end_date,
-
         "selected_employee": selected_employee,
-
-        "start_date_str": start_date.strftime(
-            "%Y-%m-%d"
-        ),
-
-        "end_date_str": end_date.strftime(
-            "%Y-%m-%d"
-        ),
-
+        "start_date_str": start_date.strftime("%Y-%m-%d"),
+        "end_date_str": end_date.strftime("%Y-%m-%d"),
     }
-
-
-    return render(
-        request,
-        "hr/attendance_page.html",
-        context
-    )
+    return render(request, "hr/attendance_page.html", context)
 
 
 @login_required
@@ -1272,7 +1109,6 @@ def attendance_check_in_ajax(request, employee_id):
         return JsonResponse({"success": False, "error": "لا توجد شركة للمستخدم"})
 
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
-
         today = timezone.now().date()
         now = timezone.now()
 
@@ -1284,352 +1120,789 @@ def attendance_check_in_ajax(request, employee_id):
             date=today
         )
 
-        # يسجل أول حضور فقط
         if not attendance.check_in:
             attendance.check_in = now
+            schedule = (
+                EmployeeSchedule.objects
+                .filter(company=company, employee=employee, date=today)
+                .select_related("shift")
+                .first()
+            )
+            if schedule and schedule.shift:
+                attendance.shift = schedule.shift
+                shift_start = datetime.combine(today, schedule.shift.start_time)
+                if now > timezone.make_aware(shift_start):
+                    diff = now - timezone.make_aware(shift_start)
+                    attendance.late_minutes = int(diff.total_seconds() // 60)
+
             attendance.save()
 
         return JsonResponse({
             "success": True,
-            "check_in": attendance.check_in.strftime("%H:%M")
+            "check_in": attendance.check_in.strftime("%H:%M") if attendance.check_in else "",
+            "late_minutes": attendance.late_minutes
         })
 
-    return JsonResponse({
-        "success": False,
-        "error": "طلب غير صالح"
-    })
+    return JsonResponse({"success": False, "error": "طلب غير صالح"})
+
+
 @login_required
 @hr_permission_required("change_attendance")
 def attendance_check_out_ajax(request, attendance_id):
-
     company = _company_required(request)
-
     if not company:
-        return JsonResponse({
-            "success": False,
-            "error": "لا توجد شركة للمستخدم"
-        })
-
+        return JsonResponse({"success": False, "error": "لا توجد شركة للمستخدم"})
 
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
-
-        attendance = get_object_or_404(
-            Attendance,
-            company=company,
-            id=attendance_id
-        )
-
-        attendance.check_out = timezone.now()
-        attendance.save()
-
+        attendance = get_object_or_404(Attendance, company=company, id=attendance_id)
+        if not attendance.check_out:
+            attendance.check_out = timezone.now()
+            attendance.save()
 
         return JsonResponse({
             "success": True,
-            "check_out": attendance.check_out.strftime("%H:%M")
+            "check_out": attendance.check_out.strftime("%H:%M") if attendance.check_out else ""
         })
 
+    return JsonResponse({"success": False, "error": "طلب غير صالح"})
 
-    return JsonResponse({
-        "success": False,
-        "error": "طلب غير صالح"
-    })
-# ==========================
-# صفحة تسجيل الدخول والخروج السريع
-# ==========================
-@hr_permission_required("change_attendance")
+
+
+@login_required
+@hr_permission_required("attendance_check")
 def attendance_check_page(request):
+    """
+    صفحة الحضور والانصراف
 
-    employee = None
-    last_attendance = None
+    تعتمد على:
+    Attendance     = سجل اليوم
+    AttendanceLog  = عمليات الحضور والانصراف
 
-    if hasattr(request.user, "employee"):
-        employee = request.user.employee
+    تدعم:
+    - حضور وانصراف متعدد في نفس اليوم
+    - GPS
+    - latitude / longitude
+    - accuracy
+    - الشفت
+    - موقع العمل
+    """
 
-    if employee:
-        last_attendance = (
-            Attendance.objects
-            .filter(employee=employee)
-            .order_by("-date", "-check_in")
-            .first()
-        )
+    company = _company_required(request)
 
-    if employee and employee.company:
-        company = employee.company
-    else:
-        company = Company.objects.first()
+    if not company:
+        return redirect("accounts:login")
 
-    today = timezone.now().date()
+    today = timezone.localdate()
     now = timezone.now()
-    message = ""
-    next_action = _("Check In")
 
-    employee = _get_logged_employee(request, company)
+    # ==========================================================
+    # الموظف الحالي
+    # ==========================================================
+
+    employee = (
+        Employee.objects
+        .filter(
+            user=request.user,
+            company=company,
+        )
+        .select_related(
+            "department",
+            "branch",
+            "work_location",
+        )
+        .first()
+    )
 
     if not employee:
-        return render(request, "hr/attendance_check.html", {
-            "employee": None,
-            "company": company,
-            "attendance": None,
-            "message": "الموظف غير مرتبط بحساب المستخدم أو ليس من نفس الشركة.",
-            "next_action": next_action,
-            "last_attendance": None,
-        })
+        return render(
+            request,
+            "hr/attendance_check.html",
+            {
+                "employee": None,
+                "company": company,
+                "today_attendances": [],
+                "last_attendance": None,
+                "attendance": None,
+                "shift": None,
+                "work_location": None,
+                "message": (
+                    "الموظف غير مرتبط بحساب المستخدم "
+                    "أو ليس من نفس الشركة."
+                ),
+            },
+        )
 
-    attendance, created = Attendance.objects.get_or_create(
-        company=company,
-        employee=employee,
-        date=today
+    # ==========================================================
+    # شفت الموظف لهذا اليوم
+    # ==========================================================
+
+    schedule = (
+        EmployeeSchedule.objects
+        .filter(
+            company=company,
+            employee=employee,
+            date=today,
+        )
+        .select_related("shift")
+        .first()
     )
 
-    last_attendance = attendance
+    shift = schedule.shift if schedule else None
 
-    can_toggle = True
-    last_time = attendance.check_out if attendance.check_out else attendance.check_in
+    # ==========================================================
+    # موقع العمل
+    # ==========================================================
 
-    if last_time:
-        elapsed = (now - last_time).total_seconds()
-        if elapsed < 60:
-            can_toggle = False
-            message = _("Please wait before making a new record!")
+    work_location = employee.work_location
 
-    next_action = _("Check Out") if attendance.check_in and not attendance.check_out else _("Check In")
+    # ==========================================================
+    # سجل Attendance الخاص باليوم
+    #
+    # يوجد سجل واحد فقط لكل موظف في اليوم
+    # والعمليات الفعلية موجودة داخل AttendanceLog
+    # ==========================================================
 
-    if request.method == "POST" and can_toggle:
-
-        if not attendance.check_in:
-
-            attendance.check_in = now
-            message = "تم تسجيل الحضور بنجاح."
-
-        else:
-
-            attendance.check_out = now
-            message = "تم تحديث وقت الانصراف بنجاح."
-
-
-        attendance.save()
-        return redirect("hr:attendance_check_page")
-
-    return render(request, "hr/attendance_check.html", {
-        "employee": employee,
-        "company": company,
-        "attendance": attendance,
-        "message": message,
-        "next_action": next_action,
-        "last_attendance": attendance,
-    })
-@login_required
-@hr_permission_required("view_attendance")
-def attendance_report_page(request):
-
-    company = _company_required(request)
-
-    if not company:
-        return redirect("accounts:login")
-
-
-    today = timezone.now().date()
-
-    employee = None
-
-    if not _is_hr_admin(request):
-        employee = request.user.employee
-
-
-
-    all_employees = Employee.objects.filter(
-        company=company
+    attendance = (
+        Attendance.objects
+        .filter(
+            company=company,
+            employee=employee,
+            date=today,
+        )
+        .select_related(
+            "shift",
+            "work_location",
+        )
+        .first()
     )
 
+    # ==========================================================
+    # إنشاء Attendance لليوم إذا لم يكن موجودًا
+    #
+    # لا نسجل حضور هنا.
+    # فقط سجل اليوم.
+    # ==========================================================
 
-
-    selected_employee = request.GET.get("employee", "all")
-    start_date_str = request.GET.get("start_date", "")
-    end_date_str = request.GET.get("end_date", "")
-
-
-
-    try:
-        start_date = (
-            datetime.strptime(start_date_str, "%Y-%m-%d").date()
-            if start_date_str
-            else today.replace(day=1)
+    if not attendance:
+        attendance = Attendance.objects.create(
+            company=company,
+            employee=employee,
+            date=today,
+            shift=shift,
+            work_location=work_location,
+            status="present",
         )
 
-    except ValueError:
-        start_date = today.replace(day=1)
+    # ==========================================================
+    # جميع عمليات اليوم
+    # ==========================================================
 
-
-
-    try:
-        end_date = (
-            datetime.strptime(end_date_str, "%Y-%m-%d").date()
-            if end_date_str
-            else today
+    today_logs = list(
+        AttendanceLog.objects
+        .filter(
+            company=company,
+            employee=employee,
+            attendance=attendance,
         )
-
-    except ValueError:
-        end_date = today
-
-
-
-    employees = all_employees
-
-
-
-    # فلترة قائمة الموظفين
-    if selected_employee != "all":
-
-        try:
-            employees = employees.filter(
-                id=int(selected_employee)
-            )
-
-        except ValueError:
-            selected_employee = "all"
-
-
-
-    # جلب سجلات الحضور
-    attendances = Attendance.objects.filter(
-        company=company,
-        date__range=(start_date, end_date)
+        .order_by(
+            "timestamp",
+            "id",
+        )
     )
 
+    # ==========================================================
+    # تحديد آخر عملية
+    # ==========================================================
 
-
-    # الموظف العادي يرى سجله فقط
-    if not _is_hr_admin(request):
-
-        attendances = attendances.filter(
-            employee=employee
-        )
-
-
-
-    # مدير HR يستطيع اختيار موظف
-    elif selected_employee != "all":
-
-        attendances = attendances.filter(
-            employee_id=selected_employee
-        )
-
-
-
-    attendance_map = {}
-
-    for att in attendances:
-
-        attendance_map.setdefault(
-            att.employee_id,
-            {}
-        )
-
-        attendance_map[att.employee_id][att.date] = att
-
-
-
-    context = {
-
-        "all_employees": all_employees,
-
-        "employees": employees,
-
-        "attendance_map": attendance_map,
-
-        "today": today,
-
-        "start_date": start_date,
-
-        "end_date": end_date,
-
-        "selected_employee": selected_employee,
-
-        "start_date_str": start_date.strftime("%Y-%m-%d"),
-
-        "end_date_str": end_date.strftime("%Y-%m-%d"),
-
-    }
-
-
-
-    return render(
-        request,
-        "hr/attendance_page.html",
-        context
-    )
-# ==========================
-# الرواتب
-# ==========================
-@login_required
-@hr_permission_required("view_payroll")
-def payroll_list(request):
-
-    company = _company_required(request)
-
-    if not company:
-        return redirect("accounts:login")
-
-    payrolls = Payroll.objects.filter(
-        company=company
+    last_log = (
+        today_logs[-1]
+        if today_logs
+        else None
     )
 
-    if not _is_hr_admin(request):
+    # ==========================================================
+    # هل آخر عملية حضور؟
+    #
+    # إذا كانت آخر عملية check_in
+    # إذن يجب أن تكون العملية التالية check_out
+    # ==========================================================
 
-        employee = _get_logged_employee(request, company)
+    has_open_attendance = (
+        last_log is not None
+        and last_log.action == "check_in"
+    )
 
-        payrolls = payrolls.filter(
-            employee=employee
-        )
+    # ==========================================================
+    # العملية القادمة
+    # ==========================================================
 
-    payrolls = payrolls.order_by("-id")
+    if has_open_attendance:
+        next_action = "check_out"
+        next_action_label = "تسجيل الانصراف"
+    else:
+        next_action = "check_in"
+        next_action_label = "تسجيل الحضور"
 
-    return render(request, "hr/payroll_list.html", {
-        "payrolls": payrolls
-    })
-
-@login_required
-@hr_permission_required("add_payroll")
-@login_required
-def add_payroll(request):
-
-    company = _company_required(request)
-    if not company:
-        return redirect("accounts:login")
-
-    employees = Employee.objects.filter(company=company)
+    # ==========================================================
+    # POST
+    # ==========================================================
 
     if request.method == "POST":
 
-        payroll_date = request.POST.get("date")
+        action = request.POST.get(
+            "action",
+            "",
+        ).strip()
 
-        for employee in employees:
+        latitude_raw = request.POST.get(
+            "latitude",
+            "",
+        ).strip()
 
-            prefix = f"emp_{employee.id}_"
+        longitude_raw = request.POST.get(
+            "longitude",
+            "",
+        ).strip()
 
-            Payroll.objects.update_or_create(
-                employee=employee,
-                date=payroll_date,
-                defaults={
-                    "base_salary": Decimal(request.POST.get(prefix + "base_salary", "0") or "0"),
-                    "allowances": Decimal(request.POST.get(prefix + "allowances", "0") or "0"),
-                    "overtime": Decimal(request.POST.get(prefix + "overtime", "0") or "0"),
-                    "advance_deduction": Decimal(request.POST.get(prefix + "advance_deduction", "0") or "0"),
-                    "absence_deduction": Decimal(request.POST.get(prefix + "absence_deduction", "0") or "0"),
-                    "other_deductions": Decimal(request.POST.get(prefix + "other_deductions", "0") or "0"),
-                    "notes": request.POST.get(prefix + "notes", ""),
-                }
+        accuracy_raw = request.POST.get(
+            "accuracy",
+            "",
+        ).strip()
+
+        # ======================================================
+        # التحقق من العملية
+        # ======================================================
+
+        if action not in (
+            "check_in",
+            "check_out",
+        ):
+            messages.error(
+                request,
+                "عملية الحضور غير معروفة.",
             )
 
-        messages.success(request, "تم حفظ مسير الرواتب بنجاح.")
-        return redirect("hr:payrolls")
+            return redirect(
+                "hr:attendance_check"
+            )
+
+        # ======================================================
+        # التحقق من GPS
+        # ======================================================
+
+        if not latitude_raw or not longitude_raw:
+
+            messages.error(
+                request,
+                "📍 يجب السماح بتحديد الموقع قبل تسجيل الحضور أو الانصراف.",
+            )
+
+            return redirect(
+                "hr:attendance_check"
+            )
+
+        # ======================================================
+        # تحويل GPS
+        # ======================================================
+
+        try:
+
+            latitude = float(latitude_raw)
+            longitude = float(longitude_raw)
+
+            accuracy = (
+                float(accuracy_raw)
+                if accuracy_raw
+                else None
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            messages.error(
+                request,
+                "بيانات الموقع غير صحيحة.",
+            )
+
+            return redirect(
+                "hr:attendance_check"
+            )
+
+        # ======================================================
+        # التحقق من الإحداثيات
+        # ======================================================
+
+        if not -90 <= latitude <= 90:
+
+            messages.error(
+                request,
+                "خط العرض غير صحيح.",
+            )
+
+            return redirect(
+                "hr:attendance_check"
+            )
+
+        if not -180 <= longitude <= 180:
+
+            messages.error(
+                request,
+                "خط الطول غير صحيح.",
+            )
+
+            return redirect(
+                "hr:attendance_check"
+            )
+
+        # ======================================================
+        # CHECK IN
+        # ======================================================
+
+        if action == "check_in":
+
+            # ----------------------------------------------
+            # إعادة قراءة آخر عملية من قاعدة البيانات
+            # ----------------------------------------------
+
+            last_log = (
+                AttendanceLog.objects
+                .filter(
+                    company=company,
+                    employee=employee,
+                    attendance=attendance,
+                )
+                .order_by(
+                    "-timestamp",
+                    "-id",
+                )
+                .first()
+            )
+
+            # ----------------------------------------------
+            # إذا آخر عملية حضور
+            # فهذا يعني أن هناك حضور مفتوح
+            # ----------------------------------------------
+
+            if last_log and last_log.action == "check_in":
+
+                messages.warning(
+                    request,
+                    "يوجد حضور مفتوح بالفعل. يجب تسجيل الانصراف أولاً.",
+                )
+
+                return redirect(
+                    "hr:attendance_check"
+                )
+
+            # ----------------------------------------------
+            # إنشاء عملية الحضور
+            # ----------------------------------------------
+
+            AttendanceLog.objects.create(
+                company=company,
+                attendance=attendance,
+                employee=employee,
+                action="check_in",
+                timestamp=now,
+                latitude=latitude,
+                longitude=longitude,
+                work_location=work_location,
+                location_verified=True,
+            )
+
+            # ----------------------------------------------
+            # تحديث Attendance
+            # ----------------------------------------------
+
+            attendance.shift = shift
+            attendance.work_location = work_location
+            attendance.status = "present"
+
+            attendance.save(
+                update_fields=[
+                    "shift",
+                    "work_location",
+                    "status",
+                    "updated_at",
+                ]
+            )
+
+            messages.success(
+                request,
+                "✅ تم تسجيل الحضور بنجاح. يمكنك الآن تسجيل الانصراف.",
+            )
+
+            return redirect(
+                "hr:attendance_check"
+            )
+
+        # ======================================================
+        # CHECK OUT
+        # ======================================================
+
+        if action == "check_out":
+
+            # ----------------------------------------------
+            # آخر عملية
+            # ----------------------------------------------
+
+            last_log = (
+                AttendanceLog.objects
+                .filter(
+                    company=company,
+                    employee=employee,
+                    attendance=attendance,
+                )
+                .order_by(
+                    "-timestamp",
+                    "-id",
+                )
+                .first()
+            )
+
+            # ----------------------------------------------
+            # لا يوجد حضور مفتوح
+            # ----------------------------------------------
+
+            if not last_log or last_log.action != "check_in":
+
+                messages.warning(
+                    request,
+                    "لا يوجد حضور مفتوح لتسجيل الانصراف.",
+                )
+
+                return redirect(
+                    "hr:attendance_check"
+                )
+
+            # ----------------------------------------------
+            # إنشاء عملية الانصراف
+            # ----------------------------------------------
+
+            checkout_log = AttendanceLog.objects.create(
+                company=company,
+                attendance=attendance,
+                employee=employee,
+                action="check_out",
+                timestamp=now,
+                latitude=latitude,
+                longitude=longitude,
+                work_location=work_location,
+                location_verified=True,
+            )
+
+            # ----------------------------------------------
+            # حساب مدة الفترة الحالية
+            # ----------------------------------------------
+
+            worked_seconds = (
+                checkout_log.timestamp - last_log.timestamp
+            ).total_seconds()
+
+            worked_minutes = max(
+                0,
+                int(worked_seconds // 60)
+            )
+
+            # ----------------------------------------------
+            # إضافة مدة الفترة إلى إجمالي اليوم
+            # ----------------------------------------------
+
+            attendance.worked_minutes = (
+                attendance.worked_minutes
+                + worked_minutes
+            )
+
+            attendance.status = "completed"
+
+            attendance.save(
+                update_fields=[
+                    "worked_minutes",
+                    "status",
+                    "updated_at",
+                ]
+            )
+
+            messages.success(
+                request,
+                "✅ تم تسجيل الانصراف بنجاح.",
+            )
+
+            return redirect(
+                "hr:attendance_check"
+            )
+
+    # ==========================================================
+    # تجهيز بيانات القالب
+    # ==========================================================
+
+    # نحتاج last_attendance حتى يعمل القالب الحالي
+    # لذلك نستخدم Attendance نفسه.
+    last_attendance = attendance
+
+    # ==========================================================
+    # GET
+    # ==========================================================
 
     return render(
         request,
-        "hr/add_payroll.html",
+        "hr/attendance_check.html",
         {
+            "employee": employee,
+            "company": company,
+
+            # سجل اليوم
+            "today_attendances": [attendance],
+
+            # سجل اليوم الرئيسي
+            "last_attendance": last_attendance,
+
+            # Attendance المفتوح
+            "attendance": attendance
+            if has_open_attendance
+            else None,
+
+            # العملية التالية
+            "next_action": next_action,
+            "next_action_label": next_action_label,
+
+            # آخر عملية
+            "last_log": last_log,
+
+            # جميع عمليات اليوم
+            "today_logs": today_logs,
+
+            # الشفت
+            "shift": shift,
+
+            # موقع العمل
+            "work_location": work_location,
+
+            # التاريخ والوقت
+            "today": today,
+            "now": now,
+        },
+    )
+
+
+
+# ==========================================================
+# تقرير الحضور والانصراف
+# ==========================================================
+
+def attendance_report_page(request):
+    """
+    تقرير الحضور والانصراف للشركة.
+
+    يدعم:
+    - جميع الموظفين
+    - تحديد موظف معين
+    - تحديد تاريخ البداية والنهاية
+    - عرض الحضور والانصراف
+    - عرض عدد ساعات العمل
+    """
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    # ======================================================
+    # الفلاتر
+    # ======================================================
+
+    employee_id = request.GET.get("employee", "").strip()
+    date_from = request.GET.get("date_from", "").strip()
+    date_to = request.GET.get("date_to", "").strip()
+
+    # ======================================================
+    # الموظفون
+    # ======================================================
+
+    employees = (
+        Employee.objects
+        .filter(company=company)
+        .select_related(
+            "department",
+            "branch",
+        )
+        .order_by(
+            "name_ar",
+            "id",
+        )
+    )
+
+    # ======================================================
+    # سجلات الحضور
+    # ======================================================
+
+    attendances = (
+        Attendance.objects
+        .filter(company=company)
+        .select_related(
+            "employee",
+            "shift",
+            "work_location",
+        )
+        .order_by(
+            "-date",
+            "-check_in",
+            "-id",
+        )
+    )
+
+    # ======================================================
+    # فلترة الموظف
+    # ======================================================
+
+    if employee_id:
+
+        try:
+            attendances = attendances.filter(
+                employee_id=int(employee_id)
+            )
+        except (TypeError, ValueError):
+            pass
+
+    # ======================================================
+    # فلترة التاريخ
+    # ======================================================
+
+    if date_from:
+
+        try:
+            from datetime import datetime
+
+            parsed_from = datetime.strptime(
+                date_from,
+                "%Y-%m-%d",
+            ).date()
+
+            attendances = attendances.filter(
+                date__gte=parsed_from
+            )
+
+        except ValueError:
+            pass
+
+    if date_to:
+
+        try:
+            from datetime import datetime
+
+            parsed_to = datetime.strptime(
+                date_to,
+                "%Y-%m-%d",
+            ).date()
+
+            attendances = attendances.filter(
+                date__lte=parsed_to
+            )
+
+        except ValueError:
+            pass
+
+    # ======================================================
+    # حساب مدة العمل
+    # ======================================================
+
+    attendance_rows = []
+
+    for attendance in attendances:
+
+        duration = None
+        duration_hours = 0
+
+        if attendance.check_in and attendance.check_out:
+
+            duration = (
+                attendance.check_out
+                - attendance.check_in
+            )
+
+            duration_hours = round(
+                duration.total_seconds() / 3600,
+                2,
+            )
+
+        attendance_rows.append(
+            {
+                "attendance": attendance,
+                "duration": duration,
+                "duration_hours": duration_hours,
+            }
+        )
+
+    # ======================================================
+    # الموظف المحدد
+    # ======================================================
+
+    selected_employee = None
+
+    if employee_id:
+
+        try:
+            selected_employee = employees.filter(
+                id=int(employee_id)
+            ).first()
+        except (TypeError, ValueError):
+            selected_employee = None
+
+    # ======================================================
+    # الإجماليات
+    # ======================================================
+
+    total_records = len(attendance_rows)
+
+    completed_records = sum(
+        1
+        for row in attendance_rows
+        if row["attendance"].check_in
+        and row["attendance"].check_out
+    )
+
+    open_records = total_records - completed_records
+
+    total_hours = round(
+        sum(
+            row["duration_hours"]
+            for row in attendance_rows
+        ),
+        2,
+    )
+
+    # ======================================================
+    # العرض
+    # ======================================================
+
+    return render(
+        request,
+        "hr/attendance_report.html",
+        {
+            "company": company,
+
+            # الموظفون
             "employees": employees,
-            "today": timezone.now().date(),
+            "selected_employee": selected_employee,
+            "employee_id": employee_id,
+
+            # الفلاتر
+            "date_from": date_from,
+            "date_to": date_to,
+
+            # البيانات
+            "attendances": attendance_rows,
+
+            # الإحصائيات
+            "total_records": total_records,
+            "completed_records": completed_records,
+            "open_records": open_records,
+            "total_hours": total_hours,
+
+            # التاريخ الحالي
+            "today": timezone.localdate(),
         },
     )
 
@@ -1938,13 +2211,9 @@ def evaluation_fill_peer(request, eval_id, target_id):
     criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
 
     if request.method == "POST":
-        notes = (request.POST.get("notes") or "").strip()
-        attachment = request.FILES.get("attachment")
-
         for c in criteria:
             key = f"score_{c.id}"
             v_raw = (request.POST.get(key) or "").strip()
-
             try:
                 v = float(v_raw) if v_raw != "" else 0
             except ValueError:
@@ -1956,11 +2225,7 @@ def evaluation_fill_peer(request, eval_id, target_id):
                 criteria=c,
                 evaluator=evaluator_emp,
                 role="peer",
-                defaults={
-                    "value": v,
-                    "notes": notes,
-                    "attachment": attachment,
-                }
+                defaults={"value": v}
             )
 
         messages.success(request, "✅ تم حفظ تقييم الزميل بنجاح.")
@@ -2028,16 +2293,10 @@ def evaluation_fill_manager(request, eval_id, target_id):
 
     criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
 
-
     if request.method == "POST":
-
-        notes = (request.POST.get("notes") or "").strip()
-        attachment = request.FILES.get("attachment")
-
         for c in criteria:
             key = f"score_{c.id}"
             v_raw = (request.POST.get(key) or "").strip()
-
             try:
                 v = float(v_raw) if v_raw != "" else 0
             except ValueError:
@@ -2049,17 +2308,10 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 criteria=c,
                 evaluator=evaluator_emp,
                 role="manager",
-                defaults={
-                    "value": v,
-                    "notes": notes,
-                    "attachment": attachment,
-                }
+                defaults={"value": v}
             )
 
-        messages.success(
-    request,
-    "✅ تم حفظ تقييم المدير بنجاح."
-)
+        messages.success(request, "✅ تم حفظ تقييم المدير بنجاح.")
         return redirect("hr:evaluation_records_list")
 
     existing_scores = {
@@ -2481,98 +2733,146 @@ def _sync_user_django_permissions_from_hrpermission(user, permission_obj):
 
     permission_map = {
         # الموظفون
-        "view_employees": ["hr.view_employee"],
-        "add_employees": ["hr.add_employee"],
-        "edit_employees": ["hr.change_employee"],
-        "delete_employees": ["hr.delete_employee"],
+        "view_employees": [
+            "hr.view_employee",
+        ],
+        "add_employees": [
+            "hr.add_employee",
+        ],
+        "edit_employees": [
+            "hr.change_employee",
+        ],
+        "delete_employees": [
+            "hr.delete_employee",
+        ],
 
         # الأقسام
-        "view_departments": ["hr.view_department"],
-        "add_departments": ["hr.add_department"],
-        "edit_departments": ["hr.change_department"],
-        "delete_departments": ["hr.delete_department"],
-
-        # مواقع العمل
-        "worklocations_view": ["hr.view_worklocation"],
-        "worklocations_add": ["hr.add_worklocation"],
-        "worklocations_edit": ["hr.change_worklocation"],
-        "worklocations_delete": ["hr.delete_worklocation"],
+        "view_departments": [
+            "hr.view_department",
+        ],
+        "add_departments": [
+            "hr.add_department",
+        ],
+        "edit_departments": [
+            "hr.change_department",
+        ],
+        "delete_departments": [
+            "hr.delete_department",
+        ],
 
         # الحضور
-        "view_attendance": ["hr.view_attendance"],
-        "add_attendance": ["hr.change_attendance"],
-        "edit_attendance": ["hr.change_attendance"],
-        "approve_attendance": ["hr.change_attendance"],
+        "view_attendance": [
+            "hr.view_attendance",
+        ],
+        "add_attendance": [
+            "hr.change_attendance",
+        ],
+        "edit_attendance": [
+            "hr.change_attendance",
+        ],
+        "approve_attendance": [
+            "hr.change_attendance",
+        ],
 
         # الإجازات
-        "view_leaves": ["hr.view_leave"],
-        "add_leaves": ["hr.add_leave"],
-        "approve_leaves": ["hr.change_leave"],
-        "reject_leaves": ["hr.change_leave"],
+        "view_leaves": [
+            "hr.view_leave",
+        ],
+        "add_leaves": [
+            "hr.add_leave",
+        ],
+        "approve_leaves": [
+            "hr.change_leave",
+        ],
+        "reject_leaves": [
+            "hr.change_leave",
+        ],
 
         # التقييمات
-        "view_evaluations": ["hr.view_evaluation"],
-        "add_evaluations": ["hr.add_evaluation"],
-        "edit_evaluations": ["hr.change_evaluation"],
-        "delete_evaluations": ["hr.delete_evaluation"],
-        "peer_evaluation": ["hr.change_evaluation"],
-        "manager_evaluation": ["hr.change_evaluation"],
-        "approve_evaluation_results": ["hr.change_evaluation"],
-        "view_evaluation_reports": ["hr.view_evaluation"],
+        "view_evaluations": [
+            "hr.view_evaluation",
+        ],
+        "add_evaluations": [
+            "hr.add_evaluation",
+        ],
+        "edit_evaluations": [
+            "hr.change_evaluation",
+        ],
+        "delete_evaluations": [
+            "hr.delete_evaluation",
+        ],
+        "peer_evaluation": [
+            "hr.change_evaluation",
+        ],
+        "manager_evaluation": [
+            "hr.change_evaluation",
+        ],
+        "approve_evaluation_results": [
+            "hr.change_evaluation",
+        ],
+        "view_evaluation_reports": [
+            "hr.view_evaluation",
+        ],
 
         # الرواتب
-        "view_payroll": ["hr.view_payroll"],
-        "add_payroll": ["hr.add_payroll"],
+        "view_payroll": [
+            "hr.view_payroll",
+        ],
+        "add_payroll": [
+            "hr.add_payroll",
+        ],
 
-        # الشفتات
-        "view_shifts": ["hr.view_shift"],
-        "add_shifts": ["hr.add_shift"],
-        "edit_shifts": ["hr.change_shift"],
-        "delete_shifts": ["hr.delete_shift"],
-
-        # الجداول
-        "view_schedule": ["hr.view_employeeschedule"],
-        "edit_schedule": ["hr.add_employeeschedule"],
+        # الشفتات والجدول
+        "view_shifts": [
+            "hr.view_shift",
+        ],
+        "add_shifts": [
+            "hr.add_shift",
+        ],
+        "edit_shifts": [
+            "hr.change_shift",
+        ],
+        "delete_shifts": [
+            "hr.delete_shift",
+        ],
+        "view_schedule": [
+            "hr.view_employeeschedule",
+        ],
+        "edit_schedule": [
+            "hr.add_employeeschedule",
+        ],
     }
 
     all_permission_codes = set()
-
     for codes in permission_map.values():
         all_permission_codes.update(codes)
 
     permissions_to_clear = Permission.objects.filter(
         content_type__app_label__in=["hr", "auth"],
-        codename__in=[c.split(".")[1] for c in all_permission_codes]
+        codename__in=[code.split(".")[1] for code in all_permission_codes]
     )
-
     user.user_permissions.remove(*permissions_to_clear)
 
     permissions_to_add = []
-
-    for field_name, perm_codes in permission_map.items():
-        if getattr(permission_obj, field_name, False):
+    for form_field, perm_codes in permission_map.items():
+        if getattr(permission_obj, form_field, False):
             for perm_code in perm_codes:
                 app_label, codename = perm_code.split(".")
-
                 perm = Permission.objects.filter(
                     content_type__app_label=app_label,
                     codename=codename
                 ).first()
-
                 if perm:
                     permissions_to_add.append(perm)
 
     if permissions_to_add:
         user.user_permissions.add(*permissions_to_add)
-
-
 @login_required
 @hr_permission_required("view_user")
 def hr_permissions_users(request):
     company = _company_required(request)
     if not company:
         return redirect("accounts:login")
-
     users = (
         User.objects
         .filter(employee__company=company)
@@ -2580,14 +2880,27 @@ def hr_permissions_users(request):
         .order_by("username")
     )
 
-    return render(
-        request,
-        "hr/hr_permissions_users.html",
-        {
-            "users": users,
-        },
+    return render(request, "hr/hr_permissions_users.html", {
+        "users": users,
+    })
+
+
+@login_required
+@hr_permission_required("change_user")
+def hr_permissions_page(request, user_id):
+    company = _company_required(request)
+    if not company:
+        return redirect("accounts:login")
+    selected_user = get_object_or_404(
+        User.objects.select_related("employee"),
+        id=user_id,
+        employee__company=company
     )
 
+    permission_obj, created = HRPermission.objects.get_or_create(
+        company=company,
+        user=selected_user
+    )
 
 @login_required
 @hr_permission_required("change_user")
@@ -2599,19 +2912,16 @@ def hr_permissions_page(request, user_id):
     selected_user = get_object_or_404(
         User.objects.select_related("employee"),
         id=user_id,
-        employee__company=company,
+        employee__company=company
     )
 
     permission_obj, created = HRPermission.objects.get_or_create(
         company=company,
-        user=selected_user,
+        user=selected_user
     )
 
     if request.method == "POST":
-        form = HRPermissionForm(
-            request.POST,
-            instance=permission_obj,
-        )
+        form = HRPermissionForm(request.POST, instance=permission_obj)
 
         if form.is_valid():
             obj = form.save(commit=False)
@@ -2619,36 +2929,28 @@ def hr_permissions_page(request, user_id):
             obj.user = selected_user
             obj.save()
 
-            _sync_user_django_permissions_from_hrpermission(
-                selected_user,
-                obj,
-            )
+            _sync_user_django_permissions_from_hrpermission(selected_user, obj)
 
-            messages.success(
-                request,
-                "✅ تم حفظ الصلاحيات بنجاح."
-            )
-
+            messages.success(request, "✅ تم الحفظ بنجاح")
             return redirect("hr:hr_permissions_users")
 
     else:
         form = HRPermissionForm(instance=permission_obj)
 
-    return render(
-        request,
-        "hr/hr_permissions.html",
-        {
-            "form": form,
-            "selected_user": selected_user,
-            "permission_obj": permission_obj,
-        },
-    )
-
+    return render(request, "hr/hr_permissions.html", {
+        "form": form,
+        "selected_user": selected_user,
+        "permission_obj": permission_obj,
+    })
 @login_required
 def manage_user_permissions(request, employee_id):
     # جلب الشركة الحالية الخاصة بالمستخدم
     # إذا كانت الدالة _get_company موجودة في نفس ملف views.py هذا، استدعها مباشرة بدون self
-    company = _get_company(request)        
+    try:
+        company = request.user.employee.company  # أو الطريقة التي تستخدمها دائماً لربط اليوزر بالشركة
+    except AttributeError:
+        company = None
+        
     if not company:
         messages.error(request, "❌ لم يتم تحديد الشركة لهذا المستخدم.")
         return redirect('home')
@@ -2700,6 +3002,7 @@ def manage_user_permissions(request, employee_id):
 # ==========================
 # فحص مستخدم مؤقت
 # ==========================
+
 @login_required
 def check_user(request):
     user = request.user
@@ -2717,3 +3020,69 @@ Permissions:
 """
 
     return HttpResponse(text)
+# ==========================
+# الرواتب
+# ==========================
+
+@login_required
+@hr_permission_required("payroll_view")
+def payroll_list(request):
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    payrolls = (
+        Payroll.objects
+        .filter(company=company)
+        .select_related("employee")
+        .order_by("-date", "-id")
+    )
+
+    return render(
+        request,
+        "hr/payroll_list.html",
+        {
+            "payrolls": payrolls,
+        }
+    )
+@login_required
+@hr_permission_required("payroll_add")
+def add_payroll(request):
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    from django.forms import modelform_factory
+
+    PayrollForm = modelform_factory(
+        Payroll,
+        exclude=("company",)
+    )
+
+    if request.method == "POST":
+        form = PayrollForm(request.POST)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.company = company
+            obj.save()
+
+            messages.success(
+                request,
+                "✅ تم حفظ مسير الرواتب بنجاح."
+            )
+
+            return redirect("hr:payrolls")
+
+    else:
+        form = PayrollForm()
+
+    return render(
+        request,
+        "hr/add_payroll.html",
+        {
+            "form": form,
+        }
+    )

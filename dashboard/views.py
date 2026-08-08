@@ -69,9 +69,12 @@ def index(request):
             'employee_number': getattr(emp, 'employee_number', '-'),
             'status': att.status if att else 'غياب',
             'date': att.date if att else today,
+
+            'check_in': att.check_in if att else '-',
+            'check_out': att.check_out if att else '-',
+
             'notes': getattr(att, 'notes', '-') if att else '-',
         })
-
     # ==============================
     # بيانات المبيعات (مع عزل الشركة)
     # ==============================

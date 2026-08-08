@@ -629,7 +629,8 @@ class EvaluationAttachment(models.Model):
 
     def __str__(self):
         return self.file.name
-# ================= سجل الحضور =================
+# ================= سجل الحضور اليومي =================
+
 class Attendance(models.Model):
     company = models.ForeignKey(
         Company,
@@ -640,15 +641,10 @@ class Attendance(models.Model):
         blank=True
     )
 
-    STATUS_CHOICES = (
-        ("present", _("Present")),
-        ("late", _("Late")),
-        ("absent", _("Absent")),
-    )
-
     employee = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
+        related_name="attendance_records",
         verbose_name=_("Employee")
     )
 
@@ -657,36 +653,70 @@ class Attendance(models.Model):
         verbose_name=_("Date")
     )
 
+    # الشفت المعتمد لهذا اليوم
     shift = models.ForeignKey(
         Shift,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="attendance_records",
         verbose_name=_("Shift")
     )
 
-    check_in = models.DateTimeField(
+    # موقع العمل المعتمد
+    work_location = models.ForeignKey(
+        WorkLocation,
         null=True,
         blank=True,
-        verbose_name=_("Check In Time")
+        on_delete=models.SET_NULL,
+        related_name="attendance_records",
+        verbose_name=_("Work Location")
     )
 
-    check_out = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name=_("Check Out Time")
+    STATUS_CHOICES = (
+        ("present", _("Present")),
+        ("late", _("Late")),
+        ("absent", _("Absent")),
+        ("early_leave", _("Early Leave")),
+        ("completed", _("Completed")),
     )
 
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="present",
+        verbose_name=_("Status")
+    )
+
+    # إجمالي دقائق التأخير
     late_minutes = models.PositiveIntegerField(
         default=0,
         verbose_name=_("Late Minutes")
     )
 
-    status = models.CharField(
-        max_length=10,
-        choices=STATUS_CHOICES,
-        default="present",
-        verbose_name=_("Status")
+    # إجمالي دقائق الخروج المبكر
+    early_leave_minutes = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Early Leave Minutes")
+    )
+
+    # إجمالي دقائق العمل
+    worked_minutes = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Worked Minutes")
+    )
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
     )
 
     class Meta:
@@ -704,6 +734,160 @@ class Attendance(models.Model):
     def __str__(self):
         return f"{self.employee} - {self.date}"
 
+    @property
+    def check_in(self):
+        """
+        أول دخول في اليوم
+        """
+        first_log = self.logs.filter(
+            action="check_in"
+        ).order_by("timestamp").first()
+
+        return first_log.timestamp if first_log else None
+
+    @property
+    def check_out(self):
+        """
+        آخر خروج في اليوم
+        """
+        last_log = self.logs.filter(
+            action="check_out"
+        ).order_by("-timestamp").first()
+
+        return last_log.timestamp if last_log else None
+
+    @property
+    def total_entries(self):
+        return self.logs.filter(
+            action="check_in"
+        ).count()
+
+    @property
+    def total_exits(self):
+        return self.logs.filter(
+            action="check_out"
+        ).count()
+# ================= عمليات الدخول والخروج =================
+
+class AttendanceLog(models.Model):
+
+    ACTION_CHOICES = (
+        ("check_in", _("Check In")),
+        ("check_out", _("Check Out")),
+    )
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="hr_attendance_logs",
+        verbose_name=_("Company"),
+        null=True,
+        blank=True
+    )
+
+    attendance = models.ForeignKey(
+        Attendance,
+        on_delete=models.CASCADE,
+        related_name="logs",
+        verbose_name=_("Attendance")
+    )
+
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="attendance_logs",
+        verbose_name=_("Employee")
+    )
+
+    # نوع العملية
+    action = models.CharField(
+        max_length=20,
+        choices=ACTION_CHOICES,
+        verbose_name=_("Action")
+    )
+
+    # وقت العملية الحقيقي
+    timestamp = models.DateTimeField(
+        default=timezone.now,
+        verbose_name=_("Date and Time")
+    )
+
+    # ================= الموقع =================
+
+    latitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True,
+        verbose_name=_("Latitude")
+    )
+
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True,
+        verbose_name=_("Longitude")
+    )
+
+    # المسافة بين الموظف وموقع العمل بالمتر
+    distance_from_workplace = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_("Distance From Workplace")
+    )
+
+    # هل الموقع مسموح؟
+    location_verified = models.BooleanField(
+        default=False,
+        verbose_name=_("Location Verified")
+    )
+
+    # موقع العمل المستخدم للتحقق
+    work_location = models.ForeignKey(
+        WorkLocation,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="attendance_logs",
+        verbose_name=_("Work Location")
+    )
+
+    # عنوان/معلومة إضافية للموقع إن احتجتها
+    location_note = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_("Location Note")
+    )
+
+    # الجهاز / المتصفح
+    device_info = models.CharField(
+        max_length=500,
+        blank=True,
+        verbose_name=_("Device Information")
+    )
+
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        verbose_name=_("IP Address")
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        verbose_name = _("Attendance Operation")
+        verbose_name_plural = _("Attendance Operations")
+        ordering = ["timestamp"]
+
+    def __str__(self):
+        return (
+            f"{self.employee} - "
+            f"{self.get_action_display()} - "
+            f"{self.timestamp}"
+        )
 # ================= تحديث جدول الموظف عند الموافقة على الإجازة =================
 @receiver(post_save, sender=Leave)
 def update_schedule_on_leave(sender, instance, **kwargs):

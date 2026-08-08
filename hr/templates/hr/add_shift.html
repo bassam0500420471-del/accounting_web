@@ -1,93 +1,516 @@
+```html
 {% extends "layout/base.html" %}
 {% load i18n %}
 
+
 {% block title %}
-    {% if edit_mode %}{% trans "تعديل شفت" %}{% else %}{% trans "إضافة شفت جديد" %}{% endif %}
+{% if edit_mode %}
+{% trans "تعديل شفت" %}
+{% else %}
+{% trans "إضافة شفت جديد" %}
+{% endif %}
 {% endblock %}
+
+
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <!-- الرأس باللون الرمادي -->
-        <div class="card-header bg-secondary text-white">
-            <h4 class="mb-0">
-                {% if edit_mode %}
-                    <i class="bi bi-pencil-square"></i> {% trans "تعديل شفت" %}
-                {% else %}
-                    <i class="bi bi-plus-circle"></i> {% trans "إضافة شفت جديد" %}
-                {% endif %}
-            </h4>
-        </div>
-        
-        <div class="card-body p-4">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="row">
-                    <!-- اسم الشفت -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "اسم المناوبة" %}</label>
-                        <input type="text" name="shift_name" class="form-control" 
-                               value="{{ shift.shift_name|default:'' }}" required>
-                    </div>
 
-                    <!-- ترتيب الشفت -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "ترتيب المناوبة" %}</label>
-<input type="number" name="shift_order" class="form-control"
-       placeholder="تلقائي">
-                    </div>
 
-                    <!-- وقت البداية -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "وقت البداية" %}</label>
-                        <input type="time" name="start_time" class="form-control" 
-                               value="{{ shift.start_time|time:'H:i' }}" required>
-                    </div>
+<style>
 
-                    <!-- وقت النهاية -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "وقت النهاية" %}</label>
-                        <input type="time" name="end_time" class="form-control" 
-                               value="{{ shift.end_time|time:'H:i' }}" required>
-                    </div>
 
-                    <!-- بداية الاستراحة -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">{% trans "بداية الاستراحة" %}</label>
-                        <input type="time" name="break_start" class="form-control" 
-                               value="{{ shift.break_start|time:'H:i' }}">
-                    </div>
+.hr-page-card{
 
-                    <!-- نهاية الاستراحة -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">{% trans "نهاية الاستراحة" %}</label>
-                        <input type="time" name="break_end" class="form-control" 
-                               value="{{ shift.break_end|time:'H:i' }}">
-                    </div>
+    background:#ffffff;
 
-                    <!-- ملاحظات -->
-                    <div class="col-12 mb-3">
-                        <label class="form-label">{% trans "ملاحظات" %}</label>
-                        <textarea name="notes" class="form-control" rows="3">{{ shift.notes|default:'' }}</textarea>
-                    </div>
-                </div>
+    border-radius:25px;
 
-                <hr>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <!-- زر الحفظ باللون الرمادي الغامق -->
-                    <button type="submit" class="btn btn-secondary px-5">
-                        <i class="bi bi-save"></i> {% trans "حفظ الشفت" %}
-                    </button>
-                    
-                    <!-- زر الإلغاء باللون الرمادي الفاتح -->
-                    <a href="{% url 'hr:shifts' %}" class="btn btn-outline-secondary">
-                        {% trans "إلغاء" %}
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
+    padding:30px;
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.18);
+
+}
+
+
+
+/* Header */
+
+.hr-page-header{
+
+    margin-bottom:30px;
+
+    text-align:right;
+
+}
+
+
+.hr-page-header h3{
+
+    margin:0;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:#343a40;
+
+}
+
+
+.hr-page-header p{
+
+    color:#6c757d;
+
+    margin-top:8px;
+
+}
+
+
+
+/* Form */
+
+.hr-form label{
+
+    font-weight:600;
+
+    color:#343a40;
+
+    margin-bottom:8px;
+
+}
+
+
+
+.hr-form input,
+.hr-form textarea{
+
+    width:100%;
+
+    padding:12px 15px;
+
+    border-radius:14px;
+
+    border:1px solid #ddd;
+
+    background:#f8f9fa;
+
+    transition:.3s;
+
+}
+
+
+
+.hr-form input:focus,
+.hr-form textarea:focus{
+
+    background:white;
+
+    border-color:#666;
+
+    box-shadow:0 0 8px rgba(0,0,0,.15);
+
+    outline:none;
+
+}
+
+
+
+.hr-form textarea{
+
+    resize:none;
+
+}
+
+
+
+/* Buttons */
+
+.hr-action{
+
+    background:#5c5c5c;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 25px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    display:inline-block;
+
+    box-shadow:3px 3px 8px #ccc;
+
+    transition:.3s;
+
+}
+
+
+
+.hr-action:hover{
+
+    background:#333;
+
+    color:white;
+
+}
+
+
+
+.hr-cancel{
+
+    background:#eee;
+
+    color:#444;
+
+    padding:10px 25px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+}
+
+
+
+.hr-cancel:hover{
+
+    background:#ddd;
+
+    color:#222;
+
+}
+
+
+
+</style>
+
+
+
+
+
+<div class="container-fluid mt-4">
+
+
+
+<div class="hr-page-card">
+
+
+
+
+
+<div class="hr-page-header">
+
+
+<h3>
+
+
+{% if edit_mode %}
+
+<i class="fa-solid fa-pen-to-square"></i>
+
+{% trans "تعديل شفت" %}
+
+
+{% else %}
+
+
+<i class="fa-solid fa-clock"></i>
+
+{% trans "إضافة شفت جديد" %}
+
+
+{% endif %}
+
+
+</h3>
+
+
+
+<p>
+
+Manage employee working shifts
+
+</p>
+
+
+
 </div>
+
+
+
+
+
+
+
+<form method="post" class="hr-form">
+
+
+{% csrf_token %}
+
+
+
+<div class="row">
+
+
+
+
+
+<!-- اسم الشفت -->
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{% trans "اسم المناوبة" %}
+
+</label>
+
+
+<input type="text"
+name="shift_name"
+class="form-control"
+value="{{ shift.shift_name|default:'' }}"
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- ترتيب الشفت -->
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{% trans "ترتيب المناوبة" %}
+
+</label>
+
+
+<input type="number"
+name="shift_order"
+class="form-control"
+placeholder="تلقائي">
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- وقت البداية -->
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{% trans "وقت البداية" %}
+
+</label>
+
+
+<input type="time"
+name="start_time"
+class="form-control"
+value="{{ shift.start_time|time:'H:i' }}"
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- وقت النهاية -->
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{% trans "وقت النهاية" %}
+
+</label>
+
+
+<input type="time"
+name="end_time"
+class="form-control"
+value="{{ shift.end_time|time:'H:i' }}"
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- بداية الاستراحة -->
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{% trans "بداية الاستراحة" %}
+
+</label>
+
+
+<input type="time"
+name="break_start"
+class="form-control"
+value="{{ shift.break_start|time:'H:i' }}">
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- نهاية الاستراحة -->
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+{% trans "نهاية الاستراحة" %}
+
+</label>
+
+
+<input type="time"
+name="break_end"
+class="form-control"
+value="{{ shift.break_end|time:'H:i' }}">
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ملاحظات -->
+
+
+<div class="col-12 mb-3">
+
+
+<label>
+
+{% trans "ملاحظات" %}
+
+</label>
+
+
+<textarea name="notes"
+class="form-control"
+rows="3">{{ shift.notes|default:'' }}</textarea>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<hr>
+
+
+
+
+<div class="mt-4">
+
+
+<button type="submit"
+class="hr-action">
+
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+{% trans "حفظ الشفت" %}
+
+
+</button>
+
+
+
+
+
+<a href="{% url 'hr:shifts' %}"
+class="hr-cancel">
+
+
+<i class="fa-solid fa-xmark"></i>
+
+{% trans "إلغاء" %}
+
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+</div>
+
+
 {% endblock %}
+```

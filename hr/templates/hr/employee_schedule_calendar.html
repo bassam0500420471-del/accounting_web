@@ -4,112 +4,620 @@
 {% block title %}{% trans "Employee Schedule" %}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="mb-4">{% if create_mode %}{% else %}{% trans "Employee Schedule" %}{% endif %}</h3>
 
-    <div class="row mb-3 align-items-end">
-        <!-- الشهر -->
-        <div class="col-md-2">
-            <label class="form-label">{% trans "Month" %}</label>
-            <select name="month" id="monthSelect" class="form-select" required>
-                {% for m in months %}
-                    <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
-                {% endfor %}
-            </select>
-        </div>
+<style>
 
-        <!-- السنة -->
-        <div class="col-md-2">
-            <label class="form-label">{% trans "Year" %}</label>
-            <select name="year" id="yearSelect" class="form-select" required>
-                {% for y in years %}
-                    <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
-                {% endfor %}
-            </select>
-        </div>
+/* اسم الموظف في رأس الجدول */
 
-        <!-- الموظف -->
-        <div class="col-md-3">
-            <label class="form-label">{% trans "Employee" %}</label>
-            <select name="employee" id="employeeSelect" class="form-select">
-                <option value="all" {% if selected_employee == 'all' %}selected{% endif %}>
-                    {% trans "All" %}
-                </option>
-                {% for emp in employees %}
-                    <option value="{{ emp.id }}" {% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
-                        {{ emp.get_full_name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+.hr-table thead th.employee-name{
 
-        <!-- زر الحفظ -->
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="button" id="save_schedule_btn" class="btn btn-secondary w-100">
-                {% trans "Save" %}
-            </button>
-        </div>
-    </div>
+    width:120px;
+    max-width:120px;
+    white-space:nowrap;
+    overflow:visible;
+    cursor:pointer;
+    position:relative;
+    z-index:20;
 
-    <!-- الجدول -->
-    <table class="table table-bordered text-center">
-        <thead>
-            <tr>
-                <th>{% trans "Day" %}</th>
-                <th>{% trans "Date" %}</th>
-                {% for emp in employees %}
-                    <th>{{ emp.get_full_name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for day in schedule_list %}
-            <tr>
-                <td>{{ day.day_name }}</td>
-                <td>{{ day.date }}</td>
-                {% for shift in day.shifts %}
-                <td class="align-middle shift-cell position-relative" 
-                    data-emp-id="{{ shift.emp_id }}" 
-                    data-date="{{ day.date }}"
-                    data-shift-id="{{ shift.shift_id|default:'' }}">
-                    <span class="shift-text">{{ shift.shift_name|default:'' }}</span>
-                    {% if create_mode %}
-                    <i class="bi bi-pencil shift-edit-icon position-absolute"></i>
-                    {% endif %}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+}
 
-    <div id="form-message" class="mt-3"></div>
+
+.employee-short{
+
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+
+.employee-short:hover::after{
+
+    content:attr(data-full-name);
+
+    position:absolute;
+
+    bottom:calc(100% + 10px);
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:white;
+
+    color:#333;
+
+    padding:10px 15px;
+
+    border-radius:10px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+
+    white-space:nowrap;
+
+    z-index:999999;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+/* تثبيت عرض أعمدة جدول الموظفين */
+
+.hr-table{
+
+    table-layout:fixed;
+
+}
+
+
+/* أعمدة الموظفين تكون متساوية */
+
+
+
+/* عمود اليوم والتاريخ */
+
+.hr-table thead th:first-child{
+
+    width:90px;
+
+}
+
+
+.hr-table thead th:nth-child(2){
+
+    width:110px;
+
+}
+
+
+/* خلايا الجدول */
+
+.hr-table tbody td{
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.employee-name{
+    position:relative;
+}
+
+
+.employee-short{
+
+    display:block;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+}
+
+
+
+.employee-short:hover::after{
+
+    content:attr(data-full-name);
+
+    position:absolute;
+
+    bottom:100%;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:white;
+
+    color:#333;
+
+    padding:10px 15px;
+
+    border-radius:10px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+
+    white-space:nowrap;
+
+    z-index:999999;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.hr-table thead{
+
+    position:relative;
+
+    z-index:10;
+
+}
+
+
+.hr-table thead th.employee-name{
+
+    position:relative;
+
+}
+.hr-page-card{
+
+    background:#fff;
+    border-radius:25px;
+    padding:30px;
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
+
+}
+
+
+.hr-page-header{
+
+    text-align:right;
+    margin-bottom:30px;
+
+}
+
+
+.hr-page-header h3{
+
+    margin:0;
+    font-size:28px;
+    font-weight:700;
+    color:#343a40;
+
+}
+
+
+.hr-page-header p{
+
+    color:#6c757d;
+    margin-top:8px;
+
+}
+
+
+
+/* Filters */
+
+.hr-filter label{
+
+    font-weight:600;
+    color:#343a40;
+
+}
+
+
+.hr-filter select{
+
+    border-radius:14px;
+    padding:12px;
+    background:#f8f9fa;
+    border:1px solid #ddd;
+
+}
+
+
+
+/* Table */
+
+.hr-table{
+
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    border-radius:15px;
+
+}
+
+.hr-table thead th{
+
+    background:linear-gradient(145deg,#444,#666);
+    color:white;
+    padding:15px;
+    text-align:center;
+
+}
+
+
+
+.hr-table tbody td{
+
+    padding:13px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+
+}
+
+
+
+.hr-table tbody tr:hover{
+
+    background:#f8f9fa;
+
+}
+
+
+
+/* Shift cell */
+
+.shift-cell{
+
+    cursor:pointer;
+    transition:.3s;
+    position:relative;
+
+}
+
+
+.shift-cell:hover{
+
+    background:#f1f1f1;
+
+}
+
+
+.shift-edit-icon{
+
+    color:#777;
+
+}
+
+
+
+/* Button */
+
+.hr-action{
+
+    background:#5c5c5c;
+    color:white;
+    border:none;
+    padding:10px 30px;
+    border-radius:12px;
+    box-shadow:3px 3px 8px #ccc;
+
+}
+
+
+.hr-action:hover{
+
+    background:#333;
+    color:white;
+
+}
+
+
+</style>
+
+
+
+<div class="container-fluid mt-4">
+
+
+<div class="hr-page-card">
+
+
+
+<div class="hr-page-header">
+
+<h3>
+
+<i class="fa-solid fa-calendar-days"></i>
+
+{% trans "Employee Schedule" %}
+
+</h3>
+
+
+
+
 </div>
 
-<!-- Modal اختيار الشفت -->
+
+
+<div id="form-message" class="mb-3"></div>
+
+<div class="row mb-4 hr-filter align-items-end">
+
+
+<div class="col-md-2">
+
+<label>
+{% trans "Month" %}
+</label>
+
+
+<select id="monthSelect" class="form-select">
+
+{% for m in months %}
+
+<option value="{{ m }}" {% if m == month %}selected{% endif %}>
+{{ m }}
+</option>
+
+{% endfor %}
+
+</select>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<label>
+{% trans "Year" %}
+</label>
+
+
+<select id="yearSelect" class="form-select">
+
+
+{% for y in years %}
+
+<option value="{{ y }}" {% if y == year %}selected{% endif %}>
+{{ y }}
+</option>
+
+{% endfor %}
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<label>
+{% trans "Employee" %}
+</label>
+
+
+<select id="employeeSelect" class="form-select">
+
+
+<option value="all">
+
+{% trans "All" %}
+
+</option>
+
+
+{% for emp in employees %}
+
+<option value="{{ emp.id }}"
+{% if emp.id|stringformat:"s" == selected_employee %}selected{% endif %}>
+
+{{ emp.get_full_name }}
+
+</option>
+
+
+{% endfor %}
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<button id="save_schedule_btn"
+class="hr-action w-100">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+{% trans "Save" %}
+
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<table class="hr-table">
+
+
+<thead>
+
+<tr>
+
+<th>{% trans "Day" %}</th>
+
+<th>{% trans "Date" %}</th>
+
+
+{% for emp in employees %}
+<th class="employee-name">
+
+    <span class="employee-short"
+          data-full-name="{{ emp.get_full_name }}">
+        {{ emp.get_full_name }}
+    </span>
+
+</th>
+{% endfor %}
+</tr>
+
+
+</thead>
+
+
+
+<tbody>
+
+
+{% for day in schedule_list %}
+
+
+<tr>
+
+
+<td>
+
+<strong>
+{{ day.day_name }}
+</strong>
+
+</td>
+
+
+<td>
+
+{{ day.date }}
+
+</td>
+
+
+
+
+{% for shift in day.shifts %}
+
+
+<td class="shift-cell"
+data-emp-id="{{ shift.emp_id }}"
+data-date="{{ day.date }}"
+data-shift-id="{{ shift.shift_id|default:'' }}">
+
+
+
+<span class="shift-text">
+
+{{ shift.shift_name|default:'' }}
+
+</span>
+
+
+
+{% if create_mode %}
+
+<i class="bi bi-pencil shift-edit-icon position-absolute"></i>
+
+{% endif %}
+
+
+
+</td>
+
+
+{% endfor %}
+
+
+
+</tr>
+
+
+{% endfor %}
+
+
+
+</tbody>
+
+
+</table>
+
+
+
+<!-- Shift Modal -->
 <div class="modal fade" id="shiftModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
-                <h5 class="modal-title">{% trans "Select Shift" %}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">
+                    {% trans "Select Shift" %}
+                </h5>
+
+                <button type="button" 
+                        class="btn-close" 
+                        data-bs-dismiss="modal">
+                </button>
             </div>
+
+
             <div class="modal-body">
-                <ul class="list-group">
-                    
-                    {% for shift in shifts %}
-                    <li class="list-group-item list-group-item-action"
-                        onclick="selectShift('{{ shift.id }}', '{{ shift.shift_name }}')">
-                        {{ shift.shift_name }}
-                    </li>
-                    {% endfor %}
-                </ul>
+
+                {% for shift in shifts %}
+                <button type="button"
+                        class="btn btn-outline-secondary w-100 mb-2"
+                        onclick="selectShift('{{ shift.id }}','{{ shift.shift_name }}')">
+
+                    {{ shift.shift_name }}
+
+                </button>
+                {% empty %}
+
+                <p class="text-center text-muted">
+                    لا توجد شفتات مضافة
+                </p>
+
+                {% endfor %}
             </div>
+
         </div>
     </div>
 </div>
-{% endblock %}
 
+
+</div>
+
+</div>
+
+
+{% endblock %}
 {% block styles %}
 <style>
 .shift-cell {
@@ -157,11 +665,32 @@ const today = new Date().toISOString().split("T")[0];
 
 document.querySelectorAll(".shift-cell").forEach(cell => {
     cell.addEventListener("click", function() {
-        const cellDate = cell.dataset.date;
-        if (cellDate < today) {
-            alert("{% trans 'Cannot edit past days.' %}");
-            return;
-        }
+let dateValue = cell.dataset.date;
+
+// تحويل التاريخ إذا كان بصيغة 05/08/2026
+let parts = dateValue.split("/");
+
+let cellDate;
+
+if (parts.length === 3) {
+    cellDate = new Date(parts[2], parts[1]-1, parts[0]);
+} else {
+    cellDate = new Date(dateValue);
+}
+
+let todayDate = new Date();
+
+todayDate.setHours(0,0,0,0);
+cellDate.setHours(0,0,0,0);
+
+
+if (cellDate < todayDate) {
+
+    alert("{% trans 'Cannot edit past days.' %}");
+    return;
+
+}
+
         currentCell = this;
         let modal = new bootstrap.Modal(document.getElementById("shiftModal"));
         modal.show();
@@ -214,12 +743,31 @@ document.getElementById("save_schedule_btn").addEventListener("click", function(
         body: JSON.stringify(scheduleData)
     })
     .then(res => res.json())
-    .then(result => {
+.then(result => {
+
         if (result.success) {
-            const month = document.getElementById("monthSelect").value;
-            const year = document.getElementById("yearSelect").value;
-            const employee = document.getElementById("employeeSelect").value;
-            window.location.href = `{% url 'hr:employee_schedule' %}?month=${month}&year=${year}&employee=${employee}`;
+
+            document.getElementById("form-message").innerHTML =
+                `
+                <div class="alert alert-success text-center">
+                    <i class="fa-solid fa-circle-check"></i>
+                    {% trans "تم إضافة الشفتات بنجاح" %}
+                </div>
+                `;
+
+
+            setTimeout(() => {
+
+                const month = document.getElementById("monthSelect").value;
+                const year = document.getElementById("yearSelect").value;
+                const employee = document.getElementById("employeeSelect").value;
+
+                window.location.href =
+                `{% url 'hr:employee_schedule' %}?month=${month}&year=${year}&employee=${employee}`;
+
+            },1500);
+
+
         } else {
             document.getElementById("form-message").innerHTML =
                 `<div class="alert alert-danger">{% trans "Error" %}: ${result.error}</div>`;
