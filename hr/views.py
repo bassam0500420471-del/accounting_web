@@ -1257,9 +1257,6 @@ def attendance_check_page(request):
 
     # ==========================================================
     # سجل Attendance الخاص باليوم
-    #
-    # يوجد سجل واحد فقط لكل موظف في اليوم
-    # والعمليات الفعلية موجودة داخل AttendanceLog
     # ==========================================================
 
     attendance = (
@@ -1278,9 +1275,6 @@ def attendance_check_page(request):
 
     # ==========================================================
     # إنشاء Attendance لليوم إذا لم يكن موجودًا
-    #
-    # لا نسجل حضور هنا.
-    # فقط سجل اليوم.
     # ==========================================================
 
     if not attendance:
@@ -1321,10 +1315,7 @@ def attendance_check_page(request):
     )
 
     # ==========================================================
-    # هل آخر عملية حضور؟
-    #
-    # إذا كانت آخر عملية check_in
-    # إذن يجب أن تكون العملية التالية check_out
+    # هل يوجد حضور مفتوح؟
     # ==========================================================
 
     has_open_attendance = (
@@ -1383,7 +1374,7 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
         # ======================================================
@@ -1398,7 +1389,7 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
         # ======================================================
@@ -1406,7 +1397,6 @@ def attendance_check_page(request):
         # ======================================================
 
         try:
-
             latitude = float(latitude_raw)
             longitude = float(longitude_raw)
 
@@ -1427,7 +1417,7 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
         # ======================================================
@@ -1442,7 +1432,7 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
         if not -180 <= longitude <= 180:
@@ -1453,7 +1443,7 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
         # ======================================================
@@ -1493,7 +1483,7 @@ def attendance_check_page(request):
                 )
 
                 return redirect(
-                    "hr:attendance_check"
+                    "hr:attendance_check_page"
                 )
 
             # ----------------------------------------------
@@ -1535,7 +1525,7 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
         # ======================================================
@@ -1574,7 +1564,7 @@ def attendance_check_page(request):
                 )
 
                 return redirect(
-                    "hr:attendance_check"
+                    "hr:attendance_check_page"
                 )
 
             # ----------------------------------------------
@@ -1631,15 +1621,13 @@ def attendance_check_page(request):
             )
 
             return redirect(
-                "hr:attendance_check"
+                "hr:attendance_check_page"
             )
 
     # ==========================================================
     # تجهيز بيانات القالب
     # ==========================================================
 
-    # نحتاج last_attendance حتى يعمل القالب الحالي
-    # لذلك نستخدم Attendance نفسه.
     last_attendance = attendance
 
     # ==========================================================
@@ -1660,9 +1648,11 @@ def attendance_check_page(request):
             "last_attendance": last_attendance,
 
             # Attendance المفتوح
-            "attendance": attendance
-            if has_open_attendance
-            else None,
+            "attendance": (
+                attendance
+                if has_open_attendance
+                else None
+            ),
 
             # العملية التالية
             "next_action": next_action,
@@ -1685,7 +1675,6 @@ def attendance_check_page(request):
             "now": now,
         },
     )
-
 
 
 # ==========================================================

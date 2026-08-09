@@ -8,9 +8,6 @@ from accounts.models import Company
 
 
 class JournalEntry(models.Model):
-    """
-    Journal Entry - قيد يومية
-    """
 
     company = models.ForeignKey(
         Company,
@@ -22,7 +19,6 @@ class JournalEntry(models.Model):
     )
 
     entry_no = models.PositiveIntegerField(
-        unique=True,
         verbose_name='رقم القيد'
     )
 
@@ -35,9 +31,6 @@ class JournalEntry(models.Model):
         verbose_name='البيان'
     )
 
-    # ==================================================
-    # 🔗 مصدر القيد (آلي / يدوي)
-    # ==================================================
     SOURCE_CHOICES = (
         ("manual", "قيد يدوي"),
         ("sales_invoice", "فاتورة مبيعات"),
@@ -58,7 +51,6 @@ class JournalEntry(models.Model):
         blank=True,
         verbose_name="رقم المصدر"
     )
-    # ==================================================
 
     posted = models.BooleanField(
         default=False,
@@ -73,6 +65,13 @@ class JournalEntry(models.Model):
         ordering = ['-date', '-entry_no']
         verbose_name = 'قيد يومية'
         verbose_name_plural = 'القيود اليومية'
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=['company', 'entry_no'],
+                name='unique_journal_entry_no_per_company'
+            )
+        ]
 
     def __str__(self):
         return f"قيد رقم {self.entry_no}"

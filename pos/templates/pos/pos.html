@@ -5,8 +5,66 @@
 {% trans "Point of Sale" %}
 {% endblock %}
 
-{% block content %}
 
+{% block extra_css %}
+
+<style>
+    .product-name {
+        position: relative;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    .product-name:hover,
+    .product-name.show-full-name {
+        overflow: visible;
+        white-space: normal;
+        z-index: 9999;
+    }
+
+    .product-name::after {
+        content: attr(data-full-name);
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 13px;
+        line-height: 1.4;
+        white-space: normal;
+        width: max-content;
+        max-width: 300px;
+        min-width: 100px;
+        text-align: center;
+        z-index: 99999;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+        pointer-events: none;
+    }
+
+    .product-name:hover::after,
+    .product-name.show-full-name::after {
+        display: block;
+    }
+
+    .card,
+    .card-body {
+        overflow: visible !important;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
 
 
 <div class="container-fluid mt-3">
@@ -35,128 +93,167 @@
 
     </div>
 
-    <div class="pos-layout">
+<!-- Invoice Panel -->
+<div style="width:100%;
+            border:1px solid #ddd;
+            padding:10px;
+            border-radius:5px;
+            margin-bottom:20px;">
+
+    <div id="invoice-tabs"
+         class="d-flex gap-1 mb-2 flex-wrap"></div>
+
+    <div id="invoice-contents"></div>
+
+</div>
+
+
+<!-- Products Area -->
+<div style="width:100%;">
+
+    <!-- Categories -->
+    <h4>{% trans "Categories" %}</h4>
+
+    <div class="mb-3 d-flex flex-wrap gap-2">
+
+        <button class="btn btn-outline-primary category-btn"
+                data-id="">
+            {% trans "All" %}
+        </button>
+
+        {% for cat in categories %}
+
+        <div class="category-card"
+             data-id="{{ cat.id }}"
+             style="cursor:pointer;
+                    width:150px;
+                    height:220px;
+                    text-align:center;
+                    border:1px solid #ddd;
+                    border-radius:8px;
+                    background:#f8f8f8;">
+
+            {% if cat.image %}
+
+            <img src="{{ cat.image.url }}"
+                 style="width:100%;
+                        height:120px;
+                        object-fit:cover;
+                        border-radius:8px 8px 0 0;">
+
+            {% else %}
+
+            <div style="width:100%;
+                        height:120px;
+                        background:#e0e0e0;
+                        border-radius:8px 8px 0 0;">
+            </div>
+
+            {% endif %}
+
+            <div style="padding:5px;
+                        background:#f0f0f0;">
+
+                <h6>{{ cat.name }}</h6>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Products -->
+
+    <div class="row"
+         id="products-container">
+
+        {% for p in products %}
+
+        <div class="col-md-2 mb-2 product-card"
+             data-id="{{ p.id }}"
+             data-name="{{ p.get_name }}"
+             data-price="{{ p.sale_price }}"
+             data-stock="{{ p.current_stock }}"
+             data-category="{% if p.category %}{{ p.category.id }}{% endif %}"
+             style="display:none;">
+
+            <div class="card text-center"
+                 style="cursor:pointer;
+                        height:150px;
+                        background:#f8f8f8;
+                        border-radius:8px;">
+
+                {% if p.image %}
+
+                <img src="{{ p.image.url }}"
+                     style="width:100%;
+                            height:80px;
+                            object-fit:cover;
+                            border-radius:8px 8px 0 0;">
+
+                {% else %}
+
+                <div style="width:100%;
+                            height:80px;
+                            background:#e0e0e0;
+                            border-radius:8px 8px 0 0;">
+                </div>
+
+                {% endif %}
+
+                <div class="card-body p-1">
+
+                    <h6 class="card-title product-name"
+                        data-full-name="{{ p.get_name }}"
+                        style="font-size:13px;
+                               margin:2px 0;">
+
+                        {{ p.get_name }}
+
+                    </h6>
+
+                    <p class="card-text"
+                       style="font-size:12px;
+                              margin:0;">
+
+                        {{ p.sale_price }}
+                        {% trans "SAR" %}
+
+                    </p>
+
+                    <small class="stock-text">
+
+                        {% trans "Stock" %}:
+                        {{ p.current_stock }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
         <!-- Invoice Panel -->
-
-        <div class="pos-invoice-panel">
-
-
+        <div style="flex:1;
+                    border:1px solid #ddd;
+                    padding:10px;
+                    border-radius:5px;">
 
             <div id="invoice-tabs"
-
                  class="d-flex gap-1 mb-2 flex-wrap"></div>
-
-
 
             <div id="invoice-contents"></div>
 
-
-
         </div>
-
-        <!-- Products -->
-        <div class="pos-products">
-
-            <h4>{% trans "Categories" %}</h4>
-
-            <div class="mb-3 d-flex flex-wrap gap-2">
-
-                <button class="btn btn-outline-primary category-btn" data-id="">
-                    {% trans "All" %}
-                </button>
-
-                {% for cat in categories %}
-
-                <div class="category-card"
-                     data-id="{{ cat.id }}"
-                     style="cursor:pointer;
-                            width:150px;
-                            height:220px;
-                            text-align:center;
-                            border:1px solid #ddd;
-                            border-radius:8px;
-                            background:#f8f8f8;">
-
-                    {% if cat.image %}
-                    <img src="{{ cat.image.url }}"
-                         style="width:100%;
-                                height:120px;
-                                object-fit:cover;
-                                border-radius:8px 8px 0 0;">
-                    {% else %}
-                    <div style="width:100%;
-                                height:120px;
-                                background:#e0e0e0;
-                                border-radius:8px 8px 0 0;"></div>
-                    {% endif %}
-
-                    <div style="padding:5px; background:#f0f0f0;">
-                        <h6>{{ cat.name }}</h6>
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-            <!-- Products -->
-            <div class="row" id="products-container">
-
-                {% for p in products %}
-
-                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-2 product-card"
-                     data-id="{{ p.id }}"
-                     data-name="{{ p.get_name }}"
-                     data-price="{{ p.sale_price }}"
-                     data-stock="{{ p.current_stock }}"
-                     data-category="{% if p.category %}{{ p.category.id }}{% endif %}">
-
-<div class="card text-center product-pos-card"
-     style="cursor:pointer;
-            background:#f8f8f8;
-            border-radius:8px;">
-                        {% if p.image %}
-<img src="{{ p.image.url }}"
-     class="product-pos-image product-preview"
-     data-image="{{ p.image.url }}"
-     alt="{{ p.get_name }}">
-
-                        {% else %}
-<div class="product-pos-image"
-     style="background:#e0e0e0;"></div>
-
-                        {% endif %}
-
-                        <div class="card-body p-1 d-flex flex-column">
-
-<h6 class="card-title product-pos-name"
-    title="{{ p.get_name }}"
-    onclick="this.classList.toggle('expanded'); event.stopPropagation();">
-    {{ p.get_name }}
-</h6>
-
-                            <p class="card-text product-pos-price">
-                               
-                                {{ p.sale_price }} {% trans "SAR" %}
-                            </p>
-
-                            <small class="stock-text product-pos-stock">
-                                {% trans "Stock" %}: {{ p.current_stock }}
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-        </div>
-
 
     </div>
 
@@ -270,166 +367,88 @@ function createInvoice(id = null, name = null){
 
 <div class="mb-2">
 
-    <label>{% trans "Select Customer" %}</label>
+    <div class="d-flex justify-content-between align-items-center">
 
-    <div class="d-flex gap-2">
-
-        <select class="form-select customer-select">
-
-            <option value="">
-                {% trans "Cash Customer" %}
-            </option>
-
-            {% for cust in customers %}
-            <option value="{{ cust.id }}">
-                {{ cust.name }}
-            </option>
-            {% endfor %}
-
-        </select>
-
+        <label class="mb-1">
+            {% trans "Select Customer" %}
+        </label>
 
         <button type="button"
                 class="btn btn-danger clear-invoice-btn"
-                style="white-space:nowrap;">
-
-            🗑️ تفريغ
-
+                style="min-width: 86px;">
+            🗑 تفريغ
         </button>
 
     </div>
 
+    <select class="form-select customer-select">
+
+        <option value="">
+            {% trans "Cash Customer" %}
+        </option>
+
+        {% for cust in customers %}
+            <option value="{{ cust.id }}"
+                    data-tax-number="{{ cust.tax_number|default:'' }}">
+                {{ cust.name }}
+            </option>
+        {% endfor %}
+
+    </select>
+
 </div>
+    <table class="table table-bordered">
 
         <table class="table table-bordered">
 
             <thead>
                 <tr>
-                    <th>{% trans "Item" %}</th>
-                    <th>{% trans "Qty" %}</th>
-                    <th>{% trans "Price" %}</th>
-                    <th>
-
-                        {% trans "Discount" %} ▼
-
-                        <select id="discount-type"
-                                style="display:none;
-                                       position:absolute;
-                                       top:100%;
-                                       right:0;
-                                       width:80px;
-                                       z-index:9999;">
-
-                            <option value="percent">%</option>
-
-                            <option value="fixed">قيمة</option>
-
-                        </select>
-
-                    </th>
-                    <th>{% trans "Tax" %}</th>
-                    <th>{% trans "Total" %}</th>
-                    <th>X</th>
+<th>{% trans "Item" %}</th>
+<th>الكمية</th>
+<th>{% trans "Price" %}</th>
+<th>{% trans "Total" %}</th>
+<th>X</th>
                 </tr>
             </thead>
 
             <tbody class="invoice-body"></tbody>
 
-            <tfoot>
-                <tr>
-                    <th colspan="3">
-                        {% trans "Grand Total" %}
-                    </th>
+<tfoot>
+    <tr>
+        <th colspan="3">
+            {% trans "Grand Total" %}
+        </th>
 
-                    <th class="total">0.00</th>
+        <th class="total">0.00</th>
 
-                    <th></th>
-                </tr>
-            </tfoot>
+        <th></th>
+    </tr>
+</tfoot>
 
         </table>
 
 
-        <!-- Invoice Totals -->
-        <div class="invoice-totals mt-3">
+    <!-- Invoice Total -->
+    <div class="invoice-totals mt-3">
 
-            <div class="row mb-2">
+        <div class="row mb-2">
 
-                <div class="col-6">
-                    <input type="text"
-                           class="form-control text-end subtotal-before-tax"
-                           value="0.00"
-                           readonly>
-                </div>
-
-                <div class="col-6 text-end">
-                    <label>
-                        {% trans "الاجمالى قبل الضريبة" %}
-                    </label>
-                </div>
-
+            <div class="col-6">
+                <input type="text"
+                       class="form-control text-end grand-total"
+                       value="0.00"
+                       readonly>
             </div>
 
-
-
-            <div class="row mb-2">
-
-                <div class="col-6">
-                    <input type="text"
-                           class="form-control text-end discount-total"
-                           value="0.00"
-                           readonly>
-                </div>
-
-                <div class="col-6 text-end">
-                    <label>
-                        {% trans "Total Discount" %}
-                    </label>
-                </div>
-
+            <div class="col-6 text-end">
+                <label>
+                    {% trans "Total" %}
+                </label>
             </div>
-
-
-
-            <div class="row mb-2">
-
-                <div class="col-6">
-                    <input type="text"
-                           class="form-control text-end tax-total"
-                           value="0.00"
-                           readonly>
-                </div>
-
-                <div class="col-6 text-end">
-                    <label>
-                        {% trans "Total Tax" %}
-                    </label>
-                </div>
-
-            </div>
-
-
-
-            <div class="row mb-2">
-
-                <div class="col-6">
-                    <input type="text"
-                           class="form-control text-end grand-total"
-                           value="0.00"
-                           readonly>
-                </div>
-
-                <div class="col-6 text-end">
-                    <label>
-                        {% trans "Total After Tax" %}
-                    </label>
-                </div>
-
-            </div>
-
 
         </div>
 
+    </div>
 
         <button class="btn btn-success w-100 save-btn">
             💳 {% trans "Save & Proceed to Payment" %}
@@ -450,17 +469,31 @@ function createInvoice(id = null, name = null){
     content.querySelector(".save-btn").addEventListener("click", function(){
         saveInvoice(id);
     });
+content.querySelector(".clear-invoice-btn").addEventListener("click", function(){
 
-    content.querySelector(".customer-select").addEventListener("change", function(){
-        invoices[id].customer_id = this.value || null;
-    });
-content.querySelector(".clear-invoice-btn")
-.addEventListener("click", function(){
+    if (!confirm("هل تريد تفريغ جميع أصناف الفاتورة؟")) {
+        return;
+    }
 
-    clearInvoice(id);
+    // تفريغ الأصناف
+    invoices[id].items = {};
+
+    // تصفير الإجمالي
+    invoices[id].total = 0;
+
+    // إعادة ضبط تنبيهات الكميات
+    invoices[id].negativeAlertShown = {};
+
+    // إعادة رسم الفاتورة
+    renderInvoice(id);
 
 });
+content.querySelector(".customer-select").addEventListener("change", function(){
 
+    invoices[id].customer_id = this.value || null;
+
+    renderInvoice(id);
+});
 if(invoices[id].customer_id){
     content.querySelector(".customer-select").value = invoices[id].customer_id;
 }
@@ -564,7 +597,7 @@ function addProductToInvoice(product){
             qty: 1,
             discount: 0,
             discount_type: "percent",
-            tax: 15,
+            tax: 0,
             allowNegative: allowNegative
         };
 
@@ -607,132 +640,85 @@ function renderInvoice(id){
 
     tbody.innerHTML = "";
 
-    let subtotalBeforeTax = 0;
-let totalDiscount = 0;
-let totalTax = 0;
-let total = 0;
-
+    let total = 0;
     for(let pid in inv.items){
 
         const item = inv.items[pid];
 
         const subtotal = item.qty * item.price;
-subtotalBeforeTax += subtotal;
 
         let discountAmount = 0;
 
         if(item.discount_type === "percent"){
 
-            discountAmount = subtotal * (item.discount || 0) / 100;
+            discountAmount =
+                subtotal * (item.discount || 0) / 100;
 
         }else{
 
-            discountAmount = item.discount || 0;
+            discountAmount =
+                item.discount || 0;
 
         }
 
-        const afterDiscount = subtotal - discountAmount;
-totalDiscount += discountAmount;
-
-        const taxAmount = afterDiscount * (item.tax || 0) / 100;
-totalTax += taxAmount;
-
-        const lineTotal = afterDiscount + taxAmount;
+        const lineTotal =
+            subtotal - discountAmount;
 
         total += lineTotal;
+tbody.innerHTML += `
 
-        tbody.innerHTML += `
+    <tr>
 
-            <tr>
+        <td>${item.name}</td>
 
-                <td class="invoice-item-name">
-<div class="invoice-item-text">
-    ${item.name}
-</div>
-</td>
+        <td>
 
-                <td>
+            <button class="btn btn-sm btn-secondary"
+                    onclick="changeQty(${id}, '${pid}', -1)">
+                -
+            </button>
 
-                    <button class="btn btn-sm btn-secondary"
-                            onclick="changeQty(${id}, '${pid}', -1)">
-                        -
-                    </button>
+            ${item.qty}
 
-                    ${item.qty}
+            <button class="btn btn-sm btn-secondary"
+                    onclick="changeQty(${id}, '${pid}', 1)">
+                +
+            </button>
 
-                    <button class="btn btn-sm btn-secondary"
-                            onclick="changeQty(${id}, '${pid}', 1)">
-                        +
-                    </button>
+        </td>
 
-                </td>
+        <td style="width:40px;text-align:center;">
 
-                <td style="width:40px;text-align:center;">
+            ${Number(item.price).toFixed(2)}
 
-                    ${Number(item.price)}
+        </td>
 
-                </td>
+        <td>${lineTotal.toFixed(2)}</td>
 
-                <td>
+        <td>
 
-                    <div style="display:flex;
-                                align-items:center;
-                                gap:4px;">
+            <button class="btn btn-sm btn-danger"
+                    onclick="removeItem(${id}, '${pid}')">
+                x
+            </button>
 
-                        <input type="number"
-                               class="form-control form-control-sm"
-                               value="${item.discount}"
-                               style="width:70px;"
-                               onchange="updateDiscount(${id}, '${pid}', this.value)">
+        </td>
 
-                        <select class="form-select form-select-sm"
-                                style="width:60px;"
-                                onchange="updateDiscountType(${id}, '${pid}', this.value)">
-
-                            <option value="percent"
-                                ${item.discount_type === "percent" ? "selected" : ""}>
-                                %
-                            </option>
-
-                            <option value="fixed"
-                                ${item.discount_type === "fixed" ? "selected" : ""}>
-                                قيمة
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </td>
-                <td>
-
-                    <input type="number"
-                           class="form-control form-control-sm"
-                           value="${item.tax}"
-                           style="width:60px;"
-                           onchange="updateTax(${id}, '${pid}', this.value)">
-
-                </td>
-                <td>${lineTotal.toFixed(2)}</td>
-
-                <td>
-
-                    <button class="btn btn-sm btn-danger"
-                            onclick="removeItem(${id}, '${pid}')">
-                        x
-                    </button>
-
-                </td>
-
-            </tr>
-        `;
+    </tr>
+`;
     }
 
     inv.total = total;
-document.querySelector(
-    `.invoice-content[data-id='${id}'] .subtotal-before-tax`
-).value = subtotalBeforeTax.toFixed(2);
 
+    document.querySelector(
+        `.invoice-content[data-id='${id}'] .grand-total`
+    ).value = total.toFixed(2);
+
+    document.querySelector(
+        `.invoice-content[data-id='${id}'] .total`
+    ).innerText = total.toFixed(2);
+
+    saveInvoicesState();
 
 document.querySelector(
     `.invoice-content[data-id='${id}'] .discount-total`
@@ -809,44 +795,7 @@ function updateTax(invoiceId, pid, value){
     renderInvoice(invoiceId);
 
 }
-// ===================== Clear Invoice =====================
 
-function clearInvoice(id){
-
-    const inv = invoices[id];
-
-
-    if(!confirm("هل تريد تفريغ الفاتورة؟")){
-
-        return;
-
-    }
-
-
-    inv.items = {};
-
-    inv.total = 0;
-
-    inv.customer_id = null;
-
-    inv.negativeAlertShown = {};
-
-
-    const customer = document.querySelector(
-        `.invoice-content[data-id='${id}'] .customer-select`
-    );
-
-
-    if(customer){
-
-        customer.value = "";
-
-    }
-
-
-    renderInvoice(id);
-
-}
 // ===================== Save Invoice =====================
 function saveInvoice(id){
 
@@ -1086,25 +1035,6 @@ document.querySelectorAll(".product-card").forEach(card => {
 </div>
 
 <script>
-
-
-
-document.querySelectorAll(".product-preview").forEach(function(img){
-
-    img.addEventListener("click", function(e){
-
-        e.stopPropagation();
-
-        document.getElementById("previewImage").src =
-            this.dataset.image;
-
-        new bootstrap.Modal(
-            document.getElementById("imagePreviewModal")
-        ).show();
-
-    });
-
-});
 document.addEventListener("DOMContentLoaded", function() {
 
     const saveBtn = document.getElementById("save-payment-method");
@@ -1191,224 +1121,80 @@ fetch("{% url 'pos:add_payment_method' %}", {
 
 });
 </script>
-<style>
-#products-container .product-card{
-    min-width:0;
-    flex-shrink:1;
-}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
-#products-container .card{
-    width:100%;
-    overflow:hidden;
-}
-.product-pos-card{
-    height:235px !important;
-    display:flex;
-    flex-direction:column;
-}
+        const categoryButtons = document.querySelectorAll(
+            ".category-btn, .category-card"
+        );
 
-.product-pos-image{
-    width:100%;
-    height:95px;
-    object-fit:contain;
-    border-radius:8px 8px 0 0;
-    background:#fff;
-}
+        const productCards = document.querySelectorAll(
+            ".product-card"
+        );
 
-.product-pos-name{
-    width:100%;
-    min-width:0;
+        categoryButtons.forEach(function (category) {
 
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
+            category.addEventListener("click", function () {
 
-    display:block;
+                const categoryId = this.dataset.id;
 
-    text-align:center;
-    font-size:13px;
-    line-height:22px;
-    height:22px;
+                productCards.forEach(function (product) {
 
-    padding:0 6px;
+                    const productCategory = product.dataset.category;
 
-    cursor:pointer;
-}
+                    if (categoryId === "") {
 
-.product-pos-name.expanded{
-    white-space:normal;
-    overflow:visible;
-    text-overflow:unset;
+                        product.style.display = "";
 
-    height:auto;
-    max-height:120px;
+                    } else if (productCategory === categoryId) {
 
-    line-height:1.4;
-    word-break:break-word;
-}
-.product-pos-price{
-    font-size:13px;
-    font-weight:bold;
-    margin-top:auto;
-}
+                        product.style.display = "";
 
-.product-pos-stock{
-    font-size:12px;
-    margin-bottom:6px;
-}
+                    } else {
 
-.invoice-item-name{
+                        product.style.display = "none";
+                    }
 
-    width:90px;
-    min-width:90px;
-    max-width:90px;
+                });
 
-    vertical-align:top;
+            });
 
-}
+        });
 
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
 
-.invoice-item-text{
+        const productNames = document.querySelectorAll(".product-name");
 
-    width:100%;
-    font-size:12px;
-    line-height:20px;
+        productNames.forEach(function (name) {
 
-    white-space:normal;
-    overflow:visible;
-    word-break:break-word;
+            name.addEventListener("click", function (event) {
 
-    height:auto;
-}
-/* تكبير عمود الصنف */
-.invoice-item-name{
-    width:180px !important;
-    min-width:180px !important;
-    max-width:180px !important;
-}
+                event.stopPropagation();
 
+                productNames.forEach(function (otherName) {
 
-/* تصغير عمود الخصم */
-.invoice-content th:nth-child(4),
-.invoice-content td:nth-child(4){
-    width:90px !important;
-    min-width:90px !important;
-    max-width:90px !important;
-}
+                    if (otherName !== name) {
+                        otherName.classList.remove("show-full-name");
+                    }
 
+                });
 
-/* تصغير حقول الخصم */
-.invoice-content td:nth-child(4) input{
-    width:45px !important;
-}
+                name.classList.toggle("show-full-name");
+            });
 
-.invoice-content td:nth-child(4) select{
-    width:45px !important;
-}
-/* تنسيق أعمدة جدول الفاتورة */
-.invoice-content table{
-    width:100%;
-    table-layout:fixed;
-}
+        });
 
-/* عمود الصنف */
-.invoice-content table th:nth-child(1),
-.invoice-content table td:nth-child(1){
-    width:35%;
-}
+        document.addEventListener("click", function () {
 
-/* الكمية */
-.invoice-content table th:nth-child(2),
-.invoice-content table td:nth-child(2){
-    width:10%;
-    text-align:center;
-}
+            productNames.forEach(function (name) {
+                name.classList.remove("show-full-name");
+            });
 
-/* السعر */
-.invoice-content table th:nth-child(3),
-.invoice-content table td:nth-child(3){
-    width:10%;
-    text-align:center;
-}
+        });
 
-/* الخصم */
-.invoice-content table th:nth-child(4),
-.invoice-content table td:nth-child(4){
-    width:10%;
-    text-align:center;
-}
-
-/* الضريبة */
-.invoice-content table th:nth-child(5),
-.invoice-content table td:nth-child(5){
-    width:10%;
-    text-align:center;
-}
-
-/* الإجمالي */
-.invoice-content table th:nth-child(6),
-.invoice-content table td:nth-child(6){
-    width:15%;
-    text-align:center;
-}
-
-/* حذف */
-.invoice-content table th:nth-child(7),
-.invoice-content table td:nth-child(7){
-    width:10%;
-    text-align:center;
-}
-
-
-/* اسم الصنف يظهر كامل بدون قص */
-.invoice-item-text{
-    height:auto !important;
-    max-height:none !important;
-    overflow:visible !important;
-    white-space:normal !important;
-    word-break:break-word;
-}
-</style>
-<div class="modal fade" id="imagePreviewModal" tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-
-        <div class="modal-content">
-
-<div class="modal-header">
-
-    <button type="button"
-            class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center"
-            data-bs-dismiss="modal"
-            style="width:36px;
-                   height:36px;
-                   padding:0;
-                   font-size:20px;
-                   margin-right:auto;
-                   margin-left:0;">
-
-        ×
-
-    </button>
-
-    <h5 class="modal-title mx-auto">
-        {% trans "Product Image" %}
-    </h5>
-
-</div>
-            <div class="modal-body text-center">
-
-                <img id="previewImage"
-                     src=""
-                     style="max-width:100%;
-                            max-height:75vh;
-                            object-fit:contain;">
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
+    });
+</script>
 {% endblock %}

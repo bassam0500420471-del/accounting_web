@@ -245,10 +245,6 @@ th{
 <span>{{ subtotal|floatformat:2 }}</span>
 </div>
 
-<div class="total-row">
-<span>الإجمالي</span>
-<span>{{ invoice.total|floatformat:2 }}</span>
-</div>
 
 <div class="total-row">
 <span>المدفوع</span>
@@ -264,11 +260,6 @@ th{
 
 <hr>
 
-<div class="qr">
-
-{% if qr_code %}
-<img src="{{ qr_code }}">
-{% endif %}
 
 <div class="small">
 شكراً لتعاملكم معنا

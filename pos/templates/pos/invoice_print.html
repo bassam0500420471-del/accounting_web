@@ -283,10 +283,6 @@ th{
             <td>{{ subtotal|floatformat:2 }}</td>
         </tr>
 
-        <tr>
-            <td>الإجمالي شامل الضريبة</td>
-            <td>{{ invoice.total|floatformat:2 }}</td>
-        </tr>
 
         <tr>
             <td>المدفوع</td>
@@ -302,24 +298,21 @@ th{
 
 </div>
 
-    <div class="qr-section">
-
-        {% if qr_code %}
-            <img src="{{ qr_code }}" width="100" height="100">
-        {% endif %}
 
 
-        <p style="font-size:10px;margin-top:5px;">
-            شكراً لزيارتكم
-        </p>
 
-        <!-- زر الطباعة -->
-        <button class="print-btn" onclick="window.print()">
-            🖨️ طباعة
-        </button>
+    <p style="font-size:10px; margin-top:5px; text-align:center;">
+        شكراً لزيارتكم
+    </p>
 
-    </div>
+    <!-- زر الطباعة -->
+    <button class="print-btn"
+            onclick="window.print()"
+            style="display:block; margin:10px auto 0;">
+        🖨️ طباعة
+    </button>
 
+</div>
 </div>
 
 <div style="display:none">
