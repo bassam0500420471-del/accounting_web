@@ -917,12 +917,16 @@ document.querySelectorAll(".category-card").forEach(card => {
 // ===================== Product Click =====================
 document.querySelectorAll(".product-card").forEach(card => {
 
-    card.addEventListener("click", function(){
+    card.addEventListener("click", function(event) {
 
-        addProductToInvoice(this);
+        event.preventDefault();
+        event.stopPropagation();
+
+        addProductToInvoice(card);
+
     });
-});
 
+});
 
 // ===================== New Invoice =====================
 document.getElementById("new-invoice-btn")

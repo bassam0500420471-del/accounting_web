@@ -301,31 +301,32 @@ th{
 
 
 
-    <p style="font-size:10px; margin-top:5px; text-align:center;">
-        شكراً لزيارتكم
-    </p>
+<p style="font-size:10px; margin-top:5px; text-align:center;">
+    شكراً لزيارتكم
+</p>
 
-    <!-- زر الطباعة -->
-    <button class="print-btn"
-            onclick="window.print()"
-            style="display:block; margin:10px auto 0;">
-        🖨️ طباعة
-    </button>
+<button class="print-btn"
+        onclick="printAndClose()"
+        style="display:block; margin:10px auto 0;">
+    🖨️ طباعة
+</button>
 
-</div>
-</div>
+<script>
+    function printAndClose() {
+        window.print();
+    }
 
-<div style="display:none">
-AUTO PRINT = {{ auto_print }}
-</div>
+    window.onafterprint = function () {
+        window.close();
+    };
+</script>
 
 {% if auto_print %}
 <script>
-window.onload=function(){
-    window.print();
-}
+    window.onload = function () {
+        window.print();
+    };
 </script>
 {% endif %}
-
 </body>
 </html>
