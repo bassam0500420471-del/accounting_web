@@ -480,47 +480,74 @@ class="form-control">
     </div>
 
 </div>
-<div class="col-md-6">
+<div class="form-group">
 
-    <div class="form-group">
+    <label>
+        خط العرض (Latitude)
+    </label>
 
-        <label>خط العرض (Latitude)</label>
+    <div class="input-icon">
 
-        <div class="input-icon">
+        <i class="bi bi-crosshair"></i>
 
-            <i class="bi bi-crosshair"></i>
-
-            <input
-                type="text"
-                name="latitude"
-                value="{{ work_location.latitude|default:'' }}"
-                class="form-control"
-                placeholder="21.543333">
-
-        </div>
+        <input
+            type="text"
+            name="latitude"
+            id="latitude"
+            value="{{ work_location.latitude|default:'' }}"
+            class="form-control"
+            placeholder="21.543333">
 
     </div>
 
 </div>
-<div class="col-md-6">
 
-    <div class="form-group">
 
-        <label>خط الطول (Longitude)</label>
+<div class="form-group">
 
-        <div class="input-icon">
+    <label>
+        خط الطول (Longitude)
+    </label>
 
-            <i class="bi bi-crosshair2"></i>
+    <div class="input-icon">
 
-            <input
-                type="text"
-                name="longitude"
-                value="{{ work_location.longitude|default:'' }}"
-                class="form-control"
-                placeholder="39.172779">
+        <i class="bi bi-crosshair2"></i>
 
-        </div>
+        <input
+            type="text"
+            name="longitude"
+            id="longitude"
+            value="{{ work_location.longitude|default:'' }}"
+            class="form-control"
+            placeholder="39.172779">
 
+    </div>
+
+</div>
+
+
+<div class="mt-2">
+
+    <button
+        type="button"
+        class="btn btn-outline-primary"
+        id="get-location-btn">
+
+        <i class="bi bi-geo-alt-fill"></i>
+
+        تحديد موقعي الحالي
+
+    </button>
+
+    <small
+        id="location-status"
+        class="d-block text-muted mt-2">
+
+        يمكنك استخدام موقع جهازك لتحديد إحداثيات مقر العمل.
+
+    </small>
+
+</div>
     </div>
 
 </div>
@@ -848,5 +875,53 @@ function openGoogleMap() {
     window.open(url, "_blank");
 }
 </script>
+<script>
 
+document.getElementById("get-location-btn").addEventListener("click", function () {
+
+    const status = document.getElementById("location-status");
+
+    if (!navigator.geolocation) {
+
+        status.textContent = "المتصفح لا يدعم تحديد الموقع.";
+
+        return;
+
+    }
+
+    status.textContent = "جاري تحديد الموقع...";
+
+    navigator.geolocation.getCurrentPosition(
+
+        function (position) {
+
+            document.getElementById("latitude").value =
+                position.coords.latitude.toFixed(7);
+
+            document.getElementById("longitude").value =
+                position.coords.longitude.toFixed(7);
+
+            status.textContent =
+                "تم تحديد الموقع بنجاح.";
+
+        },
+
+        function (error) {
+
+            status.textContent =
+                "تعذر تحديد الموقع. تأكد من السماح للمتصفح باستخدام الموقع.";
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+
+    );
+
+});
+
+</script>
 {% endblock %}

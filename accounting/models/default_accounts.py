@@ -83,7 +83,20 @@ def create_default_accounts(company):
     )
 
     accounts["vat"] = vat
+# ==========================
+# حقوق الملكية
+# ==========================
 
+equity = Account.objects.create(
+    company=company,
+    code="3000",
+    name="حقوق الملكية",
+    account_type="EQUITY",
+    nature="CREDIT",
+    is_group=True,
+)
+
+accounts["equity"] = equity
 
     # ==========================
     # المصروفات

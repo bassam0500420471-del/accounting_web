@@ -4,121 +4,197 @@
 
 <div class="container-fluid mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">{% trans "Supplier List" %}</h3>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold">{% trans "Supplier List" %}</h3>
 
-        <!-- Add Supplier Button -->
-        <a href="/suppliers/add/"
-           class="btn"
-           style="background:#6c757d; color:white; border-radius:6px; padding:6px 18px; font-weight:bold;">
-            + {% trans "Add Supplier" %}
-        </a>
-    </div>
+    <!-- Add Supplier Button -->
+    <a href="{% url 'supplier_add' %}"
+       class="btn"
+       style="background:#6c757d; color:white; border-radius:6px; padding:6px 18px; font-weight:bold;">
+        + {% trans "Add Supplier" %}
+    </a>
+</div>
 
-    <table class="table table-hover text-center align-middle">
+<table class="table table-hover text-center align-middle">
 
-        <thead>
-            <!-- Filter Row -->
-            <tr>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search No.' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Supplier' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Invoices' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Balance' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Status' %}"></th>
-                <th></th>
-            </tr>
+    <thead>
 
-            <!-- Table Headers -->
-            <tr class="table-dark">
-                <th>#</th>
-                <th>{% trans "Supplier" %}</th>
-                <th>{% trans "Invoice Count" %}</th>
-                <th>{% trans "Balance" %}</th>
-                <th>{% trans "Status" %}</th>
-                <th>{% trans "Actions" %}</th>
-            </tr>
-        </thead>
+        <!-- Filter Row -->
+        <tr>
+            <th>
+                <input type="text"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="{% trans 'Search No.' %}">
+            </th>
 
-        <tbody>
-            {% for s in suppliers %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ s.commercial_name }}</td>
-                <td>{{ s.invoices_count }}</td>
-                <td>{{ s.balance|floatformat:2 }}</td>
+            <th>
+                <input type="text"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="{% trans 'Search Supplier' %}">
+            </th>
 
-                <td>
-                    {% if s.balance > 0 %}
-                        <span class="badge bg-secondary">{% trans "Debtor" %}</span>
-                    {% elif s.balance < 0 %}
-                        <span class="badge bg-secondary">{% trans "Creditor" %}</span>
-                    {% else %}
-                        <span class="badge bg-secondary">{% trans "Balanced" %}</span>
-                    {% endif %}
-                </td>
+            <th>
+                <input type="text"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="{% trans 'Search Invoices' %}">
+            </th>
 
-                <!-- Actions -->
-                <td>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary btn-sm dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                            {% trans "Options" %}
-                        </button>
+            <th>
+                <input type="text"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="{% trans 'Search Balance' %}">
+            </th>
 
-                        <ul class="dropdown-menu text-end">
-                            <li>
-                                <a class="dropdown-item" href="/suppliers/{{ s.id }}/edit/">{% trans "Edit" %}</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger"
-                                   href="/suppliers/{{ s.id }}/delete/"
-                                   onclick="return confirm('{% trans "Are you sure you want to delete?" %}');">
-                                   {% trans "Delete" %}
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+            <th>
+                <input type="text"
+                       class="filter-input form-control form-control-sm"
+                       placeholder="{% trans 'Search Status' %}">
+            </th>
 
-    </table>
+            <th></th>
+        </tr>
+
+        <!-- Table Headers -->
+        <tr class="table-dark">
+            <th>#</th>
+            <th>{% trans "Supplier" %}</th>
+            <th>{% trans "Invoice Count" %}</th>
+            <th>{% trans "Balance" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Actions" %}</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for s in suppliers %}
+
+        <tr>
+
+            <td>{{ forloop.counter }}</td>
+
+            <td>{{ s.commercial_name }}</td>
+
+            <td>{{ s.invoices_count }}</td>
+
+            <td>{{ s.balance|floatformat:2 }}</td>
+
+            <td>
+                {% if s.balance > 0 %}
+                    <span class="badge bg-secondary">
+                        {% trans "Debtor" %}
+                    </span>
+
+                {% elif s.balance < 0 %}
+                    <span class="badge bg-secondary">
+                        {% trans "Creditor" %}
+                    </span>
+
+                {% else %}
+                    <span class="badge bg-secondary">
+                        {% trans "Balanced" %}
+                    </span>
+                {% endif %}
+            </td>
+
+            <!-- Actions -->
+            <td>
+
+                <div class="dropdown">
+
+                    <button class="btn btn-secondary btn-sm dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        {% trans "Options" %}
+                    </button>
+
+                    <ul class="dropdown-menu text-end">
+
+                        <!-- Edit -->
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'supplier_edit' supplier_id=s.id %}">
+                                {% trans "Edit" %}
+                            </a>
+                        </li>
+
+                        <!-- Delete -->
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               href="{% url 'supplier_delete' supplier_id=s.id %}"
+                               onclick="return confirm('{% trans "Are you sure you want to delete?" %}');">
+                                {% trans "Delete" %}
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
 
 </div>
 
 <style>
+
 .filter-input {
     text-align: center;
     border: 1px solid #6c757d !important;
     border-radius: 6px;
 }
+
 .filter-input::placeholder {
     text-align: center;
     color: #6c757d;
 }
+
 </style>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function() {
+
     const filterInputs = document.querySelectorAll(".filter-input");
     const rows = document.querySelectorAll("tbody tr");
 
     filterInputs.forEach((input, colIndex) => {
+
         input.addEventListener("keyup", function () {
+
             const value = this.value.toLowerCase();
+
             rows.forEach(row => {
+
                 const cell = row.querySelectorAll("td")[colIndex];
+
                 if (cell) {
+
                     const text = cell.textContent.toLowerCase();
-                    row.style.display = text.includes(value) ? "" : "none";
+
+                    row.style.display =
+                        text.includes(value) ? "" : "none";
+
                 }
+
             });
+
         });
+
     });
+
 });
+
 </script>
 
 {% endblock %}

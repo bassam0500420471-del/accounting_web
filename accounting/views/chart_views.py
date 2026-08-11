@@ -8,21 +8,24 @@ from accounts.models import Company, UserProfile
 
 def get_request_company(request):
     company = getattr(request, "company", None)
+
     if company:
         return company
 
-    if request.user.is_authenticated:
-        profile = (
-            UserProfile.objects
-            .select_related("company")
-            .filter(user=request.user)
-            .first()
-        )
-        if profile and profile.company:
-            return profile.company
+    if not request.user.is_authenticated:
+        return None
 
-    return Company.objects.first()
+    profile = (
+        UserProfile.objects
+        .select_related("company")
+        .filter(user=request.user)
+        .first()
+    )
 
+    if profile and profile.company:
+        return profile.company
+
+    return None
 
 # ==================================================
 # 🌳 صفحة شجرة الحسابات

@@ -88,80 +88,382 @@
 
             <table class="attendance-table">
 
-                <thead>
-                    <tr>
-                        <th>{% trans "Employee" %}</th>
-                        <th>{% trans "Date" %}</th>
-                        <th>{% trans "Check In Time" %}</th>
-                        <th>{% trans "Check Out Time" %}</th>
-                    </tr>
-                </thead>
+<thead>
+    <tr>
+        <th>{% trans "Employee" %}</th>
+        <th>{% trans "Date" %}</th>
+
+        <th>{% trans "الحضور 1" %}</th>
+        <th>{% trans "الانصراف 1" %}</th>
+        <th>{% trans "الموقع 1" %}</th>
+
+        <th>{% trans "الحضور 2" %}</th>
+        <th>{% trans "الانصراف 2" %}</th>
+        <th>{% trans "الموقع 2" %}</th>
+
+        <th>{% trans "الحضور 3" %}</th>
+        <th>{% trans "الانصراف 3" %}</th>
+        <th>{% trans "الموقع 3" %}</th>
+    </tr>
+</thead>
+
+<tbody>
+
+{% for emp in employees %}
+
+    {% for day in start_date|until:end_date %}
+
+        {% with row=attendance_map|dict_get:emp.id|dict_get:day %}
+
+        <tr>
+
+            <!-- الموظف -->
+
+            <td>
+
+                <div class="employee-name">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    {{ emp.get_full_name }}
+
+                </div>
+
+            </td>
 
 
-                <tbody>
+            <!-- التاريخ -->
 
-                {% for emp in employees %}
+            <td>
 
-                    {% for day in start_date|until:end_date %}
+                {{ day|date:"d-m-Y" }}
 
-                    {% with att=attendance_map|dict_get:emp.id|dict_get:day %}
-
-                    <tr>
-
-                        <td>
-                            <div class="employee-name">
-                                <i class="fa-solid fa-user"></i>
-                                {{ emp.get_full_name }}
-                            </div>
-                        </td>
+            </td>
 
 
-                        <td>
-                            {{ day|date:"d-m-Y" }}
-                        </td>
+            <!-- ========================= -->
+            <!-- الدورة الأولى -->
+            <!-- ========================= -->
+
+            {% with session=row.sessions.0 %}
+
+                <!-- الحضور 1 -->
+
+                <td>
+
+                    {% if session.check_in %}
+
+                        <span class="time-in">
+
+                            {{ session.check_in.timestamp|date:"H:i" }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
 
 
-                        <td>
+                <!-- الانصراف 1 -->
 
-                            {% if att and att.check_in %}
+                <td>
 
-                            <span class="time-in">
-                                {{ att.check_in|date:"H:i" }}
-                            </span>
+                    {% if session.check_out %}
 
-                            {% else %}
-                                <span class="empty">---</span>
-                            {% endif %}
+                        <span class="time-out">
 
-                        </td>
+                            {{ session.check_out.timestamp|date:"H:i" }}
 
+                        </span>
 
-                        <td>
+                    {% else %}
 
-                            {% if att and att.check_out %}
+                        <span class="empty">
+                            ---
+                        </span>
 
-                            <span class="time-out">
-                                {{ att.check_out|date:"H:i" }}
-                            </span>
+                    {% endif %}
 
-                            {% else %}
-                                <span class="empty">---</span>
-                            {% endif %}
-
-                        </td>
+                </td>
 
 
-                    </tr>
+                <!-- الموقع 1 -->
 
-                    {% endwith %}
-                    {% endfor %}
+                <td>
 
-                {% endfor %}
+                    {% if session.check_in %}
+
+                        {% if session.check_in.latitude and session.check_in.longitude %}
+
+                            <a href="https://www.google.com/maps?q={{ session.check_in.latitude }},{{ session.check_in.longitude }}"
+                               target="_blank"
+                               title="{% trans 'Check In Location' %}"
+                               class="location-btn">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
 
 
-                </tbody>
+                    {% if session.check_out %}
 
-            </table>
+                        {% if session.check_out.latitude and session.check_out.longitude %}
+
+                            <a href="https://www.google.com/maps?q={{ session.check_out.latitude }},{{ session.check_out.longitude }}"
+                               target="_blank"
+                               title="{% trans 'Check Out Location' %}"
+                               class="location-btn">
+
+                                <i class="fa-solid fa-location-arrow"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    {% if not session.check_in and not session.check_out %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            {% endwith %}
+
+
+            <!-- ========================= -->
+            <!-- الدورة الثانية -->
+            <!-- ========================= -->
+
+            {% with session=row.sessions.1 %}
+
+                <!-- الحضور 2 -->
+
+                <td>
+
+                    {% if session.check_in %}
+
+                        <span class="time-in">
+
+                            {{ session.check_in.timestamp|date:"H:i" }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- الانصراف 2 -->
+
+                <td>
+
+                    {% if session.check_out %}
+
+                        <span class="time-out">
+
+                            {{ session.check_out.timestamp|date:"H:i" }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- الموقع 2 -->
+
+                <td>
+
+                    {% if session.check_in %}
+
+                        {% if session.check_in.latitude and session.check_in.longitude %}
+
+                            <a href="https://www.google.com/maps?q={{ session.check_in.latitude }},{{ session.check_in.longitude }}"
+                               target="_blank"
+                               title="{% trans 'Check In Location' %}"
+                               class="location-btn">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    {% if session.check_out %}
+
+                        {% if session.check_out.latitude and session.check_out.longitude %}
+
+                            <a href="https://www.google.com/maps?q={{ session.check_out.latitude }},{{ session.check_out.longitude }}"
+                               target="_blank"
+                               title="{% trans 'Check Out Location' %}"
+                               class="location-btn">
+
+                                <i class="fa-solid fa-location-arrow"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    {% if not session.check_in and not session.check_out %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            {% endwith %}
+
+
+            <!-- ========================= -->
+            <!-- الدورة الثالثة -->
+            <!-- ========================= -->
+
+            {% with session=row.sessions.2 %}
+
+                <!-- الحضور 3 -->
+
+                <td>
+
+                    {% if session.check_in %}
+
+                        <span class="time-in">
+
+                            {{ session.check_in.timestamp|date:"H:i" }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- الانصراف 3 -->
+
+                <td>
+
+                    {% if session.check_out %}
+
+                        <span class="time-out">
+
+                            {{ session.check_out.timestamp|date:"H:i" }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- الموقع 3 -->
+
+                <td>
+
+                    {% if session.check_in %}
+
+                        {% if session.check_in.latitude and session.check_in.longitude %}
+
+                            <a href="https://www.google.com/maps?q={{ session.check_in.latitude }},{{ session.check_in.longitude }}"
+                               target="_blank"
+                               title="{% trans 'Check In Location' %}"
+                               class="location-btn">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    {% if session.check_out %}
+
+                        {% if session.check_out.latitude and session.check_out.longitude %}
+
+                            <a href="https://www.google.com/maps?q={{ session.check_out.latitude }},{{ session.check_out.longitude }}"
+                               target="_blank"
+                               title="{% trans 'Check Out Location' %}"
+                               class="location-btn">
+
+                                <i class="fa-solid fa-location-arrow"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    {% if not session.check_in and not session.check_out %}
+
+                        <span class="empty">
+                            ---
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            {% endwith %}
+
+        </tr>
+
+        {% endwith %}
+
+    {% endfor %}
+
+{% endfor %}
+
+</tbody>
 
         </div>
 

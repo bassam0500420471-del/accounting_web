@@ -167,8 +167,8 @@
         </div>
     </td>
     <td><input type="text" name="row_1_desc" class="form-control"></td>
-    <td><input type="number" name="row_1_qty" value="1" class="form-control qty-input"></td>
-    <td><input type="number" name="row_1_price" value="0" class="form-control price-input"></td>
+    <td><input type="number" name="row_1_qty" value="1" step="any" class="form-control qty-input"></td>
+    <td><input type="number" name="row_1_price" value="0" step="any" class="form-control price-input"></td>
 
     <td>
         <input type="text" name="row_1_discount" value="0"
@@ -446,8 +446,8 @@ const SEARCH_SUPPLIER_PLACEHOLDER = "{% trans 'Search for a supplier.' %}";
                 </div>
             </td>
             <td><input type="text" name="row_${next}_desc" class="form-control"></td>
-            <td><input type="number" name="row_${next}_qty" value="1" class="form-control qty-input"></td>
-            <td><input type="number" name="row_${next}_price" value="0" class="form-control price-input"></td>
+            <td><input type="number" name="row_${next}_qty" value="1" step="any" class="form-control qty-input"></td>
+            <td><input type="number" name="row_${next}_price" value="0" step="any" class="form-control price-input"></td>
 
             <td><input type="text" name="row_${next}_discount" value="0" class="form-control discount-input" placeholder="${EXAMPLE_DISCOUNT_PLACEHOLDER}"></td>
 

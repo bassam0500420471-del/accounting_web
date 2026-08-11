@@ -156,7 +156,6 @@
 
 <div class="attendance-page">
 
-```
 <!-- ============================= -->
 <!-- شريط الحالة -->
 <!-- ============================= -->
@@ -353,22 +352,21 @@
             تسجيل العملية
         </div>
 
-        <div id="operation-label"
-             class="text-muted"
-             style="font-size:12px;">
+<div id="operation-label"
+     class="text-muted"
+     style="font-size:12px;">
 
-            {% if last_attendance and last_attendance.check_in and not last_attendance.check_out %}
+    {% if next_action == "check_out" %}
 
-                سيتم تسجيل الانصراف
+        سيتم تسجيل الانصراف
 
-            {% else %}
+    {% else %}
 
-                سيتم تسجيل الحضور
+        سيتم تسجيل الحضور
 
-            {% endif %}
+    {% endif %}
 
-        </div>
-
+</div>
     </div>
 
 
@@ -429,11 +427,10 @@
 
             <!-- نوع العملية -->
 
-            <input type="hidden"
-                   name="action"
-                   id="attendance-action"
-                   value="{% if last_attendance and last_attendance.check_in and not last_attendance.check_out %}check_out{% else %}check_in{% endif %}">
-
+<input type="hidden"
+       name="action"
+       id="attendance-action"
+       value="{{ next_action }}">
 
             <button type="submit"
                     id="attendance-btn"
@@ -446,13 +443,20 @@
                    class="fas fa-location-crosshairs mb-2"
                    style="font-size:32px;"></i>
 
-                <span id="attendance-btn-text"
-                      style="font-size:17px;font-weight:800;">
+<span id="attendance-btn-text"
+      style="font-size:17px;font-weight:800;">
 
-                    تحديد الموقع...
+    {% if next_action == "check_out" %}
 
-                </span>
+        تسجيل الانصراف
 
+    {% else %}
+
+        تسجيل الحضور
+
+    {% endif %}
+
+</span>
             </button>
 
         </form>
@@ -697,7 +701,6 @@
     {% endif %}
 
 </div>
-```
 
 </div>
 
@@ -715,7 +718,7 @@
                border-top:1px solid #374151;
                backdrop-filter:blur(5px);">
 
-```
+
 <a href="#"
    class="nav-item text-center text-decoration-none"
    style="color:inherit;">
@@ -766,7 +769,7 @@
     </span>
 
 </a>
-```
+
 
 </footer>
 

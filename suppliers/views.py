@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Supplier
 from purchase.models import PurchaseInvoice
 from accounting.models import Account
-
+from django.db.models.deletion import ProtectedError
 
 def _get_company(request):
     profile = getattr(request.user, "profile", None)
@@ -150,14 +150,32 @@ def supplier_edit(request, supplier_id):
 # ===========================
 # 🗑️ حذف مورد - حسب الشركة
 # ===========================
+
 @login_required
 def supplier_delete(request, supplier_id):
     company = _get_company(request)
-    supplier = get_object_or_404(Supplier, id=supplier_id, company=company)
-    supplier.delete()
-    messages.success(request, "تم حذف المورد")
-    return redirect("suppliers_list")
 
+    supplier = get_object_or_404(
+        Supplier,
+        id=supplier_id,
+        company=company
+    )
+
+    try:
+        supplier.delete()
+
+        messages.success(
+            request,
+            "تم حذف المورد بنجاح."
+        )
+
+    except ProtectedError:
+        messages.error(
+            request,
+            "لا يمكن حذف المورد لارتباطه بعمليات في النظام."
+        )
+
+    return redirect("suppliers_list")
 
 # ===========================
 # 🔌 API: جميع الموردين - حسب الشركة

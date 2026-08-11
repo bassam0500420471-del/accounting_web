@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from .models import Attendance
 # ✅ استيراد الـ Decorator المخصص لجدولك بدلاً من الافتراضي
 from .decorators import hr_permission_required
+from math import radians, sin, cos, sqrt, atan2
 
 import json
 from datetime import date, datetime, time
@@ -920,7 +921,7 @@ def work_locations_list(request):
 
     return render(
         request,
-        "hr/work_locations.html",
+        "hr/work_locations_list.html",
         {
             "work_locations": work_locations,
         }
@@ -937,14 +938,46 @@ def add_work_location(request):
 
     if request.method == "POST":
         name = (request.POST.get("name") or "").strip()
-        address = (request.POST.get("address") or "").strip()
+        country = (request.POST.get("country") or "").strip()
+        city = (request.POST.get("city") or "").strip()
+        district = (request.POST.get("district") or "").strip()
+        street = (request.POST.get("street") or "").strip()
+        building_no = (request.POST.get("building_no") or "").strip()
+        unit_no = (request.POST.get("unit_no") or "").strip()
+        postal_code = (request.POST.get("postal_code") or "").strip()
+        google_map_url = (request.POST.get("google_map_url") or "").strip()
         latitude = request.POST.get("latitude") or None
         longitude = request.POST.get("longitude") or None
         allowed_radius = request.POST.get("allowed_radius") or 100
+        active = request.POST.get("active") == "on"
 
         if not name:
-            messages.error(request, "❌ اسم موقع العمل مطلوب.")
-            return render(request, "hr/add_work_location.html")
+            messages.error(
+                request,
+                "❌ اسم موقع العمل مطلوب."
+            )
+
+            return render(
+                request,
+                "hr/work_locations.html"
+            )
+
+        # منع تكرار اسم الموقع داخل نفس الشركة
+        duplicate = WorkLocation.objects.filter(
+            company=company,
+            name=name
+        ).exists()
+
+        if duplicate:
+            messages.error(
+                request,
+                "❌ يوجد موقع عمل آخر بنفس الاسم داخل الشركة."
+            )
+
+            return render(
+                request,
+                "hr/work_locations.html"
+            )
 
         try:
             allowed_radius = int(allowed_radius)
@@ -954,16 +987,32 @@ def add_work_location(request):
         WorkLocation.objects.create(
             company=company,
             name=name,
-            address=address,
+            country=country,
+            city=city,
+            district=district,
+            street=street,
+            building_no=building_no,
+            unit_no=unit_no,
+            postal_code=postal_code,
+            google_map_url=google_map_url,
             latitude=latitude,
             longitude=longitude,
             allowed_radius=allowed_radius,
+            active=active,
         )
 
-        messages.success(request, "✅ تم إضافة موقع العمل بنجاح.")
+        messages.success(
+            request,
+            "✅ تم إضافة موقع العمل بنجاح."
+        )
+
         return redirect("hr:work_locations")
 
-    return render(request, "hr/add_work_location.html")
+    return render(
+        request,
+        "hr/work_locations.html"
+    )
+
 @login_required
 @hr_permission_required("attendance_edit")
 def edit_work_location(request, location_id):
@@ -980,17 +1029,51 @@ def edit_work_location(request, location_id):
 
     if request.method == "POST":
         name = (request.POST.get("name") or "").strip()
-        address = (request.POST.get("address") or "").strip()
+        country = (request.POST.get("country") or "").strip()
+        city = (request.POST.get("city") or "").strip()
+        district = (request.POST.get("district") or "").strip()
+        street = (request.POST.get("street") or "").strip()
+        building_no = (request.POST.get("building_no") or "").strip()
+        unit_no = (request.POST.get("unit_no") or "").strip()
+        postal_code = (request.POST.get("postal_code") or "").strip()
+        google_map_url = (request.POST.get("google_map_url") or "").strip()
         latitude = request.POST.get("latitude") or None
         longitude = request.POST.get("longitude") or None
         allowed_radius = request.POST.get("allowed_radius") or 100
+        active = request.POST.get("active") == "on"
 
         if not name:
-            messages.error(request, "❌ اسم موقع العمل مطلوب.")
+            messages.error(
+                request,
+                "❌ اسم موقع العمل مطلوب."
+            )
 
             return render(
                 request,
-                "hr/add_work_location.html",
+                "hr/work_locations.html",
+                {
+                    "location": location,
+                    "edit_mode": True,
+                }
+            )
+
+        # التحقق من عدم تكرار اسم الموقع داخل نفس الشركة
+        duplicate = WorkLocation.objects.filter(
+            company=company,
+            name=name
+        ).exclude(
+            id=location.id
+        ).exists()
+
+        if duplicate:
+            messages.error(
+                request,
+                "❌ يوجد موقع عمل آخر بنفس الاسم داخل الشركة."
+            )
+
+            return render(
+                request,
+                "hr/work_locations.html",
                 {
                     "location": location,
                     "edit_mode": True,
@@ -1003,10 +1086,18 @@ def edit_work_location(request, location_id):
             allowed_radius = 100
 
         location.name = name
-        location.address = address
+        location.country = country
+        location.city = city
+        location.district = district
+        location.street = street
+        location.building_no = building_no
+        location.unit_no = unit_no
+        location.postal_code = postal_code
+        location.google_map_url = google_map_url
         location.latitude = latitude
         location.longitude = longitude
         location.allowed_radius = allowed_radius
+        location.active = active
 
         location.save()
 
@@ -1019,12 +1110,14 @@ def edit_work_location(request, location_id):
 
     return render(
         request,
-        "hr/add_work_location.html",
+        "hr/work_locations.html",
         {
             "location": location,
             "edit_mode": True,
         }
     )
+
+
 @login_required
 @hr_permission_required("attendance_edit")
 def delete_work_location(request, location_id):
@@ -1041,9 +1134,13 @@ def delete_work_location(request, location_id):
 
     location.delete()
 
-    messages.success(request, "✅ تم حذف موقع العمل بنجاح.")
+    messages.success(
+        request,
+        "✅ تم حذف موقع العمل بنجاح."
+    )
 
     return redirect("hr:work_locations")
+
 
 # ==========================
 # الحضور (الإدارة)
@@ -1052,40 +1149,230 @@ def delete_work_location(request, location_id):
 @hr_permission_required("attendance_view")
 def attendance_page(request):
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    today = timezone.now().date()
-    all_employees = Employee.objects.filter(company=company, active=True).order_by("employee_number")
-    selected_employee = request.GET.get("employee", "all")
-    start_date_str = request.GET.get("start_date", "")
-    end_date_str = request.GET.get("end_date", "")
+    today = timezone.localdate()
+
+    all_employees = (
+        Employee.objects
+        .filter(
+            company=company,
+            active=True
+        )
+        .order_by("employee_number")
+    )
+
+    selected_employee = request.GET.get(
+        "employee",
+        "all"
+    )
+
+    start_date_str = request.GET.get(
+        "start_date",
+        ""
+    )
+
+    end_date_str = request.GET.get(
+        "end_date",
+        ""
+    )
+
+    # ==========================================================
+    # تاريخ البداية
+    # ==========================================================
 
     try:
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else today.replace(day=1)
+
+        start_date = (
+            datetime.strptime(
+                start_date_str,
+                "%Y-%m-%d"
+            ).date()
+            if start_date_str
+            else today.replace(day=1)
+        )
+
     except ValueError:
+
         start_date = today.replace(day=1)
 
+    # ==========================================================
+    # تاريخ النهاية
+    # ==========================================================
+
     try:
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else today
+
+        end_date = (
+            datetime.strptime(
+                end_date_str,
+                "%Y-%m-%d"
+            ).date()
+            if end_date_str
+            else today
+        )
+
     except ValueError:
+
         end_date = today
 
+    # ==========================================================
+    # الموظفون
+    # ==========================================================
+
     employees = all_employees
+
     if selected_employee != "all":
+
         try:
-            employees = employees.filter(id=int(selected_employee))
-        except ValueError:
+
+            employees = employees.filter(
+                id=int(selected_employee)
+            )
+
+        except (TypeError, ValueError):
+
             selected_employee = "all"
 
-    attendances = Attendance.objects.filter(company=company, date__range=(start_date, end_date))
+    # ==========================================================
+    # Attendance
+    # ==========================================================
+
+    attendances = (
+        Attendance.objects
+        .filter(
+            company=company,
+            date__range=(
+                start_date,
+                end_date
+            )
+        )
+        .select_related(
+            "employee"
+        )
+        .prefetch_related(
+            "logs"
+        )
+        .order_by(
+            "employee_id",
+            "date"
+        )
+    )
+
     if selected_employee != "all":
-        attendances = attendances.filter(employee_id=selected_employee)
+
+        attendances = attendances.filter(
+            employee_id=selected_employee
+        )
+
+    # ==========================================================
+    # تجهيز بيانات الحضور
+    # ==========================================================
 
     attendance_map = {}
-    for att in attendances:
-        attendance_map.setdefault(att.employee_id, {})
-        attendance_map[att.employee_id][att.date] = att
+
+    for attendance in attendances:
+
+        logs = list(
+            attendance.logs
+            .filter(
+                action__in=[
+                    "check_in",
+                    "check_out"
+                ]
+            )
+            .order_by(
+                "timestamp",
+                "id"
+            )
+        )
+
+        # ------------------------------------------------------
+        # تقسيم العمليات إلى 3 أزواج
+        # ------------------------------------------------------
+
+        sessions = []
+
+        current_session = None
+
+        for log in logs:
+
+            if log.action == "check_in":
+
+                # إذا كان هناك حضور مفتوح
+                # نبدأ دورة جديدة
+                if current_session is not None:
+
+                    sessions.append(
+                        current_session
+                    )
+
+                current_session = {
+                    "check_in": log,
+                    "check_out": None,
+                }
+
+            elif log.action == "check_out":
+
+                if current_session is not None:
+
+                    current_session["check_out"] = log
+
+                    sessions.append(
+                        current_session
+                    )
+
+                    current_session = None
+
+        # ------------------------------------------------------
+        # إذا بقي حضور بدون انصراف
+        # ------------------------------------------------------
+
+        if current_session is not None:
+
+            sessions.append(
+                current_session
+            )
+
+        # ------------------------------------------------------
+        # نضمن وجود 3 دورات
+        # ------------------------------------------------------
+
+        while len(sessions) < 3:
+
+            sessions.append(
+                {
+                    "check_in": None,
+                    "check_out": None,
+                }
+            )
+
+        # ------------------------------------------------------
+        # نأخذ أول 3 فقط
+        # ------------------------------------------------------
+
+        sessions = sessions[:3]
+
+        # ------------------------------------------------------
+        # تخزين البيانات
+        # ------------------------------------------------------
+
+        attendance_map.setdefault(
+            attendance.employee_id,
+            {}
+        )
+
+        attendance_map[
+            attendance.employee_id
+        ][attendance.date] = {
+            "attendance": attendance,
+            "sessions": sessions,
+        }
+
+    # ==========================================================
+    # البيانات المرسلة للقالب
+    # ==========================================================
 
     context = {
         "all_employees": all_employees,
@@ -1095,11 +1382,19 @@ def attendance_page(request):
         "start_date": start_date,
         "end_date": end_date,
         "selected_employee": selected_employee,
-        "start_date_str": start_date.strftime("%Y-%m-%d"),
-        "end_date_str": end_date.strftime("%Y-%m-%d"),
+        "start_date_str": start_date.strftime(
+            "%Y-%m-%d"
+        ),
+        "end_date_str": end_date.strftime(
+            "%Y-%m-%d"
+        ),
     }
-    return render(request, "hr/attendance_page.html", context)
 
+    return render(
+        request,
+        "hr/attendance_page.html",
+        context
+    )
 
 @login_required
 @hr_permission_required("change_attendance")
@@ -1167,7 +1462,41 @@ def attendance_check_out_ajax(request, attendance_id):
     return JsonResponse({"success": False, "error": "طلب غير صالح"})
 
 
+def calculate_distance_meters(
+    latitude1,
+    longitude1,
+    latitude2,
+    longitude2,
+):
+    """
+    حساب المسافة بين نقطتين GPS بالمتر
+    باستخدام Haversine Formula.
+    """
 
+    earth_radius = 6371000
+
+    lat1 = radians(float(latitude1))
+    lon1 = radians(float(longitude1))
+
+    lat2 = radians(float(latitude2))
+    lon2 = radians(float(longitude2))
+
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(lat1)
+        * cos(lat2)
+        * sin(dlon / 2) ** 2
+    )
+
+    c = 2 * atan2(
+        sqrt(a),
+        sqrt(1 - a)
+    )
+
+    return earth_radius * c
 @login_required
 @hr_permission_required("attendance_check")
 def attendance_check_page(request):
@@ -1194,7 +1523,6 @@ def attendance_check_page(request):
 
     today = timezone.localdate()
     now = timezone.now()
-
     # ==========================================================
     # الموظف الحالي
     # ==========================================================
@@ -1368,6 +1696,7 @@ def attendance_check_page(request):
             "check_in",
             "check_out",
         ):
+
             messages.error(
                 request,
                 "عملية الحضور غير معروفة.",
@@ -1376,254 +1705,368 @@ def attendance_check_page(request):
             return redirect(
                 "hr:attendance_check_page"
             )
+    # ======================================================
+    # التحقق من وجود موقع عمل للموظف
+    # ======================================================
 
-        # ======================================================
-        # التحقق من GPS
-        # ======================================================
+    if not work_location:
 
-        if not latitude_raw or not longitude_raw:
+        messages.error(
+            request,
+            "لا يوجد موقع عمل مسجل لهذا الموظف. لا يمكن تسجيل الحضور أو الانصراف.",
+        )
 
-            messages.error(
-                request,
-                "📍 يجب السماح بتحديد الموقع قبل تسجيل الحضور أو الانصراف.",
-            )
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
+    # ======================================================
+    # التحقق من أن موقع العمل فعال
+    # ======================================================
 
-        # ======================================================
-        # تحويل GPS
-        # ======================================================
+    if not work_location.active:
 
-        try:
-            latitude = float(latitude_raw)
-            longitude = float(longitude_raw)
+        messages.error(
+            request,
+            "موقع العمل المرتبط بك غير فعال حاليًا. لا يمكن تسجيل الحضور أو الانصراف.",
+        )
 
-            accuracy = (
-                float(accuracy_raw)
-                if accuracy_raw
-                else None
-            )
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-        except (
-            TypeError,
-            ValueError,
-        ):
+    # ======================================================
+    # التحقق من إحداثيات موقع العمل
+    # ======================================================
 
-            messages.error(
-                request,
-                "بيانات الموقع غير صحيحة.",
-            )
+    if (
+        work_location.latitude is None
+        or work_location.longitude is None
+    ):
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
+        messages.error(
+            request,
+            "إحداثيات موقع العمل غير مكتملة. يرجى مراجعة إدارة الموارد البشرية.",
+        )
 
-        # ======================================================
-        # التحقق من الإحداثيات
-        # ======================================================
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-        if not -90 <= latitude <= 90:
+    # ======================================================
+    # التحقق من GPS
+    # ======================================================
 
-            messages.error(
-                request,
-                "خط العرض غير صحيح.",
-            )
+    if not latitude_raw or not longitude_raw:
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
+        messages.error(
+            request,
+            "📍 يجب السماح بتحديد الموقع قبل تسجيل الحضور أو الانصراف.",
+        )
 
-        if not -180 <= longitude <= 180:
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-            messages.error(
-                request,
-                "خط الطول غير صحيح.",
-            )
+    # ======================================================
+    # تحويل GPS
+    # ======================================================
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
+    try:
 
-        # ======================================================
-        # CHECK IN
-        # ======================================================
+        latitude = float(latitude_raw)
+        longitude = float(longitude_raw)
 
-        if action == "check_in":
+        accuracy = (
+            float(accuracy_raw)
+            if accuracy_raw
+            else None
+        )
 
-            # ----------------------------------------------
-            # إعادة قراءة آخر عملية من قاعدة البيانات
-            # ----------------------------------------------
+    except (
+        TypeError,
+        ValueError,
+    ):
 
-            last_log = (
-                AttendanceLog.objects
-                .filter(
-                    company=company,
-                    employee=employee,
-                    attendance=attendance,
-                )
-                .order_by(
-                    "-timestamp",
-                    "-id",
-                )
-                .first()
-            )
+        messages.error(
+            request,
+            "بيانات الموقع غير صحيحة.",
+        )
 
-            # ----------------------------------------------
-            # إذا آخر عملية حضور
-            # فهذا يعني أن هناك حضور مفتوح
-            # ----------------------------------------------
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-            if last_log and last_log.action == "check_in":
+    # ======================================================
+    # التحقق من الإحداثيات
+    # ======================================================
 
-                messages.warning(
-                    request,
-                    "يوجد حضور مفتوح بالفعل. يجب تسجيل الانصراف أولاً.",
-                )
+    if not -90 <= latitude <= 90:
 
-                return redirect(
-                    "hr:attendance_check_page"
-                )
+        messages.error(
+            request,
+            "خط العرض غير صحيح.",
+        )
 
-            # ----------------------------------------------
-            # إنشاء عملية الحضور
-            # ----------------------------------------------
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-            AttendanceLog.objects.create(
+    if not -180 <= longitude <= 180:
+
+        messages.error(
+            request,
+            "خط الطول غير صحيح.",
+        )
+
+        return redirect(
+            "hr:attendance_check_page"
+        )
+
+    # ======================================================
+    # حساب المسافة عن موقع العمل
+    # ======================================================
+
+    distance_from_workplace = calculate_distance_meters(
+        latitude,
+        longitude,
+        float(work_location.latitude),
+        float(work_location.longitude),
+    )
+
+    # ======================================================
+    # نصف قطر السماح
+    # ======================================================
+
+    allowed_radius = float(
+        work_location.allowed_radius or 0
+    )
+
+    # ======================================================
+    # رفض التبصيم خارج الموقع
+    # ======================================================
+
+    if distance_from_workplace > allowed_radius:
+
+        messages.error(
+            request,
+            (
+                "لا يمكنك تسجيل الحضور أو الانصراف من هذا الموقع. "
+                f"أنت خارج نطاق موقع العمل بحوالي "
+                f"{round(distance_from_workplace)} متر. "
+                f"النطاق المسموح {round(allowed_radius)} متر."
+            ),
+        )
+
+        return redirect(
+            "hr:attendance_check_page"
+        )
+
+    # ======================================================
+    # CHECK IN
+    # ======================================================
+
+    if action == "check_in":
+
+        # ----------------------------------------------
+        # إعادة قراءة آخر عملية من قاعدة البيانات
+        # ----------------------------------------------
+
+        last_log = (
+            AttendanceLog.objects
+            .filter(
                 company=company,
-                attendance=attendance,
                 employee=employee,
-                action="check_in",
-                timestamp=now,
-                latitude=latitude,
-                longitude=longitude,
-                work_location=work_location,
-                location_verified=True,
+                attendance=attendance,
             )
-
-            # ----------------------------------------------
-            # تحديث Attendance
-            # ----------------------------------------------
-
-            attendance.shift = shift
-            attendance.work_location = work_location
-            attendance.status = "present"
-
-            attendance.save(
-                update_fields=[
-                    "shift",
-                    "work_location",
-                    "status",
-                    "updated_at",
-                ]
+            .order_by(
+                "-timestamp",
+                "-id",
             )
+            .first()
+        )
 
-            messages.success(
+        # ----------------------------------------------
+        # إذا آخر عملية حضور
+        # يوجد حضور مفتوح
+        # ----------------------------------------------
+
+        if last_log and last_log.action == "check_in":
+
+            messages.warning(
                 request,
-                "✅ تم تسجيل الحضور بنجاح. يمكنك الآن تسجيل الانصراف.",
+                "يوجد حضور مفتوح بالفعل. يجب تسجيل الانصراف أولاً.",
             )
 
             return redirect(
                 "hr:attendance_check_page"
             )
 
-        # ======================================================
-        # CHECK OUT
-        # ======================================================
+        # ----------------------------------------------
+        # إنشاء عملية الحضور
+        # ----------------------------------------------
 
-        if action == "check_out":
+        AttendanceLog.objects.create(
+            company=company,
+            attendance=attendance,
+            employee=employee,
+            action="check_in",
+            timestamp=now,
+            latitude=latitude,
+            longitude=longitude,
+            distance_from_workplace=round(
+                distance_from_workplace
+            ),
+            location_verified=True,
+            work_location=work_location,
+            location_note=(
+                f"تم التحقق من الموقع - "
+                f"المسافة {round(distance_from_workplace)} متر"
+            ),
+            device_info=request.META.get(
+                "HTTP_USER_AGENT",
+                ""
+            )[:500],
+            ip_address=(
+                request.META.get("REMOTE_ADDR")
+            ),
+        )
 
-            # ----------------------------------------------
-            # آخر عملية
-            # ----------------------------------------------
+        # ----------------------------------------------
+        # تحديث Attendance
+        # ----------------------------------------------
 
-            last_log = (
-                AttendanceLog.objects
-                .filter(
-                    company=company,
-                    employee=employee,
-                    attendance=attendance,
-                )
-                .order_by(
-                    "-timestamp",
-                    "-id",
-                )
-                .first()
-            )
+        attendance.shift = shift
+        attendance.work_location = work_location
+        attendance.status = "present"
 
-            # ----------------------------------------------
-            # لا يوجد حضور مفتوح
-            # ----------------------------------------------
+        attendance.save(
+            update_fields=[
+                "shift",
+                "work_location",
+                "status",
+                "updated_at",
+            ]
+        )
 
-            if not last_log or last_log.action != "check_in":
+        messages.success(
+            request,
+            "✅ تم تسجيل الحضور بنجاح. يمكنك الآن تسجيل الانصراف.",
+        )
 
-                messages.warning(
-                    request,
-                    "لا يوجد حضور مفتوح لتسجيل الانصراف.",
-                )
+        return redirect(
+            "hr:attendance_check_page"
+        )
 
-                return redirect(
-                    "hr:attendance_check_page"
-                )
+    # ======================================================
+    # CHECK OUT
+    # ======================================================
 
-            # ----------------------------------------------
-            # إنشاء عملية الانصراف
-            # ----------------------------------------------
+    if action == "check_out":
 
-            checkout_log = AttendanceLog.objects.create(
+        # ----------------------------------------------
+        # آخر عملية
+        # ----------------------------------------------
+
+        last_log = (
+            AttendanceLog.objects
+            .filter(
                 company=company,
-                attendance=attendance,
                 employee=employee,
-                action="check_out",
-                timestamp=now,
-                latitude=latitude,
-                longitude=longitude,
-                work_location=work_location,
-                location_verified=True,
+                attendance=attendance,
             )
-
-            # ----------------------------------------------
-            # حساب مدة الفترة الحالية
-            # ----------------------------------------------
-
-            worked_seconds = (
-                checkout_log.timestamp - last_log.timestamp
-            ).total_seconds()
-
-            worked_minutes = max(
-                0,
-                int(worked_seconds // 60)
+            .order_by(
+                "-timestamp",
+                "-id",
             )
+            .first()
+        )
 
-            # ----------------------------------------------
-            # إضافة مدة الفترة إلى إجمالي اليوم
-            # ----------------------------------------------
+        # ----------------------------------------------
+        # لا يوجد حضور مفتوح
+        # ----------------------------------------------
 
-            attendance.worked_minutes = (
-                attendance.worked_minutes
-                + worked_minutes
-            )
+        if not last_log or last_log.action != "check_in":
 
-            attendance.status = "completed"
-
-            attendance.save(
-                update_fields=[
-                    "worked_minutes",
-                    "status",
-                    "updated_at",
-                ]
-            )
-
-            messages.success(
+            messages.warning(
                 request,
-                "✅ تم تسجيل الانصراف بنجاح.",
+                "لا يوجد حضور مفتوح لتسجيل الانصراف.",
             )
 
             return redirect(
                 "hr:attendance_check_page"
             )
 
+        # ----------------------------------------------
+        # إنشاء عملية الانصراف
+        # ----------------------------------------------
+
+        checkout_log = AttendanceLog.objects.create(
+            company=company,
+            attendance=attendance,
+            employee=employee,
+            action="check_out",
+            timestamp=now,
+            latitude=latitude,
+            longitude=longitude,
+            distance_from_workplace=round(
+                distance_from_workplace
+            ),
+            location_verified=True,
+            work_location=work_location,
+            location_note=(
+                f"تم التحقق من الموقع - "
+                f"المسافة {round(distance_from_workplace)} متر"
+            ),
+            device_info=request.META.get(
+                "HTTP_USER_AGENT",
+                ""
+            )[:500],
+            ip_address=(
+                request.META.get("REMOTE_ADDR")
+            ),
+        )
+
+        # ----------------------------------------------
+        # حساب مدة الفترة الحالية
+        # ----------------------------------------------
+
+        worked_seconds = (
+            checkout_log.timestamp - last_log.timestamp
+        ).total_seconds()
+
+        worked_minutes = max(
+            0,
+            int(worked_seconds // 60)
+        )
+
+        # ----------------------------------------------
+        # إضافة مدة الفترة إلى إجمالي اليوم
+        # ----------------------------------------------
+
+        attendance.worked_minutes = (
+            attendance.worked_minutes
+            + worked_minutes
+        )
+
+        attendance.status = "completed"
+
+        attendance.save(
+            update_fields=[
+                "worked_minutes",
+                "status",
+                "updated_at",
+            ]
+        )
+
+        messages.success(
+            request,
+            "✅ تم تسجيل الانصراف بنجاح.",
+        )
+
+        return redirect(
+            "hr:attendance_check_page"
+        )
     # ==========================================================
     # تجهيز بيانات القالب
     # ==========================================================
