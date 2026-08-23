@@ -1,82 +1,217 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Category Details" %}{% endblock %}
+{% block title %}
+    {% trans "Category Details" %}
+{% endblock %}
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid category-page mt-4">
 
-    <div class="card shadow-sm">
+    <div class="category-card">
 
-        <div class="card-header">
-            <h4 class="mb-0">
-                {% trans "Category Details" %}
-            </h4>
+        <!-- ===================================================== -->
+        <!-- رأس الصفحة -->
+        <!-- ===================================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                    {% trans "Category Details" %}
+
+                </h3>
+
+                <p>
+                    {% trans "View category information and settings" %}
+                </p>
+
+            </div>
+
+
+            <div class="header-actions">
+
+                <a href="{% url 'products:category_list' %}"
+                   class="back-btn">
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                    {% trans "Back" %}
+
+                </a>
+
+                <a href="{% url 'products:category_edit' category.id %}"
+                   class="edit-btn">
+
+                    <i class="fa-solid fa-pen-to-square"></i>
+
+                    {% trans "Edit" %}
+
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="card-body">
 
-            <div class="row mb-3">
-                <div class="col-md-3 fw-bold">
+        <!-- ===================================================== -->
+        <!-- معلومات التصنيف -->
+        <!-- ===================================================== -->
+
+        <div class="details-box">
+
+            <!-- اسم التصنيف -->
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+
+                    <i class="fa-solid fa-tag"></i>
+
                     {% trans "Name" %}
+
                 </div>
-                <div class="col-md-9">
-                    {{ category.name }}
+
+                <div class="detail-value">
+
+                    <span class="name-badge">
+
+                        {{ category.name }}
+
+                    </span>
+
                 </div>
+
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-3 fw-bold">
+
+            <!-- الترتيب -->
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+
+                    <i class="fa-solid fa-sort"></i>
+
                     {% trans "Order" %}
+
                 </div>
-                <div class="col-md-9">
-                    {{ category.sort_order }}
+
+                <div class="detail-value">
+
+                    <span class="order-badge">
+
+                        {{ category.sort_order }}
+
+                    </span>
+
                 </div>
+
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-3 fw-bold">
+
+            <!-- الحالة -->
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+
+                    <i class="fa-solid fa-toggle-on"></i>
+
                     {% trans "Status" %}
+
                 </div>
-                <div class="col-md-9">
+
+                <div class="detail-value">
+
                     {% if category.active %}
-                        <span class="badge bg-success">
+
+                        <span class="status-badge active">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
                             {% trans "Active" %}
+
                         </span>
+
                     {% else %}
-                        <span class="badge bg-secondary">
+
+                        <span class="status-badge inactive">
+
+                            <i class="fa-solid fa-circle-xmark"></i>
+
                             {% trans "Inactive" %}
+
                         </span>
+
                     {% endif %}
+
                 </div>
+
             </div>
+
+
+            <!-- الصورة -->
 
             {% if category.image %}
-            <div class="row mb-3">
-                <div class="col-md-3 fw-bold">
+
+            <div class="detail-row image-row">
+
+                <div class="detail-label">
+
+                    <i class="fa-solid fa-image"></i>
+
                     {% trans "Image" %}
+
                 </div>
-                <div class="col-md-9">
-                    <img src="{{ category.image.url }}"
-                         class="img-thumbnail"
-                         style="max-width:220px;">
+
+                <div class="detail-value">
+
+                    <div class="category-image-wrapper">
+
+                        <img src="{{ category.image.url }}"
+                             alt="{{ category.name }}"
+                             class="category-image">
+
+                    </div>
+
                 </div>
+
             </div>
+
             {% endif %}
 
         </div>
 
-        <div class="card-footer text-end">
 
-            <a href="{% url 'products:category_edit' category.id %}"
-               class="btn btn-warning">
-                ✏️ {% trans "Edit" %}
-            </a>
+        <!-- ===================================================== -->
+        <!-- أزرار أسفل الصفحة -->
+        <!-- ===================================================== -->
+
+        <div class="bottom-actions">
 
             <a href="{% url 'products:category_list' %}"
-               class="btn btn-secondary">
-                ↩ {% trans "Back" %}
+               class="cancel-btn">
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+                {% trans "Back to Categories" %}
+
+            </a>
+
+
+            <a href="{% url 'products:category_edit' category.id %}"
+               class="save-edit-btn">
+
+                <i class="fa-solid fa-pen-to-square"></i>
+
+                {% trans "Edit Category" %}
+
             </a>
 
         </div>
@@ -84,5 +219,727 @@
     </div>
 
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:#eeeeee;
+
+    font-family:"Tahoma";
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.category-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.category-card {
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+
+.page-header h3 {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i {
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p {
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   أزرار الرأس
+========================================================= */
+
+.header-actions {
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+}
+
+
+.back-btn,
+.edit-btn {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:11px 20px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    transition:.3s;
+
+}
+
+
+/* الرجوع */
+
+.back-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.back-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #dddddd,
+        #bbbbbb
+    );
+
+    color:#333;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* التعديل */
+
+.edit-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.edit-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   صندوق التفاصيل
+========================================================= */
+
+.details-box {
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+    border:1px solid #e2e2e2;
+
+}
+
+
+/* =========================================================
+   صف التفاصيل
+========================================================= */
+
+.detail-row {
+
+    display:flex;
+
+    align-items:center;
+
+    min-height:75px;
+
+    border-bottom:1px solid #eeeeee;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f6f6f6
+    );
+
+    transition:.3s;
+
+}
+
+
+.detail-row:last-child {
+
+    border-bottom:0;
+
+}
+
+
+.detail-row:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #e1e1e1
+    );
+
+}
+
+
+/* =========================================================
+   عنوان الحقل
+========================================================= */
+
+.detail-label {
+
+    width:30%;
+
+    min-width:200px;
+
+    padding:20px;
+
+    font-weight:800;
+
+    color:#555;
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d8d8d8
+    );
+
+    border-left:1px solid #d0d0d0;
+
+}
+
+
+.detail-label i {
+
+    width:25px;
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+/* =========================================================
+   قيمة الحقل
+========================================================= */
+
+.detail-value {
+
+    flex:1;
+
+    padding:20px;
+
+    color:#555;
+
+    font-weight:600;
+
+}
+
+
+/* =========================================================
+   اسم التصنيف
+========================================================= */
+
+.name-badge {
+
+    display:inline-block;
+
+    padding:9px 18px;
+
+    border-radius:12px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#444;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    box-shadow:
+    0 3px 7px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   رقم الترتيب
+========================================================= */
+
+.order-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:45px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    color:#444;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الحالة
+========================================================= */
+
+.status-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.15),
+    inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* الحالة النشطة */
+
+.status-badge.active {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+}
+
+
+/* الحالة غير النشطة */
+
+.status-badge.inactive {
+
+    background:
+    linear-gradient(
+        135deg,
+        #aaaaaa,
+        #777777
+    );
+
+    color:white;
+
+}
+
+
+/* =========================================================
+   الصورة
+========================================================= */
+
+.image-row {
+
+    align-items:flex-start;
+
+}
+
+
+.category-image-wrapper {
+
+    display:inline-flex;
+
+    padding:8px;
+
+    border-radius:16px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.15),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.category-image {
+
+    width:220px;
+
+    height:220px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    border:1px solid #ccc;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   أزرار أسفل الصفحة
+========================================================= */
+
+.bottom-actions {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:25px;
+
+    padding-top:20px;
+
+    border-top:1px solid #eeeeee;
+
+}
+
+
+.cancel-btn,
+.save-edit-btn {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:11px 22px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    transition:.3s;
+
+}
+
+
+/* الرجوع */
+
+.cancel-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.cancel-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #dddddd,
+        #bbbbbb
+    );
+
+    color:#333;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* تعديل */
+
+.save-edit-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.save-edit-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .category-page {
+
+        padding:15px;
+
+    }
+
+
+    .category-card {
+
+        padding:18px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .header-actions {
+
+        justify-content:center;
+
+        flex-wrap:wrap;
+
+    }
+
+
+    .detail-row {
+
+        display:block;
+
+    }
+
+
+    .detail-label {
+
+        width:100%;
+
+        min-width:0;
+
+        border-left:0;
+
+        border-bottom:1px solid #ccc;
+
+    }
+
+
+    .detail-value {
+
+        width:100%;
+
+    }
+
+
+    .category-image {
+
+        width:180px;
+
+        height:180px;
+
+    }
+
+
+    .bottom-actions {
+
+        flex-direction:column;
+
+        gap:12px;
+
+    }
+
+
+    .cancel-btn,
+    .save-edit-btn {
+
+        width:100%;
+
+    }
+
+}
+
+</style>
 
 {% endblock %}

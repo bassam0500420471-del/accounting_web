@@ -1,178 +1,1504 @@
 {% extends 'layout/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Company Information Settings" %}
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4" dir="rtl">
-    <h3 class="mb-4 text-primary fw-bold"><i class="bi bi-gear-fill me-2"></i>إعدادات معلومات الشركة</h3>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.company-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.company-wrapper {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.company-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 22px 26px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        0 5px 12px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.company-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.company-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   وصف الصفحة
+========================================================= */
+
+.company-header p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   الرسائل
+========================================================= */
+
+.company-messages {
+
+    margin-bottom: 22px;
+
+}
+
+
+.company-alert {
+
+    border: 0;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 6px 15px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.7);
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.company-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 24px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.company-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+    z-index: 5;
+
+}
+
+
+/* =========================================================
+   رأس القسم
+========================================================= */
+
+.company-card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+.company-card-header i {
+
+    font-size: 20px;
+
+}
+
+
+/* =========================================================
+   جسم القسم
+========================================================= */
+
+.company-card-body {
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   العناوين
+========================================================= */
+
+.company-form-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.company-form-control {
+
+    width: 100%;
+
+    min-height: 44px;
+
+    padding: 9px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+.company-form-control:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+.company-form-control::placeholder {
+
+    color: #999;
+
+}
+
+
+/* =========================================================
+   الحقول التي يتم توليدها بواسطة Django
+========================================================= */
+
+.company-card-body input[type="text"],
+.company-card-body input[type="email"],
+.company-card-body input[type="url"],
+.company-card-body input[type="file"],
+.company-card-body textarea,
+.company-card-body select {
+
+    width: 100%;
+
+    min-height: 44px;
+
+    padding: 9px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+.company-card-body input:focus,
+.company-card-body textarea:focus,
+.company-card-body select:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   Textarea
+========================================================= */
+
+.company-card-body textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   أخطاء الحقول
+========================================================= */
+
+.company-error {
+
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   الشعار
+========================================================= */
+
+.company-logo-box {
+
+    display: inline-block;
+
+    margin-top: 12px;
+
+    padding: 12px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d6d6d6
+        );
+
+    border: 1px solid #ccc;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+.company-logo-title {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #666;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+
+.company-logo {
+
+    max-width: 130px;
+
+    max-height: 100px;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+
+}
+
+
+/* =========================================================
+   منطقة الحفظ
+========================================================= */
+
+.company-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 24px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    border: 1px solid #d0d0d0;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9),
+        0 8px 18px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   زر الحفظ
+========================================================= */
+
+.company-save-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 46px;
+
+    padding: 10px 28px;
+
+    color: #fff !important;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
+}
+
+
+.company-save-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .company-page {
+
+        padding: 15px;
+
+    }
+
+
+    .company-header {
+
+        padding: 18px;
+
+    }
+
+
+    .company-header h3 {
+
+        font-size: 21px;
+
+    }
+
+
+    .company-header-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 20px;
+
+    }
+
+
+    .company-card-body {
+
+        padding: 14px;
+
+    }
+
+
+    .company-actions {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        padding: 14px;
+
+    }
+
+
+    .company-save-btn {
+
+        width: 100%;
+
+    }
+
+}
+
+</style>
+
+
+<div class="company-page">
+
+    <div class="company-wrapper">
+
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="company-header">
+
+            <div class="company-header-icon">
+
+                🏢
+
             </div>
-        {% endfor %}
-    {% endif %}
 
-    <form method="post" action="{% url 'company_settings' %}" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
+            <div>
 
-        <div class="card p-4 shadow-sm mb-4">
-            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
-                <i class="bi bi-building me-1"></i> البيانات الأساسية والرسمية
-            </h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.name.label }}</label>
-                    <input type="text" name="name" class="form-control" value="{{ company_info.name|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.name.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.name_en.label }}</label>
-                    <input type="text" name="name_en" class="form-control" value="{{ company_info.name_en|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.name_en.errors }}</div>
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.tax_number.label }}</label>
-                    {{ form.tax_number }}
-                    <div class="text-danger small">{{ form.tax_number.errors }}</div>
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.commercial_number.label }}</label>
-                    {{ form.commercial_number }}
-                    <div class="text-danger small">{{ form.commercial_number.errors }}</div>
-                </div>
+                <h3>
+
+                    إعدادات معلومات الشركة
+
+                </h3>
+
+                <p>
+
+                    إدارة البيانات الرسمية والعنوان ووسائل الاتصال والحسابات البنكية
+
+                </p>
+
             </div>
+
         </div>
 
-        <div class="card p-4 shadow-sm mb-4">
-            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
-                <i class="bi bi-geo-alt-fill me-1"></i> بيانات الموقع والعنوان الوطني
-            </h5>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">{{ form.country.label }}</label>
-                    <input type="text" name="country" class="form-control" value="{{ company_info.country|default_if_none:'المملكة العربية السعودية' }}">
-                    <div class="text-danger small">{{ form.country.errors }}</div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">{{ form.city.label }}</label>
-                    <input type="text" name="city" class="form-control" value="{{ company_info.city|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.city.errors }}</div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">{{ form.district.label }}</label>
-                    <input type="text" name="district" class="form-control" value="{{ company_info.district|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.district.errors }}</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label fw-bold">{{ form.street.label }}</label>
-                    <input type="text" name="street" class="form-control" value="{{ company_info.street|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.street.errors }}</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label fw-bold">{{ form.building_no.label }}</label>
-                    <input type="text" name="building_no" class="form-control" value="{{ company_info.building_no|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.building_no.errors }}</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label fw-bold">{{ form.postal_code.label }}</label>
-                    <input type="text" name="postal_code" class="form-control" value="{{ company_info.postal_code|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.postal_code.errors }}</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label fw-bold">{{ form.additional_no.label }}</label>
-                    <input type="text" name="additional_no" class="form-control" value="{{ company_info.additional_no|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.additional_no.errors }}</div>
-                </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label fw-bold">{{ form.national_address.label }}</label>
-                    <textarea name="national_address" class="form-control" rows="2">{{ company_info.national_address|default_if_none:'' }}</textarea>
-                    <div class="text-danger small">{{ form.national_address.errors }}</div>
-                </div>
-            </div>
-        </div>
 
-        <div class="card p-4 shadow-sm mb-4">
-            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
-                <i class="bi bi-telephone-fill me-1"></i> وسائل الاتصال والشعار
-            </h5>
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">{{ form.phone.label }}</label>
-                    <input type="text" name="phone" class="form-control" value="{{ company_info.phone|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.phone.errors }}</div>
+        <!-- =================================================
+             الرسائل
+        ================================================= -->
+
+        {% if messages %}
+
+            <div class="company-messages">
+
+                {% for message in messages %}
+
+                    <div
+                        class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show company-alert"
+                        role="alert"
+                    >
+
+                        {{ message }}
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close"
+                        ></button>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             النموذج
+        ================================================= -->
+
+        <form
+            method="post"
+            action="{% url 'company_settings' %}"
+            enctype="multipart/form-data"
+            novalidate
+        >
+
+            {% csrf_token %}
+
+
+            <!-- =================================================
+                 البيانات الأساسية والرسمية
+            ================================================= -->
+
+            <div class="company-card">
+
+                <div class="company-card-header">
+
+                    <i class="bi bi-building"></i>
+
+                    البيانات الأساسية والرسمية
+
                 </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">{{ form.mobile.label }}</label>
-                    <input type="text" name="mobile" class="form-control" value="{{ company_info.mobile|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.mobile.errors }}</div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">{{ form.email.label }}</label>
-                    <input type="email" name="email" class="form-control" value="{{ company_info.email|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.email.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.website.label }}</label>
-                    <input type="url" name="website" class="form-control" value="{{ company_info.website|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.website.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.logo.label }}</label>
-                    {{ form.logo }}
-                    <div class="text-danger small">{{ form.logo.errors }}</div>
-                    
-                    {% if company_info.logo %}
-                        <div class="mt-2 p-2 border rounded bg-light d-inline-block">
-                            <span class="d-block small text-muted mb-1">الشعار الحالي:</span>
-                            <img src="{{ company_info.logo.url }}" width="100" class="img-thumbnail">
+
+
+                <div class="company-card-body">
+
+                    <div class="row">
+
+
+                        <!-- اسم الشركة -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.name.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                class="company-form-control"
+                                value="{{ company_info.name|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.name.errors }}
+
+                            </div>
+
                         </div>
-                    {% endif %}
+
+
+                        <!-- الاسم الإنجليزي -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.name_en.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name_en"
+                                class="company-form-control"
+                                value="{{ company_info.name_en|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.name_en.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الرقم الضريبي -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.tax_number.label }}
+
+                            </label>
+
+                            {{ form.tax_number }}
+
+                            <div class="company-error">
+
+                                {{ form.tax_number.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- السجل التجاري -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.commercial_number.label }}
+
+                            </label>
+
+                            {{ form.commercial_number }}
+
+                            <div class="company-error">
+
+                                {{ form.commercial_number.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
                 </div>
+
             </div>
-        </div>
 
-        <div class="card p-4 shadow-sm mb-4">
-            <h5 class="card-title text-secondary border-bottom pb-2 mb-3 fw-bold">
-                <i class="bi bi-bank me-1"></i> الحساب البنكي والملاحظات
-            </h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.bank_name.label }}</label>
-                    <input type="text" name="bank_name" class="form-control" value="{{ company_info.bank_name|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.bank_name.errors }}</div>
+
+            <!-- =================================================
+                 بيانات الموقع والعنوان الوطني
+            ================================================= -->
+
+            <div class="company-card">
+
+                <div class="company-card-header">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                    بيانات الموقع والعنوان الوطني
+
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.iban.label }}</label>
-                    <input type="text" name="iban" class="form-control" value="{{ company_info.iban|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.iban.errors }}</div>
+
+
+                <div class="company-card-body">
+
+                    <div class="row">
+
+
+                        <!-- الدولة -->
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.country.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="country"
+                                class="company-form-control"
+                                value="{{ company_info.country|default_if_none:'المملكة العربية السعودية' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.country.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- المدينة -->
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.city.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="city"
+                                class="company-form-control"
+                                value="{{ company_info.city|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.city.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الحي -->
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.district.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="district"
+                                class="company-form-control"
+                                value="{{ company_info.district|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.district.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الشارع -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.street.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="street"
+                                class="company-form-control"
+                                value="{{ company_info.street|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.street.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- رقم المبنى -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.building_no.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="building_no"
+                                class="company-form-control"
+                                value="{{ company_info.building_no|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.building_no.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الرمز البريدي -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.postal_code.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="postal_code"
+                                class="company-form-control"
+                                value="{{ company_info.postal_code|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.postal_code.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الرقم الإضافي -->
+
+                        <div class="col-md-3 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.additional_no.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="additional_no"
+                                class="company-form-control"
+                                value="{{ company_info.additional_no|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.additional_no.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- العنوان الوطني -->
+
+                        <div class="col-12 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.national_address.label }}
+
+                            </label>
+
+                            <textarea
+                                name="national_address"
+                                class="company-form-control"
+                                rows="2"
+                            >{{ company_info.national_address|default_if_none:'' }}</textarea>
+
+                            <div class="company-error">
+
+                                {{ form.national_address.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.account_number.label }}</label>
-                    <input type="text" name="account_number" class="form-control" value="{{ company_info.account_number|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.account_number.errors }}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">{{ form.swift_code.label }}</label>
-                    <input type="text" name="swift_code" class="form-control" value="{{ company_info.swift_code|default_if_none:'' }}">
-                    <div class="text-danger small">{{ form.swift_code.errors }}</div>
-                </div>
-                <div class="col-12 mb-3">
-                    <label class="form-label fw-bold">{{ form.notes.label }}</label>
-                    <textarea name="notes" class="form-control" rows="2">{{ company_info.notes|default_if_none:'' }}</textarea>
-                    <div class="text-danger small">{{ form.notes.errors }}</div>
-                </div>
+
             </div>
-        </div>
 
-        <div class="mb-5">
-            <button type="submit" class="btn btn-primary btn-lg w-100 py-2 fw-bold shadow-sm">
-                <i class="bi bi-check-circle-fill me-1"></i> حفظ كافة التغييرات والإعدادات
-            </button>
-        </div>
 
-    </form>
+            <!-- =================================================
+                 وسائل الاتصال والشعار
+            ================================================= -->
+
+            <div class="company-card">
+
+                <div class="company-card-header">
+
+                    <i class="bi bi-telephone-fill"></i>
+
+                    وسائل الاتصال والشعار
+
+                </div>
+
+
+                <div class="company-card-body">
+
+                    <div class="row">
+
+
+                        <!-- الهاتف -->
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.phone.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="phone"
+                                class="company-form-control"
+                                value="{{ company_info.phone|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.phone.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الجوال -->
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.mobile.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="mobile"
+                                class="company-form-control"
+                                value="{{ company_info.mobile|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.mobile.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- البريد الإلكتروني -->
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.email.label }}
+
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                class="company-form-control"
+                                value="{{ company_info.email|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.email.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الموقع -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.website.label }}
+
+                            </label>
+
+                            <input
+                                type="url"
+                                name="website"
+                                class="company-form-control"
+                                value="{{ company_info.website|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.website.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الشعار -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.logo.label }}
+
+                            </label>
+
+                            {{ form.logo }}
+
+                            <div class="company-error">
+
+                                {{ form.logo.errors }}
+
+                            </div>
+
+
+                            {% if company_info.logo %}
+
+                                <div class="company-logo-box">
+
+                                    <span class="company-logo-title">
+
+                                        الشعار الحالي
+
+                                    </span>
+
+                                    <img
+                                        src="{{ company_info.logo.url }}"
+                                        class="company-logo"
+                                        alt="شعار الشركة"
+                                    >
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 الحساب البنكي والملاحظات
+            ================================================= -->
+
+            <div class="company-card">
+
+                <div class="company-card-header">
+
+                    <i class="bi bi-bank"></i>
+
+                    الحساب البنكي والملاحظات
+
+                </div>
+
+
+                <div class="company-card-body">
+
+                    <div class="row">
+
+
+                        <!-- اسم البنك -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.bank_name.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="bank_name"
+                                class="company-form-control"
+                                value="{{ company_info.bank_name|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.bank_name.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- IBAN -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.iban.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="iban"
+                                class="company-form-control"
+                                value="{{ company_info.iban|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.iban.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- رقم الحساب -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.account_number.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="account_number"
+                                class="company-form-control"
+                                value="{{ company_info.account_number|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.account_number.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SWIFT -->
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.swift_code.label }}
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="swift_code"
+                                class="company-form-control"
+                                value="{{ company_info.swift_code|default_if_none:'' }}"
+                            >
+
+                            <div class="company-error">
+
+                                {{ form.swift_code.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- الملاحظات -->
+
+                        <div class="col-12 mb-3">
+
+                            <label class="company-form-label">
+
+                                {{ form.notes.label }}
+
+                            </label>
+
+                            <textarea
+                                name="notes"
+                                class="company-form-control"
+                                rows="2"
+                            >{{ company_info.notes|default_if_none:'' }}</textarea>
+
+                            <div class="company-error">
+
+                                {{ form.notes.errors }}
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 زر الحفظ
+            ================================================= -->
+
+            <div class="company-actions">
+
+                <button
+                    type="submit"
+                    class="company-save-btn"
+                >
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    حفظ كافة التغييرات والإعدادات
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
 </div>
+
 {% endblock %}

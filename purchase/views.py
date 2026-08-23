@@ -112,33 +112,131 @@ def invoices_list(request):
 @login_required
 def invoice_view(request, pk):
     company = _get_company(request)
-    invoice = get_object_or_404(PurchaseInvoice, pk=pk, company=company, is_po=False)
-    return render(request, "purchase/invoice_view.html", {"invoice": invoice})
 
+    invoice = get_object_or_404(
+        PurchaseInvoice,
+        pk=pk,
+        company=company,
+        is_po=False
+    )
 
-# =====================================================
-# 🖨️ طباعة فاتورة مشتريات
-# =====================================================
+    items = invoice.items.select_related("product").all()
+
+    return render(
+        request,
+        "purchase/invoice_view.html",
+        {
+            "invoice": invoice,
+            "items": items,
+        }
+    )
+
 @login_required
 def invoice_print(request, pk):
     company = _get_company(request)
-    invoice = get_object_or_404(PurchaseInvoice, pk=pk, company=company, is_po=False)
-    return render(request, "purchase/invoice_print.html", {"invoice": invoice})
 
+    invoice = get_object_or_404(
+        PurchaseInvoice,
+        pk=pk,
+        company=company,
+        is_po=False
+    )
+
+    items = invoice.items.select_related("product").all()
+
+    return render(
+        request,
+        "purchase/invoice_print.html",
+        {
+            "invoice": invoice,
+            "items": items,
+        }
+    )
 
 # =====================================================
 # 📄 PDF فاتورة مشتريات
 # =====================================================
 @login_required
 def invoice_pdf(request, pk):
+
     company = _get_company(request)
-    invoice = get_object_or_404(PurchaseInvoice, pk=pk, company=company, is_po=False)
-    html = render_to_string("invoice_pdf.html", {"invoice": invoice})
-    response = HttpResponse(content_type="application/pdf")
-    pisa.CreatePDF(html, dest=response)
+
+    invoice = get_object_or_404(
+        PurchaseInvoice,
+        pk=pk,
+        company=company,
+        is_po=False
+    )
+
+    items = invoice.items.select_related("product").all()
+
+    html_string = render_to_string(
+        "purchase/invoice_print.html",
+        {
+            "invoice": invoice,
+            "items": items,
+        }
+    )
+
+    pdf_file = HTML(
+        string=html_string,
+        base_url=request.build_absolute_uri("/")
+    ).write_pdf()
+
+    response = HttpResponse(
+        pdf_file,
+        content_type="application/pdf"
+    )
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="purchase_invoice_{invoice.invoice_no}.pdf"'
+    )
+
     return response
+# =====================================================
+# 📄 تحميل PDF لمرتجع المشتريات
+# =====================================================
+@login_required
+def purchase_return_pdf(request, pk):
 
+    company = _get_company(request)
 
+    purchase_return = get_object_or_404(
+        PurchaseReturn.objects.select_related(
+            "invoice",
+            "supplier"
+        ),
+        pk=pk,
+        company=company
+    )
+
+    items = purchase_return.items.select_related(
+        "product"
+    ).all()
+
+    html_string = render_to_string(
+        "purchase/purchase_return_print.html",
+        {
+            "purchase_return": purchase_return,
+            "items": items,
+        }
+    )
+
+    pdf_file = HTML(
+        string=html_string,
+        base_url=request.build_absolute_uri("/")
+    ).write_pdf()
+
+    response = HttpResponse(
+        pdf_file,
+        content_type="application/pdf"
+    )
+
+    response["Content-Disposition"] = (
+        f'attachment; filename="purchase_return_{purchase_return.return_no}.pdf"'
+    )
+
+    return response
 # =====================================================
 # ➕ إضافة فاتورة مشتريات
 # =====================================================
@@ -333,6 +431,43 @@ def po_add(request):
         "cost_centers": cost_centers,
         "next_number": get_next_po_number(company)
     })
+
+# =====================================================
+# 🗑️ حذف أمر شراء
+# =====================================================
+@login_required
+def po_delete(request, pk):
+
+    company = _get_company(request)
+
+    # الحذف يجب أن يكون عن طريق POST فقط
+    if request.method != "POST":
+        messages.error(
+            request,
+            "❌ طريقة حذف غير صحيحة"
+        )
+
+        return redirect(
+            "purchase:purchase_orders_list"
+        )
+
+    purchase_order = get_object_or_404(
+        PurchaseInvoice,
+        pk=pk,
+        company=company,
+        is_po=True
+    )
+
+    purchase_order.delete()
+
+    messages.success(
+        request,
+        "✅ تم حذف أمر الشراء بنجاح"
+    )
+
+    return redirect(
+        "purchase:purchase_orders_list"
+    )
 
 
 # =====================================================
@@ -552,7 +687,64 @@ def purchase_returns_list(request):
     )
     return render(request, "purchase/returns_list.html", {"returns": returns})
 
+# =====================================================
+# 👁️ عرض مرتجع المشتريات
+# =====================================================
+@login_required
+def purchase_return_view(request, pk):
 
+    company = _get_company(request)
+
+    purchase_return = get_object_or_404(
+        PurchaseReturn.objects.select_related(
+            "invoice",
+            "supplier"
+        ),
+        id=pk,
+        company=company
+    )
+
+    items = purchase_return.items.select_related(
+        "product"
+    ).all()
+
+    return render(
+        request,
+        "purchase/purchase_return_view.html",
+        {
+            "purchase_return": purchase_return,
+            "items": items,
+        }
+    )
+# =====================================================
+# 🖨️ طباعة مرتجع المشتريات
+# =====================================================
+@login_required
+def purchase_return_print(request, pk):
+
+    company = _get_company(request)
+
+    purchase_return = get_object_or_404(
+        PurchaseReturn.objects.select_related(
+            "invoice",
+            "supplier"
+        ),
+        id=pk,
+        company=company
+    )
+
+    items = purchase_return.items.select_related(
+        "product"
+    ).all()
+
+    return render(
+        request,
+        "purchase/purchase_return_print.html",
+        {
+            "purchase_return": purchase_return,
+            "items": items,
+        }
+    )
 # =====================================================
 # ➕ إضافة مرتجع مستقل
 # =====================================================

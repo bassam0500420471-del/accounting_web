@@ -47,34 +47,256 @@ def index(request):
         ).count()
 
     # ==============================
-    # الحضور اليومي (✅ مع العزل بالشركة)
+    # الحضور اليومي
+    # يدعم 3 مرات حضور وانصراف وموقع
     # ==============================
+
     if company:
+
         attendance_today = Attendance.objects.filter(
             date=today,
             employee__company=company
-        ).select_related('employee')
+        ).select_related(
+            "employee",
+            "work_location"
+        ).order_by(
+            "employee_id",
+            "id"
+        )
 
-        employees = Employee.objects.filter(company=company)
+        employees = Employee.objects.filter(
+            company=company
+        ).order_by(
+            "employee_number"
+        )
+
     else:
-        attendance_today = Attendance.objects.filter(date=today).select_related('employee')
-        employees = Employee.objects.all()
+
+        attendance_today = Attendance.objects.filter(
+            date=today
+        ).select_related(
+            "employee",
+            "work_location"
+        ).order_by(
+            "employee_id",
+            "id"
+        )
+
+        employees = Employee.objects.all().order_by(
+            "employee_number"
+        )
+
+
+    # =====================================================
+    # تجميع سجلات الحضور لكل موظف
+    # =====================================================
 
     attendance_list = []
 
+
     for emp in employees:
-        att = attendance_today.filter(employee=emp).first()
-        attendance_list.append({
-            'employee': emp,
-            'employee_number': getattr(emp, 'employee_number', '-'),
-            'status': att.status if att else 'غياب',
-            'date': att.date if att else today,
 
-            'check_in': att.check_in if att else '-',
-            'check_out': att.check_out if att else '-',
+        att = attendance_today.filter(
+            employee=emp
+        ).first()
 
-            'notes': getattr(att, 'notes', '-') if att else '-',
-        })
+
+        # =================================================
+        # السجل الأساسي
+        # =================================================
+
+        row = {
+
+            "employee": emp,
+
+            "employee_number": getattr(
+                emp,
+                "employee_number",
+                "-"
+            ),
+
+            "status": "غياب",
+
+            "date": today,
+
+            # -----------------------------
+            # الحضور 1
+            # -----------------------------
+
+            "check_in_1": None,
+            "check_out_1": None,
+            "work_location_1": None,
+            "location_1": None,
+
+            # -----------------------------
+            # الحضور 2
+            # -----------------------------
+
+            "check_in_2": None,
+            "check_out_2": None,
+            "work_location_2": None,
+            "location_2": None,
+
+            # -----------------------------
+            # الحضور 3
+            # -----------------------------
+
+            "check_in_3": None,
+            "check_out_3": None,
+            "work_location_3": None,
+            "location_3": None,
+
+            "notes": "-",
+        }
+
+
+        # =================================================
+        # إذا لا يوجد حضور
+        # =================================================
+
+        if not att:
+
+            attendance_list.append(row)
+
+            continue
+
+
+        # =================================================
+        # الحالة
+        # =================================================
+
+        row["status"] = att.status
+
+        row["date"] = att.date
+
+        if att.notes:
+
+            row["notes"] = att.notes
+
+
+        # =================================================
+        # جلب عمليات الحضور والانصراف
+        # من AttendanceLog
+        # =================================================
+
+        logs = att.logs.all().order_by(
+            "timestamp",
+            "id"
+        )
+
+
+        # =================================================
+        # ترتيب عمليات الدخول والخروج
+        # =================================================
+
+        check_ins = list(
+            logs.filter(
+                action="check_in"
+            )[:3]
+        )
+
+        check_outs = list(
+            logs.filter(
+                action="check_out"
+            )[:3]
+        )
+
+
+        # =================================================
+        # الحضور 1 / 2 / 3
+        # =================================================
+
+        for index, log in enumerate(
+            check_ins,
+            start=1
+        ):
+
+            # -----------------------------
+            # وقت الحضور
+            # -----------------------------
+
+            row[
+                f"check_in_{index}"
+            ] = log.timestamp
+
+
+            # -----------------------------
+            # موقع الحضور
+            # -----------------------------
+
+            if log.work_location:
+
+                row[
+                    f"work_location_{index}"
+                ] = log.work_location
+
+
+            # -----------------------------
+            # إحداثيات الموقع
+            # -----------------------------
+
+            elif (
+                log.latitude is not None
+                and
+                log.longitude is not None
+            ):
+
+                row[
+                    f"location_{index}"
+                ] = (
+                    f"{log.latitude}, "
+                    f"{log.longitude}"
+                )
+
+
+        # =================================================
+        # الانصراف 1 / 2 / 3
+        # =================================================
+
+        for index, log in enumerate(
+            check_outs,
+            start=1
+        ):
+
+            row[
+                f"check_out_{index}"
+            ] = log.timestamp
+
+
+            # إذا لم يكن هناك موقع للحضور
+            # وكان موقع الانصراف موجودًا
+
+            if not row[
+                f"work_location_{index}"
+            ]:
+
+                if log.work_location:
+
+                    row[
+                        f"work_location_{index}"
+                    ] = log.work_location
+
+
+                elif (
+                    log.latitude is not None
+                    and
+                    log.longitude is not None
+                ):
+
+                    row[
+                        f"location_{index}"
+                    ] = (
+                        f"{log.latitude}, "
+                        f"{log.longitude}"
+                    )
+
+
+        # =================================================
+        # إضافة الموظف للقائمة
+        # =================================================
+
+        attendance_list.append(row)
+
     # ==============================
     # بيانات المبيعات (مع عزل الشركة)
     # ==============================

@@ -1,47 +1,218 @@
 {% load i18n %}
 
-<div class="row mb-3">
-    <div class="col-md-6">
-        <label>{% trans "Product Name" %}</label>
-        <input type="text" name="name" class="form-control" required>
+<style>
+    .product-form-section {
+        background: #fff;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        direction: rtl;
+    }
+
+    .product-section-title {
+        background: #f8f9fa;
+        border-right: 4px solid #6c757d;
+        padding: 10px 14px;
+        margin: 5px 0 18px;
+        font-weight: 700;
+        color: #495057;
+        border-radius: 5px;
+    }
+
+    .product-form-section .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 7px;
+    }
+
+    .product-form-section .form-control {
+        min-height: 42px;
+        border-radius: 7px;
+        border: 1px solid #ced4da;
+    }
+
+    .product-form-section .form-control:focus {
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.15rem rgba(108, 117, 125, 0.15);
+    }
+
+    .product-form-section textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .product-form-section input[type="file"] {
+        padding: 8px 12px;
+    }
+</style>
+
+
+<div class="product-form-section">
+
+    <!-- Basic Information -->
+    <div class="product-section-title">
+        {% trans "Basic Information" %}
     </div>
 
-    <div class="col-md-6">
-        <label>{% trans "SKU" %}</label>
-        <input type="text" name="sku" class="form-control">
+
+    <!-- Product Name + SKU -->
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                {% trans "Product Name" %}
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                {% trans "SKU" %}
+            </label>
+
+            <input
+                type="text"
+                name="sku"
+                class="form-control"
+            >
+
+        </div>
+
     </div>
-</div>
 
-<div class="row mb-3">
-    <div class="col-md-6">
-        <label>{% trans "Purchase Price" %}</label>
-        <input type="number" step="0.01" name="purchase_price" class="form-control" value="0">
+
+    <!-- Prices -->
+    <div class="product-section-title">
+        {% trans "Prices" %}
     </div>
 
-    <div class="col-md-6">
-        <label>{% trans "Sale Price" %}</label>
-        <input type="number" step="0.01" name="sale_price" class="form-control" value="0">
+
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                {% trans "Purchase Price" %}
+            </label>
+
+            <input
+                type="number"
+                step="0.01"
+                name="purchase_price"
+                class="form-control"
+                value="0"
+            >
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                {% trans "Sale Price" %}
+            </label>
+
+            <input
+                type="number"
+                step="0.01"
+                name="sale_price"
+                class="form-control"
+                value="0"
+            >
+
+        </div>
+
     </div>
-</div>
 
-<div class="row mb-3">
-    <div class="col-md-6">
-        <label>{% trans "Minimum Stock" %}</label>
-        <input type="number" name="min_stock" class="form-control" value="0">
+
+    <!-- Stock -->
+    <div class="product-section-title">
+        {% trans "Stock" %}
     </div>
 
-    <div class="col-md-6">
-        <label>{% trans "Low Stock Alert" %}</label>
-        <input type="number" name="alert_stock" class="form-control" value="0">
+
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                {% trans "Minimum Stock" %}
+            </label>
+
+            <input
+                type="number"
+                name="min_stock"
+                class="form-control"
+                value="0"
+            >
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                {% trans "Low Stock Alert" %}
+            </label>
+
+            <input
+                type="number"
+                name="alert_stock"
+                class="form-control"
+                value="0"
+            >
+
+        </div>
+
     </div>
-</div>
 
-<div class="mb-3">
-    <label>{% trans "Description" %}</label>
-    <textarea name="description" class="form-control"></textarea>
-</div>
 
-<div class="mb-3">
-    <label>{% trans "Image" %}</label>
-    <input type="file" name="image" class="form-control">
+    <!-- Additional Information -->
+    <div class="product-section-title">
+        {% trans "Additional Information" %}
+    </div>
+
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            {% trans "Description" %}
+        </label>
+
+        <textarea
+            name="description"
+            class="form-control"
+            rows="3"
+        ></textarea>
+
+    </div>
+
+
+    <!-- Image -->
+    <div class="mb-3">
+
+        <label class="form-label">
+            {% trans "Image" %}
+        </label>
+
+        <input
+            type="file"
+            name="image"
+            class="form-control"
+            accept="image/*"
+        >
+
+    </div>
+
 </div>

@@ -2,157 +2,994 @@
 {% load static %}
 {% load i18n %}
 
+{% block title %}{% trans "عرض المورد" %}{% endblock %}
+
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid suppliers-page mt-4">
 
-    <!-- Top Buttons -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">{% trans "View Purchase Invoice" %}</h3>
+```
+<div class="supplier-card">
+
+    <!-- ============================= -->
+    <!-- رأس الصفحة -->
+    <!-- ============================= -->
+
+    <div class="page-header">
 
         <div>
-            <a href="/purchases/invoices/" class="btn btn-light">⬅️ {% trans "Back" %}</a>
 
-            <a href="/purchases/invoices/{{ invoice.id }}/edit/" class="btn btn-warning">
-                ✏️ {% trans "Edit" %}
-            </a>
+            <h3>
+                <i class="fa-solid fa-truck-field"></i>
+                {% trans "عرض المورد" %}
+            </h3>
 
-            <a href="/purchases/invoices/{{ invoice.id }}/delete/"
-               class="btn btn-danger"
-               onclick="return confirm('{% trans "Do you want to permanently delete the invoice?" %}');">
-                🗑️ {% trans "Delete" %}
-            </a>
+            <p>
+                {% trans "عرض بيانات المورد ومعلومات الحساب" %}
+            </p>
 
-            <a href="/purchases/invoices/{{ invoice.id }}/print/"
-               class="btn btn-primary" target="_blank">
-               🖨️ {% trans "Print" %}
-            </a>
-
-            <a href="/purchases/invoices/{{ invoice.id }}/pdf/"
-               class="btn btn-dark">
-               📄 PDF
-            </a>
         </div>
+
+        <div class="header-actions">
+
+            <a href="{% url 'suppliers_list' %}" class="back-btn">
+                <i class="fa-solid fa-arrow-right"></i>
+                {% trans "رجوع" %}
+            </a>
+
+            <a href="{% url 'supplier_edit' supplier_id=supplier.id %}"
+               class="edit-btn">
+
+                <i class="fa-solid fa-pen"></i>
+                {% trans "تعديل" %}
+
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="card p-4">
 
-        <!-- Invoice Number + Date -->
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label class="fw-bold">{% trans "Invoice No:" %}</label>
-                <p>{{ invoice.invoice_no }}</p>
+    <!-- ============================= -->
+    <!-- معلومات المورد -->
+    <!-- ============================= -->
+
+    <div class="row g-4">
+
+
+        <!-- ============================= -->
+        <!-- بيانات المورد -->
+        <!-- ============================= -->
+
+        <div class="col-md-6">
+
+            <div class="section-card">
+
+                <h5 class="section-title">
+
+                    <i class="fa-solid fa-building"></i>
+
+                    {% trans "معلومات المورد" %}
+
+                </h5>
+
+
+                <div class="info-item">
+
+                    <label>
+                        {% trans "الاسم التجاري" %}
+                    </label>
+
+                    <div class="info-value">
+                        {{ supplier.commercial_name|default:"-" }}
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-3">
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "الاسم الأول" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.first_name|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "اسم العائلة" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.last_name|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-3">
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "الهاتف" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.phone|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "الجوال" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.mobile|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "العنوان الأول" %}
+                    </label>
+
+                    <div class="info-value">
+                        {{ supplier.street1|default:"-" }}
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "العنوان الثاني" %}
+                    </label>
+
+                    <div class="info-value">
+                        {{ supplier.street2|default:"-" }}
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-3">
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "المدينة" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.city|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "المنطقة" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.region|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "الرمز البريدي" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.postal_code|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "الدولة" %}
+                    </label>
+
+                    <div class="info-value">
+                        {{ supplier.country|default:"-" }}
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-3">
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "الرقم الضريبي" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.tax_number|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col">
+
+                        <div class="info-item">
+
+                            <label>
+                                {% trans "رقم السجل التجاري" %}
+                            </label>
+
+                            <div class="info-value">
+                                {{ supplier.cr_number|default:"-" }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div class="col-md-4">
-                <label class="fw-bold">{% trans "Invoice Date:" %}</label>
-                <p>{{ invoice.date_invoice }}</p>
-            </div>
-            <div class="col-md-4">
-                <label class="fw-bold">{% trans "Issue Date:" %}</label>
-                <p>{{ invoice.date_issue }}</p>
-            </div>
+
         </div>
 
-        <hr>
 
-        <!-- Supplier Information -->
-        <h5 class="fw-bold mt-3">{% trans "Supplier Information" %}</h5>
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label class="fw-bold">{% trans "Commercial Name:" %}</label>
-                <p>{{ invoice.supplier.commercial_name }}</p>
+        <!-- ============================= -->
+        <!-- المعلومات الإضافية -->
+        <!-- ============================= -->
+
+        <div class="col-md-6">
+
+            <div class="section-card">
+
+                <h5 class="section-title">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    {% trans "معلومات إضافية" %}
+
+                </h5>
+
+
+                <div class="info-item">
+
+                    <label>
+                        {% trans "البريد الإلكتروني" %}
+                    </label>
+
+                    <div class="info-value">
+                        {{ supplier.email|default:"-" }}
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "الرصيد الافتتاحي" %}
+                    </label>
+
+                    <div class="info-value balance-value">
+                        {{ supplier.opening_balance|default:"0.00" }}
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "حساب المورد" %}
+                    </label>
+
+                    <div class="info-value">
+
+                        {% if supplier.account %}
+
+                            {{ supplier.account.code }}
+                            -
+                            {{ supplier.account.name }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "الملاحظات" %}
+                    </label>
+
+                    <div class="info-value notes-box">
+
+                        {% if supplier.notes %}
+
+                            {{ supplier.notes|linebreaksbr }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-item mt-3">
+
+                    <label>
+                        {% trans "المرفق" %}
+                    </label>
+
+                    <div class="info-value">
+
+                        {% if supplier.attachment %}
+
+                            <a href="{{ supplier.attachment.url }}"
+                               target="_blank"
+                               class="attachment-btn">
+
+                                <i class="fa-solid fa-paperclip"></i>
+
+                                {% trans "عرض المرفق" %}
+
+                            </a>
+
+                        {% else %}
+
+                            {% trans "لا يوجد مرفق" %}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
             </div>
-            <div class="col-md-4">
-                <label class="fw-bold">{% trans "Tax Number:" %}</label>
-                <p>{{ invoice.supplier.tax_number }}</p>
-            </div>
-            <div class="col-md-4">
-                <label class="fw-bold">{% trans "Commercial Registration No:" %}</label>
-                <p>{{ invoice.supplier.cr_number }}</p>
-            </div>
+
         </div>
 
-        <hr>
+    </div>
 
-        <!-- Description -->
-        <label class="fw-bold">{% trans "Description:" %}</label>
-        <p>{{ invoice.description }}</p>
 
-        <hr>
+    <!-- ============================= -->
+    <!-- أزرار أسفل الصفحة -->
+    <!-- ============================= -->
 
-        <!-- Items Table -->
-        <h5 class="fw-bold mt-3">{% trans "Items" %}</h5>
+    <div class="form-actions mt-4">
 
-        <table class="table table-bordered mt-2">
-            <thead class="table-light">
-                <tr>
-                    <th>{% trans "Item" %}</th>
-                    <th>{% trans "Description" %}</th>
-                    <th>{% trans "Quantity" %}</th>
-                    <th>{% trans "Price" %}</th>
-                    <th>{% trans "Discount" %}</th>
-                    <th>{% trans "Tax %" %}</th>
-                    <th>{% trans "Total" %}</th>
-                </tr>
-            </thead>
+        <a href="{% url 'supplier_edit' supplier_id=supplier.id %}"
+           class="save-btn">
 
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>{{ item.qty }}</td>
-                    <td>{{ item.price }}</td>
-                    <td>{{ item.discount }}</td>
-                    <td>{{ item.tax }}</td>
-                    <td>{{ item.total }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            <i class="fa-solid fa-pen"></i>
 
-        <hr>
+            {% trans "تعديل المورد" %}
 
-        <!-- Totals -->
-        <div class="row mt-3">
+        </a>
 
-            <div class="col-md-3">
-                <label class="fw-bold">{% trans "Total Before Discount:" %}</label>
-                <p>{{ invoice.total_before_tax }}</p>
-            </div>
 
-            <div class="col-md-3">
-                <label class="fw-bold">{% trans "Total Discount:" %}</label>
-                <p>{{ invoice.total_discount }}</p>
-            </div>
+        <a href="{% url 'suppliers_list' %}"
+           class="cancel-btn">
 
-            <div class="col-md-3">
-                <label class="fw-bold">{% trans "After Discount:" %}</label>
-                <p>{{ invoice.total_after_discount }}</p>
-            </div>
+            <i class="fa-solid fa-xmark"></i>
 
-            <div class="col-md-3">
-                <label class="fw-bold">{% trans "Tax:" %}</label>
-                <p>{{ invoice.tax_value }}</p>
-            </div>
+            {% trans "رجوع" %}
 
-            <div class="col-md-3 mt-3">
-                <label class="fw-bold">{% trans "Total After Tax:" %}</label>
-                <p class="fw-bold text-success">{{ invoice.total_after_tax }}</p>
-            </div>
-
-        </div>
-
-        <hr>
-
-        <!-- QR Code -->
-        <div class="text-center mt-4">
-            <h6 class="fw-bold">{% trans "QR Code" %}</h6>
-            <img src="data:image/png;base64,{{ qr_code }}" width="180">
-        </div>
+        </a>
 
     </div>
 
 </div>
+```
+
+</div>
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.suppliers-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.supplier-card {
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3 {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i {
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p {
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   أزرار الرأس
+========================================================= */
+
+.header-actions {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.back-btn,
+.edit-btn {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    padding:10px 20px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    transition:.3s;
+
+}
+
+
+.back-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+    border:1px solid #aaa;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.back-btn:hover {
+
+    color:#222;
+
+    transform:translateY(-2px);
+
+}
+
+
+.edit-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:1px solid #3f3f3f;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.edit-btn:hover {
+
+    color:white;
+
+    background:
+    linear-gradient(
+        135deg,
+        #777,
+        #444
+    );
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   أقسام البيانات
+========================================================= */
+
+.section-card {
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+    border:1px solid #dddddd;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   عنوان القسم
+========================================================= */
+
+.section-title {
+
+    color:#444;
+
+    font-weight:800;
+
+    padding-bottom:12px;
+
+    margin-bottom:15px;
+
+    border-bottom:2px solid #dddddd;
+
+}
+
+
+.section-title i {
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+/* =========================================================
+   عناصر المعلومات
+========================================================= */
+
+.info-item {
+
+    width:100%;
+
+}
+
+
+.info-item label {
+
+    display:block;
+
+    margin-bottom:6px;
+
+    color:#555;
+
+    font-weight:600;
+
+    font-size:14px;
+
+}
+
+
+.info-value {
+
+    min-height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+    width:100%;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    padding:9px 12px;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    word-break:break-word;
+
+}
+
+
+.notes-box {
+
+    min-height:120px;
+
+    align-items:flex-start;
+
+    line-height:1.8;
+
+}
+
+
+.balance-value {
+
+    font-weight:800;
+
+}
+
+
+/* =========================================================
+   المرفق
+========================================================= */
+
+.attachment-btn {
+
+    color:#444;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+}
+
+
+.attachment-btn:hover {
+
+    color:#222;
+
+}
+
+
+/* =========================================================
+   أزرار أسفل الصفحة
+========================================================= */
+
+.form-actions {
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.save-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:1px solid #3f3f3f;
+
+    padding:10px 22px;
+
+    border-radius:10px;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.save-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #777,
+        #444
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+.cancel-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+    border:1px solid #aaa;
+
+    padding:10px 22px;
+
+    border-radius:10px;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.3s;
+
+}
+
+
+.cancel-btn:hover {
+
+    color:#222;
+
+    background:
+    linear-gradient(
+        135deg,
+        #e0e0e0,
+        #bbbbbb
+    );
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .suppliers-page {
+
+        padding:15px;
+
+    }
+
+
+    .supplier-card {
+
+        padding:18px;
+
+    }
+
+
+    .section-card {
+
+        padding:18px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        text-align:center;
+
+        gap:15px;
+
+    }
+
+
+    .header-actions {
+
+        justify-content:center;
+
+    }
+
+
+    .form-actions {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+
+    .save-btn,
+    .cancel-btn {
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+}
+
+</style>
 
 {% endblock %}

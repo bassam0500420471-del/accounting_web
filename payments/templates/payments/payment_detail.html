@@ -1,82 +1,897 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "View Payment Voucher" %}{% endblock %}
+{% block title %}{% trans "عرض سند الصرف" %}{% endblock %}
 
 {% block content %}
 
-<h3 class="mb-4">👁 {% trans "View Payment Voucher" %}</h3>
+<style>
 
-<table class="table table-bordered">
+/* =========================================================
+   الخلفية العامة
+========================================================= */
 
-    <tr>
-        <th style="width: 200px;">{% trans "Voucher Number" %}</th>
-        <td>{{ voucher.voucher_no|default:voucher.id }}</td>
-    </tr>
+body {
 
-    <tr>
-        <th>{% trans "Date" %}</th>
-        <td>{{ voucher.date }}</td>
-    </tr>
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
 
-    <tr>
-        <th>{% trans "Party" %}</th>
-        <td>
-            {% if voucher.supplier %}
-                {{ voucher.supplier }}
-            {% elif voucher.customer %}
-                {{ voucher.customer }}
-            {% elif voucher.cost_center %}
-                {{ voucher.cost_center }}
-            {% elif voucher.other_account %}
-                {{ voucher.other_account }}
-            {% else %}
-                -
-            {% endif %}
-        </td>
-    </tr>
+}
 
-    <tr>
-        <th>{% trans "Cash / Bank Account" %}</th>
-        <td>{{ voucher.cash_account }}</td>
-    </tr>
 
-    <tr>
-        <th>{% trans "Amount" %}</th>
-        <td class="fw-bold text-danger">
-            {{ voucher.amount }}
-        </td>
-    </tr>
+/* =========================================================
+   الصفحة
+========================================================= */
 
-    <tr>
-        <th>{% trans "Description" %}</th>
-        <td>{{ voucher.description|default:"-" }}</td>
-    </tr>
+.payment-page {
 
-    <tr>
-        <th>{% trans "Status" %}</th>
-        <td>
-            {% if voucher.status == "posted" %}
-                <span class="badge bg-success">{% trans "Posted" %}</span>
-            {% elif voucher.status == "cancelled" %}
-                <span class="badge bg-danger">{% trans "Cancelled" %}</span>
-            {% else %}
-                <span class="badge bg-secondary">{% trans "Draft" %}</span>
-            {% endif %}
-        </td>
-    </tr>
+    min-height: calc(100vh - 40px);
 
-    <tr>
-        <th>{% trans "Created By" %}</th>
-        <td>{{ voucher.created_by }}</td>
-    </tr>
+    padding: 30px;
 
-</table>
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
 
-<div class="mt-4">
-    <a href="{% url 'payments:payment_list' %}" class="btn btn-secondary">
-        ⬅ {% trans "Back to Payment Vouchers" %}
-    </a>
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.payment-wrapper {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.payment-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 22px 26px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        0 5px 12px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.payment-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.payment-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.payment-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.payment-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+    z-index: 5;
+
+}
+
+
+/* =========================================================
+   رأس الكرت
+========================================================= */
+
+.payment-card-header {
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   جسم الكرت
+========================================================= */
+
+.payment-card-body {
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   جدول البيانات
+========================================================= */
+
+.payment-table {
+
+    width: 100%;
+
+    margin: 0;
+
+    border-collapse: separate;
+
+    border-spacing: 0 9px;
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.payment-table th,
+.payment-table td {
+
+    padding: 15px 18px;
+
+    vertical-align: middle;
+
+    border: none;
+
+}
+
+
+/* =========================================================
+   عنوان الحقل
+========================================================= */
+
+.payment-table th {
+
+    width: 220px;
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    text-align: right;
+
+    background:
+        linear-gradient(
+            145deg,
+            #dcdcdc,
+            #c7c7c7
+        );
+
+    border-radius: 12px 0 0 12px;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.75),
+        0 3px 7px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   قيمة الحقل
+========================================================= */
+
+.payment-table td {
+
+    color: #444;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 0 12px 12px 0;
+
+    border-top:
+        1px solid #ffffff;
+
+    border-bottom:
+        1px solid #d4d4d4;
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   المبلغ
+========================================================= */
+
+.payment-table .amount-value {
+
+    color: #555 !important;
+
+    font-size: 19px;
+
+    font-weight: 900;
+
+}
+
+
+/* =========================================================
+   الوصف
+========================================================= */
+
+.payment-description {
+
+    min-height: 70px;
+
+    line-height: 1.8;
+
+}
+
+
+/* =========================================================
+   الشارات
+========================================================= */
+
+.payment-status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 90px;
+
+    padding: 8px 16px;
+
+    border-radius: 10px;
+
+    color: #fff;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   حالة Posted
+========================================================= */
+
+.payment-status.posted {
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #444444
+        );
+
+}
+
+
+/* =========================================================
+   حالة Cancelled
+========================================================= */
+
+.payment-status.cancelled {
+
+    background:
+        linear-gradient(
+            145deg,
+            #999999,
+            #555555
+        );
+
+}
+
+
+/* =========================================================
+   حالة Draft
+========================================================= */
+
+.payment-status.draft {
+
+    background:
+        linear-gradient(
+            145deg,
+            #b0b0b0,
+            #6d6d6d
+        );
+
+}
+
+
+/* =========================================================
+   منطقة الأزرار
+========================================================= */
+
+.payment-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 24px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    border: 1px solid #d0d0d0;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9),
+        0 8px 18px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   زر الرجوع
+========================================================= */
+
+.payment-back-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height: 44px;
+
+    padding: 10px 22px;
+
+    color: #fff !important;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    border:
+        1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
+}
+
+
+.payment-back-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* =========================================================
+   الشاشات المتوسطة
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .payment-page {
+
+        padding: 15px;
+
+    }
+
+
+    .payment-header {
+
+        padding: 18px;
+
+    }
+
+
+    .payment-header h3 {
+
+        font-size: 21px;
+
+    }
+
+
+    .payment-header-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 20px;
+
+    }
+
+
+    .payment-card-body {
+
+        padding: 14px;
+
+    }
+
+
+    .payment-table th {
+
+        width: 38%;
+
+        font-size: 12px;
+
+        padding: 12px 10px;
+
+    }
+
+
+    .payment-table td {
+
+        font-size: 13px;
+
+        padding: 12px 10px;
+
+    }
+
+
+    .payment-actions {
+
+        padding: 14px;
+
+    }
+
+}
+
+</style>
+
+<div class="payment-page">
+
+<div class="payment-wrapper">
+
+
+    <!-- =================================================
+         رأس الصفحة
+    ================================================= -->
+
+    <div class="payment-header">
+
+        <div class="payment-header-icon">
+
+            👁
+
+        </div>
+
+        <div>
+
+            <h3>
+
+                {% trans "عرض سند الصرف" %}
+
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         الكرت
+    ================================================= -->
+
+    <div class="payment-card">
+
+
+        <div class="payment-card-header">
+
+            {% trans "عرض سند الصرف" %}
+
+        </div>
+
+
+        <div class="payment-card-body">
+
+
+            <table class="payment-table">
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Voucher Number" %}
+
+                    </th>
+
+                    <td>
+
+                        {{ voucher.voucher_no|default:voucher.id }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Date" %}
+
+                    </th>
+
+                    <td>
+
+                        {{ voucher.date }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Party" %}
+
+                    </th>
+
+                    <td>
+
+                        {% if voucher.supplier %}
+
+                            {{ voucher.supplier }}
+
+                        {% elif voucher.customer %}
+
+                            {{ voucher.customer }}
+
+                        {% elif voucher.cost_center %}
+
+                            {{ voucher.cost_center }}
+
+                        {% elif voucher.other_account %}
+
+                            {{ voucher.other_account }}
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Cash / Bank Account" %}
+
+                    </th>
+
+                    <td>
+
+                        {{ voucher.cash_account }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Amount" %}
+
+                    </th>
+
+                    <td class="amount-value">
+
+                        {{ voucher.amount }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Description" %}
+
+                    </th>
+
+                    <td class="payment-description">
+
+                        {{ voucher.description|default:"-" }}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Status" %}
+
+                    </th>
+
+                    <td>
+
+                        {% if voucher.status == "posted" %}
+
+                            <span class="payment-status posted">
+
+                                {% trans "Posted" %}
+
+                            </span>
+
+                        {% elif voucher.status == "cancelled" %}
+
+                            <span class="payment-status cancelled">
+
+                                {% trans "Cancelled" %}
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="payment-status draft">
+
+                                {% trans "Draft" %}
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>
+
+                        {% trans "Created By" %}
+
+                    </th>
+
+                    <td>
+
+                        {{ voucher.created_by }}
+
+                    </td>
+
+                </tr>
+
+
+            </table>
+
+
+            <!-- =================================================
+                 زر الرجوع
+            ================================================= -->
+
+            <div class="payment-actions">
+
+                <a href="{% url 'payments:payment_list' %}"
+                   class="payment-back-btn">
+
+                    ⬅ {% trans "رجوع" %}
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
 </div>
 
 {% endblock %}

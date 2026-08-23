@@ -1,192 +1,1838 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Invoice List" %}{% endblock %}
-
-{% block head %}
-<style>
-    body { background: #f0f0f0; font-family: "Tahoma", sans-serif; }
-
-    /* التنسيقات العامة */
-    .filter-input { text-align: center; border: 1px solid #6c757d !important; border-radius: 6px; }
-    .btn-main { background: #6c757d; color: white; border-radius: 6px; }
-    .btn-action { background: #6c757d; color: white; border-radius: 6px; font-size: 15px; padding: 4px 15px; }
-
-    /* تنسيق القائمة المنسدلة */
-    .dropdown { position: relative; }
-    .custom-menu {
-        min-width: 180px !important;
-        border-radius: 10px !important;
-        padding: 8px 0 !important;
-        background: #fff !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-        left: 50% !important;
-        right: auto !important;
-        transform: translateX(-50%) !important;
-        margin-top: 5px !important;
-    }
-
-    .custom-menu .dropdown-item {
-        padding: 10px 15px;
-        font-size: 15px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .custom-menu .dropdown-item:hover { background: #f1f1f1; border-radius: 5px; }
-    .icon { color: #6c757d; font-size: 16px; }
-    .return-icon { color: #c0392b !important; }
-    .date-filter-bar { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; text-align: center; }
-</style>
+{% block title %}
+    {% trans "Invoice List" %}
 {% endblock %}
+
 
 {% block content %}
 
-{% if request.GET.date_from and request.GET.date_to %}
-<div class="date-filter-bar">
-    {% trans "Showing invoices from" %} {{ request.GET.date_from }} {% trans "to" %} {{ request.GET.date_to }}
-</div>
-{% endif %}
+<div class="container-fluid invoices-page mt-4">
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">{% trans "Invoice List" %}</h2>
-    <a href="{% url 'sales:invoice_add' %}" class="btn btn-main" onclick="sessionStorage.removeItem('invoice_draft')">
-        + {% trans "Add Invoice" %}
-    </a>
-</div>
+    <div class="invoice-card">
 
-<table class="table text-center align-middle">
-    <thead>
-        <tr>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search ID' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Invoice No' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Customer' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Date' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Total' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Status' %}"></th>
-            <th></th>
-        </tr>
-        <tr class="table-dark">
-            <th>#</th>
-            <th>{% trans "Invoice No" %}</th>
-            <th>{% trans "Customer" %}</th>
-            <th>{% trans "Date" %}</th>
-            <th>{% trans "Total" %}</th>
-            <th>{% trans "Status" %}</th>
-            <th>{% trans "Actions" %}</th>
-        </tr>
-    </thead>
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
 
-    <tbody>
-    {% for invoice in invoices %}
-        <tr>
-            <td>{{ invoice.id }}</td>
-            <td>{{ invoice.number }}</td>
-            <td>
-                {% if invoice.object.customer %}
-                    {{ invoice.object.customer.name }}
-                {% else %}
-                    {% trans "Cash" %}
-                {% endif %}
-            </td>
-            <td>{{ invoice.date|date:"Y-m-d H:i" }}</td>
-            <td>{{ invoice.total }}</td>
-<td>
-    <span class="badge" style="background:#6c757d; color:white;">
+        <div class="page-header">
 
-        {% if invoice.type == "pos" %}
+            <div>
 
-            {{ invoice.object.payment_status }}
+                <h3>
 
-        {% else %}
+                    <i class="fa-solid fa-file-invoice"></i>
 
-            {{ invoice.object.get_payment_status_display }}
+                    {% trans "Invoice List" %}
+
+                </h3>
+
+                <p>
+
+                    {% trans "Manage sales invoices and payments" %}
+
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'sales:invoice_add' %}"
+               class="add-btn"
+               onclick="sessionStorage.removeItem('invoice_draft')">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add Invoice" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- فلتر التاريخ -->
+        <!-- ============================= -->
+
+        {% if request.GET.date_from and request.GET.date_to %}
+
+        <div class="date-filter-bar">
+
+            <i class="fa-solid fa-calendar-days"></i>
+
+            {% trans "Showing invoices from" %}
+
+            {{ request.GET.date_from }}
+
+            {% trans "to" %}
+
+            {{ request.GET.date_to }}
+
+        </div>
 
         {% endif %}
 
-    </span>
-</td>
-            <td>
-                <div class="dropdown">
-                    <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
-                        {% trans "Options" %}
-                    </button>
-<ul class="dropdown-menu custom-menu">
-    <li>
-<a class="dropdown-item"
-   href="{% if invoice.type == 'pos' %}{% url 'pos:pos_invoice_view' invoice.object.id %}{% else %}{% url 'sales:invoice_view' invoice.object.id %}{% endif %}">
-    <i class="fa-solid fa-eye icon"></i> {% trans "View" %}
-</a>
-    </li>
-    <li>
-        <a class="dropdown-item" href="{% url 'sales:invoice_print' invoice.object.id %}" target="_blank">
-            <i class="fa-solid fa-print icon"></i> {% trans "Print" %}
-        </a>
-    </li>
-    <li>
-        <a class="dropdown-item" href="{% if invoice.type == 'pos' %}{% url 'sales:pos_pdf' invoice.object.id %}{% else %}{% url 'sales:invoice_pdf' invoice.object.id %}{% endif %}">
-            <i class="fa-solid fa-file-pdf icon"></i> {% trans "Download PDF" %}
-        </a>
-    </li>
-{% if invoice.type == "sales" %}
 
-<li>
-    <a class="dropdown-item" href="{% url 'sales:invoice_view' invoice.object.id %}?open_payment=1">
-        <i class="fa-solid fa-credit-card icon"></i>
-        {% trans "Pay" %}
-    </a>
-</li>
+        <!-- ============================= -->
+        <!-- الجدول -->
+        <!-- ============================= -->
 
-<li>
-    <a class="dropdown-item return-btn" href="{% url 'sales:create_return' invoice.object.id %}">
-        <i class="fa-solid fa-rotate-left return-icon"></i>
-        {% trans "Invoice Return" %}
-    </a>
-</li>
+        <div class="table-box">
 
-{% elif invoice.type == "pos" %}
+            <table class="invoice-table">
 
-<li>
-    <a class="dropdown-item"
-       href="{% url 'pos:payment_detail' invoice.object.id %}">
-        <i class="fa-solid fa-credit-card icon"></i>
-        {% trans "Pay" %}
-    </a>
-</li>
+                <thead>
 
-{% endif %}
-</ul>
-                </div>
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="7" class="text-muted">{% trans "No invoices found" %}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                    <!-- ============================= -->
+                    <!-- صف البحث -->
+                    <!-- ============================= -->
+
+                    <tr class="filter-row">
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search ID' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Invoice No' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Customer' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Date' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Total' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Status' %}"
+                            >
+                        </th>
+
+                        <th></th>
+
+                    </tr>
+
+
+                    <!-- ============================= -->
+                    <!-- عنوان الأعمدة -->
+                    <!-- ============================= -->
+
+                    <tr class="header-row">
+
+                        <th>#</th>
+
+                        <th>
+                            {% trans "Invoice No" %}
+                        </th>
+
+                        <th>
+                            {% trans "Customer" %}
+                        </th>
+
+                        <th>
+                            {% trans "Date" %}
+                        </th>
+
+                        <th>
+                            {% trans "Total" %}
+                        </th>
+
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for invoice in invoices %}
+
+                    <tr>
+
+                        <!-- الرقم -->
+
+                        <td>
+
+                            <span class="order-badge">
+
+                                {{ invoice.id }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- رقم الفاتورة -->
+
+                        <td class="invoice-number">
+
+                            <i class="fa-solid fa-file-invoice"></i>
+
+                            {{ invoice.number }}
+
+                        </td>
+
+
+                        <!-- العميل -->
+
+                        <td class="customer-name">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            {% if invoice.object.customer %}
+
+                                {{ invoice.object.customer.name }}
+
+                            {% else %}
+
+                                {% trans "Cash" %}
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- التاريخ -->
+
+                        <td>
+
+                            <span class="date-badge">
+
+                                {{ invoice.date|date:"Y-m-d H:i" }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- الإجمالي -->
+
+                        <td class="total-cell">
+
+                            {{ invoice.total }}
+
+                        </td>
+
+
+                        <!-- الحالة -->
+
+                        <td>
+
+                            <span class="status-badge">
+
+                                {% if invoice.type == "pos" %}
+
+                                    {{ invoice.object.payment_status }}
+
+                                {% else %}
+
+                                    {{ invoice.object.get_payment_status_display }}
+
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- الخيارات -->
+                        <!-- ============================= -->
+
+                        <td>
+
+                            <div class="options-dropdown">
+
+                                <button
+                                    type="button"
+                                    class="action-btn options-button"
+                                >
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Options" %}
+
+                                </button>
+
+
+                                <!-- ===================================== -->
+                                <!-- القائمة -->
+                                <!-- ===================================== -->
+
+                                <ul class="dropdown-menu custom-menu text-end">
+
+                                    <!-- عرض -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% if invoice.type == 'pos' %}{% url 'pos:pos_invoice_view' invoice.object.id %}{% else %}{% url 'sales:invoice_view' invoice.object.id %}{% endif %}"
+                                        >
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- PDF -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% if invoice.type == 'pos' %}{% url 'sales:pos_pdf' invoice.object.id %}{% else %}{% url 'sales:invoice_pdf' invoice.object.id %}{% endif %}"
+                                        >
+
+                                            <i class="fa-solid fa-file-pdf"></i>
+
+                                            {% trans "Download PDF" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- طباعة -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'sales:invoice_print' invoice.object.id %}"
+                                            target="_blank"
+                                        >
+
+                                            <i class="fa-solid fa-print"></i>
+
+                                            {% trans "Print" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    {% if invoice.type == "sales" %}
+
+                                    <!-- الدفع -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'sales:invoice_view' invoice.object.id %}?open_payment=1"
+                                        >
+
+                                            <i class="fa-solid fa-credit-card"></i>
+
+                                            {% trans "Pay" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- تعديل طريقة الدفع -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'sales:edit_payment_method' invoice.object.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-money-bill-transfer"></i>
+
+                                            تعديل طريقة الدفع فقط
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- المرتجع -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item return-btn"
+                                            href="{% url 'sales:create_return' invoice.object.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-rotate-left return-icon"></i>
+
+                                            {% trans "Invoice Return" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    {% elif invoice.type == "pos" %}
+
+
+                                    <!-- دفع POS -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'pos:payment_detail' invoice.object.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-credit-card"></i>
+
+                                            {% trans "Pay" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- تعديل طريقة الدفع POS -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'pos:edit_payment_method' invoice.object.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-money-bill-transfer"></i>
+
+                                            تعديل طريقة الدفع فقط
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- مرتجع POS -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item return-btn"
+                                            href="{% url 'pos:create_return' invoice.object.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-rotate-left return-icon"></i>
+
+                                            {% trans "Invoice Return" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    {% endif %}
+
+                                </ul>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7" class="empty">
+
+                            <i class="fa-solid fa-file-circle-xmark"></i>
+
+                            <div>
+
+                                {% trans "No invoices found" %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.invoices-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.invoice-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر إضافة الفاتورة
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   فلتر التاريخ
+========================================================= */
+
+.date-filter-bar{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+    border:1px solid #c5c5c5;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    margin-bottom:20px;
+
+    font-weight:bold;
+
+    text-align:center;
+
+    color:#555;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.invoice-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+.filter-row th{
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+.filter-input{
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+.filter-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder{
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.invoice-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.invoice-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.invoice-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم الفاتورة
+========================================================= */
+
+.invoice-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.invoice-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   اسم العميل
+========================================================= */
+
+.customer-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.customer-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   رقم ID
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الإجمالي
+========================================================= */
+
+.total-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+/* =========================================================
+   حالة الفاتورة
+========================================================= */
+
+.status-badge{
+
+    display:inline-block;
+
+    min-width:85px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.options-dropdown{
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+
+   ملاحظة مهمة:
+   لا نضع position:absolute هنا.
+
+   JavaScript سينقل القائمة إلى body
+   عند فتحها، وبالتالي لن تتأثر بـ
+   overflow الخاص بالجدول.
+========================================================= */
+
+.custom-menu{
+
+    display:none;
+
+    position:fixed !important;
+
+    min-width:210px;
+
+    padding:8px;
+
+    margin:0 !important;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.22),
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index:999999999 !important;
+
+}
+
+
+.custom-menu.menu-open{
+
+    display:block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    margin:2px 0;
+
+    border-radius:9px;
+
+    color:#444;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#333;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+/* =========================================================
+   أيقونات القائمة
+========================================================= */
+
+.custom-menu .dropdown-item i{
+
+    width:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i{
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   المرتجع
+========================================================= */
+
+.custom-menu .return-btn{
+
+    color:#555;
+
+}
+
+
+.custom-menu .return-icon{
+
+    color:#777 !important;
+
+}
+
+
+/* =========================================================
+   لا توجد فواتير
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .invoices-page{
+
+        padding:15px;
+
+    }
+
+
+    .invoice-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .invoice-table{
+
+        min-width:1000px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================================
+     JavaScript
+     
+     البحث + قائمة الخيارات
+========================================================= -->
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const filterInputs = document.querySelectorAll(".filter-input");
-    const rows = document.querySelectorAll("tbody tr");
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       البحث
+    ===================================================== */
+
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
+
+
+    const rows =
+        document.querySelectorAll(".invoice-table tbody tr");
+
+
     filterInputs.forEach((input, colIndex) => {
+
         input.addEventListener("keyup", function () {
-            const value = this.value.toLowerCase();
+
+            const value =
+                this.value.toLowerCase();
+
+
             rows.forEach(row => {
-                const cell = row.querySelectorAll("td")[colIndex];
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                const cell =
+                    cells[colIndex];
+
+
                 if (cell) {
-                    const text = cell.textContent.toLowerCase();
-                    row.style.display = text.includes(value) ? "" : "none";
+
+                    const text =
+                        cell.textContent.toLowerCase();
+
+
+                    row.style.display =
+                        text.includes(value)
+                        ? ""
+                        : "none";
+
                 }
+
             });
+
         });
+
     });
+
+
+
+    /* =====================================================
+       قائمة الخيارات
+       
+       لا نستخدم Bootstrap dropdown هنا.
+       
+       القائمة يتم نقلها إلى body عند فتحها.
+       
+       النتيجة:
+       
+       1. لا تتأثر بالجدول.
+       2. لا تتأثر بـ overflow.
+       3. لا تظهر مرتين.
+       4. لا تتغير حسب حركة الماوس.
+       5. دائمًا فوق الزر.
+    ===================================================== */
+
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(".options-button");
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            const dropdown =
+                this.closest(".options-dropdown");
+
+
+            if (!dropdown) {
+                return;
+            }
+
+
+            const menu =
+                dropdown.querySelector(".custom-menu");
+
+
+            if (!menu) {
+                return;
+            }
+
+
+
+            /* =============================================
+               إذا كانت نفس القائمة مفتوحة
+               أغلقها
+            ============================================= */
+
+            if (
+                openedMenu === menu &&
+                menu.classList.contains("menu-open")
+            ) {
+
+                closeOptionsMenu();
+
+                return;
+
+            }
+
+
+
+            /* =============================================
+               إغلاق أي قائمة أخرى
+            ============================================= */
+
+            closeOptionsMenu();
+
+
+
+            /* =============================================
+               نقل القائمة إلى body
+               
+               مهم جدًا حتى لا تتأثر بـ:
+               
+               .table-box {
+                   overflow-x:auto;
+               }
+            ============================================= */
+
+            document.body.appendChild(menu);
+
+
+            menu.classList.add("menu-open");
+
+
+            openedMenu = menu;
+
+            openedButton = this;
+
+
+
+            /* =============================================
+               تحديد موقع الزر
+            ============================================= */
+
+            const rect =
+                this.getBoundingClientRect();
+
+
+
+            /* =============================================
+               نحتاج أولًا إلى معرفة ارتفاع القائمة
+            ============================================= */
+
+            const menuHeight =
+                menu.offsetHeight;
+
+
+            const menuWidth =
+                menu.offsetWidth;
+
+
+            const gap = 8;
+
+
+
+            /* =============================================
+               القائمة دائمًا فوق الزر
+               
+               bottom يتم حسابه من أعلى الزر.
+               
+               وهذا يعني أن القائمة لا تعتمد على
+               مكان الصف أو الجدول.
+            ============================================= */
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+
+            /* =============================================
+               توسيط القائمة أفقيًا مع الزر
+            ============================================= */
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+
+            /* =============================================
+               منع خروج القائمة من يمين الشاشة
+            ============================================= */
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+
+            /* =============================================
+               منع خروجها من يسار الشاشة
+            ============================================= */
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+
+            /* =============================================
+               إذا كان الصف قريبًا جدًا من أعلى الشاشة
+               
+               لا ننقل القائمة للأسفل.
+               
+               نجعلها تبدأ من أعلى الشاشة
+               حتى تظل فوق الزر.
+            ============================================= */
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+
+            /* =============================================
+               تطبيق الموقع
+            ============================================= */
+
+            menu.style.top =
+                top + "px";
+
+
+            menu.style.left =
+                left + "px";
+
+
+            menu.style.right =
+                "auto";
+
+
+            menu.style.bottom =
+                "auto";
+
+
+            menu.style.transform =
+                "none";
+
+
+
+            /* =============================================
+               منع تمرير الصفحة عند الضغط داخل القائمة
+            ============================================= */
+
+            menu.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                }
+            );
+
+        });
+
+    });
+
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+        if (!openedMenu) {
+            return;
+        }
+
+
+        openedMenu.classList.remove("menu-open");
+
+
+        /* =============================================
+           إرجاع القائمة إلى مكانها الأصلي
+           
+           حتى لا تبقى في body بشكل دائم.
+        ============================================= */
+
+        if (openedButton) {
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       عند تحريك الصفحة
+       
+       إذا كانت القائمة مفتوحة، نعيد حساب موقعها
+       مع بقاءها فوق نفس الزر.
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                openedButton.getBoundingClientRect();
+
+
+            const menuHeight =
+                openedMenu.offsetHeight;
+
+
+            const menuWidth =
+                openedMenu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            openedMenu.style.top =
+                top + "px";
+
+
+            openedMenu.style.left =
+                left + "px";
+
+        },
+        true
+    );
+
+
+
+    /* =====================================================
+       عند تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
 });
+
 </script>
+
 
 {% endblock %}

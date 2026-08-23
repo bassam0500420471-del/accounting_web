@@ -2,63 +2,655 @@
 {% load i18n %}
 
 {% block title %}
-{% trans "Point of Sale" %}
+    {% trans "Point of Sale" %}
 {% endblock %}
 
 
 {% block extra_css %}
 
+<link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+/>
+
 <style>
-    .product-name {
-        position: relative;
-        display: block;
+
+/* =========================================================
+   POS PAGE
+   ========================================================= */
+
+body {
+    overflow-x: hidden;
+}
+
+.sidebar,
+#sidebar,
+.side-menu,
+.main-sidebar,
+.app-sidebar,
+.sidebar-wrapper {
+    display: none !important;
+}
+
+.main-content,
+.content,
+.page-content,
+main,
+.content-wrapper {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+
+/* =========================================================
+   POS CONTAINER
+   ========================================================= */
+
+.pos-page {
+    width: 100%;
+    min-height: calc(100vh - 80px);
+    padding: 15px;
+    background: #eeeeee;
+}
+
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.pos-topbar {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.pos-topbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    direction: ltr;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.pos-search-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+#new-invoice-btn {
+    order: 1;
+    flex: 0 0 auto;
+}
+
+#add-payment-method-btn {
+    order: 2;
+    flex: 0 0 auto;
+}
+
+.product-search-wrapper {
+    order: 3;
+}
+
+.invoice-search-wrapper {
+    order: 4;
+}
+
+.pos-select2 {
+    width: 100% !important;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--default
+.select2-selection--single {
+    height: 38px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+    background: #fff !important;
+}
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__rendered {
+    line-height: 36px !important;
+    text-align: right;
+    direction: rtl;
+    padding-right: 12px !important;
+    padding-left: 30px !important;
+    color: #495057;
+}
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__arrow {
+    height: 36px !important;
+    left: 6px !important;
+    right: auto !important;
+}
+
+.select2-dropdown {
+    direction: rtl;
+    text-align: right;
+    z-index: 999999 !important;
+}
+
+.select2-search__field {
+    direction: rtl;
+    text-align: right;
+}
+
+.pos-topbar button {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   MAIN POS
+   ========================================================= */
+
+.pos-layout {
+    display: flex;
+    direction: ltr;
+    gap: 15px;
+    width: 100%;
+    align-items: stretch;
+}
+
+
+/* =========================================================
+   PRODUCTS
+   ========================================================= */
+
+.pos-products-panel {
+    flex: 1;
+    min-width: 0;
+    direction: rtl;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+
+/* =========================================================
+   INVOICE
+   ========================================================= */
+
+.pos-invoice-panel {
+    width: 42%;
+    min-width: 420px;
+    direction: rtl;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 15px;
+    height: calc(100vh - 125px);
+    max-height: calc(100vh - 125px);
+}
+
+
+/* =========================================================
+   INVOICE TABS
+   ========================================================= */
+
+.invoice-tabs-wrapper {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+#invoice-tabs {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.invoice-tab {
+    position: relative;
+}
+
+.invoice-tab.btn-primary {
+    color: #fff;
+}
+
+
+/* =========================================================
+   INVOICE CONTENT
+   ========================================================= */
+
+#invoice-contents {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.invoice-content {
+    background: #fff;
+}
+
+
+/* =========================================================
+   CUSTOMER
+   ========================================================= */
+
+.invoice-customer {
+    background: #f7f7f7;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   INVOICE TABLE
+   ========================================================= */
+
+.invoice-table-wrapper {
+    overflow-x: auto;
+}
+
+.invoice-table {
+    width: 100%;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.invoice-table th {
+    background: #f1f1f1;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.invoice-table td {
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   PRODUCT NAME
+   ========================================================= */
+
+.invoice-table .item-name {
+    width: 150px;
+    max-width: 150px;
+    min-width: 150px;
+}
+
+.invoice-item-name {
+    display: block;
+    width: 150px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    text-align: right;
+    direction: rtl;
+}
+
+
+/* =========================================================
+   TOOLTIP
+   ========================================================= */
+
+.pos-product-name-tooltip {
+    position: fixed;
+    display: none;
+    background: #333;
+    color: #fff;
+    padding: 7px 11px;
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: normal;
+    width: max-content;
+    max-width: 350px;
+    min-width: 100px;
+    text-align: center;
+    z-index: 999999;
+    box-shadow: 0 3px 12px rgba(0,0,0,.30);
+    pointer-events: none;
+    word-break: break-word;
+}
+
+.pos-product-name-tooltip.show {
+    display: block;
+}
+
+
+/* =========================================================
+   QUANTITY
+   ========================================================= */
+
+.qty-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.qty-control button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.invoice-total-box {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.invoice-total-row {
+    display: grid;
+    grid-template-columns:
+        minmax(120px, 1fr)
+        80px
+        80px
+        90px
+        40px;
+    align-items: center;
+    column-gap: 0;
+    font-size: 18px;
+    font-weight: bold;
+    direction: rtl;
+    width: 100%;
+}
+
+.invoice-total-label {
+    grid-column: 1 / 4;
+    text-align: right;
+    padding-right: 5px;
+}
+
+.invoice-total-value {
+    grid-column: 4;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.invoice-total-empty {
+    grid-column: 5;
+}
+
+
+/* =========================================================
+   SAVE
+   ========================================================= */
+
+.save-btn {
+    margin-top: 10px;
+    min-height: 48px;
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+
+.categories-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.categories-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.category-card {
+    cursor: pointer;
+    width: 130px;
+    height: 150px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f8f8;
+    overflow: hidden;
+    transition: .2s;
+}
+
+.category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+}
+
+.category-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.category-image-empty {
+    width: 100%;
+    height: 100px;
+    background: #e0e0e0;
+}
+
+.category-name {
+    padding: 8px 4px;
+    background: #f0f0f0;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   PRODUCTS
+   ========================================================= */
+
+.products-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#products-container {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.product-card {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.product-box {
+    cursor: pointer;
+    height: 175px;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: visible;
+    transition: .2s;
+}
+
+.product-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+}
+
+.product-image {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+
+.product-image-empty {
+    width: 100%;
+    height: 90px;
+    background: #e0e0e0;
+    border-radius: 8px 8px 0 0;
+}
+
+.product-info {
+    padding: 5px;
+    text-align: center;
+}
+
+.product-name {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.product-name:hover,
+.product-name.show-full-name {
+    overflow: visible;
+    white-space: normal;
+    z-index: 9999;
+}
+
+.product-name::after {
+    content: attr(data-full-name);
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: normal;
+    width: max-content;
+    max-width: 300px;
+    min-width: 100px;
+    text-align: center;
+    z-index: 99999;
+    box-shadow: 0 3px 10px rgba(0,0,0,.25);
+    pointer-events: none;
+}
+
+.product-name:hover::after,
+.product-name.show-full-name::after {
+    display: block;
+}
+
+.card,
+.card-body {
+    overflow: visible !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .pos-layout {
+        flex-direction: column;
+    }
+
+    .pos-invoice-panel {
         width: 100%;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        cursor: pointer;
+        min-width: 0;
+        position: relative;
+        height: auto;
+        max-height: none;
+        order: 1;
     }
 
-    .product-name:hover,
-    .product-name.show-full-name {
-        overflow: visible;
-        white-space: normal;
-        z-index: 9999;
+    .pos-products-panel {
+        order: 2;
     }
 
-    .product-name::after {
-        content: attr(data-full-name);
-        display: none;
-        position: absolute;
-        bottom: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: #fff;
-        padding: 6px 10px;
-        border-radius: 5px;
-        font-size: 13px;
-        line-height: 1.4;
-        white-space: normal;
-        width: max-content;
-        max-width: 300px;
-        min-width: 100px;
-        text-align: center;
-        z-index: 99999;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-        pointer-events: none;
+}
+
+@media (max-width: 768px) {
+
+    .pos-topbar-inner {
+        flex-wrap: wrap;
+        direction: ltr;
     }
 
-    .product-name:hover::after,
-    .product-name.show-full-name::after {
-        display: block;
+    .pos-search-wrapper {
+        flex: 1 1 100%;
+        order: unset !important;
     }
 
-    .card,
-    .card-body {
-        overflow: visible !important;
+    #new-invoice-btn,
+    #add-payment-method-btn {
+        flex: 1 1 auto;
+        order: unset;
     }
+
+    .category-card {
+        width: 110px;
+        height: 135px;
+    }
+
+    .category-card img,
+    .category-image-empty {
+        height: 85px;
+    }
+
+    .pos-product-name-tooltip {
+        max-width: 280px;
+    }
+
+    .invoice-total-row {
+        grid-template-columns:
+            minmax(100px, 1fr)
+            60px
+            60px
+            75px
+            30px;
+        font-size: 16px;
+    }
+
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+#paymentMethodModal {
+    direction: rtl;
+}
+
 </style>
 
 {% endblock %}
@@ -66,190 +658,232 @@
 
 {% block content %}
 
+<div class="pos-page">
 
-<div class="container-fluid mt-3">
-    <!-- Top Bar -->
-    <div class="d-flex mb-3 align-items-center gap-2">
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
 
-        <input type="text"
-               class="form-control"
-               id="product-search"
-               placeholder="{% trans 'Search product...' %}">
+    <div class="pos-topbar">
 
-        <input type="text"
-               class="form-control"
-               id="invoice-search"
-               placeholder="{% trans 'Search invoice...' %}">
+        <div class="pos-topbar-inner">
 
-        <button class="btn btn-primary" id="new-invoice-btn">
-            ➕ {% trans "New Invoice" %}
-        </button>
-
-
-        <button class="btn btn-success" id="add-payment-method-btn">
-            ➕ إضافة طريقة دفع
-        </button>
+            <button
+                class="btn btn-primary"
+                id="new-invoice-btn"
+                type="button"
+            >
+                ➕ {% trans "New Invoice" %}
+            </button>
 
 
-    </div>
-
-<!-- Invoice Panel -->
-<div style="width:100%;
-            border:1px solid #ddd;
-            padding:10px;
-            border-radius:5px;
-            margin-bottom:20px;">
-
-    <div id="invoice-tabs"
-         class="d-flex gap-1 mb-2 flex-wrap"></div>
-
-    <div id="invoice-contents"></div>
-
-</div>
+            <button
+                class="btn btn-success"
+                id="add-payment-method-btn"
+                type="button"
+            >
+                ➕ إضافة طريقة دفع
+            </button>
 
 
-<!-- Products Area -->
-<div style="width:100%;">
+            <!-- PRODUCT SEARCH -->
 
-    <!-- Categories -->
-    <h4>{% trans "Categories" %}</h4>
+            <div class="pos-search-wrapper product-search-wrapper">
 
-    <div class="mb-3 d-flex flex-wrap gap-2">
+                <select
+                    id="product-search"
+                    class="form-select pos-select2"
+                >
 
-        <button class="btn btn-outline-primary category-btn"
-                data-id="">
-            {% trans "All" %}
-        </button>
+                    <option value="">
+                        {% trans "Search product..." %}
+                    </option>
 
-        {% for cat in categories %}
+                    {% for p in products %}
 
-        <div class="category-card"
-             data-id="{{ cat.id }}"
-             style="cursor:pointer;
-                    width:150px;
-                    height:220px;
-                    text-align:center;
-                    border:1px solid #ddd;
-                    border-radius:8px;
-                    background:#f8f8f8;">
-
-            {% if cat.image %}
-
-            <img src="{{ cat.image.url }}"
-                 style="width:100%;
-                        height:120px;
-                        object-fit:cover;
-                        border-radius:8px 8px 0 0;">
-
-            {% else %}
-
-            <div style="width:100%;
-                        height:120px;
-                        background:#e0e0e0;
-                        border-radius:8px 8px 0 0;">
-            </div>
-
-            {% endif %}
-
-            <div style="padding:5px;
-                        background:#f0f0f0;">
-
-                <h6>{{ cat.name }}</h6>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-
-    <!-- Products -->
-
-    <div class="row"
-         id="products-container">
-
-        {% for p in products %}
-
-        <div class="col-md-2 mb-2 product-card"
-             data-id="{{ p.id }}"
-             data-name="{{ p.get_name }}"
-             data-price="{{ p.sale_price }}"
-             data-stock="{{ p.current_stock }}"
-             data-category="{% if p.category %}{{ p.category.id }}{% endif %}"
-             style="display:none;">
-
-            <div class="card text-center"
-                 style="cursor:pointer;
-                        height:150px;
-                        background:#f8f8f8;
-                        border-radius:8px;">
-
-                {% if p.image %}
-
-                <img src="{{ p.image.url }}"
-                     style="width:100%;
-                            height:80px;
-                            object-fit:cover;
-                            border-radius:8px 8px 0 0;">
-
-                {% else %}
-
-                <div style="width:100%;
-                            height:80px;
-                            background:#e0e0e0;
-                            border-radius:8px 8px 0 0;">
-                </div>
-
-                {% endif %}
-
-                <div class="card-body p-1">
-
-                    <h6 class="card-title product-name"
-                        data-full-name="{{ p.get_name }}"
-                        style="font-size:13px;
-                               margin:2px 0;">
-
+                    <option
+                        value="{{ p.id }}"
+                        data-name="{{ p.get_name }}"
+                    >
                         {{ p.get_name }}
+                    </option>
 
-                    </h6>
+                    {% endfor %}
 
-                    <p class="card-text"
-                       style="font-size:12px;
-                              margin:0;">
+                </select>
 
-                        {{ p.sale_price }}
-                        {% trans "SAR" %}
+            </div>
 
-                    </p>
 
-                    <small class="stock-text">
+            <!-- INVOICE SEARCH -->
 
-                        {% trans "Stock" %}:
-                        {{ p.current_stock }}
+            <div class="pos-search-wrapper invoice-search-wrapper">
 
-                    </small>
+                <select
+                    id="invoice-search"
+                    class="form-select pos-select2"
+                >
 
-                </div>
+                    <option value="">
+                        {% trans "Search invoice..." %}
+                    </option>
+
+                </select>
 
             </div>
 
         </div>
 
-        {% endfor %}
-
     </div>
 
-</div>
-        <!-- Invoice Panel -->
-        <div style="flex:1;
-                    border:1px solid #ddd;
-                    padding:10px;
-                    border-radius:5px;">
 
-            <div id="invoice-tabs"
-                 class="d-flex gap-1 mb-2 flex-wrap"></div>
+    <!-- =====================================================
+         MAIN POS
+         ===================================================== -->
+
+    <div class="pos-layout">
+
+        <!-- PRODUCTS -->
+
+        <div class="pos-products-panel">
+
+            <div class="categories-title">
+                {% trans "Categories" %}
+            </div>
+
+            <div class="categories-container">
+
+                <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    id="all-products-btn"
+                    data-id=""
+                >
+                    <span id="all-products-btn-text">
+                        {% trans "All" %}
+                    </span>
+                </button>
+
+
+                {% for cat in categories %}
+
+                <div
+                    class="category-card"
+                    data-id="{{ cat.id }}"
+                >
+
+                    {% if cat.image %}
+
+                    <img
+                        src="{{ cat.image.url }}"
+                        alt="{{ cat.name }}"
+                    >
+
+                    {% else %}
+
+                    <div class="category-image-empty"></div>
+
+                    {% endif %}
+
+                    <div class="category-name">
+
+                        <h6 class="mb-0">
+                            {{ cat.name }}
+                        </h6>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="products-title">
+                {% trans "Products" %}
+            </div>
+
+
+            <div
+                class="row"
+                id="products-container"
+            >
+
+                {% for p in products %}
+
+                <div
+                    class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mb-2 product-card"
+                    data-id="{{ p.id }}"
+                    data-name="{{ p.get_name }}"
+                    data-price="{{ p.sale_price }}"
+                    data-stock="{{ p.current_stock }}"
+                    data-category="{% if p.category %}{{ p.category.id }}{% endif %}"
+                    style="display:none;"
+                >
+
+                    <div class="product-box">
+
+                        {% if p.image %}
+
+                        <img
+                            src="{{ p.image.url }}"
+                            class="product-image"
+                            alt="{{ p.get_name }}"
+                        >
+
+                        {% else %}
+
+                        <div class="product-image-empty"></div>
+
+                        {% endif %}
+
+
+                        <div class="product-info">
+
+                            <h6
+                                class="product-name"
+                                data-full-name="{{ p.get_name }}"
+                                style="font-size:13px; margin:2px 0;"
+                            >
+                                {{ p.get_name }}
+                            </h6>
+
+                            <p style="font-size:12px; margin:0;">
+                                {{ p.sale_price }}
+                                {% trans "SAR" %}
+                            </p>
+
+                            <small class="stock-text">
+
+                                {% trans "Stock" %}:
+
+                                {{ p.current_stock }}
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- INVOICE -->
+
+        <div class="pos-invoice-panel">
+
+            <div class="invoice-tabs-wrapper">
+
+                <div id="invoice-tabs"></div>
+
+            </div>
 
             <div id="invoice-contents"></div>
 
@@ -259,730 +893,26 @@
 
 </div>
 
-<script>
-console.log("JS START POS");
 
+<!-- =========================================================
+     TOOLTIP
+     ========================================================= -->
 
+<div
+    id="pos-product-name-tooltip"
+    class="pos-product-name-tooltip"
+></div>
 
-let invoiceCounter = 1;
 
-let invoices = {};
+<!-- =========================================================
+     PAYMENT METHOD MODAL
+     ========================================================= -->
 
-let activeInvoiceId = null;
-
-// ===================== Auto Save =====================
-
-function saveInvoicesState(){
-
-    sessionStorage.setItem(
-        "pos_invoices",
-        JSON.stringify({
-            invoices: invoices,
-            activeInvoiceId: activeInvoiceId,
-            invoiceCounter: invoiceCounter
-        })
-    );
-
-}
-
-function loadInvoicesState(){
-
-    const data = sessionStorage.getItem("pos_invoices");
-
-    if(!data) return;
-
-    const state = JSON.parse(data);
-
-    invoices = {};
-    invoiceCounter = state.invoiceCounter || 1;
-
-    for(const id in state.invoices){
-
-        createInvoice(Number(id), "فاتورة");
-
-        invoices[id] = state.invoices[id];
-
-const select = document.querySelector(
-    `.invoice-content[data-id='${id}'] .customer-select`
-);
-
-if(select){
-    select.value = invoices[id].customer_id || "";
-}
-
-        renderInvoice(Number(id));
-    }
-
-    activeInvoiceId = state.activeInvoiceId;
-
-    if(activeInvoiceId){
-        setActiveInvoice(activeInvoiceId);
-    }
-
-}
-
-// ===================== Create Invoice =====================
-function createInvoice(id = null, name = null){
-
-    if(id === null){
-    id = invoiceCounter++;
-}else{
-    invoiceCounter = Math.max(invoiceCounter, Number(id) + 1);
-}
-
-
-    invoices[id] = {
-        items: {},
-        total: 0,
-        customer_id: null,
-        negativeAlertShown: {}
-    };
-
-    const title = name || "{% trans 'Invoice' %}";
-
-    // Tab
-    const tab = document.createElement("button");
-
-    tab.className = "btn btn-outline-secondary invoice-tab";
-
-    tab.innerHTML = `
-        ${title}
-        <span style="margin-left:5px; cursor:pointer;">❌</span>
-    `;
-
-    tab.dataset.id = id;
-
-    document.getElementById("invoice-tabs").appendChild(tab);
-
-    // Content
-    const content = document.createElement("div");
-
-    content.className = "invoice-content p-2 border rounded";
-
-    content.dataset.id = id;
-
-    content.style.display = "none";
-
-    content.innerHTML = `
-
-<div class="mb-2">
-
-    <div class="d-flex justify-content-between align-items-center">
-
-        <label class="mb-1">
-            {% trans "Select Customer" %}
-        </label>
-
-        <button type="button"
-                class="btn btn-danger clear-invoice-btn"
-                style="min-width: 86px;">
-            🗑 تفريغ
-        </button>
-
-    </div>
-
-    <select class="form-select customer-select">
-
-        <option value="">
-            {% trans "Cash Customer" %}
-        </option>
-
-        {% for cust in customers %}
-            <option value="{{ cust.id }}"
-                    data-tax-number="{{ cust.tax_number|default:'' }}">
-                {{ cust.name }}
-            </option>
-        {% endfor %}
-
-    </select>
-
-</div>
-    <table class="table table-bordered">
-
-        <table class="table table-bordered">
-
-            <thead>
-                <tr>
-<th>{% trans "Item" %}</th>
-<th>الكمية</th>
-<th>{% trans "Price" %}</th>
-<th>{% trans "Total" %}</th>
-<th>X</th>
-                </tr>
-            </thead>
-
-            <tbody class="invoice-body"></tbody>
-
-<tfoot>
-    <tr>
-        <th colspan="3">
-            {% trans "Grand Total" %}
-        </th>
-
-        <th class="total">0.00</th>
-
-        <th></th>
-    </tr>
-</tfoot>
-
-        </table>
-
-
-    <!-- Invoice Total -->
-    <div class="invoice-totals mt-3">
-
-        <div class="row mb-2">
-
-            <div class="col-6">
-                <input type="text"
-                       class="form-control text-end grand-total"
-                       value="0.00"
-                       readonly>
-            </div>
-
-            <div class="col-6 text-end">
-                <label>
-                    {% trans "Total" %}
-                </label>
-            </div>
-
-        </div>
-
-    </div>
-
-        <button class="btn btn-success w-100 save-btn">
-            💳 {% trans "Save & Proceed to Payment" %}
-        </button>    `;
-
-    document.getElementById("invoice-contents").appendChild(content);
-
-    // Events
-    tab.addEventListener("click", function(){
-        setActiveInvoice(id);
-    });
-
-    tab.querySelector("span").addEventListener("click", function(e){
-        e.stopPropagation();
-        deleteInvoice(id);
-    });
-
-    content.querySelector(".save-btn").addEventListener("click", function(){
-        saveInvoice(id);
-    });
-content.querySelector(".clear-invoice-btn").addEventListener("click", function(){
-
-    if (!confirm("هل تريد تفريغ جميع أصناف الفاتورة؟")) {
-        return;
-    }
-
-    // تفريغ الأصناف
-    invoices[id].items = {};
-
-    // تصفير الإجمالي
-    invoices[id].total = 0;
-
-    // إعادة ضبط تنبيهات الكميات
-    invoices[id].negativeAlertShown = {};
-
-    // إعادة رسم الفاتورة
-    renderInvoice(id);
-
-});
-content.querySelector(".customer-select").addEventListener("change", function(){
-
-    invoices[id].customer_id = this.value || null;
-
-    renderInvoice(id);
-});
-if(invoices[id].customer_id){
-    content.querySelector(".customer-select").value = invoices[id].customer_id;
-}
-
-    setActiveInvoice(id);
-}
-
-
-// ===================== Active Invoice =====================
-function setActiveInvoice(id){
-
-    activeInvoiceId = id;
-
-    document.querySelectorAll(".invoice-tab").forEach(el => {
-        el.classList.remove("btn-primary");
-    });
-
-    document.querySelectorAll(".invoice-content").forEach(el => {
-        el.style.display = "none";
-    });
-
-    document.querySelector(`.invoice-tab[data-id='${id}']`)
-        .classList.add("btn-primary");
-
-    document.querySelector(`.invoice-content[data-id='${id}']`)
-        .style.display = "block";
-}
-
-
-// ===================== Delete Invoice =====================
-function deleteInvoice(id){
-
-    delete invoices[id];
-
-    const tab = document.querySelector(`.invoice-tab[data-id='${id}']`);
-    const content = document.querySelector(`.invoice-content[data-id='${id}']`);
-
-    if(tab) tab.remove();
-    if(content) content.remove();
-
-    const keys = Object.keys(invoices);
-
-    if(keys.length){
-        setActiveInvoice(keys[0]);
-    }else{
-        activeInvoiceId = null;
-    }
-
-    saveInvoicesState();
-
-}
-
-
-// ===================== Add Product =====================
-function addProductToInvoice(product){
-
-    if(!activeInvoiceId){
-
-        alert("{% trans 'Open invoice first' %}");
-
-        return;
-    }
-
-    const inv = invoices[activeInvoiceId];
-
-    const pid = product.dataset.id;
-
-    const stock = parseInt(product.dataset.stock);
-
-    const name = product.dataset.name;
-
-    const price = parseFloat(product.dataset.price);
-
-    // New Item
-    if(!inv.items[pid]){
-
-        let allowNegative = false;
-
-        // Empty Stock
-        if(stock <= 0){
-
-            if(!inv.negativeAlertShown[pid]){
-
-                const confirmNegative = confirm(
-                    `{% trans "Stock is lower than requested quantity for product" %} "${name}".\n{% trans "Allow negative stock?" %}`
-                );
-
-                if(!confirmNegative){
-                    return;
-                }
-
-                inv.negativeAlertShown[pid] = true;
-
-                allowNegative = true;
-            }
-        }
-
-        inv.items[pid] = {
-            name: name,
-            price: price,
-            qty: 1,
-            discount: 0,
-            discount_type: "percent",
-            tax: 0,
-            allowNegative: allowNegative
-        };
-
-    }else{
-
-        const item = inv.items[pid];
-
-        // Exceed Stock
-        if(item.qty + 1 > stock){
-
-            if(!item.allowNegative){
-
-                const confirmNegative = confirm(
-                    `{% trans "Stock is lower than requested quantity for product" %} "${name}".\n{% trans "Allow negative stock?" %}`
-                );
-
-                if(!confirmNegative){
-                    return;
-                }
-
-                item.allowNegative = true;
-            }
-        }
-
-        item.qty++;
-    }
-
-    renderInvoice(activeInvoiceId);
-}
-
-
-// ===================== Render Invoice =====================
-function renderInvoice(id){
-
-    const inv = invoices[id];
-
-    const tbody = document.querySelector(
-        `.invoice-content[data-id='${id}'] .invoice-body`
-    );
-
-    tbody.innerHTML = "";
-
-    let total = 0;
-    for(let pid in inv.items){
-
-        const item = inv.items[pid];
-
-        const subtotal = item.qty * item.price;
-
-        let discountAmount = 0;
-
-        if(item.discount_type === "percent"){
-
-            discountAmount =
-                subtotal * (item.discount || 0) / 100;
-
-        }else{
-
-            discountAmount =
-                item.discount || 0;
-
-        }
-
-        const lineTotal =
-            subtotal - discountAmount;
-
-        total += lineTotal;
-tbody.innerHTML += `
-
-    <tr>
-
-        <td>${item.name}</td>
-
-        <td>
-
-            <button class="btn btn-sm btn-secondary"
-                    onclick="changeQty(${id}, '${pid}', -1)">
-                -
-            </button>
-
-            ${item.qty}
-
-            <button class="btn btn-sm btn-secondary"
-                    onclick="changeQty(${id}, '${pid}', 1)">
-                +
-            </button>
-
-        </td>
-
-        <td style="width:40px;text-align:center;">
-
-            ${Number(item.price).toFixed(2)}
-
-        </td>
-
-        <td>${lineTotal.toFixed(2)}</td>
-
-        <td>
-
-            <button class="btn btn-sm btn-danger"
-                    onclick="removeItem(${id}, '${pid}')">
-                x
-            </button>
-
-        </td>
-
-    </tr>
-`;
-    }
-
-    inv.total = total;
-
-    document.querySelector(
-        `.invoice-content[data-id='${id}'] .grand-total`
-    ).value = total.toFixed(2);
-
-    document.querySelector(
-        `.invoice-content[data-id='${id}'] .total`
-    ).innerText = total.toFixed(2);
-
-    saveInvoicesState();
-
-document.querySelector(
-    `.invoice-content[data-id='${id}'] .discount-total`
-).value = totalDiscount.toFixed(2);
-
-
-document.querySelector(
-    `.invoice-content[data-id='${id}'] .tax-total`
-).value = totalTax.toFixed(2);
-
-
-document.querySelector(
-    `.invoice-content[data-id='${id}'] .grand-total`
-).value = total.toFixed(2);
-
-document.querySelector(
-    `.invoice-content[data-id='${id}'] .total`
-).innerText = total.toFixed(2);
-
-saveInvoicesState();
-
-}   // <-- هذا القوس ناقص عندك
-
-// ===================== Remove Item =====================
-function removeItem(invoiceId, pid){
-
-    delete invoices[invoiceId].items[pid];
-
-    renderInvoice(invoiceId);
-
-}
-
-// ===================== Change Qty =====================
-function changeQty(invoiceId, pid, delta){
-
-    const item = invoices[invoiceId].items[pid];
-
-    item.qty += delta;
-
-    if(item.qty <= 0){
-
-        delete invoices[invoiceId].items[pid];
-    }
-
-    renderInvoice(invoiceId);
-}
-
-
-// ===================== Update Discount =====================
-function updateDiscount(invoiceId, pid, value){
-
-    invoices[invoiceId].items[pid].discount = parseFloat(value) || 0;
-
-    renderInvoice(invoiceId);
-
-}
-
-
-// ===================== Change Discount Type =====================
-function updateDiscountType(invoiceId, pid, value){
-
-    invoices[invoiceId].items[pid].discount_type = value;
-
-    renderInvoice(invoiceId);
-
-}
-
-
-// ===================== Update Tax =====================
-function updateTax(invoiceId, pid, value){
-
-    invoices[invoiceId].items[pid].tax = parseFloat(value) || 0;
-
-    renderInvoice(invoiceId);
-
-}
-
-// ===================== Save Invoice =====================
-function saveInvoice(id){
-
-    const inv = invoices[id];
-
-    const items = [];
-
-    for(let pid in inv.items){
-
-items.push({
-
-    product_id: pid,
-
-    quantity: inv.items[pid].qty,
-
-    price: inv.items[pid].price,
-
-    discount: inv.items[pid].discount,
-
-    discount_type: inv.items[pid].discount_type,
-
-    tax: inv.items[pid].tax
-
-});
-    }
-
-    fetch("{% url 'pos:pos_save_invoice' %}", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}"
-        },
-
-        body: JSON.stringify({
-            items: items,
-            customer_id: inv.customer_id,
-            final: true
-        })
-
-    })
-
-    .then(res => res.json())
-
-    .then(data => {
-
-        if(data.success){
-
-            window.location.href =
-                `/pos/payment/${data.invoice_id}/`;
-
-        }else{
-
-            alert(data.error || "Error");
-        }
-    })
-
-    .catch(err => {
-
-        console.error(err);
-
-        alert("Server Error");
-    });
-}
-
-
-// ===================== Categories Filter =====================
-document.querySelectorAll(".category-btn").forEach(btn => {
-
-    btn.addEventListener("click", function(){
-
-        const categoryId = this.dataset.id;
-
-        document.querySelectorAll(".product-card").forEach(card => {
-
-            if(categoryId === ""){
-
-                card.style.display = "block";
-
-            }else{
-
-                if(card.dataset.category === categoryId){
-
-                    card.style.display = "block";
-
-                }else{
-
-                    card.style.display = "none";
-                }
-            }
-        });
-    });
-});
-
-
-// ===================== Category Cards =====================
-document.querySelectorAll(".category-card").forEach(card => {
-
-    card.addEventListener("click", function(){
-
-        const categoryId = this.dataset.id;
-
-        document.querySelectorAll(".product-card").forEach(product => {
-
-            if(product.dataset.category === categoryId){
-
-                product.style.display = "block";
-
-            }else{
-
-                product.style.display = "none";
-            }
-        });
-    });
-});
-
-
-// ===================== Product Click =====================
-document.querySelectorAll(".product-card").forEach(card => {
-
-    card.addEventListener("click", function(event) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        addProductToInvoice(card);
-
-    });
-
-});
-
-// ===================== New Invoice =====================
-document.getElementById("new-invoice-btn")
-.addEventListener("click", function(){
-
-    createInvoice();
-});
-
-
-
-// ===================== Open Payment Modal =====================
-
-const addPaymentBtn = document.getElementById("add-payment-method-btn");
-
-if(addPaymentBtn){
-
-    addPaymentBtn.addEventListener("click", function(){
-
-        const modal = new bootstrap.Modal(
-            document.getElementById("paymentMethodModal")
-        );
-
-        modal.show();
-
-    });
-
-}
-
-
-// ===================== Start =====================
-
-console.log("BEFORE LOAD");
-
-loadInvoicesState();
-
-if (Object.keys(invoices).length === 0) {
-    createInvoice();
-}
-
-console.log("AFTER LOAD");
-// عند فتح الصفحة لا تعرض كل المنتجات
-document.querySelectorAll(".product-card").forEach(card => {
-
-    if(card.dataset.category){
-        card.style.display = "none";
-    }else{
-        // المنتجات بدون تصنيف تبقى ظاهرة
-        card.style.display = "block";
-    }
-
-});
-
-</script>
-
-
-<div class="modal fade" id="paymentMethodModal" tabindex="-1">
+<div
+    class="modal fade"
+    id="paymentMethodModal"
+    tabindex="-1"
+>
 
     <div class="modal-dialog">
 
@@ -994,40 +924,64 @@ document.querySelectorAll(".product-card").forEach(card => {
                     إضافة طريقة دفع
                 </h5>
 
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                </button>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                ></button>
 
             </div>
 
 
-<div class="modal-body">
-    <label>اسم طريقة الدفع</label>
-    <input type="text" id="payment-method-name" class="form-control" placeholder="مثال: بنك البلاد">
+            <div class="modal-body">
 
-    <br>
+                <label>
+                    اسم طريقة الدفع
+                </label>
 
-    <label>الحساب الرئيسي</label>
-    
-    <select id="payment-main-account" class="form-select">
-        <option value="">اختر الحساب</option>
-        {% for account in payment_parent_accounts %}
-            <option value="{{ account.id }}">
-                {{ account.display_name }} 
-            </option>
-        {% endfor %}
-    </select>
-</div>
+                <input
+                    type="text"
+                    id="payment-method-name"
+                    class="form-control"
+                    placeholder="مثال: بنك البلاد"
+                >
+
+                <br>
+
+                <label>
+                    الحساب الرئيسي
+                </label>
+
+                <select
+                    id="payment-main-account"
+                    class="form-select"
+                >
+
+                    <option value="">
+                        اختر الحساب
+                    </option>
+
+                    {% for account in payment_parent_accounts %}
+
+                    <option value="{{ account.id }}">
+                        {{ account.display_name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
 
             <div class="modal-footer">
 
-                <button type="button"
-                        class="btn btn-primary"
-                        id="save-payment-method">
-
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="save-payment-method"
+                >
                     حفظ
-
                 </button>
 
             </div>
@@ -1038,167 +992,2557 @@ document.querySelectorAll(".product-card").forEach(card => {
 
 </div>
 
+
+<!-- =========================================================
+     JQUERY
+     ========================================================= -->
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+<!-- =========================================================
+     SELECT2
+     ========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"
+></script>
+
+
+<!-- =========================================================
+     POS JAVASCRIPT
+     ========================================================= -->
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
 
-    const saveBtn = document.getElementById("save-payment-method");
-    
-    if (saveBtn) {
-
-        console.log("تم العثور على زر الحفظ، جارٍ ربط الحدث...");
-
-        saveBtn.addEventListener("click", function(e) {
-
-            e.preventDefault(); 
-
-            console.log("تم الضغط على زر الحفظ!");
-
-            const name = document.getElementById("payment-method-name").value;
-
-            const account = document.getElementById("payment-main-account").value;
+console.log("POS JS START");
 
 
-            console.log("البيانات:", { name, account });
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+let invoiceCounter = 1;
+let invoices = {};
+let activeInvoiceId = null;
+
+let activeProductCategory = null;
+let allProductsShown = false;
+
+let activeInvoiceNameElement = null;
 
 
-fetch("{% url 'pos:add_payment_method' %}", {
+/* =========================================================
+   SAFE STORAGE
+   ========================================================= */
 
-    method: "POST",
+function saveInvoicesState(){
 
-    headers: {
+    try {
 
-        "Content-Type": "application/json",
+        sessionStorage.setItem(
+            "pos_invoices",
+            JSON.stringify({
+                invoices: invoices,
+                activeInvoiceId: activeInvoiceId,
+                invoiceCounter: invoiceCounter
+            })
+        );
 
-        "X-CSRFToken": "{{ csrf_token }}"
+    } catch(error) {
 
-    },
+        console.error(
+            "POS STORAGE SAVE ERROR:",
+            error
+        );
 
-    body: JSON.stringify({
+    }
 
-        name: name,
+}
 
-        parent_id: account
+
+/* =========================================================
+   LOAD INVOICES SAFELY
+   ========================================================= */
+
+function loadInvoicesState(){
+
+    const raw =
+        sessionStorage.getItem("pos_invoices");
+
+    if(!raw){
+        return false;
+    }
+
+    try {
+
+        const state =
+            JSON.parse(raw);
+
+        if(
+            !state ||
+            typeof state !== "object"
+        ){
+
+            throw new Error(
+                "Invalid POS session data"
+            );
+
+        }
+
+        if(
+            !state.invoices ||
+            typeof state.invoices !== "object"
+        ){
+
+            throw new Error(
+                "Invalid invoices data"
+            );
+
+        }
+
+        invoices = {};
+        invoiceCounter =
+            Number(state.invoiceCounter) || 1;
+
+        Object.keys(state.invoices)
+            .forEach(function(id){
+
+                const oldInvoice =
+                    state.invoices[id];
+
+                createInvoice(
+                    Number(id),
+                    "فاتورة " + id,
+                    false
+                );
+
+                invoices[id] = {
+
+                    items:
+                        oldInvoice.items || {},
+
+                    total:
+                        Number(oldInvoice.total) || 0,
+
+                    customer_id:
+                        oldInvoice.customer_id || null,
+
+                    negativeAlertShown:
+                        oldInvoice.negativeAlertShown || {}
+
+                };
+
+                renderInvoice(
+                    Number(id)
+                );
+
+            });
+
+        activeInvoiceId =
+            state.activeInvoiceId
+                ? Number(state.activeInvoiceId)
+                : null;
+
+        if(
+            activeInvoiceId &&
+            invoices[activeInvoiceId]
+        ){
+
+            setActiveInvoice(
+                activeInvoiceId
+            );
+
+        }
+
+        return true;
+
+    } catch(error) {
+
+        console.error(
+            "POS SESSION DATA ERROR:",
+            error
+        );
+
+        /*
+         * البيانات القديمة تالفة.
+         * نمسحها ونبدأ POS جديد.
+         */
+
+        sessionStorage.removeItem(
+            "pos_invoices"
+        );
+
+        invoices = {};
+        activeInvoiceId = null;
+        invoiceCounter = 1;
+
+        return false;
+    }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHtml(value){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+
+        return "";
+
+    }
+
+    return String(value)
+
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   CREATE INVOICE
+   ========================================================= */
+
+function createInvoice(
+    id = null,
+    name = null,
+    activate = true
+){
+
+    if(id === null){
+
+        id =
+            invoiceCounter++;
+
+    }else{
+
+        id =
+            Number(id);
+
+        invoiceCounter =
+            Math.max(
+                invoiceCounter,
+                id + 1
+            );
+
+    }
+
+
+    /*
+     * إذا كانت الفاتورة موجودة بالفعل
+     * لا ننشئ نسخة ثانية.
+     */
+
+    if(
+        invoices[id] &&
+        document.querySelector(
+            `.invoice-content[data-id="${id}"]`
+        )
+    ){
+
+        if(activate){
+
+            setActiveInvoice(id);
+
+        }
+
+        return id;
+
+    }
+
+
+    invoices[id] = {
+
+        items: {},
+
+        total: 0,
+
+        customer_id: null,
+
+        negativeAlertShown: {}
+
+    };
+
+
+    const title =
+        name ||
+        "{% trans 'Invoice' %}";
+
+
+    /* =====================================================
+       TAB
+       ===================================================== */
+
+    const tab =
+        document.createElement("button");
+
+    tab.type = "button";
+
+    tab.className =
+        "btn btn-outline-secondary invoice-tab";
+
+    tab.dataset.id =
+        id;
+
+    tab.innerHTML = `
+
+        <span class="invoice-tab-title">
+            ${escapeHtml(title)}
+        </span>
+
+        <span
+            class="invoice-close"
+            style="
+                margin-left:5px;
+                cursor:pointer;
+            "
+        >
+            ❌
+        </span>
+
+    `;
+
+
+    document
+        .getElementById("invoice-tabs")
+        .appendChild(tab);
+
+
+    /* =====================================================
+       CONTENT
+       ===================================================== */
+
+    const content =
+        document.createElement("div");
+
+    content.className =
+        "invoice-content p-2 border rounded";
+
+    content.dataset.id =
+        id;
+
+    content.style.display =
+        "none";
+
+
+    content.innerHTML = `
+
+        <div class="invoice-customer">
+
+            <div
+                class="d-flex justify-content-between align-items-center"
+            >
+
+                <label class="mb-1">
+                    {% trans "Select Customer" %}
+                </label>
+
+                <button
+                    type="button"
+                    class="btn btn-danger clear-invoice-btn"
+                    style="min-width:86px;"
+                >
+                    🗑 تفريغ
+                </button>
+
+            </div>
+
+
+            <select
+                class="form-select customer-select"
+            >
+
+                <option value="">
+                    {% trans "Cash Customer" %}
+                </option>
+
+                {% for cust in customers %}
+
+                <option
+                    value="{{ cust.id }}"
+                    data-tax-number="{{ cust.tax_number|default:'' }}"
+                >
+                    {{ cust.name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="invoice-table-wrapper">
+
+            <table
+                class="table table-bordered invoice-table"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            {% trans "Item" %}
+                        </th>
+
+                        <th>
+                            الكمية
+                        </th>
+
+                        <th>
+                            {% trans "Price" %}
+                        </th>
+
+                        <th>
+                            {% trans "Total" %}
+                        </th>
+
+                        <th>
+                            X
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody class="invoice-body"></tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="invoice-total-box">
+
+            <div class="invoice-total-row">
+
+                <span class="invoice-total-label">
+                    {% trans "Total" %}
+                </span>
+
+                <span class="invoice-total-value">
+
+                    <span class="grand-total-text">
+                        0.00
+                    </span>
+
+                    {% trans "SAR" %}
+
+                </span>
+
+                <span
+                    class="invoice-total-empty"
+                ></span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn btn-success w-100 save-btn"
+        >
+
+            💳
+
+            {% trans "Save & Proceed to Payment" %}
+
+        </button>
+
+    `;
+
+
+    document
+        .getElementById("invoice-contents")
+        .appendChild(content);
+
+
+    /* =====================================================
+       TAB CLICK
+       ===================================================== */
+
+    tab.addEventListener(
+        "click",
+        function(){
+
+            setActiveInvoice(id);
+
+        }
+    );
+
+
+    /* =====================================================
+       CLOSE INVOICE
+       ===================================================== */
+
+    const closeButton =
+        tab.querySelector(".invoice-close");
+
+    if(closeButton){
+
+        closeButton.addEventListener(
+            "click",
+            function(event){
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                deleteInvoice(id);
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       SAVE
+       ===================================================== */
+
+    const saveButton =
+        content.querySelector(".save-btn");
+
+    if(saveButton){
+
+        saveButton.addEventListener(
+            "click",
+            function(){
+
+                saveInvoice(id);
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CLEAR
+       ===================================================== */
+
+    const clearButton =
+        content.querySelector(
+            ".clear-invoice-btn"
+        );
+
+    if(clearButton){
+
+        clearButton.addEventListener(
+            "click",
+            function(){
+
+                if(
+                    !confirm(
+                        "هل تريد تفريغ جميع أصناف الفاتورة؟"
+                    )
+                ){
+
+                    return;
+
+                }
+
+                invoices[id].items = {};
+                invoices[id].total = 0;
+                invoices[id].negativeAlertShown = {};
+
+                renderInvoice(id);
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CUSTOMER
+       ===================================================== */
+
+    const customerSelect =
+        content.querySelector(
+            ".customer-select"
+        );
+
+    if(customerSelect){
+
+        customerSelect.addEventListener(
+            "change",
+            function(){
+
+                invoices[id].customer_id =
+                    this.value || null;
+
+                saveInvoicesState();
+
+            }
+        );
+
+    }
+
+
+    if(activate){
+
+        setActiveInvoice(id);
+
+    }
+
+
+    refreshInvoiceSearch();
+
+    return id;
+
+}
+
+
+/* =========================================================
+   ACTIVE INVOICE
+   ========================================================= */
+
+function setActiveInvoice(id){
+
+    id =
+        Number(id);
+
+    if(
+        !invoices[id]
+    ){
+
+        return;
+
+    }
+
+    activeInvoiceId =
+        id;
+
+
+    document
+        .querySelectorAll(".invoice-tab")
+        .forEach(function(el){
+
+            el.classList.remove(
+                "btn-primary"
+            );
+
+            el.classList.add(
+                "btn-outline-secondary"
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(".invoice-content")
+        .forEach(function(el){
+
+            el.style.display =
+                "none";
+
+        });
+
+
+    const tab =
+        document.querySelector(
+            `.invoice-tab[data-id="${id}"]`
+        );
+
+
+    const content =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"]`
+        );
+
+
+    if(tab){
+
+        tab.classList.remove(
+            "btn-outline-secondary"
+        );
+
+        tab.classList.add(
+            "btn-primary"
+        );
+
+    }
+
+
+    if(content){
+
+        content.style.display =
+            "block";
+
+    }
+
+
+    saveInvoicesState();
+
+}
+
+
+/* =========================================================
+   DELETE INVOICE
+   ========================================================= */
+
+function deleteInvoice(id){
+
+    id =
+        Number(id);
+
+    delete invoices[id];
+
+
+    const tab =
+        document.querySelector(
+            `.invoice-tab[data-id="${id}"]`
+        );
+
+    const content =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"]`
+        );
+
+
+    if(tab){
+        tab.remove();
+    }
+
+    if(content){
+        content.remove();
+    }
+
+
+    const keys =
+        Object.keys(invoices);
+
+
+    if(keys.length){
+
+        setActiveInvoice(
+            Number(keys[0])
+        );
+
+    }else{
+
+        activeInvoiceId =
+            null;
+
+        /*
+         * لا نترك POS بدون فورمة.
+         * أنشئ فاتورة جديدة تلقائيًا.
+         */
+
+        createInvoice();
+
+    }
+
+
+    saveInvoicesState();
+
+    refreshInvoiceSearch();
+
+}
+
+
+/* =========================================================
+   INVOICE SEARCH
+   ========================================================= */
+
+function refreshInvoiceSearch(){
+
+    const select =
+        $("#invoice-search");
+
+
+    if(
+        !select.length
+    ){
+
+        return;
+
+    }
+
+
+    select.empty();
+
+
+    select.append(
+        new Option(
+            "",
+            "",
+            false,
+            false
+        )
+    );
+
+
+    Object.keys(invoices)
+        .forEach(function(id){
+
+            const option =
+                new Option(
+                    "فاتورة " + id,
+                    id,
+                    false,
+                    false
+                );
+
+            select.append(option);
+
+        });
+
+
+    select.trigger("change");
+
+}
+
+
+/* =========================================================
+   PRODUCT SEARCH
+   ========================================================= */
+
+function initializeProductSearch(){
+
+    $("#product-search").select2({
+
+        placeholder:
+            "{% trans 'Search product...' %}",
+
+        allowClear: true,
+
+        dir: "rtl",
+
+        width: "100%",
+
+        language: {
+
+            noResults: function(){
+                return "لا توجد نتائج";
+            },
+
+            searching: function(){
+                return "جاري البحث...";
+            }
+
+        }
+
+    });
+
+
+    $("#product-search").on(
+        "select2:select",
+        function(e){
+
+            const productId =
+                String(
+                    e.params.data.id
+                );
+
+
+            const product =
+                document.querySelector(
+                    `.product-card[data-id="${productId}"]`
+                );
+
+
+            if(product){
+
+                filterProductsBySearch(
+                    productId
+                );
+
+                addProductToInvoice(
+                    product
+                );
+
+            }
+
+
+            $(this)
+                .val(null)
+                .trigger("change");
+
+        }
+    );
+
+
+    $("#product-search").on(
+        "select2:clear",
+        function(){
+
+            restoreCurrentProductFilter();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INVOICE SEARCH
+   ========================================================= */
+
+function initializeInvoiceSearch(){
+
+    /*
+     * لا يوجد AJAX هنا.
+     *
+     * السبب:
+     * search_saved_invoices غير موجود في urls.py.
+     *
+     * البحث يعمل على الفواتير المفتوحة
+     * في POS فقط.
+     */
+
+    $("#invoice-search").select2({
+
+        placeholder:
+            "{% trans 'Search invoice...' %}",
+
+        allowClear: true,
+
+        dir: "rtl",
+
+        width: "100%",
+
+        minimumInputLength: 0,
+
+        language: {
+
+            noResults: function(){
+                return "لا توجد فواتير";
+            },
+
+            searching: function(){
+                return "جاري البحث...";
+            }
+
+        }
+
+    });
+
+
+    $("#invoice-search").on(
+        "select2:select",
+        function(e){
+
+            const invoiceId =
+                Number(
+                    e.params.data.id
+                );
+
+
+            if(
+                invoices[invoiceId]
+            ){
+
+                setActiveInvoice(
+                    invoiceId
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ADD PRODUCT
+   ========================================================= */
+
+function addProductToInvoice(product){
+
+    /*
+     * إذا لم توجد فاتورة لأي سبب
+     * أنشئ واحدة مباشرة.
+     */
+
+    if(
+        !activeInvoiceId ||
+        !invoices[activeInvoiceId]
+    ){
+
+        createInvoice();
+
+    }
+
+
+    if(
+        !activeInvoiceId ||
+        !invoices[activeInvoiceId]
+    ){
+
+        alert(
+            "تعذر إنشاء الفاتورة"
+        );
+
+        return;
+
+    }
+
+
+    const inv =
+        invoices[activeInvoiceId];
+
+
+    const pid =
+        String(
+            product.dataset.id
+        );
+
+
+    const stock =
+        parseFloat(
+            product.dataset.stock
+        ) || 0;
+
+
+    const name =
+        product.dataset.name || "";
+
+
+    const price =
+        parseFloat(
+            product.dataset.price
+        ) || 0;
+
+
+    if(
+        !inv.items[pid]
+    ){
+
+        let allowNegative =
+            false;
+
+
+        if(stock <= 0){
+
+            if(
+                !inv.negativeAlertShown[pid]
+            ){
+
+                const confirmNegative =
+                    confirm(
+
+                        `{% trans "Stock is lower than requested quantity for product" %} "${name}".\n{% trans "Allow negative stock?" %}`
+
+                    );
+
+
+                if(!confirmNegative){
+
+                    return;
+
+                }
+
+
+                inv.negativeAlertShown[pid] =
+                    true;
+
+                allowNegative =
+                    true;
+
+            }
+
+        }
+
+
+        inv.items[pid] = {
+
+            name:
+                name,
+
+            price:
+                price,
+
+            qty:
+                1,
+
+            discount:
+                0,
+
+            discount_type:
+                "percent",
+
+            tax:
+                0,
+
+            allowNegative:
+                allowNegative
+
+        };
+
+    }else{
+
+        const item =
+            inv.items[pid];
+
+
+        if(
+            item.qty + 1 > stock &&
+            !item.allowNegative
+        ){
+
+            const confirmNegative =
+                confirm(
+
+                    `{% trans "Stock is lower than requested quantity for product" %} "${name}".\n{% trans "Allow negative stock?" %}`
+
+                );
+
+
+            if(!confirmNegative){
+
+                return;
+
+            }
+
+
+            item.allowNegative =
+                true;
+
+        }
+
+
+        item.qty++;
+
+    }
+
+
+    renderInvoice(
+        activeInvoiceId
+    );
+
+}
+
+
+/* =========================================================
+   RENDER INVOICE
+   ========================================================= */
+
+function renderInvoice(id){
+
+    id =
+        Number(id);
+
+
+    const inv =
+        invoices[id];
+
+
+    if(!inv){
+
+        return;
+
+    }
+
+
+    const tbody =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"] .invoice-body`
+        );
+
+
+    if(!tbody){
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        "";
+
+
+    let total =
+        0;
+
+
+    for(
+        let pid in inv.items
+    ){
+
+        const item =
+            inv.items[pid];
+
+
+        const subtotal =
+            Number(item.qty || 0) *
+            Number(item.price || 0);
+
+
+        let discountAmount =
+            0;
+
+
+        if(
+            item.discount_type ===
+            "percent"
+        ){
+
+            discountAmount =
+                subtotal *
+                (Number(item.discount) || 0) /
+                100;
+
+        }else{
+
+            discountAmount =
+                Number(item.discount) || 0;
+
+        }
+
+
+        const lineTotal =
+            subtotal -
+            discountAmount;
+
+
+        total +=
+            lineTotal;
+
+
+        tbody.innerHTML += `
+
+            <tr>
+
+                <td class="item-name">
+
+                    <span
+                        class="invoice-item-name"
+                        data-full-name="${escapeHtml(item.name)}"
+                        title="${escapeHtml(item.name)}"
+                    >
+                        ${escapeHtml(item.name)}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="qty-control">
+
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            onclick="changeQty(${id}, '${pid}', -1)"
+                        >
+                            -
+                        </button>
+
+
+                        <span>
+                            ${item.qty}
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            onclick="changeQty(${id}, '${pid}', 1)"
+                        >
+                            +
+                        </button>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${Number(item.price).toFixed(2)}
+                </td>
+
+
+                <td>
+                    ${lineTotal.toFixed(2)}
+                </td>
+
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        onclick="removeItem(${id}, '${pid}')"
+                    >
+                        ×
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    inv.total =
+        total;
+
+
+    const grandTotalText =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"] .grand-total-text`
+        );
+
+
+    if(grandTotalText){
+
+        grandTotalText.innerText =
+            total.toFixed(2);
+
+    }
+
+
+    const select =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"] .customer-select`
+        );
+
+
+    if(select){
+
+        select.value =
+            inv.customer_id || "";
+
+    }
+
+
+    saveInvoicesState();
+
+    initializeInvoiceNameTooltips();
+
+}
+
+
+/* =========================================================
+   REMOVE ITEM
+   ========================================================= */
+
+function removeItem(
+    invoiceId,
+    pid
+){
+
+    if(
+        !invoices[invoiceId] ||
+        !invoices[invoiceId].items[pid]
+    ){
+
+        return;
+
+    }
+
+
+    delete invoices[invoiceId]
+        .items[pid];
+
+
+    renderInvoice(
+        invoiceId
+    );
+
+}
+
+
+/* =========================================================
+   CHANGE QUANTITY
+   ========================================================= */
+
+function changeQty(
+    invoiceId,
+    pid,
+    delta
+){
+
+    if(
+        !invoices[invoiceId]
+    ){
+
+        return;
+
+    }
+
+
+    const item =
+        invoices[invoiceId]
+        .items[pid];
+
+
+    if(!item){
+
+        return;
+
+    }
+
+
+    item.qty +=
+        Number(delta);
+
+
+    if(
+        item.qty <= 0
+    ){
+
+        delete invoices[invoiceId]
+            .items[pid];
+
+    }
+
+
+    renderInvoice(
+        invoiceId
+    );
+
+}
+
+
+/* =========================================================
+   SAVE INVOICE
+   ========================================================= */
+
+function saveInvoice(id){
+
+    const inv =
+        invoices[id];
+
+
+    if(
+        !inv ||
+        Object.keys(inv.items).length === 0
+    ){
+
+        alert(
+            "الفاتورة فارغة"
+        );
+
+        return;
+
+    }
+
+
+    const items = [];
+
+
+    for(
+        let pid in inv.items
+    ){
+
+        items.push({
+
+            product_id:
+                pid,
+
+            quantity:
+                inv.items[pid].qty,
+
+            price:
+                inv.items[pid].price,
+
+            discount:
+                inv.items[pid].discount,
+
+            discount_type:
+                inv.items[pid].discount_type,
+
+            tax:
+                inv.items[pid].tax
+
+        });
+
+    }
+
+
+    fetch(
+        "{% url 'pos:pos_save_invoice' %}",
+        {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json",
+
+                "X-CSRFToken":
+                    "{{ csrf_token }}"
+
+            },
+
+            body:
+                JSON.stringify({
+
+                    items:
+                        items,
+
+                    customer_id:
+                        inv.customer_id,
+
+                    final:
+                        true
+
+                })
+
+        }
+    )
+
+    .then(function(res){
+
+        return res.json();
 
     })
 
-})
+    .then(function(data){
 
-            .then(response => response.json())
+        if(data.success){
+
+            sessionStorage.setItem(
+                "pos_pending_payment_invoice",
+                String(data.invoice_id)
+            );
 
 
-            .then(data => {
+            window.location.href =
+                `/pos/payment/${data.invoice_id}/`;
 
-                console.log(data);
+        }else{
 
+            alert(
+                data.error ||
+                "حدث خطأ أثناء حفظ الفاتورة"
+            );
+
+        }
+
+    })
+
+    .catch(function(error){
+
+        console.error(
+            "SAVE INVOICE ERROR:",
+            error
+        );
+
+        alert(
+            "حدث خطأ في الاتصال بالسيرفر"
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   PRODUCT FILTER
+   ========================================================= */
+
+function showCategorizedProducts(){
+
+    activeProductCategory =
+        null;
+
+    allProductsShown =
+        false;
+
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(function(card){
+
+            const category =
+                card.dataset.category || "";
+
+
+            if(category){
+
+                card.style.display =
+                    "none";
+
+            }else{
+
+                card.style.display =
+                    "";
+
+            }
+
+        });
+
+
+    updateAllProductsButton();
+
+}
+
+
+function filterProducts(categoryId){
+
+    activeProductCategory =
+        String(categoryId);
+
+    allProductsShown =
+        false;
+
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(function(card){
+
+            const cardCategory =
+                String(
+                    card.dataset.category || ""
+                );
+
+
+            card.style.display =
+                cardCategory ===
+                String(categoryId)
+                    ? ""
+                    : "none";
+
+        });
+
+
+    updateAllProductsButton();
+
+}
+
+
+function showAllProducts(){
+
+    activeProductCategory =
+        "ALL";
+
+    allProductsShown =
+        true;
+
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(function(card){
+
+            card.style.display =
+                "";
+
+        });
+
+
+    updateAllProductsButton();
+
+}
+
+
+function filterProductsBySearch(productId){
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(function(card){
+
+            card.style.display =
+                String(card.dataset.id) ===
+                String(productId)
+                    ? ""
+                    : "none";
+
+        });
+
+}
+
+
+function restoreCurrentProductFilter(){
+
+    if(
+        activeProductCategory ===
+        "ALL"
+    ){
+
+        showAllProducts();
+
+        return;
+
+    }
+
+
+    if(
+        activeProductCategory !== null
+    ){
+
+        filterProducts(
+            activeProductCategory
+        );
+
+        return;
+
+    }
+
+
+    showCategorizedProducts();
+
+}
+
+
+/* =========================================================
+   ALL BUTTON
+   ========================================================= */
+
+function updateAllProductsButton(){
+
+    const button =
+        document.getElementById(
+            "all-products-btn"
+        );
+
+
+    const text =
+        document.getElementById(
+            "all-products-btn-text"
+        );
+
+
+    if(
+        !button ||
+        !text
+    ){
+
+        return;
+
+    }
+
+
+    if(allProductsShown){
+
+        text.innerText =
+            "عرض أقل";
+
+
+        button.classList.remove(
+            "btn-outline-primary"
+        );
+
+
+        button.classList.add(
+            "btn-primary"
+        );
+
+    }else{
+
+        text.innerText =
+            "{% trans 'All' %}";
+
+
+        button.classList.remove(
+            "btn-primary"
+        );
+
+
+        button.classList.add(
+            "btn-outline-primary"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CATEGORY EVENTS
+   ========================================================= */
+
+function initializeCategoryEvents(){
+
+    document
+        .querySelectorAll(".category-card")
+        .forEach(function(card){
+
+            card.addEventListener(
+                "click",
+                function(){
+
+                    filterProducts(
+                        this.dataset.id
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+/* =========================================================
+   PRODUCT CLICK EVENTS
+   ========================================================= */
+
+function initializeProductEvents(){
+
+    document
+        .querySelectorAll(".product-card")
+        .forEach(function(card){
+
+            card.addEventListener(
+                "click",
+                function(event){
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+                    addProductToInvoice(
+                        card
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+/* =========================================================
+   ALL PRODUCTS BUTTON
+   ========================================================= */
+
+function initializeAllButton(){
+
+    const button =
+        document.getElementById(
+            "all-products-btn"
+        );
+
+
+    if(!button){
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        function(){
+
+            if(allProductsShown){
+
+                showCategorizedProducts();
+
+            }else{
+
+                showAllProducts();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   NEW INVOICE BUTTON
+   ========================================================= */
+
+function initializeNewInvoiceButton(){
+
+    const button =
+        document.getElementById(
+            "new-invoice-btn"
+        );
+
+
+    if(!button){
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        function(){
+
+            createInvoice();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PAYMENT METHOD
+   ========================================================= */
+
+function initializePaymentMethod(){
+
+    const addButton =
+        document.getElementById(
+            "add-payment-method-btn"
+        );
+
+
+    if(addButton){
+
+        addButton.addEventListener(
+            "click",
+            function(){
+
+                const modalElement =
+                    document.getElementById(
+                        "paymentMethodModal"
+                    );
+
+
+                if(
+                    !modalElement
+                ){
+
+                    return;
+
+                }
+
+
+                if(
+                    typeof bootstrap ===
+                    "undefined"
+                ){
+
+                    alert(
+                        "Bootstrap غير محمل"
+                    );
+
+                    return;
+
+                }
+
+
+                const modal =
+                    bootstrap.Modal.getOrCreateInstance(
+                        modalElement
+                    );
+
+
+                modal.show();
+
+            }
+        );
+
+    }
+
+
+    const saveButton =
+        document.getElementById(
+            "save-payment-method"
+        );
+
+
+    if(!saveButton){
+
+        return;
+
+    }
+
+
+    saveButton.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+
+            const name =
+                document.getElementById(
+                    "payment-method-name"
+                ).value.trim();
+
+
+            const account =
+                document.getElementById(
+                    "payment-main-account"
+                ).value;
+
+
+            if(!name){
+
+                alert(
+                    "أدخل اسم طريقة الدفع"
+                );
+
+                return;
+
+            }
+
+
+            if(!account){
+
+                alert(
+                    "اختر الحساب الرئيسي"
+                );
+
+                return;
+
+            }
+
+
+            fetch(
+                "{% url 'pos:add_payment_method' %}",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "X-CSRFToken":
+                            "{{ csrf_token }}"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            name:
+                                name,
+
+                            parent_id:
+                                account
+
+                        })
+
+                }
+            )
+
+            .then(function(response){
+
+                return response.json();
+
+            })
+
+            .then(function(data){
 
                 if(data.success){
 
-                    alert("تم حفظ طريقة الدفع بنجاح");
+                    alert(
+                        "تم حفظ طريقة الدفع بنجاح"
+                    );
 
                     location.reload();
 
                 }else{
 
-                    alert(data.error || "حدث خطأ أثناء الحفظ");
+                    alert(
+                        data.error ||
+                        "حدث خطأ أثناء الحفظ"
+                    );
 
                 }
 
             })
 
+            .catch(function(error){
 
-            .catch(error => {
+                console.error(
+                    error
+                );
 
-                console.error(error);
-
-                alert("خطأ في الاتصال بالسيرفر");
+                alert(
+                    "خطأ في الاتصال بالسيرفر"
+                );
 
             });
 
+        }
+    );
 
-        });
+}
 
-    } else {
 
-        console.error("لم يتم العثور على الزر!");
+/* =========================================================
+   PRODUCT NAME
+   ========================================================= */
+
+function initializeProductNameEvents(){
+
+    const productNames =
+        document.querySelectorAll(
+            ".product-name"
+        );
+
+
+    productNames.forEach(
+        function(name){
+
+            name.addEventListener(
+                "click",
+                function(event){
+
+                    event.stopPropagation();
+
+
+                    productNames.forEach(
+                        function(otherName){
+
+                            if(
+                                otherName !== name
+                            ){
+
+                                otherName.classList
+                                    .remove(
+                                        "show-full-name"
+                                    );
+
+                            }
+
+                        }
+                    );
+
+
+                    name.classList.toggle(
+                        "show-full-name"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function(){
+
+            productNames.forEach(
+                function(name){
+
+                    name.classList.remove(
+                        "show-full-name"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INVOICE TOOLTIP
+   ========================================================= */
+
+function initializeInvoiceNameTooltips(){
+
+    const productNames =
+        document.querySelectorAll(
+            ".invoice-item-name"
+        );
+
+
+    const tooltip =
+        document.getElementById(
+            "pos-product-name-tooltip"
+        );
+
+
+    if(!tooltip){
+
+        return;
 
     }
 
+
+    productNames.forEach(
+        function(nameElement){
+
+            if(
+                nameElement.dataset.tooltipReady ===
+                "1"
+            ){
+
+                return;
+
+            }
+
+
+            nameElement.dataset.tooltipReady =
+                "1";
+
+
+            nameElement.addEventListener(
+                "mouseenter",
+                function(){
+
+                    showInvoiceProductTooltip(
+                        nameElement
+                    );
+
+                }
+            );
+
+
+            nameElement.addEventListener(
+                "mouseleave",
+                function(){
+
+                    if(
+                        activeInvoiceNameElement !==
+                        nameElement
+                    ){
+
+                        hideInvoiceProductTooltip();
+
+                    }
+
+                }
+            );
+
+
+            nameElement.addEventListener(
+                "click",
+                function(event){
+
+                    event.stopPropagation();
+
+
+                    if(
+                        activeInvoiceNameElement ===
+                        nameElement
+                    ){
+
+                        activeInvoiceNameElement =
+                            null;
+
+                        hideInvoiceProductTooltip();
+
+                    }else{
+
+                        activeInvoiceNameElement =
+                            nameElement;
+
+                        showInvoiceProductTooltip(
+                            nameElement
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+function showInvoiceProductTooltip(element){
+
+    const tooltip =
+        document.getElementById(
+            "pos-product-name-tooltip"
+        );
+
+
+    if(!tooltip){
+
+        return;
+
+    }
+
+
+    const fullName =
+        element.getAttribute(
+            "data-full-name"
+        );
+
+
+    if(!fullName){
+
+        return;
+
+    }
+
+
+    tooltip.innerHTML =
+        fullName;
+
+
+    tooltip.classList.add(
+        "show"
+    );
+
+
+    const rect =
+        element.getBoundingClientRect();
+
+
+    let left =
+        rect.left +
+        (rect.width / 2);
+
+
+    let top =
+        rect.top -
+        8;
+
+
+    tooltip.style.left =
+        left + "px";
+
+
+    tooltip.style.top =
+        top + "px";
+
+
+    tooltip.style.transform =
+        "translate(-50%, -100%)";
+
+
+    const tooltipRect =
+        tooltip.getBoundingClientRect();
+
+
+    if(
+        tooltipRect.left < 5
+    ){
+
+        tooltip.style.left =
+            (
+                tooltipRect.width / 2 +
+                5
+            ) + "px";
+
+    }
+
+
+    if(
+        tooltipRect.right >
+        window.innerWidth - 5
+    ){
+
+        tooltip.style.left =
+            (
+                window.innerWidth -
+                tooltipRect.width / 2 -
+                5
+            ) + "px";
+
+    }
+
+
+    const finalRect =
+        tooltip.getBoundingClientRect();
+
+
+    if(
+        finalRect.top < 5
+    ){
+
+        tooltip.style.top =
+            (
+                rect.bottom +
+                8
+            ) + "px";
+
+
+        tooltip.style.transform =
+            "translate(-50%, 0)";
+
+    }
+
+}
+
+
+function hideInvoiceProductTooltip(){
+
+    const tooltip =
+        document.getElementById(
+            "pos-product-name-tooltip"
+        );
+
+
+    if(!tooltip){
+
+        return;
+
+    }
+
+
+    tooltip.classList.remove(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE EVERYTHING
+   ========================================================= */
+
+$(document).ready(function(){
+
+    console.log(
+        "POS DOCUMENT READY"
+    );
+
+
+    /*
+     * 1
+     * تهيئة البحث
+     */
+
+    initializeProductSearch();
+
+    initializeInvoiceSearch();
+
+
+    /*
+     * 2
+     * الأزرار والأحداث
+     */
+
+    initializeAllButton();
+
+    initializeCategoryEvents();
+
+    initializeProductEvents();
+
+    initializeNewInvoiceButton();
+
+    initializePaymentMethod();
+
+    initializeProductNameEvents();
+
+
+    /*
+     * 3
+     * تحميل الفواتير المؤقتة بأمان
+     */
+
+    let loaded =
+        false;
+
+
+    try {
+
+        loaded =
+            loadInvoicesState();
+
+    } catch(error) {
+
+        console.error(
+            "LOAD INVOICE FATAL ERROR:",
+            error
+        );
+
+        invoices = {};
+        activeInvoiceId = null;
+        invoiceCounter = 1;
+
+        sessionStorage.removeItem(
+            "pos_invoices"
+        );
+
+    }
+
+
+    /*
+     * 4
+     * إذا لم توجد فاتورة
+     * ننشئ فاتورة جديدة.
+     */
+
+    if(
+        !Object.keys(invoices).length
+    ){
+
+        createInvoice();
+
+    }else{
+
+        /*
+         * التأكد أن هناك فاتورة نشطة
+         */
+
+        if(
+            !activeInvoiceId ||
+            !invoices[activeInvoiceId]
+        ){
+
+            const firstId =
+                Number(
+                    Object.keys(invoices)[0]
+                );
+
+            setActiveInvoice(
+                firstId
+            );
+
+        }
+
+
+        refreshInvoiceSearch();
+
+    }
+
+
+    /*
+     * 5
+     * الفلترة الأولية للمنتجات
+     */
+
+    showCategorizedProducts();
+
+    updateAllProductsButton();
+
+
+    console.log(
+        "POS READY",
+        {
+            invoices:
+                invoices,
+
+            activeInvoiceId:
+                activeInvoiceId
+        }
+    );
+
 });
+
+
+/* =========================================================
+   GLOBAL DOCUMENT CLICK
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    function(){
+
+        activeInvoiceNameElement =
+            null;
+
+        hideInvoiceProductTooltip();
+
+    }
+);
+
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
 
-        const categoryButtons = document.querySelectorAll(
-            ".category-btn, .category-card"
-        );
-
-        const productCards = document.querySelectorAll(
-            ".product-card"
-        );
-
-        categoryButtons.forEach(function (category) {
-
-            category.addEventListener("click", function () {
-
-                const categoryId = this.dataset.id;
-
-                productCards.forEach(function (product) {
-
-                    const productCategory = product.dataset.category;
-
-                    if (categoryId === "") {
-
-                        product.style.display = "";
-
-                    } else if (productCategory === categoryId) {
-
-                        product.style.display = "";
-
-                    } else {
-
-                        product.style.display = "none";
-                    }
-
-                });
-
-            });
-
-        });
-
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const productNames = document.querySelectorAll(".product-name");
-
-        productNames.forEach(function (name) {
-
-            name.addEventListener("click", function (event) {
-
-                event.stopPropagation();
-
-                productNames.forEach(function (otherName) {
-
-                    if (otherName !== name) {
-                        otherName.classList.remove("show-full-name");
-                    }
-
-                });
-
-                name.classList.toggle("show-full-name");
-            });
-
-        });
-
-        document.addEventListener("click", function () {
-
-            productNames.forEach(function (name) {
-                name.classList.remove("show-full-name");
-            });
-
-        });
-
-    });
-</script>
 {% endblock %}

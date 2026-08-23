@@ -1,478 +1,2456 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
+
 {% block content %}
 
 <style>
-/* Dropdowns */
-.dropdown-box {
-    position: relative;
-    width: 100%;
-}
-.dropdown-list {
-    position: absolute;
-    top: 40px;
-    right: 0;
-    width: 100%;
-    max-height: 220px;
-    overflow-y: auto;
-    background: #fff;
-    border: 2px solid #6c757d;
-    border-top: none;
-    z-index: 9999;
-    border-radius: 0 0 8px 8px;
-    display: none;
-}
-.dropdown-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    text-align: right;
-}
-.dropdown-item:hover {
-    background: #f2f2f2;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+    font-family:"Tahoma", sans-serif;
+
 }
 
-/* Buttons */
-.btn-grey {
-    background: #6c757d !important;
-    color: white !important;
-    border-radius: 6px;
-    border: none !important;
-}
-.btn-grey:hover {
-    background: #5c636a !important;
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.quotation-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
 }
 
-.btn-wide {
-    width: 230px;
-    font-size: 15px;
-    padding: 8px 0;
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.quotation-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.8);
+
 }
 
-.btn-save {
-    background: #6c757d !important;
-    color: #fff !important;
-    border: none !important;
-    padding: 12px 40px;
-    width: 260px;
-    font-size: 17px;
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
 }
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin:0;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:7px;
+
+}
+
+
+/* =========================================================
+   العناوين
+========================================================= */
+
+.quotation-card label{
+
+    font-weight:700;
+
+    color:#555;
+
+    margin-bottom:6px;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.quotation-card .form-control{
+
+    border:1px solid #aaa;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.08),
+        0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+}
+
+
+.quotation-card .form-control:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.12),
+        inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الأزرار
+========================================================= */
+
+.btn-main{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    ) !important;
+
+    color:white !important;
+
+    border:0 !important;
+
+    border-radius:12px !important;
+
+    font-weight:700;
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.btn-main:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    ) !important;
+
+    color:white !important;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+.btn-sm-fixed{
+
+    height:40px;
+
+    padding:0 25px;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    border-radius:12px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    white-space:nowrap;
+
+}
+
+
+.btn-delete{
+
+    background:
+    linear-gradient(
+        135deg,
+        #777,
+        #444
+    ) !important;
+
+    color:white !important;
+
+    border:0 !important;
+
+    border-radius:10px !important;
+
+    font-weight:700;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.20);
+
+    transition:.3s;
+
+}
+
+
+.btn-delete:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    ) !important;
+
+    color:white !important;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.quotation-table-box{
+
+    overflow-x:auto;
+
+    overflow-y:visible !important;
+
+    border-radius:18px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.quotation-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   عنوان الجدول بالكامل
+   تدرج واحد موحد
+========================================================= */
+
+.quotation-table thead{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+/* مهم:
+   جميع خلايا العنوان تستخدم نفس الخلفية
+*/
+
+.quotation-table thead tr{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+}
+
+
+.quotation-table th{
+
+    padding:15px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    color:white;
+
+    background:transparent;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.quotation-table td{
+
+    padding:12px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+    background:#fff;
+
+}
+
+
+/* =========================================================
+   الصفوف
+========================================================= */
+
+.quotation-table tbody tr{
+
+    transition:.3s;
+
+    background:#fff;
+
+}
+
+
+.quotation-table tbody tr:nth-child(even){
+
+    background:#f8f8f8;
+
+}
+
+
+.quotation-table tbody tr:hover{
+
+    background:#eeeeee;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   حقول الجدول
+========================================================= */
+
+.quotation-table .form-control{
+
+    min-height:38px;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.08),
+        0 2px 4px rgba(0,0,0,.05);
+
+}
+
+
+/* =========================================================
+   البحث
+========================================================= */
+
+.dropdown-box{
+
+    position:relative;
+
+    width:100%;
+
+    overflow:visible;
+
+}
+
+
+.dropdown-list{
+
+    position:absolute;
+
+    top:calc(100% + 5px);
+
+    right:0;
+
+    left:0;
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #dddddd
+    );
+
+    border:1px solid #999;
+
+    border-radius:12px;
+
+    max-height:220px;
+
+    overflow-y:auto;
+
+    z-index:9999999 !important;
+
+    display:none;
+
+    padding:6px;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   قائمة المنتجات تفتح لأعلى
+========================================================= */
+
+.product-dropdown{
+
+    position:fixed !important;
+
+    max-height:220px !important;
+
+    overflow-y:auto !important;
+
+    z-index:2147483647 !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.dropdown-item{
+
+    padding:10px 14px;
+
+    cursor:pointer;
+
+    border-radius:9px;
+
+    margin-bottom:3px;
+
+    color:#444;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #e7e7e7
+    );
+
+    box-shadow:
+        0 2px 4px rgba(0,0,0,.08);
+
+    transition:.2s;
+
+    text-align:right;
+
+}
+
+
+.dropdown-item:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    transform:translateX(-2px);
+
+}
+
+
+/* =========================================================
+   الإجماليات
+========================================================= */
+
+.totals-box{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d8d8d8
+    );
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.total-label{
+
+    font-weight:800;
+
+    color:#444;
+
+    text-align:right;
+
+}
+
+
+.total-input{
+
+    font-weight:700;
+
+    color:#444;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dedede
+    ) !important;
+
+}
+
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media(max-width:768px){
+
+    .quotation-page{
+
+        padding:15px;
+
+    }
+
+
+    .quotation-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .quotation-table{
+
+        min-width:1100px;
+
+    }
+
+
+    .btn-sm-fixed{
+
+        width:100%;
+
+    }
+
+}
+
 </style>
 
-<div class="container mt-4">
 
-<h3 class="mb-4 text-center">{% trans "Create Quotation" %}</h3>
+<div class="quotation-page">
 
-<form method="post" id="quotation_form">
-    {% csrf_token %}
-    <input type="hidden" id="total_rows" name="total_rows" value="1">
+    <div class="quotation-card">
 
-    <div class="card p-4">
 
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label>{% trans "Quotation No:" %}</label>
-                <input type="number" class="form-control" name="quotation_no" value="{{ next_number }}" readonly>
+        <!-- =====================================================
+             رأس الصفحة
+        ====================================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                    {% trans "Create Quotation" %}
+
+                </h3>
+
             </div>
 
-            <div class="col-md-4">
-                <label>{% trans "Quotation Date:" %}</label>
-                <input type="date" id="date_quotation" name="date_quotation" value="{{ today }}" class="form-control">
-            </div>
         </div>
 
-        <div class="row mb-3">
-            <div class="col-md-10">
-                <label>{% trans "Customer:" %}</label>
-                <div class="dropdown-box">
-                    <input type="text" id="customer_search" class="form-control"
-                           placeholder="{% trans 'Search customer...' %}" autocomplete="off">
-                    <input type="hidden" id="customer_id" name="customer">
-                    <div id="customer_list" class="dropdown-list"></div>
+
+        <form method="post" id="quotation_form">
+
+            {% csrf_token %}
+
+
+            <input
+                type="hidden"
+                id="total_rows"
+                name="total_rows"
+                value="1"
+            >
+
+
+            <!-- =================================================
+                 بيانات العرض
+            ================================================== -->
+
+            <div class="row mb-4">
+
+
+                <div class="col-md-4">
+
+                    <label>
+                        {% trans "Quotation No:" %}
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="quotation_no"
+                        value="{{ next_number }}"
+                        readonly
+                    >
+
                 </div>
+
+
+                <div class="col-md-4">
+
+                    <label>
+                        {% trans "Quotation Date:" %}
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date_quotation"
+                        name="date_quotation"
+                        value="{{ today }}"
+                        class="form-control"
+                    >
+
+                </div>
+
+
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-grey btn-wide w-100"
-                        onclick="window.location.href='/customers/add/?return=quotation'">
-                    + {% trans "Add Customer" %}
+
+            <!-- =================================================
+                 العميل
+            ================================================== -->
+
+            <div class="row mb-4">
+
+
+                <div class="col-md-10">
+
+                    <label>
+                        {% trans "Customer:" %}
+                    </label>
+
+
+                    <div class="dropdown-box">
+
+                        <input
+                            type="text"
+                            id="customer_search"
+                            class="form-control"
+                            placeholder="{% trans 'Search customer...' %}"
+                            autocomplete="off"
+                        >
+
+
+                        <input
+                            type="hidden"
+                            id="customer_id"
+                            name="customer"
+                        >
+
+
+                        <div
+                            id="customer_list"
+                            class="dropdown-list"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-2 d-flex align-items-end">
+
+                    <button
+                        type="button"
+                        class="btn btn-main btn-sm-fixed w-100"
+                        onclick="window.location.href='/customers/add/?return=quotation'"
+                    >
+
+                        +
+
+                        {% trans "Add Customer" %}
+
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 الوصف
+            ================================================== -->
+
+            <div class="mb-4">
+
+                <label>
+                    {% trans "Description:" %}
+                </label>
+
+                <textarea
+                    name="description"
+                    id="quotation_desc"
+                    class="form-control"
+                    rows="3"
+                ></textarea>
+
+            </div>
+
+
+            <!-- =================================================
+                 إضافة منتج
+            ================================================== -->
+
+            <div class="text-end mt-2 mb-3">
+
+                <button
+                    type="button"
+                    class="btn btn-main btn-sm-fixed"
+                    onclick="window.location.href='/products/add/?return=quotation'"
+                >
+
+                    +
+
+                    {% trans "Add Product" %}
+
                 </button>
+
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label>{% trans "Description:" %}</label>
-            <textarea name="description" id="quotation_desc" class="form-control"></textarea>
-        </div>
 
-        <div class="text-end mb-3">
-            <button type="button" class="btn btn-grey btn-wide"
-                    onclick="window.location.href='/products/add/?return=quotation'">
-                + {% trans "Add Product" %}
-            </button>
-        </div>
+            <!-- =================================================
+                 جدول الأصناف
+            ================================================== -->
 
-        <table class="table table-bordered text-center">
-            <thead class="table-light">
-                <tr>
-                    <th>{% trans "Item" %}</th>
-                    <th>{% trans "Description" %}</th>
-                    <th>{% trans "Quantity" %}</th>
-                    <th>{% trans "Price" %}</th>
-                    <th>{% trans "Discount" %}</th>
-                    <th>{% trans "Tax %" %}</th>
-                    <th>{% trans "Total" %}</th>
-                    <th>{% trans "Delete" %}</th>
-                </tr>
-            </thead>
+            <div class="quotation-table-box">
 
-            <tbody id="items_table">
-                <tr id="row_1" class="item-row">
-                    <td style="width:23%;">
-                        <div class="dropdown-box">
-                            <input type="text"
-                                   name="row_1_product"
-                                   data-row="1"
-                                   class="form-control product-input"
-                                   placeholder="{% trans 'Search product...' %}"
-                                   autocomplete="off">
-                            <input type="hidden" name="row_1_product_id" id="row_1_product_id">
-                            <div id="dropdown_1" class="dropdown-list"></div>
-                        </div>
-                    </td>
+                <table class="quotation-table">
 
-                    <td style="width:28%;">
-                        <input type="text" name="row_1_desc" class="form-control">
-                    </td>
+                    <thead>
 
-                    <td style="width:8%;">
-                        <input type="number" name="row_1_qty" value="1" step="any" class="form-control row-qty">
-                    </td>
+                        <tr>
 
-                    <td style="width:10%;">
-                        <input type="number" name="row_1_price" value="0" step="any" class="form-control row-price">
-                    </td>
+                            <th>
+                                {% trans "Item" %}
+                            </th>
 
-                    <td style="width:8%;">
-                        <input type="text" name="row_1_discount" value="0" class="form-control row-discount">
-                    </td>
+                            <th>
+                                {% trans "Description" %}
+                            </th>
 
-                    <td style="width:8%;">
-                        <input type="number" name="row_1_tax" value="15" step="any" class="form-control row-tax">
-                    </td>
+                            <th>
+                                {% trans "Quantity" %}
+                            </th>
 
-                    <td style="width:12%;">
-                        <input type="number" name="row_1_total" step="any" class="form-control row-total" readonly>
-                    </td>
+                            <th>
+                                {% trans "Price" %}
+                            </th>
 
-                    <td>
-                        <button type="button" class="btn btn-danger" onclick="deleteRow(1)">
-                            {% trans "Delete" %}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                            <th>
+                                {% trans "Discount" %}
+                            </th>
 
-        <div class="text-end mt-2">
-            <button type="button" class="btn btn-grey btn-wide" onclick="addRow()">
-                + {% trans "Add Row" %}
-            </button>
-        </div>
+                            <th>
+                                {% trans "Tax %" %}
+                            </th>
 
-    </div>
+                            <th>
+                                {% trans "Total" %}
+                            </th>
 
-    <div class="mt-4">
-        <div class="row mb-3">
-            <label class="col-md-3 text-end fw-bold">{% trans "Total Before Tax:" %}</label>
-            <div class="col-md-4">
-                <input type="number" id="total_before" step="any" class="form-control" readonly>
+                            <th>
+                                {% trans "Delete" %}
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="items_table">
+
+
+                        <tr
+                            id="row_1"
+                            class="item-row"
+                        >
+
+
+                            <td style="width:23%;">
+
+                                <div class="dropdown-box">
+
+                                    <input
+                                        type="text"
+                                        name="row_1_product"
+                                        data-row="1"
+                                        class="form-control product-input"
+                                        placeholder="{% trans 'Search product...' %}"
+                                        autocomplete="off"
+                                    >
+
+
+                                    <input
+                                        type="hidden"
+                                        name="row_1_product_id"
+                                        id="row_1_product_id"
+                                    >
+
+
+                                    <div
+                                        id="dropdown_1"
+                                        class="dropdown-list"
+                                    ></div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td style="width:28%;">
+
+                                <input
+                                    type="text"
+                                    name="row_1_desc"
+                                    class="form-control"
+                                >
+
+                            </td>
+
+
+                            <td style="width:8%;">
+
+                                <input
+                                    type="number"
+                                    name="row_1_qty"
+                                    value="1"
+                                    step="any"
+                                    class="form-control row-qty"
+                                >
+
+                            </td>
+
+
+                            <td style="width:10%;">
+
+                                <input
+                                    type="number"
+                                    name="row_1_price"
+                                    value="0"
+                                    step="any"
+                                    class="form-control row-price"
+                                >
+
+                            </td>
+
+
+                            <td style="width:8%;">
+
+                                <input
+                                    type="text"
+                                    name="row_1_discount"
+                                    value="0"
+                                    class="form-control row-discount"
+                                >
+
+                            </td>
+
+
+                            <td style="width:8%;">
+
+                                <input
+                                    type="number"
+                                    name="row_1_tax"
+                                    value="15"
+                                    step="any"
+                                    class="form-control row-tax"
+                                >
+
+                            </td>
+
+
+                            <td style="width:12%;">
+
+                                <input
+                                    type="number"
+                                    name="row_1_total"
+                                    step="any"
+                                    class="form-control row-total"
+                                    readonly
+                                >
+
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-delete btn-row-delete"
+                                >
+
+                                    {% trans "Delete" %}
+
+                                </button>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <label class="col-md-3 text-end fw-bold">{% trans "Total After Discount:" %}</label>
-            <div class="col-md-4">
-                <input type="number" id="total_after_discount" step="any" class="form-control" readonly>
-            </div>
-        </div>
 
-        <div class="row mb-3">
-            <label class="col-md-3 text-end fw-bold">{% trans "Total Tax:" %}</label>
-            <div class="col-md-4">
-                <input type="number" id="total_tax" step="any" class="form-control" readonly>
-            </div>
-        </div>
+            <!-- =================================================
+                 إضافة صف
+            ================================================== -->
 
-        <div class="row mb-4">
-            <label class="col-md-3 text-end fw-bold">{% trans "Total After Tax:" %}</label>
-            <div class="col-md-4">
-                <input type="number" id="final_total" step="any" class="form-control" readonly>
-            </div>
-        </div>
-    </div>
+<div class="text-end mt-3">
 
-    <div class="text-end mt-3 mb-5">
-        <button type="submit" class="btn btn-save">
-            {% trans "Save Quotation" %}
-        </button>
-    </div>
-
-</form>
+    <button
+        type="button"
+        id="add_row_btn"
+        class="btn btn-main btn-sm-fixed"
+    >
+        +
+        {% trans "Add Row" %}
+    </button>
 
 </div>
 
+        <!-- =====================================================
+             الإجماليات
+        ====================================================== -->
+
+        <div class="totals-box mt-4">
+
+
+            <div class="row mb-3 align-items-center">
+
+                <label class="col-md-3 total-label">
+
+                    {% trans "Total Before Tax:" %}
+
+                </label>
+
+                <div class="col-md-4">
+
+                    <input
+                        type="number"
+                        id="total_before"
+                        step="any"
+                        class="form-control total-input"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="row mb-3 align-items-center">
+
+                <label class="col-md-3 total-label">
+
+                    {% trans "Total After Discount:" %}
+
+                </label>
+
+                <div class="col-md-4">
+
+                    <input
+                        type="number"
+                        id="total_after_discount"
+                        step="any"
+                        class="form-control total-input"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="row mb-3 align-items-center">
+
+                <label class="col-md-3 total-label">
+
+                    {% trans "Total Tax:" %}
+
+                </label>
+
+                <div class="col-md-4">
+
+                    <input
+                        type="number"
+                        id="total_tax"
+                        step="any"
+                        class="form-control total-input"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="row mb-0 align-items-center">
+
+                <label class="col-md-3 total-label">
+
+                    {% trans "Total After Tax:" %}
+
+                </label>
+
+                <div class="col-md-4">
+
+                    <input
+                        type="number"
+                        id="final_total"
+                        step="any"
+                        class="form-control total-input"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =====================================================
+             حفظ العرض
+        ====================================================== -->
+
+        <div class="text-end mt-4 mb-3">
+
+            <button
+                type="submit"
+                form="quotation_form"
+                class="btn btn-main btn-lg px-5"
+            >
+
+                {% trans "Save Quotation" %}
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
 <script>
+
 let rowCount = 1;
 
-document.addEventListener("DOMContentLoaded", function() {
-    // تعديل: جلب تاريخ اليوم تلقائياً عبر المتصفح في حال تأخر السيرفر أو لم يرسله بصيغة متوافقة
-    if (!document.getElementById("date_quotation").value) {
-        document.getElementById("date_quotation").value = new Date().toISOString().substring(0, 10);
-    }
 
-    setupCustomerDropdown();
-    setupProductDropdown(1);
-    bindRowEvents(1);
-    calculateAll();
-});
+/* =========================================================
+   عند تحميل الصفحة
+========================================================= */
 
-// --- 👥 جلب وتصفية العملاء من تطبيق عروض الأسعار ---
-function setupCustomerDropdown() {
-    const searchInput = document.getElementById("customer_search");
-    const listDiv = document.getElementById("customer_list");
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
 
-    if (!searchInput || !listDiv) return;
+        const dateInput =
+            document.getElementById(
+                "date_quotation"
+            );
 
-    searchInput.addEventListener("focus", function() {
-        fetchCustomers(this.value);
-    });
 
-    searchInput.addEventListener("input", function() {
-        fetchCustomers(this.value);
-    });
+        if(
+            dateInput &&
+            !dateInput.value
+        ){
 
-    document.addEventListener("click", function(e) {
-        if (!searchInput.contains(e.target) && !listDiv.contains(e.target)) {
-            listDiv.style.display = "none";
+            dateInput.value =
+                new Date()
+                .toISOString()
+                .substring(
+                    0,
+                    10
+                );
+
         }
-    });
 
-    function fetchCustomers(query) {
-        fetch(`/quotations/api/search-customer/?q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(data => {
-                listDiv.innerHTML = "";
-                if(data.length > 0) {
-                    data.forEach(cust => {
-                        let item = document.createElement("div");
-                        item.className = "dropdown-item";
-                        item.innerText = cust.name;
-                        item.addEventListener("click", function() {
-                            searchInput.value = cust.name;
-                            document.getElementById("customer_id").value = cust.id;
-                            listDiv.style.display = "none";
-                        });
-                        listDiv.appendChild(item);
-                    });
-                    listDiv.style.display = "block";
-                } else {
-                    listDiv.style.display = "none";
+
+        setupCustomerDropdown();
+
+        setupProductDropdown(1);
+
+        bindRowEvents(1);
+
+        calculateAll();
+
+    }
+);
+
+
+/* =========================================================
+   العملاء
+========================================================= */
+
+function setupCustomerDropdown(){
+
+    const input =
+        document.getElementById(
+            "customer_search"
+        );
+
+
+    const list =
+        document.getElementById(
+            "customer_list"
+        );
+
+
+    if(
+        !input ||
+        !list
+    )
+        return;
+
+
+    function fetchCustomers(query){
+
+        fetch(
+            `/quotations/api/search-customer/?q=${
+                encodeURIComponent(query)
+            }`
+        )
+
+        .then(
+            response =>
+                response.json()
+        )
+
+        .then(
+            data => {
+
+                list.innerHTML = "";
+
+
+                if(
+                    !data ||
+                    !data.length
+                ){
+
+                    list.style.display =
+                        "none";
+
+                    return;
+
                 }
-            }).catch(err => console.log("Error customer fetch:", err));
-    }
-}
 
-// --- 📦 جلب وتصفية المنتجات مع تعبئة السعر تلقائياً ---
-function setupProductDropdown(rowId) {
-    const input = document.querySelector(`input[name="row_${rowId}_product"]`);
-    const listDiv = document.getElementById(`dropdown_${rowId}`);
-    const hiddenInput = document.getElementById(`row_${rowId}_product_id`);
 
-    if(!input) return;
+                data.forEach(
+                    customer => {
 
-    input.addEventListener("focus", function() {
-        fetchProducts(this.value);
-    });
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
 
-    input.addEventListener("input", function() {
-        fetchProducts(this.value);
-    });
 
-    document.addEventListener("click", function(e) {
-        if (!input.contains(e.target) && !listDiv.contains(e.target)) {
-            listDiv.style.display = "none";
-        }
-    });
+                        item.className =
+                            "dropdown-item";
 
-    function fetchProducts(query) {
-        fetch(`/quotations/api/search-product/?q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(data => {
-                listDiv.innerHTML = "";
-                if(data.length > 0) {
-                    data.forEach(prod => {
-                        let item = document.createElement("div");
-                        item.className = "dropdown-item";
-                        item.innerText = prod.name;
-                        
-                        item.addEventListener("click", function() {
-                            input.value = prod.name;
-                            hiddenInput.value = prod.id;
-                            
-                            // تعديل: طباعة بيانات المنتج في المتصفح لرؤية اسم حقل السعر الحقيقي القادم من السيرفر
-                            console.log("المنتج المختار بالكامل من قاعدة البيانات:", prod);
-                            
-                            const priceInput = document.querySelector(`input[name="row_${rowId}_price"]`);
-                            if (priceInput) {
-                                // محاولة إيجاد السعر تحت اسم price أو السعر المتاح
-                                let dynamicPrice = prod.price || prod.sale_price || prod.selling_price || 0;
-                                priceInput.value = parseFloat(dynamicPrice);
+
+                        item.textContent =
+                            customer.name;
+
+
+                        item.addEventListener(
+                            "click",
+                            function(){
+
+                                input.value =
+                                    customer.name;
+
+
+                                document.getElementById(
+                                    "customer_id"
+                                ).value =
+                                    customer.id;
+
+
+                                list.style.display =
+                                    "none";
+
                             }
-                            
-                            listDiv.style.display = "none";
-                            calculateRow(rowId);
-                        });
-                        listDiv.appendChild(item);
-                    });
-                    listDiv.style.display = "block";
-                } else {
-                    listDiv.style.display = "none";
-                }
-            }).catch(err => console.log("Error product fetch:", err));
+                        );
+
+
+                        list.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+
+                list.style.display =
+                    "block";
+
+            }
+        )
+
+        .catch(
+            error => {
+
+                console.error(
+                    "Customer search error:",
+                    error
+                );
+
+            }
+        );
+
     }
+
+
+    input.addEventListener(
+        "focus",
+        function(){
+
+            fetchCustomers(
+                this.value
+            );
+
+        }
+    );
+
+
+    input.addEventListener(
+        "input",
+        function(){
+
+            fetchCustomers(
+                this.value
+            );
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function(e){
+
+            if(
+                e.target === input ||
+                list.contains(e.target)
+            )
+                return;
+
+
+            list.style.display =
+                "none";
+
+        }
+    );
+
 }
 
-// --- ربط العمليات الحسابية لحقول السطر ---
-function bindRowEvents(rowId) {
-    const row = document.getElementById(`row_${rowId}`);
-    if (!row) return;
 
-    row.querySelectorAll(".row-qty, .row-price, .row-discount, .row-tax").forEach(input => {
-        input.addEventListener("input", function() {
-            calculateRow(rowId);
-        });
-    });
+/* =========================================================
+   المنتجات
+   نفس فكرة النموذج الأول:
+   القائمة تخرج إلى body وتظهر فوق الحقل
+========================================================= */
+
+function setupProductDropdown(rowId){
+
+    const input =
+        document.querySelector(
+            `input[name="row_${rowId}_product"]`
+        );
+
+
+    const list =
+        document.getElementById(
+            `dropdown_${rowId}`
+        );
+
+
+    const hidden =
+        document.getElementById(
+            `row_${rowId}_product_id`
+        );
+
+
+    if(
+        !input ||
+        !list ||
+        !hidden
+    )
+        return;
+
+
+    let timer = null;
+
+
+    function restoreList(){
+
+        if(
+            list.dataset.portal !== "1"
+        )
+            return;
+
+
+        const parent =
+            list._originalParent;
+
+
+        const nextSibling =
+            list._originalNextSibling;
+
+
+        if(parent){
+
+            if(
+                nextSibling &&
+                nextSibling.parentNode === parent
+            ){
+
+                parent.insertBefore(
+                    list,
+                    nextSibling
+                );
+
+            }
+            else{
+
+                parent.appendChild(
+                    list
+                );
+
+            }
+
+        }
+
+
+        list.style.position = "";
+
+        list.style.top = "";
+
+        list.style.left = "";
+
+        list.style.right = "";
+
+        list.style.bottom = "";
+
+        list.style.width = "";
+
+        list.style.zIndex = "";
+
+        list.dataset.portal = "0";
+
+    }
+
+
+    function positionList(){
+
+        const rect =
+            input.getBoundingClientRect();
+
+
+        if(
+            list.dataset.portal !== "1"
+        ){
+
+            list._originalParent =
+                list.parentNode;
+
+
+            list._originalNextSibling =
+                list.nextSibling;
+
+
+            document.body.appendChild(
+                list
+            );
+
+
+            list.dataset.portal =
+                "1";
+
+        }
+
+
+        const listHeight =
+            Math.min(
+                220,
+                Math.max(
+                    80,
+                    list.scrollHeight
+                )
+            );
+
+
+        const gap = 5;
+
+
+        let top =
+            rect.top -
+            listHeight -
+            gap;
+
+
+        if(
+            top < 5
+        ){
+
+            top = 5;
+
+        }
+
+
+        const maxTop =
+            window.innerHeight -
+            listHeight -
+            5;
+
+
+        if(
+            top > maxTop
+        ){
+
+            top =
+                Math.max(
+                    5,
+                    maxTop
+                );
+
+        }
+
+
+        list.style.position =
+            "fixed";
+
+
+        list.style.top =
+            `${top}px`;
+
+
+        list.style.left =
+            `${rect.left}px`;
+
+
+        list.style.right =
+            "auto";
+
+
+        list.style.bottom =
+            "auto";
+
+
+        list.style.width =
+            `${rect.width}px`;
+
+
+        list.style.maxHeight =
+            "220px";
+
+
+        list.style.overflowY =
+            "auto";
+
+
+        list.style.zIndex =
+            "2147483647";
+
+    }
+
+
+    function renderProducts(data){
+
+        list.innerHTML = "";
+
+
+        if(
+            !data ||
+            !data.length
+        ){
+
+            list.innerHTML = `
+
+                <div class="dropdown-item text-muted">
+
+                    {% trans "No results found" %}
+
+                </div>
+
+            `;
+
+        }
+        else{
+
+            data.forEach(
+                product => {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    item.className =
+                        "dropdown-item";
+
+
+                    item.textContent =
+                        product.name ||
+                        product.commercial_name ||
+                        product.text ||
+                        "—";
+
+
+                    item.addEventListener(
+                        "click",
+                        function(){
+
+                            input.value =
+                                item.textContent;
+
+
+                            hidden.value =
+                                product.id;
+
+
+                            const priceInput =
+                                document.querySelector(
+                                    `input[name="row_${rowId}_price"]`
+                                );
+
+
+                            if(priceInput){
+
+                                const price =
+                                    product.price ||
+                                    product.sale_price ||
+                                    product.selling_price ||
+                                    0;
+
+
+                                priceInput.value =
+                                    parseFloat(price) || 0;
+
+                            }
+
+
+                            list.style.display =
+                                "none";
+
+
+                            restoreList();
+
+
+                            calculateRow(
+                                rowId
+                            );
+
+                        }
+                    );
+
+
+                    list.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+
+
+        list.style.display =
+            "block";
+
+
+        positionList();
+
+    }
+
+
+    function fetchProducts(query){
+
+        fetch(
+            `/quotations/api/search-product/?q=${
+                encodeURIComponent(query || "")
+            }`
+        )
+
+        .then(
+            response =>
+                response.json()
+        )
+
+        .then(
+            renderProducts
+        )
+
+        .catch(
+            error => {
+
+                console.error(
+                    "Product search error:",
+                    error
+                );
+
+
+                list.innerHTML = `
+
+                    <div class="dropdown-item text-danger">
+
+                        {% trans "Failed to load data" %}
+
+                    </div>
+
+                `;
+
+
+                list.style.display =
+                    "block";
+
+
+                positionList();
+
+            }
+        );
+
+    }
+
+
+    input.addEventListener(
+        "focus",
+        function(){
+
+            fetchProducts(
+                ""
+            );
+
+        }
+    );
+
+
+    input.addEventListener(
+        "click",
+        function(){
+
+            fetchProducts(
+                input.value
+            );
+
+        }
+    );
+
+
+    input.addEventListener(
+        "input",
+        function(){
+
+            clearTimeout(
+                timer
+            );
+
+
+            timer =
+                setTimeout(
+                    function(){
+
+                        fetchProducts(
+                            input.value
+                        );
+
+                    },
+                    200
+                );
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        function(e){
+
+            if(
+                e.target === input ||
+                list.contains(e.target)
+            )
+                return;
+
+
+            list.style.display =
+                "none";
+
+
+            restoreList();
+
+        }
+    );
+
+
+    window.addEventListener(
+        "scroll",
+        function(){
+
+            if(
+                list.style.display ===
+                "block"
+            ){
+
+                positionList();
+
+            }
+
+        },
+        true
+    );
+
+
+    window.addEventListener(
+        "resize",
+        function(){
+
+            if(
+                list.style.display ===
+                "block"
+            ){
+
+                positionList();
+
+            }
+
+        }
+    );
+
 }
 
-// --- حساب اجمالي السطر الواحد ---
-function calculateRow(rowId) {
-    const qtyInput = document.querySelector(`input[name="row_${rowId}_qty"]`);
-    const priceInput = document.querySelector(`input[name="row_${rowId}_price"]`);
-    const discountInput = document.querySelector(`input[name="row_${rowId}_discount"]`);
-    const taxInput = document.querySelector(`input[name="row_${rowId}_tax"]`);
-    const totalInput = document.querySelector(`input[name="row_${rowId}_total"]`);
 
-    if(!qtyInput || !priceInput) return;
+/* =========================================================
+   أحداث السطر
+========================================================= */
 
-    const qty = parseFloat(qtyInput.value) || 0;
-    const price = parseFloat(priceInput.value) || 0;
-    const discountRaw = discountInput ? discountInput.value : "0";
-    const taxRate = taxInput ? parseFloat(taxInput.value) : 0;
+function bindRowEvents(rowId){
 
-    let baseAmount = qty * price;
+    const row =
+        document.getElementById(
+            `row_${rowId}`
+        );
+
+
+    if(!row)
+        return;
+
+
+    row.querySelectorAll(
+        ".row-qty, .row-price, .row-discount, .row-tax"
+    )
+    .forEach(
+        input => {
+
+            input.addEventListener(
+                "input",
+                function(){
+
+                    calculateRow(
+                        rowId
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   حساب السطر
+========================================================= */
+
+function calculateRow(rowId){
+
+    const qtyInput =
+        document.querySelector(
+            `input[name="row_${rowId}_qty"]`
+        );
+
+
+    const priceInput =
+        document.querySelector(
+            `input[name="row_${rowId}_price"]`
+        );
+
+
+    const discountInput =
+        document.querySelector(
+            `input[name="row_${rowId}_discount"]`
+        );
+
+
+    const taxInput =
+        document.querySelector(
+            `input[name="row_${rowId}_tax"]`
+        );
+
+
+    const totalInput =
+        document.querySelector(
+            `input[name="row_${rowId}_total"]`
+        );
+
+
+    if(
+        !qtyInput ||
+        !priceInput ||
+        !totalInput
+    )
+        return;
+
+
+    const qty =
+        parseFloat(
+            qtyInput.value
+        ) || 0;
+
+
+    const price =
+        parseFloat(
+            priceInput.value
+        ) || 0;
+
+
+    const discountRaw =
+        discountInput
+            ? discountInput.value
+            : "0";
+
+
+    const taxRate =
+        taxInput
+            ? parseFloat(
+                taxInput.value
+            ) || 0
+            : 0;
+
+
+    const baseAmount =
+        qty * price;
+
+
     let discountAmount = 0;
 
-    if (discountRaw.includes("%")) {
-        let pct = parseFloat(discountRaw.replace("%", "")) || 0;
-        discountAmount = (baseAmount * pct) / 100;
-    } else {
-        discountAmount = parseFloat(discountRaw) || 0;
+
+    if(
+        discountRaw.includes("%")
+    ){
+
+        const pct =
+            parseFloat(
+                discountRaw.replace(
+                    "%",
+                    ""
+                )
+            ) || 0;
+
+
+        discountAmount =
+            (
+                baseAmount *
+                pct
+            ) / 100;
+
+    }
+    else{
+
+        discountAmount =
+            parseFloat(
+                discountRaw
+            ) || 0;
+
     }
 
-    let beforeTax = baseAmount - discountAmount;
-    let taxAmount = (beforeTax * taxRate) / 100;
-    let rowTotal = beforeTax + taxAmount;
 
-    totalInput.value = rowTotal.toFixed(2);
+    const beforeTax =
+        baseAmount -
+        discountAmount;
+
+
+    const taxAmount =
+        (
+            beforeTax *
+            taxRate
+        ) / 100;
+
+
+    const rowTotal =
+        beforeTax +
+        taxAmount;
+
+
+    totalInput.value =
+        rowTotal.toFixed(2);
+
+
     calculateAll();
+
 }
 
-// --- حساب الاجماليات الكلية للمستند ---
-function calculateAll() {
+
+/* =========================================================
+   حساب الإجماليات
+========================================================= */
+
+function calculateAll(){
+
     let totalBefore = 0;
+
     let totalDiscount = 0;
+
     let totalTax = 0;
+
     let finalTotal = 0;
 
-    document.querySelectorAll("#items_table .item-row").forEach(row => {
-        const rowId = row.id.replace("row_", "");
-        const qty = parseFloat(document.querySelector(`input[name="row_${rowId}_qty"]`).value) || 0;
-        const price = parseFloat(document.querySelector(`input[name="row_${rowId}_price"]`).value) || 0;
-        const discountRaw = document.querySelector(`input[name="row_${rowId}_discount"]`).value || "0";
-        const taxRate = parseFloat(document.querySelector(`input[name="row_${rowId}_tax"]`).value) || 0;
 
-        let baseAmount = qty * price;
-        let discountAmount = 0;
+    document
+        .querySelectorAll(
+            "#items_table .item-row"
+        )
+        .forEach(
+            row => {
 
-        if (discountRaw.includes("%")) {
-            let pct = parseFloat(discountRaw.replace("%", "")) || 0;
-            discountAmount = (baseAmount * pct) / 100;
-        } else {
-            discountAmount = parseFloat(discountRaw) || 0;
-        }
+                const rowId =
+                    row.id.replace(
+                        "row_",
+                        ""
+                    );
 
-        let beforeTax = baseAmount - discountAmount;
-        let taxAmount = (beforeTax * taxRate) / 100;
 
-        totalBefore += baseAmount;
-        totalDiscount += discountAmount;
-        totalTax += taxAmount;
-        finalTotal += (beforeTax + taxAmount);
-    });
+                const qty =
+                    parseFloat(
+                        document.querySelector(
+                            `input[name="row_${rowId}_qty"]`
+                        )?.value
+                    ) || 0;
 
-    document.getElementById("total_before").value = totalBefore.toFixed(2);
-    document.getElementById("total_after_discount").value = (totalBefore - totalDiscount).toFixed(2);
-    document.getElementById("total_tax").value = totalTax.toFixed(2);
-    document.getElementById("final_total").value = finalTotal.toFixed(2);
+
+                const price =
+                    parseFloat(
+                        document.querySelector(
+                            `input[name="row_${rowId}_price"]`
+                        )?.value
+                    ) || 0;
+
+
+                const discountRaw =
+                    document.querySelector(
+                        `input[name="row_${rowId}_discount"]`
+                    )?.value ||
+                    "0";
+
+
+                const taxRate =
+                    parseFloat(
+                        document.querySelector(
+                            `input[name="row_${rowId}_tax"]`
+                        )?.value
+                    ) || 0;
+
+
+                const baseAmount =
+                    qty * price;
+
+
+                let discountAmount = 0;
+
+
+                if(
+                    discountRaw.includes("%")
+                ){
+
+                    const pct =
+                        parseFloat(
+                            discountRaw.replace(
+                                "%",
+                                ""
+                            )
+                        ) || 0;
+
+
+                    discountAmount =
+                        (
+                            baseAmount *
+                            pct
+                        ) / 100;
+
+                }
+                else{
+
+                    discountAmount =
+                        parseFloat(
+                            discountRaw
+                        ) || 0;
+
+                }
+
+
+                const beforeTax =
+                    baseAmount -
+                    discountAmount;
+
+
+                const taxAmount =
+                    (
+                        beforeTax *
+                        taxRate
+                    ) / 100;
+
+
+                totalBefore +=
+                    baseAmount;
+
+
+                totalDiscount +=
+                    discountAmount;
+
+
+                totalTax +=
+                    taxAmount;
+
+
+                finalTotal +=
+                    beforeTax +
+                    taxAmount;
+
+            }
+        );
+
+
+    document.getElementById(
+        "total_before"
+    ).value =
+        totalBefore.toFixed(2);
+
+
+    document.getElementById(
+        "total_after_discount"
+    ).value =
+        (
+            totalBefore -
+            totalDiscount
+        ).toFixed(2);
+
+
+    document.getElementById(
+        "total_tax"
+    ).value =
+        totalTax.toFixed(2);
+
+
+    document.getElementById(
+        "final_total"
+    ).value =
+        finalTotal.toFixed(2);
+
 }
 
-// --- إضافة سطر جديد ---
-function addRow() {
+
+/* =========================================================
+   إضافة صف
+========================================================= */
+
+function addRow(){
+
     rowCount++;
-    const table = document.getElementById("items_table");
-    const tr = document.createElement("tr");
-    tr.id = `row_${rowCount}`;
-    tr.className = "item-row";
+
+
+    const table =
+        document.getElementById(
+            "items_table"
+        );
+
+
+    const tr =
+        document.createElement(
+            "tr"
+        );
+
+
+    tr.id =
+        `row_${rowCount}`;
+
+
+    tr.className =
+        "item-row";
+
 
     tr.innerHTML = `
+
         <td style="width:23%;">
+
             <div class="dropdown-box">
-                <input type="text" name="row_${rowCount}_product" data-row="${rowCount}" class="form-control product-input" placeholder="{% trans 'Search product...' %}" autocomplete="off">
-                <input type="hidden" name="row_${rowCount}_product_id" id="row_${rowCount}_product_id">
-                <div id="dropdown_${rowCount}" class="dropdown-list"></div>
+
+                <input
+                    type="text"
+                    name="row_${rowCount}_product"
+                    data-row="${rowCount}"
+                    class="form-control product-input"
+                    placeholder="{% trans 'Search product...' %}"
+                    autocomplete="off"
+                >
+
+
+                <input
+                    type="hidden"
+                    name="row_${rowCount}_product_id"
+                    id="row_${rowCount}_product_id"
+                >
+
+
+                <div
+                    id="dropdown_${rowCount}"
+                    class="dropdown-list"
+                ></div>
+
             </div>
+
         </td>
-        <td style="width:28%;"><input type="text" name="row_${rowCount}_desc" class="form-control"></td>
-        <td style="width:8%;"><input type="number" name="row_${rowCount}_qty" value="1" step="any" class="form-control row-qty"></td>
-        <td style="width:10%;"><input type="number" name="row_${rowCount}_price" value="0" step="any" class="form-control row-price"></td>
-        <td style="width:8%;"><input type="text" name="row_${rowCount}_discount" value="0" class="form-control row-discount"></td>
-        <td style="width:8%;"><input type="number" name="row_${rowCount}_tax" value="15" step="any" class="form-control row-tax"></td>
-        <td style="width:12%;"><input type="number" name="row_${rowCount}_total" step="any" class="form-control row-total" readonly></td>
-        <td><button type="button" class="btn btn-danger" onclick="deleteRow(${rowCount})">{% trans "Delete" %}</button></td>
+
+
+        <td style="width:28%;">
+
+            <input
+                type="text"
+                name="row_${rowCount}_desc"
+                class="form-control"
+            >
+
+        </td>
+
+
+        <td style="width:8%;">
+
+            <input
+                type="number"
+                name="row_${rowCount}_qty"
+                value="1"
+                step="any"
+                class="form-control row-qty"
+            >
+
+        </td>
+
+
+        <td style="width:10%;">
+
+            <input
+                type="number"
+                name="row_${rowCount}_price"
+                value="0"
+                step="any"
+                class="form-control row-price"
+            >
+
+        </td>
+
+
+        <td style="width:8%;">
+
+            <input
+                type="text"
+                name="row_${rowCount}_discount"
+                value="0"
+                class="form-control row-discount"
+            >
+
+        </td>
+
+
+        <td style="width:8%;">
+
+            <input
+                type="number"
+                name="row_${rowCount}_tax"
+                value="15"
+                step="any"
+                class="form-control row-tax"
+            >
+
+        </td>
+
+
+        <td style="width:12%;">
+
+            <input
+                type="number"
+                name="row_${rowCount}_total"
+                step="any"
+                class="form-control row-total"
+                readonly
+            >
+
+        </td>
+
+
+        <td>
+
+            <button
+                type="button"
+                class="btn btn-delete btn-row-delete"
+            >
+
+                {% trans "Delete" %}
+
+            </button>
+
+        </td>
+
     `;
 
-    table.appendChild(tr);
-    document.getElementById("total_rows").value = rowCount;
 
-    setupProductDropdown(rowCount);
-    bindRowEvents(rowCount);
-    calculateRow(rowCount);
+    table.appendChild(
+        tr
+    );
+
+
+    document.getElementById(
+        "total_rows"
+    ).value =
+        rowCount;
+
+
+    setupProductDropdown(
+        rowCount
+    );
+
+
+    bindRowEvents(
+        rowCount
+    );
+
+
+    calculateRow(
+        rowCount
+    );
+
 }
+/* =========================================================
+   زر إضافة سطر
+========================================================= */
 
-// --- حذف سطر ---
-function deleteRow(rowId) {
-    const rows = document.querySelectorAll("#items_table .item-row");
-    if (rows.length > 1) {
-        const row = document.getElementById(`row_${rowId}`);
-        if (row) {
-            row.remove();
-            calculateAll();
-        }
-    } else {
-        alert(" يجب أن يحتوي المستند على صنف واحد على الأقل! ");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const addRowBtn =
+            document.getElementById(
+                "add_row_btn"
+            );
+
+        if (!addRowBtn)
+            return;
+
+        addRowBtn.addEventListener(
+            "click",
+            function () {
+
+                addRow();
+
+            }
+        );
+
     }
-}
+);
+
+/* =========================================================
+   حذف الصف
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            !e.target.classList.contains(
+                "btn-row-delete"
+            )
+        )
+            return;
+
+
+        const row =
+            e.target.closest(
+                ".item-row"
+            );
+
+
+        if(!row)
+            return;
+
+
+        const rows =
+            document.querySelectorAll(
+                "#items_table .item-row"
+            );
+
+
+        if(
+            rows.length <= 1
+        ){
+
+            alert(
+                "يجب أن يحتوي المستند على صنف واحد على الأقل!"
+            );
+
+            return;
+
+        }
+
+
+        row.remove();
+
+
+        calculateAll();
+
+    }
+);
+
 </script>
+
 
 {% endblock %}

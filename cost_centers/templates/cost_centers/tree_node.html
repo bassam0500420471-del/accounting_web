@@ -3,24 +3,451 @@
     <div class="tree-item">
 
         {% if node.children.exists %}
-            <span class="toggle" onclick="toggleNode(this)">▶</span>
+
+            <span
+                class="toggle"
+                onclick="toggleNode(this)"
+                title="فتح / إغلاق"
+            >
+                ▶
+            </span>
+
         {% else %}
+
             <span class="toggle-empty"></span>
+
         {% endif %}
 
-        <span class="node-name">
-            {{ node.name }}
-            <small class="text-muted">({{ node.get_type_display }})</small>
+
+        <!-- =================================================
+             أيقونة مركز التكلفة
+        ================================================= -->
+
+        <span class="node-icon">
+
+            {% if node.children.exists %}
+
+                <i class="bi bi-folder-fill"></i>
+
+            {% else %}
+
+                <i class="bi bi-folder2-open"></i>
+
+            {% endif %}
+
         </span>
 
+
+        <!-- =================================================
+             بيانات مركز التكلفة
+        ================================================= -->
+
+        <span class="node-info">
+
+            <span class="node-name">
+
+                {{ node.name }}
+
+            </span>
+
+
+            <small class="node-type">
+
+                {{ node.get_type_display }}
+
+            </small>
+
+        </span>
+
+
+        <!-- =================================================
+             حالة مركز التكلفة
+        ================================================= -->
+
+        {% if node.status == "ACTIVE" %}
+
+            <span class="node-status active">
+
+                نشط
+
+            </span>
+
+        {% else %}
+
+            <span class="node-status closed">
+
+                مغلق
+
+            </span>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             الإجراءات
+        ================================================= -->
+
+<span class="node-actions">
+
+    <a
+        href="{% url 'cost_center_detail' node.id %}"
+        class="node-action"
+        title="عرض"
+    >
+        <i class="bi bi-eye"></i>
+    </a>
+
+    <a
+        href="{% url 'cost_center_edit' node.id %}"
+        class="node-action"
+        title="تعديل"
+    >
+        <i class="bi bi-pencil"></i>
+    </a>
+
+    <a
+        href="{% url 'cost_center_add_child' node.id %}"
+        class="node-action"
+        title="إضافة مركز فرعي"
+    >
+        <i class="bi bi-plus-lg"></i>
+    </a>
+
+</span>
     </div>
 
+
+    <!-- =====================================================
+         الأبناء
+    ====================================================== -->
+
     {% if node.children.exists %}
+
         <ul class="tree-children d-none">
+
             {% for child in node.children.all %}
+
                 {% include "cost_centers/tree_node.html" with node=child %}
+
             {% endfor %}
+
         </ul>
+
     {% endif %}
 
 </li>
+
+
+<style>
+
+/* =========================================================
+   أيقونة المركز
+========================================================= */
+
+.node-icon {
+
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    color: #555;
+
+    font-size: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d5d5d5
+        );
+
+    border:
+        1px solid #d0d0d0;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   معلومات المركز
+========================================================= */
+
+.node-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+/* =========================================================
+   اسم المركز
+========================================================= */
+
+.node-name {
+
+    color: #3f3f3f;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   نوع المركز
+========================================================= */
+
+.node-type {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 3px 8px;
+
+    color: #777;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d9d9d9
+        );
+
+    border:
+        1px solid #d1d1d1;
+
+}
+
+
+/* =========================================================
+   حالة المركز
+========================================================= */
+
+.node-status {
+
+    flex-shrink: 0;
+
+    padding: 4px 10px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   نشط
+========================================================= */
+
+.node-status.active {
+
+    color: #555;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #cccccc
+        );
+
+    border:
+        1px solid #c8c8c8;
+
+}
+
+
+/* =========================================================
+   مغلق
+========================================================= */
+
+.node-status.closed {
+
+    color: #888;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f1f1f1,
+            #d5d5d5
+        );
+
+    border:
+        1px solid #d0d0d0;
+
+}
+
+
+/* =========================================================
+   أزرار الإجراءات
+========================================================= */
+
+.node-actions {
+
+    display: none;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-right: 8px;
+
+}
+
+
+/* =========================================================
+   تظهر عند مرور الماوس
+========================================================= */
+
+.tree-item:hover .node-actions {
+
+    display: inline-flex;
+
+}
+
+
+/* =========================================================
+   زر الإجراء
+========================================================= */
+
+.node-action {
+
+    width: 30px;
+    height: 30px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #555;
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d8d8d8
+        );
+
+    border:
+        1px solid #cecece;
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+    transition: .2s;
+
+}
+
+
+.node-action:hover {
+
+    color: #222;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 11px rgba(0,0,0,.16);
+
+}
+
+
+/* =========================================================
+   الجوال
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .node-info {
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 2px;
+
+    }
+
+
+    .node-name {
+
+        font-size: 14px;
+
+    }
+
+
+    .node-type {
+
+        font-size: 10px;
+
+    }
+
+
+    .node-status {
+
+        display: none;
+
+    }
+
+
+    .node-actions {
+
+        display: inline-flex;
+
+        margin-right: 2px;
+
+    }
+
+
+    .node-action {
+
+        width: 27px;
+        height: 27px;
+
+    }
+
+}
+
+</style>

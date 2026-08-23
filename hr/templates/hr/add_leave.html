@@ -1,9 +1,8 @@
-```html
 {% extends "layout/base.html" %}
 {% load i18n %}
 
 {% block title %}
-{% trans "Add Leave" %}
+    {% trans "Add Leave" %}
 {% endblock %}
 
 
@@ -11,481 +10,612 @@
 
 <style>
 
+/* =========================================================
+   الصفحة
+   ========================================================= */
 
-.hr-page-card{
+body {
+    background: #eeeeee !important;
+}
 
-    background:#ffffff;
+.employee-leave-page {
+    background: linear-gradient(135deg, #f8f8f8, #d9d9d9);
+    min-height: 90vh;
+    padding: 25px;
+}
 
-    border-radius:25px;
 
-    padding:30px;
+/* =========================================================
+   الكرت الرئيسي
+   ========================================================= */
+
+.hr-page-card {
+    background: #ffffff;
+    border-radius: 25px;
+    padding: 30px;
 
     box-shadow:
-    0 15px 35px rgba(0,0,0,.18);
-
+        0 15px 35px rgba(0, 0, 0, .18);
 }
 
 
+/* =========================================================
+   رأس الصفحة
+   ========================================================= */
 
-/* Header */
+.hr-page-header {
+    margin-bottom: 30px;
+    text-align: right;
+}
 
-.hr-page-header{
+.hr-page-header h3 {
+    margin: 0;
 
-    margin-bottom:30px;
+    font-size: 28px;
+    font-weight: 800;
 
-    text-align:right;
+    color: #343a40;
+}
 
+.hr-page-header h3 i {
+    color: #666;
+    margin-left: 8px;
+}
+
+.hr-page-header p {
+    color: #6c757d;
+    margin-top: 8px;
+    margin-bottom: 0;
+    font-size: 14px;
 }
 
 
-.hr-page-header h3{
+/* =========================================================
+   منطقة النموذج
+   ========================================================= */
 
-    margin:0;
+.hr-form {
+    background: linear-gradient(
+        120deg,
+        #eeeeee,
+        #fafafa
+    );
 
-    font-size:28px;
+    padding: 25px;
 
-    font-weight:700;
+    border-radius: 18px;
 
-    color:#343a40;
-
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 5px 18px rgba(0,0,0,.06);
 }
 
 
-.hr-page-header p{
+/* =========================================================
+   Labels
+   ========================================================= */
 
-    color:#6c757d;
+.hr-form label {
+    display: block;
 
-    margin-top:8px;
+    font-weight: 700;
+    color: #555;
 
+    margin-bottom: 8px;
 }
 
 
-
-/* Form */
-
-.hr-form label{
-
-    font-weight:600;
-
-    color:#343a40;
-
-    margin-bottom:8px;
-
-}
-
+/* =========================================================
+   حقول الإدخال
+   ========================================================= */
 
 .hr-form input,
 .hr-form select,
-.hr-form textarea{
+.hr-form textarea {
 
-    width:100%;
+    width: 100%;
 
-    padding:12px 15px;
+    padding: 12px 15px;
 
-    border-radius:14px;
+    border-radius: 12px;
 
-    border:1px solid #ddd;
+    border: 1px solid #ccc;
 
-    background:#f8f9fa;
+    background: #ffffff;
 
-    transition:.3s;
+    color: #444;
+
+    box-shadow:
+        inset 0 1px 3px rgba(0,0,0,.04);
+
+    transition: .25s;
 
 }
 
 
+/* =========================================================
+   Focus
+   ========================================================= */
 
 .hr-form input:focus,
 .hr-form select:focus,
-.hr-form textarea:focus{
+.hr-form textarea:focus {
 
-    background:white;
+    background: #ffffff;
 
-    border-color:#666;
+    border-color: #777;
 
-    box-shadow:0 0 8px rgba(0,0,0,.15);
+    box-shadow:
+        0 0 0 .15rem rgba(85,85,85,.12),
+        inset 0 1px 3px rgba(0,0,0,.03);
 
-    outline:none;
+    outline: none;
+}
+
+
+/* =========================================================
+   الموظف المعروض Disabled
+   ========================================================= */
+
+.hr-form input:disabled {
+
+    background: #eeeeee;
+
+    color: #555;
+
+    cursor: not-allowed;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   Textarea
+   ========================================================= */
+
+.hr-form textarea {
+
+    min-height: 120px;
+
+    resize: vertical;
+}
+
+
+/* =========================================================
+   الأخطاء
+   ========================================================= */
+
+.form-error {
+
+    color: #dc3545;
+
+    font-size: 13px;
+
+    margin-top: 6px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   الحقل الذي يحتوي خطأ
+   ========================================================= */
+
+.hr-form input.is-invalid,
+.hr-form select.is-invalid,
+.hr-form textarea.is-invalid {
+
+    border-color: #dc3545;
+}
+
+
+/* =========================================================
+   أزرار الصفحة
+   ========================================================= */
+
+.hr-action {
+
+    background:
+        linear-gradient(
+            145deg,
+            #444,
+            #666
+        );
+
+    color: #fff;
+
+    border: none;
+
+    padding: 10px 25px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    display: inline-block;
+
+    margin-left: 5px;
+
+    box-shadow:
+        3px 3px 8px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.12);
+
+    font-weight: 700;
+
+    transition: .25s;
+}
+
+
+.hr-action:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #555
+        );
+
+    color: #fff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        4px 5px 10px rgba(0,0,0,.20);
+}
+
+
+/* =========================================================
+   صف الأزرار
+   ========================================================= */
+
+.hr-form-actions {
+
+    margin-top: 25px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #ddd;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    .employee-leave-page {
+        padding: 15px;
+    }
+
+    .hr-page-card {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .hr-form {
+        padding: 20px;
+    }
+
+    .hr-page-header h3 {
+        font-size: 24px;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .hr-page-card {
+        padding: 15px;
+    }
+
+    .hr-form {
+        padding: 15px;
+    }
+
+    .hr-page-header h3 {
+        font-size: 22px;
+    }
+
+    .hr-action {
+        width: 100%;
+        margin: 4px 0;
+        text-align: center;
+    }
 
 }
 
 
+/* =========================================================
+   RTL
+   ========================================================= */
 
-.hr-form textarea{
+.employee-leave-page,
+.hr-page-card,
+.hr-form {
 
-    min-height:120px;
-
-    resize:none;
-
+    direction: rtl;
 }
 
 
+/* =========================================================
+   تدرج واحد متصل - عند استخدامه
+   لا يوجد تدرج منفصل لكل عنصر
+   ========================================================= */
 
-/* Errors */
+.hr-gradient-header {
 
-.form-error{
+    background:
+        linear-gradient(
+            90deg,
+            #444 0%,
+            #666 50%,
+            #888 100%
+        );
 
-    color:#dc3545;
+    color: #fff;
 
-    font-size:13px;
+    border-radius: 16px;
 
-    margin-top:5px;
+    padding: 18px 22px;
 
+    margin-bottom: 25px;
 }
 
+.hr-gradient-header h4 {
 
+    margin: 0;
 
-/* Buttons */
-
-.hr-action{
-
-    background:#5c5c5c;
-
-    color:white;
-
-    border:none;
-
-    padding:10px 25px;
-
-    border-radius:12px;
-
-    text-decoration:none;
-
-    display:inline-block;
-
-    box-shadow:3px 3px 8px #ccc;
-
-    transition:.3s;
-
+    font-weight: 700;
 }
 
+.hr-gradient-header p {
 
+    margin: 5px 0 0;
 
-.hr-action:hover{
+    color: rgba(255,255,255,.8);
 
-    background:#333;
-
-    color:white;
-
+    font-size: 13px;
 }
-
-
 
 </style>
 
 
+<div class="container-fluid mt-4 employee-leave-page">
 
-<div class="container-fluid mt-4">
+    <div class="hr-page-card">
 
 
-<div class="hr-page-card">
+        <!-- =====================================================
+             رأس الصفحة
+             ===================================================== -->
 
+        <div class="hr-page-header">
 
+            <h3>
 
-<div class="hr-page-header">
+                <i class="fa-solid fa-calendar-plus"></i>
 
+                {% trans "Add Leave" %}
 
-<h3>
+            </h3>
 
-<i class="fa-solid fa-calendar-plus"></i>
+            <p>
+                {% trans "Create a new employee leave request" %}
+            </p>
 
-{% trans "Add Leave" %}
+        </div>
 
-</h3>
 
+        <!-- =====================================================
+             النموذج
+             ===================================================== -->
 
-<p>
-Create a new employee leave request
-</p>
+        <form method="post" class="hr-form">
 
+            {% csrf_token %}
 
-</div>
 
+            <!-- =================================================
+                 الموظف
+                 ================================================= -->
 
+            <div class="mb-4">
 
+                <label>
+                    {{ form.employee.label }}
+                </label>
 
-<form method="post" class="hr-form">
 
-{% csrf_token %}
+                {% if employee %}
 
+                    {{ form.employee.as_hidden }}
 
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="{{ employee }}"
+                        disabled
+                    >
 
-<!-- الموظف -->
+                {% else %}
 
-<div class="mb-3">
+                    {{ form.employee }}
 
+                    {% if form.employee.errors %}
 
-<label>
+                        <div class="form-error">
+                            {{ form.employee.errors|striptags }}
+                        </div>
 
-{{ form.employee.label }}
+                    {% endif %}
 
-</label>
+                {% endif %}
 
+            </div>
 
-{% if employee %}
 
+            <!-- =================================================
+                 نوع الإجازة
+                 ================================================= -->
 
-{{ form.employee.as_hidden }}
+            <div class="mb-4">
 
+                <label>
+                    {{ form.leave_type.label }}
+                </label>
 
-<input type="text"
-class="form-control"
-value="{{ employee }}"
-disabled>
+                {{ form.leave_type }}
 
+                {% if form.leave_type.errors %}
 
-{% else %}
+                    <div class="form-error">
+                        {{ form.leave_type.errors|striptags }}
+                    </div>
 
+                {% endif %}
 
-{{ form.employee }}
+            </div>
 
 
-{% if form.employee.errors %}
+            <!-- =================================================
+                 التواريخ
+                 ================================================= -->
 
-<div class="form-error">
+            <div class="row">
 
-{{ form.employee.errors|striptags }}
 
-</div>
+                <!-- تاريخ البداية -->
 
-{% endif %}
+                <div class="col-md-6 mb-4">
 
+                    <label>
+                        {{ form.start_date.label }}
+                    </label>
 
-{% endif %}
+                    {{ form.start_date }}
 
+                    {% if form.start_date.errors %}
 
-</div>
+                        <div class="form-error">
+                            {{ form.start_date.errors|striptags }}
+                        </div>
 
+                    {% endif %}
 
+                </div>
 
 
+                <!-- تاريخ النهاية -->
 
-<!-- نوع الإجازة -->
+                <div class="col-md-6 mb-4">
 
+                    <label>
+                        {{ form.end_date.label }}
+                    </label>
 
-<div class="mb-3">
+                    {{ form.end_date }}
 
+                    {% if form.end_date.errors %}
 
-<label>
+                        <div class="form-error">
+                            {{ form.end_date.errors|striptags }}
+                        </div>
 
-{{ form.leave_type.label }}
+                    {% endif %}
 
-</label>
+                </div>
 
 
-{{ form.leave_type }}
+            </div>
 
 
-{% if form.leave_type.errors %}
+            <!-- =================================================
+                 السبب
+                 ================================================= -->
 
-<div class="form-error">
+            <div class="mb-4">
 
-{{ form.leave_type.errors|striptags }}
+                <label>
+                    {{ form.reason.label }}
+                </label>
 
-</div>
+                {{ form.reason }}
 
-{% endif %}
+                {% if form.reason.errors %}
 
+                    <div class="form-error">
+                        {{ form.reason.errors|striptags }}
+                    </div>
 
-</div>
+                {% endif %}
 
+            </div>
 
 
+            <!-- =================================================
+                 الحالة
+                 ================================================= -->
 
+            <div class="mb-4">
 
+                <label>
+                    {{ form.status.label }}
+                </label>
 
+                {{ form.status }}
 
-<!-- التواريخ -->
+                {% if form.status.errors %}
 
+                    <div class="form-error">
+                        {{ form.status.errors|striptags }}
+                    </div>
 
-<div class="row">
+                {% endif %}
 
+            </div>
 
-<div class="col-md-6 mb-3">
 
+            <!-- =================================================
+                 الأزرار
+                 ================================================= -->
 
-<label>
+            <div class="hr-form-actions">
 
-{{ form.start_date.label }}
+                <button
+                    type="submit"
+                    class="hr-action"
+                >
 
-</label>
+                    <i class="fa-solid fa-check"></i>
 
+                    {% trans "Save" %}
 
-{{ form.start_date }}
+                </button>
 
 
-{% if form.start_date.errors %}
+                <a
+                    href="{% url 'hr:leaves' %}"
+                    class="hr-action"
+                >
 
-<div class="form-error">
+                    <i class="fa-solid fa-xmark"></i>
 
-{{ form.start_date.errors|striptags }}
+                    {% trans "Cancel" %}
 
-</div>
+                </a>
 
-{% endif %}
+            </div>
 
 
+        </form>
 
-</div>
 
-
-
-
-
-
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-{{ form.end_date.label }}
-
-</label>
-
-
-{{ form.end_date }}
-
-
-{% if form.end_date.errors %}
-
-<div class="form-error">
-
-{{ form.end_date.errors|striptags }}
-
-</div>
-
-{% endif %}
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- السبب -->
-
-
-<div class="mb-3">
-
-
-<label>
-
-{{ form.reason.label }}
-
-</label>
-
-
-{{ form.reason }}
-
-
-
-{% if form.reason.errors %}
-
-<div class="form-error">
-
-{{ form.reason.errors|striptags }}
-
-</div>
-
-{% endif %}
-
-
-
-</div>
-
-
-
-
-
-
-
-<!-- الحالة -->
-
-
-<div class="mb-3">
-
-
-<label>
-
-{{ form.status.label }}
-
-</label>
-
-
-{{ form.status }}
-
-
-
-{% if form.status.errors %}
-
-<div class="form-error">
-
-{{ form.status.errors|striptags }}
-
-</div>
-
-{% endif %}
-
-
-
-</div>
-
-
-
-
-
-
-
-<!-- Buttons -->
-
-
-<div class="mt-4">
-
-
-<button type="submit"
-class="hr-action">
-
-<i class="fa-solid fa-check"></i>
-
-{% trans "Save" %}
-
-</button>
-
-
-
-
-<a href="{% url 'hr:leaves' %}"
-class="hr-action">
-
-
-<i class="fa-solid fa-xmark"></i>
-
-{% trans "Cancel" %}
-
-
-</a>
-
-
-</div>
-
-
-
-
-</form>
-
-
-
-</div>
-
+    </div>
 
 </div>
 
 
 {% endblock %}
-```

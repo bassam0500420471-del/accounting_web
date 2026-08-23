@@ -5,22 +5,1917 @@
 
 {% block content %}
 <style>
-form label { display: block !important; margin-bottom: 6px; font-weight: 500; }
-form input:not([type="checkbox"]):not([type="radio"]),
-form select, form textarea {
-    display: block; width: 100%; height: 46px !important;
-    padding: 10px 12px; border-radius: 12px;
-    border: 1px solid #ced4da; line-height: 1.2;
-    box-sizing: border-box; transition: 0.3s;
+/* =========================================================
+   نافذة الإضافة 3D
+   ========================================================= */
+
+.custom-modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    background: rgba(0,0,0,.38);
+
+    backdrop-filter: blur(5px);
+
+    align-items: center;
+
+    justify-content: center;
+
 }
-form textarea { height: auto !important; }
-form input:focus, form select:focus, form textarea:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 5px rgba(13,110,253,0.4);
+
+.custom-modal.show {
+
+    display: flex;
+
+}
+
+
+.custom-modal-content {
+
+    width: min(500px, 92%);
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e5e5e5
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.28),
+        0 8px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.95);
+
+    transform: translateY(-10px);
+
+    animation: modalOpen .22s ease forwards;
+
+}
+
+@keyframes modalOpen {
+
+    to {
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   رأس النافذة
+   ========================================================= */
+
+.custom-modal-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 18px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #777777
+        );
+
+    color: white;
+
+}
+
+.custom-modal-header h5 {
+
+    margin: 0;
+
+    font-weight: 800;
+
+}
+
+
+.custom-modal-close {
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 28px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   محتوى النافذة
+   ========================================================= */
+
+.custom-modal-body {
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f1f1f1
+        );
+
+}
+
+.custom-modal-body label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 700;
+
+    color: #555;
+
+}
+
+
+/* =========================================================
+   أزرار النافذة
+   ========================================================= */
+
+.custom-modal-footer {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 18px 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #dcdcdc
+        );
+
+    border-top: 1px solid #d0d0d0;
+
+}
+
+
+.modal-btn {
+
+    min-width: 100px;
+
+    padding: 10px 22px;
+
+    border-radius: 11px;
+
+    font-weight: 700;
+
+    border: none;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+
+}
+
+
+.modal-btn-cancel {
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #dddddd
+        );
+
+    color: #555;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+}
+
+
+.modal-btn-save {
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #707070
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+}
+
+
+.modal-btn:hover {
+
+    transform: translateY(-2px);
+
+}
+/* =========================================================
+   قسم الموظف - حقل القسم
+   ========================================================= */
+
+.department-select-wrapper {
+    width: 100%;
+}
+
+.department-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.department-select-row select {
+    flex: 1;
+}
+
+
+/* =========================================================
+   زر إضافة قسم
+   ========================================================= */
+
+.add-department-btn {
+
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    color: #555;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+.add-department-btn:hover {
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #dcdcdc,
+            #bfbfbf
+        );
+
+    box-shadow:
+        0 8px 16px rgba(0,0,0,.16),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+.add-department-btn:active {
+
+    transform: translateY(0);
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.14),
+        inset 0 2px 4px rgba(0,0,0,.08);
+}
+
+
+/* =========================================================
+   Modal إضافة قسم
+   ========================================================= */
+
+.department-modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    background: rgba(0,0,0,.45);
+
+    backdrop-filter: blur(4px);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+.department-modal.show {
+
+    display: flex;
+}
+
+
+/* =========================================================
+   صندوق النافذة
+   ========================================================= */
+
+.department-modal-box {
+
+    width: 100%;
+
+    max-width: 500px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.28),
+        0 8px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.95);
+
+    overflow: hidden;
+
+    animation: departmentModalIn .22s ease;
+}
+
+
+@keyframes departmentModalIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-15px)
+            scale(.96);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   عنوان النافذة
+   ========================================================= */
+
+.department-modal-header {
+
+    padding: 18px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #777777
+        );
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+
+.department-modal-title {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.department-modal-close {
+
+    width: 34px;
+
+    height: 34px;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.12);
+
+    color: #fff;
+
+    font-size: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+
+.department-modal-close:hover {
+
+    background: rgba(255,255,255,.22);
+
+    transform: rotate(5deg);
+}
+
+
+/* =========================================================
+   جسم النافذة
+   ========================================================= */
+
+.department-modal-body {
+
+    padding: 25px;
+}
+
+
+.department-modal-body label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    color: #555;
+}
+
+
+#newDepartmentName {
+
+    width: 100%;
+
+    height: 48px;
+
+    padding: 10px 14px;
+
+    border-radius: 12px;
+
+    border: 1px solid #d0d0d0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f3f3f3
+        );
+
+    color: #444;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.04),
+        0 2px 5px rgba(0,0,0,.03);
+
     outline: none;
+
+    transition: .2s ease;
 }
-form input[type="checkbox"] { width: 18px; height: 18px; margin-top: 8px; }
-.btn-primary { border-radius: 12px; padding: 10px 30px; }
+
+
+#newDepartmentName:focus {
+
+    border-color: #777;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.10),
+        inset 0 2px 4px rgba(0,0,0,.04);
+}
+
+
+/* =========================================================
+   أزرار النافذة
+   ========================================================= */
+
+.department-modal-footer {
+
+    padding: 18px 25px;
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    border-top: 1px solid #dddddd;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #e2e2e2
+        );
+}
+
+
+.department-modal-btn {
+
+    min-width: 110px;
+
+    height: 44px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.department-modal-save {
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #707070
+        );
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+
+.department-modal-cancel {
+
+    color: #555;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d8d8d8
+        );
+
+    border: 1px solid #c7c7c7;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+.department-modal-btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+.department-modal-message {
+
+    display: none;
+
+    margin-top: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.department-modal-message.error {
+
+    display: block;
+
+    color: #842029;
+
+    background: #f8d7da;
+
+    border: 1px solid #f1aeb5;
+}
+
+
+.department-modal-message.success {
+
+    display: block;
+
+    color: #0f5132;
+
+    background: #d1e7dd;
+
+    border: 1px solid #a3cfbb;
+}/* =========================================================
+   قسم الموظف - حقل القسم
+   ========================================================= */
+
+.department-select-wrapper {
+    width: 100%;
+}
+
+.department-select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.department-select-row select {
+    flex: 1;
+}
+
+
+/* =========================================================
+   زر إضافة قسم
+   ========================================================= */
+
+.add-department-btn {
+
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    color: #555;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+.add-department-btn:hover {
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #dcdcdc,
+            #bfbfbf
+        );
+
+    box-shadow:
+        0 8px 16px rgba(0,0,0,.16),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+.add-department-btn:active {
+
+    transform: translateY(0);
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.14),
+        inset 0 2px 4px rgba(0,0,0,.08);
+}
+
+
+/* =========================================================
+   Modal إضافة قسم
+   ========================================================= */
+
+.department-modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    background: rgba(0,0,0,.45);
+
+    backdrop-filter: blur(4px);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+.department-modal.show {
+
+    display: flex;
+}
+
+
+/* =========================================================
+   صندوق النافذة
+   ========================================================= */
+
+.department-modal-box {
+
+    width: 100%;
+
+    max-width: 500px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.28),
+        0 8px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.95);
+
+    overflow: hidden;
+
+    animation: departmentModalIn .22s ease;
+}
+
+
+@keyframes departmentModalIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-15px)
+            scale(.96);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   عنوان النافذة
+   ========================================================= */
+
+.department-modal-header {
+
+    padding: 18px 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #777777
+        );
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+
+.department-modal-title {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.department-modal-close {
+
+    width: 34px;
+
+    height: 34px;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.12);
+
+    color: #fff;
+
+    font-size: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+
+.department-modal-close:hover {
+
+    background: rgba(255,255,255,.22);
+
+    transform: rotate(5deg);
+}
+
+
+/* =========================================================
+   جسم النافذة
+   ========================================================= */
+
+.department-modal-body {
+
+    padding: 25px;
+}
+
+
+.department-modal-body label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    color: #555;
+}
+
+
+#newDepartmentName {
+
+    width: 100%;
+
+    height: 48px;
+
+    padding: 10px 14px;
+
+    border-radius: 12px;
+
+    border: 1px solid #d0d0d0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f3f3f3
+        );
+
+    color: #444;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.04),
+        0 2px 5px rgba(0,0,0,.03);
+
+    outline: none;
+
+    transition: .2s ease;
+}
+
+
+#newDepartmentName:focus {
+
+    border-color: #777;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.10),
+        inset 0 2px 4px rgba(0,0,0,.04);
+}
+
+
+/* =========================================================
+   أزرار النافذة
+   ========================================================= */
+
+.department-modal-footer {
+
+    padding: 18px 25px;
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    border-top: 1px solid #dddddd;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #e2e2e2
+        );
+}
+
+
+.department-modal-btn {
+
+    min-width: 110px;
+
+    height: 44px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.department-modal-save {
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #707070
+        );
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+
+.department-modal-cancel {
+
+    color: #555;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d8d8d8
+        );
+
+    border: 1px solid #c7c7c7;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+.department-modal-btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+.department-modal-message {
+
+    display: none;
+
+    margin-top: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.department-modal-message.error {
+
+    display: block;
+
+    color: #842029;
+
+    background: #f8d7da;
+
+    border: 1px solid #f1aeb5;
+}
+
+
+.department-modal-message.success {
+
+    display: block;
+
+    color: #0f5132;
+
+    background: #d1e7dd;
+
+    border: 1px solid #a3cfbb;
+}
+/* =========================================================
+   الخلفية العامة
+   ========================================================= */
+
+body {
+    background:
+        linear-gradient(
+            135deg,
+            #f7f7f7 0%,
+            #e4e4e4 45%,
+            #d1d1d1 100%
+        ) !important;
+
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   الحاوية الرئيسية
+   ========================================================= */
+
+.container.mt-3 {
+
+    max-width: 1500px;
+
+    margin-top: 25px !important;
+    margin-bottom: 40px;
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f7f7f7
+        );
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.15),
+        0 4px 10px rgba(0, 0, 0, 0.06);
+
+    border: 1px solid rgba(255,255,255,0.9);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+   ========================================================= */
+
+.container.mt-3 > h3 {
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+    color: #444;
+
+    margin-bottom: 25px !important;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    text-shadow:
+        0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   رسائل النظام
+   ========================================================= */
+
+.alert {
+
+    border-radius: 14px;
+
+    border: none;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   Accordion
+   ========================================================= */
+
+.accordion {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   كل قسم
+   ========================================================= */
+
+.accordion-item {
+
+    border: 0 !important;
+
+    border-radius: 18px !important;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    border: 1px solid #e2e2e2 !important;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+
+}
+
+
+.accordion-item:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(0,0,0,.14),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   عنوان القسم
+   ========================================================= */
+
+.accordion-button {
+
+    min-height: 62px;
+
+    padding: 16px 22px;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    color: #444 !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee,
+            #dcdcdc
+        ) !important;
+
+    border: 0 !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8);
+
+}
+
+
+.accordion-button:not(.collapsed) {
+
+    color: #ffffff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #777777
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+}
+
+
+.accordion-button:focus {
+
+    box-shadow:
+        none !important;
+
+}
+
+
+/* سهم الـ accordion */
+
+.accordion-button::after {
+
+    filter: grayscale(1);
+
+}
+
+
+/* =========================================================
+   محتوى القسم
+   ========================================================= */
+
+.accordion-body {
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f7f7f7
+        );
+
+}
+
+
+/* =========================================================
+   Labels
+   ========================================================= */
+
+form label {
+
+    display: block !important;
+
+    margin-bottom: 7px;
+
+    font-weight: 700;
+
+    color: #555;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   الحقول
+   ========================================================= */
+
+form input:not([type="checkbox"]):not([type="radio"]),
+form select,
+form textarea {
+
+    display: block;
+
+    width: 100%;
+
+    min-height: 46px;
+
+    height: 46px !important;
+
+    padding: 10px 14px;
+
+    border-radius: 12px;
+
+    border: 1px solid #d2d2d2;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f5f5f5
+        );
+
+    color: #444;
+
+    line-height: 1.2;
+
+    box-sizing: border-box;
+
+    transition:
+        .25s ease;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.04),
+        0 2px 5px rgba(0,0,0,.03);
+
+}
+
+
+form textarea {
+
+    height: auto !important;
+
+    min-height: 100px;
+
+}
+/* =========================================================
+   حقول المستندات - تصميم مخصص
+   ========================================================= */
+
+.document-upload {
+    position: relative;
+    width: 100%;
+    height: 46px;
+}
+
+
+/* نخفي input الحقيقي */
+
+.document-upload input[type="file"] {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+
+/* الحقل الظاهر للمستخدم */
+
+.document-upload-box {
+
+    width: 100%;
+    height: 46px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 12px;
+
+    border: 1px solid #d2d2d2;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f5f5f5
+        );
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.04),
+        0 2px 5px rgba(0,0,0,.03);
+
+    overflow: hidden;
+
+    transition: .2s ease;
+}
+
+
+/* زر اختيار الملف */
+
+.document-select-btn {
+
+    height: 44px;
+
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    flex-shrink: 0;
+
+    border: 0;
+    border-left: 1px solid #d0d0d0;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d8d8d8
+        );
+
+    color: #555;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+
+.document-select-btn:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #dddddd,
+            #c8c8c8
+        );
+
+}
+
+
+/* اسم الملف */
+
+.document-file-name {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 0 14px;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    direction: ltr;
+
+    text-align: right;
+}
+
+
+/* عندما لا يوجد ملف */
+
+.document-file-name.empty {
+
+    color: #999;
+
+    font-weight: 500;
+
+}
+
+
+/* زر × */
+
+.document-clear-btn {
+
+    width: 32px;
+    height: 32px;
+
+    margin-left: 7px;
+    margin-right: 7px;
+
+    flex-shrink: 0;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    color: #777;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    transition: .2s ease;
+}
+
+
+.document-clear-btn:hover {
+
+    transform: scale(1.06);
+
+    background:
+        linear-gradient(
+            145deg,
+            #e5e5e5,
+            #cfcfcf
+        );
+
+    color: #333;
+}
+
+
+.document-clear-btn:active {
+
+    transform: scale(.94);
+
+}
+/* =========================================================
+   إخفاء واجهة Django القديمة لحقول الملفات
+   ========================================================= */
+
+.document-upload a {
+    display: none !important;
+}
+
+.document-upload label {
+    display: none !important;
+}
+
+.document-upload input[type="checkbox"] {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.document-upload br {
+    display: none !important;
+}
+/* =========================================================
+   ملفات المستندات الموجودة حاليًا
+   ========================================================= */
+
+.accordion-body a[href*="/media/"],
+.accordion-body a[href*="employee_photos"],
+.accordion-body a[href*="employee_docs"] {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    max-width: 100%;
+
+    padding: 8px 12px;
+
+    margin: 4px 0 8px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f7f7f7,
+            #e5e5e5
+        );
+
+    border: 1px solid #d5d5d5;
+
+    color: #555 !important;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.9),
+        0 2px 5px rgba(0,0,0,.04);
+
+}
+
+
+/* =========================================================
+   Checkbox تفريغ الملف
+   ========================================================= */
+
+.accordion-body input[type="checkbox"][name$="-clear"] {
+
+    width: 18px !important;
+
+    height: 18px !important;
+
+    min-height: 18px !important;
+
+    margin: 0 6px 0 8px !important;
+
+    vertical-align: middle;
+
+    accent-color: #666;
+
+}
+
+
+/* نص تفريغ الملف */
+
+.accordion-body input[type="checkbox"][name$="-clear"] + label {
+
+    display: inline !important;
+
+    margin: 0 12px 0 0 !important;
+
+    font-size: 12px !important;
+
+    font-weight: 600 !important;
+
+    color: #777 !important;
+
+}
+
+/* =========================================================
+   Focus
+   ========================================================= */
+
+form input:not([type="checkbox"]):not([type="radio"]):focus,
+form select:focus,
+form textarea:focus {
+
+    border-color: #777;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.10),
+        inset 0 2px 4px rgba(0,0,0,.04);
+
+    outline: none;
+
+}
+
+
+/* =========================================================
+   Checkbox
+   ========================================================= */
+
+form input[type="checkbox"] {
+
+    width: 19px;
+
+    height: 19px;
+
+    margin-top: 8px;
+
+    accent-color: #555;
+
+}
+
+
+/* =========================================================
+   حساب المستخدم
+   ========================================================= */
+
+#user-account-fields {
+
+    border-radius: 16px !important;
+
+    border: 1px solid #d8d8d8 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f5f5f5,
+            #e9e9e9
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 7px 18px rgba(0,0,0,.08);
+
+}
+
+
+#user-account-fields h6 {
+
+    font-weight: 800;
+
+    color: #555 !important;
+
+}
+
+
+/* =========================================================
+   ملاحظة حساب المستخدم
+   ========================================================= */
+
+.user-switch-note {
+
+    color: #777 !important;
+
+}
+
+
+/* =========================================================
+   زر الحفظ
+   ========================================================= */
+
+.btn-primary {
+
+    min-width: 140px;
+
+    border: none !important;
+
+    border-radius: 12px;
+
+    padding: 11px 30px;
+
+    font-weight: 700;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d4d4d,
+            #707070
+        ) !important;
+
+    color: #fff !important;
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.btn-primary:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 20px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+}
+
+
+/* =========================================================
+   مسافات الحقول
+   ========================================================= */
+
+.row {
+
+    row-gap: 5px;
+
+}
+
+
+/* =========================================================
+   تحسين الشكل في الشاشات الصغيرة
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .container.mt-3 {
+
+        margin: 10px !important;
+
+        padding: 18px;
+
+        border-radius: 18px;
+
+    }
+
+    .container.mt-3 > h3 {
+
+        font-size: 23px;
+
+    }
+
+    .accordion-body {
+
+        padding: 18px;
+
+    }
+
+}
+
 </style>
 
 <div class="container mt-3">
@@ -201,16 +2096,80 @@ form input[type="checkbox"] { width: 18px; height: 18px; margin-top: 8px; }
                     </button>
                 </h2>
                 <div id="work" class="accordion-collapse collapse show">
-                    <div class="accordion-body row">
-                        {% for field in form %}
-                            {% if field.name in work_fields and field.name != 'username' and field.name != 'password1' and field.name != 'password2' %}
-                                <div class="col-md-6 mb-3">
-                                    {{ field.label_tag }}
-                                    {{ field }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+<div class="accordion-body row">
+
+    {% for field in form %}
+
+        {% if field.name in work_fields and field.name != 'department' and field.name != 'branch' and field.name != 'username' and field.name != 'password1' and field.name != 'password2' %}
+
+            <div class="col-md-6 mb-3">
+
+                {{ field.label_tag }}
+                {{ field }}
+
+            </div>
+
+        {% endif %}
+
+    {% endfor %}
+
+
+    <!-- ================= القسم ================= -->
+
+    <div class="col-md-6 mb-3">
+
+        {{ form.department.label_tag }}
+
+        <div class="department-select-wrapper">
+
+            <div class="department-select-row">
+
+                {{ form.department }}
+
+                <button
+                    type="button"
+                    class="add-department-btn"
+                    id="openAddDepartmentModal"
+                    title="{% trans 'Add Department' %}"
+                >
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= الفرع ================= -->
+
+    <div class="col-md-6 mb-3">
+
+        {{ form.branch.label_tag }}
+
+        <div class="department-select-wrapper">
+
+            <div class="department-select-row">
+
+                {{ form.branch }}
+
+                <button
+                    type="button"
+                    class="add-department-btn"
+                    id="openAddBranchModal"
+                    title="{% trans 'Add Branch' %}"
+                >
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
                 </div>
             </div>
 
@@ -244,14 +2203,58 @@ form input[type="checkbox"] { width: 18px; height: 18px; margin-top: 8px; }
                 </h2>
                 <div id="docs" class="accordion-collapse collapse show">
                     <div class="accordion-body row">
-                        {% for field in form %}
-                            {% if field.name in docs_fields and field.name != 'username' and field.name != 'password1' and field.name != 'password2' %}
-                                <div class="col-md-6 mb-3">
-                                    {{ field.label_tag }}
-                                    {{ field }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+{% for field in form %}
+
+    {% if field.name in docs_fields and field.name != 'username' and field.name != 'password1' and field.name != 'password2' %}
+
+        <div class="col-md-6 mb-3">
+
+            {{ field.label_tag }}
+
+            <div class="document-upload">
+
+                {{ field }}
+
+                <div class="document-upload-box">
+
+                    <button
+                        type="button"
+                        class="document-select-btn"
+                        onclick="openDocumentFile('{{ field.name }}')"
+                    >
+                        <i class="bi bi-paperclip"></i>
+                        {% trans "اختيار ملف" %}
+                    </button>
+
+                    <span
+                        class="document-file-name {% if not field.value %}empty{% endif %}"
+                        id="filename-{{ field.name }}"
+                    >
+                        {% if field.value %}
+                            {% trans "تم اختيار ملف" %}
+                        {% else %}
+                            {% trans "لم يتم اختيار ملف" %}
+                        {% endif %}
+                    </span>
+
+                    <button
+                        type="button"
+                        class="document-clear-btn"
+                        title="{% trans 'تفريغ الملف' %}"
+                        onclick="clearDocumentField('{{ field.name }}')"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+{% endfor %}
                     </div>
                 </div>
             </div>
@@ -265,7 +2268,74 @@ form input[type="checkbox"] { width: 18px; height: 18px; margin-top: 8px; }
         </div>
     </form>
 </div>
+<!-- =========================================================
+     نافذة إضافة قسم / فرع
+     ========================================================= -->
 
+<div id="addFieldModal" class="custom-modal">
+
+    <div class="custom-modal-content">
+
+        <div class="custom-modal-header">
+
+            <h5 id="addFieldModalTitle">
+                {% trans "إضافة" %}
+            </h5>
+
+            <button
+                type="button"
+                class="custom-modal-close"
+                onclick="closeFieldModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="custom-modal-body">
+
+            <label for="newFieldName">
+                {% trans "الاسم" %}
+            </label>
+
+            <input
+                type="text"
+                id="newFieldName"
+                class="form-control"
+                autocomplete="off"
+            >
+
+            <div
+                id="fieldModalError"
+                class="text-danger small mt-2"
+                style="display:none;"
+            ></div>
+
+        </div>
+
+        <div class="custom-modal-footer">
+
+            <button
+                type="button"
+                class="modal-btn modal-btn-cancel"
+                onclick="closeFieldModal()"
+            >
+                {% trans "إلغاء" %}
+            </button>
+
+            <button
+                type="button"
+                class="modal-btn modal-btn-save"
+                onclick="saveNewField()"
+            >
+                {% trans "حفظ" %}
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 <!-- كود JavaScript للتحكم بالظهور والاختفاء التلقائي -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -286,5 +2356,943 @@ form input[type="checkbox"] { width: 18px; height: 18px; margin-top: 8px; }
         }
     });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const openBtn = document.getElementById("openAddDepartmentModal");
+
+    const modal = document.getElementById("departmentModal");
+
+    const closeBtn = document.getElementById("closeDepartmentModal");
+
+    const cancelBtn = document.getElementById("cancelDepartmentBtn");
+
+    const saveBtn = document.getElementById("saveDepartmentBtn");
+
+    const nameInput = document.getElementById("newDepartmentName");
+
+    const messageBox = document.getElementById("departmentModalMessage");
+
+    const departmentSelect = document.querySelector(
+        'select[name="department"]'
+    );
+
+
+    /* =====================================================
+       فتح النافذة
+       ===================================================== */
+
+    function openModal() {
+
+        if (!modal) return;
+
+        modal.classList.add("show");
+
+        nameInput.value = "";
+
+        clearMessage();
+
+        setTimeout(function () {
+            nameInput.focus();
+        }, 100);
+    }
+
+
+    /* =====================================================
+       إغلاق النافذة
+       ===================================================== */
+
+    function closeModal() {
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        nameInput.value = "";
+
+        clearMessage();
+    }
+
+
+    /* =====================================================
+       الرسائل
+       ===================================================== */
+
+    function clearMessage() {
+
+        messageBox.textContent = "";
+
+        messageBox.className =
+            "department-modal-message";
+    }
+
+
+    function showMessage(message, type) {
+
+        messageBox.textContent = message;
+
+        messageBox.className =
+            "department-modal-message " + type;
+    }
+
+
+    /* =====================================================
+       فتح النافذة
+       ===================================================== */
+
+    if (openBtn) {
+
+        openBtn.addEventListener(
+            "click",
+            openModal
+        );
+
+    }
+
+
+    /* =====================================================
+       الإغلاق
+       ===================================================== */
+
+    if (closeBtn) {
+
+        closeBtn.addEventListener(
+            "click",
+            closeModal
+        );
+
+    }
+
+
+    if (cancelBtn) {
+
+        cancelBtn.addEventListener(
+            "click",
+            closeModal
+        );
+
+    }
+
+
+    /* =====================================================
+       الضغط خارج النافذة
+       ===================================================== */
+
+    if (modal) {
+
+        modal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === modal) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       الضغط على Enter
+       ===================================================== */
+
+    if (nameInput) {
+
+        nameInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    saveDepartment();
+
+                }
+
+                if (event.key === "Escape") {
+
+                    event.preventDefault();
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       حفظ القسم
+       ===================================================== */
+
+    function saveDepartment() {
+
+        const name =
+            nameInput.value.trim();
+
+
+        if (!name) {
+
+            showMessage(
+                "{% trans 'يرجى إدخال اسم القسم' %}",
+                "error"
+            );
+
+            nameInput.focus();
+
+            return;
+        }
+
+
+        saveBtn.disabled = true;
+
+        saveBtn.innerHTML =
+            '<i class="bi bi-hourglass-split"></i> {% trans "جاري الحفظ..." %}';
+
+
+        const csrfToken =
+            document.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            ).value;
+
+
+        fetch(
+            "{% url 'hr:add_department' %}",
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "X-CSRFToken": csrfToken,
+
+                    "X-Requested-With":
+                        "XMLHttpRequest",
+
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8"
+
+                },
+
+                body:
+                    "name=" +
+                    encodeURIComponent(name)
+
+            }
+        )
+
+        .then(function (response) {
+
+            return response.json();
+
+        })
+
+        .then(function (data) {
+
+            if (data.success) {
+
+                /* =========================================
+                   إضافة القسم للقائمة
+                   ========================================= */
+
+                const option =
+                    new Option(
+                        data.name,
+                        data.id,
+                        true,
+                        true
+                    );
+
+
+                departmentSelect.add(option);
+
+
+                /* =========================================
+                   تحديد القسم الجديد
+                   ========================================= */
+
+                departmentSelect.value =
+                    data.id;
+
+
+                showMessage(
+                    data.message ||
+                    "{% trans 'تم إضافة القسم بنجاح' %}",
+                    "success"
+                );
+
+
+                /* =========================================
+                   إغلاق بعد لحظة
+                   ========================================= */
+
+                setTimeout(
+                    function () {
+
+                        closeModal();
+
+                    },
+                    500
+                );
+
+
+            } else {
+
+                showMessage(
+                    data.message ||
+                    "{% trans 'حدث خطأ أثناء إضافة القسم' %}",
+                    "error"
+                );
+
+            }
+
+        })
+
+        .catch(function (error) {
+
+            console.error(error);
+
+            showMessage(
+                "{% trans 'حدث خطأ أثناء الاتصال بالخادم' %}",
+                "error"
+            );
+
+        })
+
+        .finally(function () {
+
+            saveBtn.disabled = false;
+
+            saveBtn.innerHTML =
+                '<i class="bi bi-check-lg"></i> {% trans "حفظ" %}';
+
+        });
+
+    }
+
+
+    if (saveBtn) {
+
+        saveBtn.addEventListener(
+            "click",
+            saveDepartment
+        );
+
+    }
+
+});
+</script>
+<script>
+
+let currentFieldType = null;
+
+
+/* =========================================================
+   فتح نافذة إضافة قسم / فرع
+   ========================================================= */
+
+function openBranchModal(fieldType) {
+
+    currentFieldType = fieldType;
+
+    const modal =
+        document.getElementById("addFieldModal");
+
+    const title =
+        document.getElementById("addFieldModalTitle");
+
+    const input =
+        document.getElementById("newFieldName");
+
+    const error =
+        document.getElementById("fieldModalError");
+
+
+    error.style.display = "none";
+    error.innerText = "";
+
+    input.value = "";
+
+
+    if (fieldType === "department") {
+
+        title.innerText = "إضافة قسم";
+
+    } else {
+
+        title.innerText = "إضافة فرع";
+
+    }
+
+
+    modal.classList.add("show");
+
+
+    setTimeout(function () {
+
+        input.focus();
+
+    }, 100);
+
+}
+
+
+/* =========================================================
+   إغلاق النافذة
+   ========================================================= */
+
+function closeFieldModal() {
+
+    const modal =
+        document.getElementById("addFieldModal");
+
+    modal.classList.remove("show");
+
+    currentFieldType = null;
+
+}
+
+
+/* =========================================================
+   حفظ القسم / الفرع
+   ========================================================= */
+
+function saveNewField() {
+
+    const input =
+        document.getElementById("newFieldName");
+
+    const error =
+        document.getElementById("fieldModalError");
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        error.innerText =
+            "يرجى إدخال الاسم";
+
+        error.style.display =
+            "block";
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    let url = "";
+
+
+    if (currentFieldType === "department") {
+
+        url =
+            "{% url 'hr:add_department' %}";
+
+    }
+
+
+    if (currentFieldType === "branch") {
+
+        url =
+            "{% url 'hr:add_branch' %}";
+
+    }
+
+
+    if (!url) {
+
+        error.innerText =
+            "لم يتم تحديد رابط الإضافة";
+
+        error.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    const csrfToken =
+        document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+        ).value;
+
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "name",
+        name
+    );
+
+    formData.append(
+        "csrfmiddlewaretoken",
+        csrfToken
+    );
+
+
+    console.log(
+        "================================="
+    );
+
+    console.log(
+        "ADD FIELD"
+    );
+
+    console.log(
+        "TYPE:",
+        currentFieldType
+    );
+
+    console.log(
+        "URL:",
+        url
+    );
+
+    console.log(
+        "NAME:",
+        name
+    );
+
+    console.log(
+        "================================="
+    );
+
+
+    fetch(url, {
+
+        method: "POST",
+
+        body: formData,
+
+        headers: {
+
+            "X-Requested-With":
+                "XMLHttpRequest",
+
+            "Accept":
+                "application/json"
+
+        }
+
+    })
+
+
+    .then(function(response) {
+
+        console.log(
+            "HTTP STATUS:",
+            response.status
+        );
+
+        console.log(
+            "CONTENT TYPE:",
+            response.headers.get(
+                "content-type"
+            )
+        );
+
+
+        return response.text()
+
+            .then(function(text) {
+
+                console.log(
+                    "SERVER RESPONSE:",
+                    text
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "HTTP " +
+                        response.status +
+                        " - " +
+                        text
+                    );
+
+                }
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        JSON.parse(text);
+
+                } catch (e) {
+
+                    throw new Error(
+                        "SERVER DID NOT RETURN JSON:\n" +
+                        text
+                    );
+
+                }
+
+
+                return data;
+
+            });
+
+    })
+
+
+    .then(function(data) {
+
+        console.log(
+            "JSON DATA:",
+            data
+        );
+
+
+        if (!data.success) {
+
+            error.innerText =
+                data.error ||
+                data.message ||
+                "حدث خطأ أثناء الحفظ";
+
+            error.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        const select =
+            document.querySelector(
+                'select[name="' +
+                currentFieldType +
+                '"]'
+            );
+
+
+        if (!select) {
+
+            console.error(
+                "SELECT NOT FOUND:",
+                currentFieldType
+            );
+
+            error.innerText =
+                "تعذر العثور على قائمة " +
+                currentFieldType;
+
+            error.style.display =
+                "block";
+
+            return;
+
+        }
+
+
+        const option =
+            new Option(
+                data.name,
+                data.id,
+                true,
+                true
+            );
+
+
+        select.appendChild(
+            option
+        );
+
+
+        select.value =
+            data.id;
+
+
+        closeFieldModal();
+
+    })
+
+
+    .catch(function(errorObject) {
+
+        console.error(
+            "================================="
+        );
+
+        console.error(
+            "REAL SERVER ERROR:"
+        );
+
+        console.error(
+            errorObject
+        );
+
+        console.error(
+            "================================="
+        );
+
+
+        error.innerText =
+            errorObject.message ||
+            "حدث خطأ أثناء الاتصال بالخادم";
+
+
+        error.style.display =
+            "block";
+
+    });
+
+}
+
+
+/* =========================================================
+   إغلاق النافذة عند الضغط خارجها
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const modal =
+            document.getElementById(
+                "addFieldModal"
+            );
+
+
+        if (
+            event.target === modal
+        ) {
+
+            closeFieldModal();
+
+        }
+
+    }
+);
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const branchBtn =
+        document.getElementById("openAddBranchModal");
+
+    if (branchBtn) {
+
+        branchBtn.addEventListener("click", function () {
+
+            openBranchModal("branch");
+
+        });
+
+    }
+
+});
+</script>
+
+<!-- =========================================================
+     Modal إضافة قسم
+     ========================================================= -->
+<div
+    id="departmentModal"
+    class="department-modal"
+>
+
+    <div class="department-modal-box">
+
+        <!-- Header -->
+
+        <div class="department-modal-header">
+
+            <h5 class="department-modal-title">
+
+                <i class="bi bi-building-add"></i>
+
+                {% trans "إضافة قسم جديد" %}
+
+            </h5>
+
+            <button
+                type="button"
+                class="department-modal-close"
+                id="closeDepartmentModal"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+
+        <!-- Body -->
+
+        <div class="department-modal-body">
+
+            <label for="newDepartmentName">
+                {% trans "اسم القسم" %}
+            </label>
+
+            <input
+                type="text"
+                id="newDepartmentName"
+                autocomplete="off"
+                placeholder="{% trans 'أدخل اسم القسم' %}"
+            >
+
+            <div
+                id="departmentModalMessage"
+                class="department-modal-message"
+            ></div>
+
+        </div>
+
+
+        <!-- Footer -->
+
+        <div class="department-modal-footer">
+
+            <button
+                type="button"
+                class="department-modal-btn department-modal-save"
+                id="saveDepartmentBtn"
+            >
+                <i class="bi bi-check-lg"></i>
+
+                {% trans "حفظ" %}
+
+            </button>
+
+
+            <button
+                type="button"
+                class="department-modal-btn department-modal-cancel"
+                id="cancelDepartmentBtn"
+            >
+                <i class="bi bi-x-lg"></i>
+
+                {% trans "إلغاء" %}
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+function openDocumentFile(fieldName) {
+
+    const fileInput = document.querySelector(
+        'input[name="' + fieldName + '"]'
+    );
+
+    if (fileInput) {
+        fileInput.click();
+    }
+
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(
+        '.document-upload input[type="file"]'
+    ).forEach(function (fileInput) {
+
+        fileInput.addEventListener("change", function () {
+
+            const fieldName = this.name;
+
+            const fileNameElement =
+                document.getElementById(
+                    "filename-" + fieldName
+                );
+
+            if (!fileNameElement) {
+                return;
+            }
+
+            if (this.files && this.files.length > 0) {
+
+                fileNameElement.textContent =
+                    this.files[0].name;
+
+                fileNameElement.classList.remove("empty");
+
+            } else {
+
+                fileNameElement.textContent =
+                    "لم يتم اختيار ملف";
+
+                fileNameElement.classList.add("empty");
+
+            }
+
+        });
+
+    });
+
+});
+
+
+function clearDocumentField(fieldName) {
+
+    /* =====================================================
+       تحديد أمر الحذف الخاص بـ Django
+       ===================================================== */
+
+    const clearCheckbox = document.querySelector(
+        'input[name="' + fieldName + '-clear"]'
+    );
+
+    if (clearCheckbox) {
+        clearCheckbox.checked = true;
+    }
+
+
+    /* =====================================================
+       تفريغ أي ملف جديد تم اختياره
+       ===================================================== */
+
+    const fileInput = document.querySelector(
+        'input[name="' + fieldName + '"]'
+    );
+
+    if (fileInput) {
+        fileInput.value = "";
+    }
+
+
+    /* =====================================================
+       تحديث النص الظاهر للمستخدم
+       ===================================================== */
+
+    const fileNameElement =
+        document.getElementById(
+            "filename-" + fieldName
+        );
+
+    if (fileNameElement) {
+
+        fileNameElement.textContent =
+            "لم يتم اختيار ملف";
+
+        fileNameElement.classList.add("empty");
+    }
+
+}
+
+</script>
 {% endblock %}

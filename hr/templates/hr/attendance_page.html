@@ -141,319 +141,242 @@
             </td>
 
 
-            <!-- ========================= -->
-            <!-- الدورة الأولى -->
-            <!-- ========================= -->
+            <!-- ================================= -->
+            <!-- الحضور 1 -->
+            <!-- ================================= -->
 
-            {% with session=row.sessions.0 %}
+            <td>
 
-                <!-- الحضور 1 -->
+                {% if row.sessions.0.check_in %}
 
-                <td>
+                    <span class="time-in">
 
-                    {% if session.check_in %}
+                        {{ row.sessions.0.check_in.timestamp|date:"H:i" }}
 
-                        <span class="time-in">
+                    </span>
 
-                            {{ session.check_in.timestamp|date:"H:i" }}
+                {% else %}
 
-                        </span>
+                    <span class="empty">---</span>
 
-                    {% else %}
+                {% endif %}
 
-                        <span class="empty">
-                            ---
-                        </span>
-
-                    {% endif %}
-
-                </td>
+            </td>
 
 
-                <!-- الانصراف 1 -->
+            <!-- ================================= -->
+            <!-- الانصراف 1 -->
+            <!-- ================================= -->
 
-                <td>
+            <td>
 
-                    {% if session.check_out %}
+                {% if row.sessions.0.check_out %}
 
-                        <span class="time-out">
+                    <span class="time-out">
 
-                            {{ session.check_out.timestamp|date:"H:i" }}
+                        {{ row.sessions.0.check_out.timestamp|date:"H:i" }}
 
-                        </span>
+                    </span>
 
-                    {% else %}
+                {% else %}
 
-                        <span class="empty">
-                            ---
-                        </span>
+                    <span class="empty">---</span>
 
-                    {% endif %}
+                {% endif %}
 
-                </td>
-
-
-                <!-- الموقع 1 -->
-
-                <td>
-
-                    {% if session.check_in %}
-
-                        {% if session.check_in.latitude and session.check_in.longitude %}
-
-                            <a href="https://www.google.com/maps?q={{ session.check_in.latitude }},{{ session.check_in.longitude }}"
-                               target="_blank"
-                               title="{% trans 'Check In Location' %}"
-                               class="location-btn">
-
-                                <i class="fa-solid fa-location-dot"></i>
-
-                            </a>
-
-                        {% endif %}
-
-                    {% endif %}
+            </td>
 
 
-                    {% if session.check_out %}
+            <!-- ================================= -->
+            <!-- الموقع 1 -->
+            <!-- ================================= -->
 
-                        {% if session.check_out.latitude and session.check_out.longitude %}
+            <td>
 
-                            <a href="https://www.google.com/maps?q={{ session.check_out.latitude }},{{ session.check_out.longitude }}"
-                               target="_blank"
-                               title="{% trans 'Check Out Location' %}"
-                               class="location-btn">
+                {% if row.sessions.0.check_in or row.sessions.0.check_out %}
 
-                                <i class="fa-solid fa-location-arrow"></i>
+                    {% if row.attendance.work_location %}
 
-                            </a>
+                        <span class="work-location-name">
 
-                        {% endif %}
+                            <i class="fa-solid fa-location-dot"></i>
 
-                    {% endif %}
-
-
-                    {% if not session.check_in and not session.check_out %}
-
-                        <span class="empty">
-                            ---
-                        </span>
-
-                    {% endif %}
-
-                </td>
-
-            {% endwith %}
-
-
-            <!-- ========================= -->
-            <!-- الدورة الثانية -->
-            <!-- ========================= -->
-
-            {% with session=row.sessions.1 %}
-
-                <!-- الحضور 2 -->
-
-                <td>
-
-                    {% if session.check_in %}
-
-                        <span class="time-in">
-
-                            {{ session.check_in.timestamp|date:"H:i" }}
+                            {{ row.attendance.work_location.name }}
 
                         </span>
 
                     {% else %}
 
-                        <span class="empty">
-                            ---
-                        </span>
+                        <span class="empty">---</span>
 
                     {% endif %}
 
-                </td>
+                {% else %}
+
+                    <span class="empty">---</span>
+
+                {% endif %}
+
+            </td>
 
 
-                <!-- الانصراف 2 -->
+            <!-- ================================= -->
+            <!-- الحضور 2 -->
+            <!-- ================================= -->
 
-                <td>
+            <td>
 
-                    {% if session.check_out %}
+                {% if row.sessions.1.check_in %}
 
-                        <span class="time-out">
+                    <span class="time-in">
 
-                            {{ session.check_out.timestamp|date:"H:i" }}
+                        {{ row.sessions.1.check_in.timestamp|date:"H:i" }}
 
-                        </span>
+                    </span>
 
-                    {% else %}
+                {% else %}
 
-                        <span class="empty">
-                            ---
-                        </span>
+                    <span class="empty">---</span>
 
-                    {% endif %}
+                {% endif %}
 
-                </td>
-
-
-                <!-- الموقع 2 -->
-
-                <td>
-
-                    {% if session.check_in %}
-
-                        {% if session.check_in.latitude and session.check_in.longitude %}
-
-                            <a href="https://www.google.com/maps?q={{ session.check_in.latitude }},{{ session.check_in.longitude }}"
-                               target="_blank"
-                               title="{% trans 'Check In Location' %}"
-                               class="location-btn">
-
-                                <i class="fa-solid fa-location-dot"></i>
-
-                            </a>
-
-                        {% endif %}
-
-                    {% endif %}
+            </td>
 
 
-                    {% if session.check_out %}
+            <!-- ================================= -->
+            <!-- الانصراف 2 -->
+            <!-- ================================= -->
 
-                        {% if session.check_out.latitude and session.check_out.longitude %}
+            <td>
 
-                            <a href="https://www.google.com/maps?q={{ session.check_out.latitude }},{{ session.check_out.longitude }}"
-                               target="_blank"
-                               title="{% trans 'Check Out Location' %}"
-                               class="location-btn">
+                {% if row.sessions.1.check_out %}
 
-                                <i class="fa-solid fa-location-arrow"></i>
+                    <span class="time-out">
 
-                            </a>
+                        {{ row.sessions.1.check_out.timestamp|date:"H:i" }}
 
-                        {% endif %}
+                    </span>
 
-                    {% endif %}
+                {% else %}
 
+                    <span class="empty">---</span>
 
-                    {% if not session.check_in and not session.check_out %}
+                {% endif %}
 
-                        <span class="empty">
-                            ---
-                        </span>
-
-                    {% endif %}
-
-                </td>
-
-            {% endwith %}
+            </td>
 
 
-            <!-- ========================= -->
-            <!-- الدورة الثالثة -->
-            <!-- ========================= -->
+            <!-- ================================= -->
+            <!-- الموقع 2 -->
+            <!-- ================================= -->
 
-            {% with session=row.sessions.2 %}
+            <td>
 
-                <!-- الحضور 3 -->
+                {% if row.sessions.1.check_in or row.sessions.1.check_out %}
 
-                <td>
+                    {% if row.attendance.work_location %}
 
-                    {% if session.check_in %}
+                        <span class="work-location-name">
 
-                        <span class="time-in">
+                            <i class="fa-solid fa-location-dot"></i>
 
-                            {{ session.check_in.timestamp|date:"H:i" }}
+                            {{ row.attendance.work_location.name }}
 
                         </span>
 
                     {% else %}
 
-                        <span class="empty">
-                            ---
-                        </span>
+                        <span class="empty">---</span>
 
                     {% endif %}
 
-                </td>
+                {% else %}
+
+                    <span class="empty">---</span>
+
+                {% endif %}
+
+            </td>
 
 
-                <!-- الانصراف 3 -->
+            <!-- ================================= -->
+            <!-- الحضور 3 -->
+            <!-- ================================= -->
 
-                <td>
+            <td>
 
-                    {% if session.check_out %}
+                {% if row.sessions.2.check_in %}
 
-                        <span class="time-out">
+                    <span class="time-in">
 
-                            {{ session.check_out.timestamp|date:"H:i" }}
+                        {{ row.sessions.2.check_in.timestamp|date:"H:i" }}
+
+                    </span>
+
+                {% else %}
+
+                    <span class="empty">---</span>
+
+                {% endif %}
+
+            </td>
+
+
+            <!-- ================================= -->
+            <!-- الانصراف 3 -->
+            <!-- ================================= -->
+
+            <td>
+
+                {% if row.sessions.2.check_out %}
+
+                    <span class="time-out">
+
+                        {{ row.sessions.2.check_out.timestamp|date:"H:i" }}
+
+                    </span>
+
+                {% else %}
+
+                    <span class="empty">---</span>
+
+                {% endif %}
+
+            </td>
+
+
+            <!-- ================================= -->
+            <!-- الموقع 3 -->
+            <!-- ================================= -->
+
+            <td>
+
+                {% if row.sessions.2.check_in or row.sessions.2.check_out %}
+
+                    {% if row.attendance.work_location %}
+
+                        <span class="work-location-name">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            {{ row.attendance.work_location.name }}
 
                         </span>
 
                     {% else %}
 
-                        <span class="empty">
-                            ---
-                        </span>
+                        <span class="empty">---</span>
 
                     {% endif %}
 
-                </td>
+                {% else %}
 
+                    <span class="empty">---</span>
 
-                <!-- الموقع 3 -->
+                {% endif %}
 
-                <td>
+            </td>
 
-                    {% if session.check_in %}
-
-                        {% if session.check_in.latitude and session.check_in.longitude %}
-
-                            <a href="https://www.google.com/maps?q={{ session.check_in.latitude }},{{ session.check_in.longitude }}"
-                               target="_blank"
-                               title="{% trans 'Check In Location' %}"
-                               class="location-btn">
-
-                                <i class="fa-solid fa-location-dot"></i>
-
-                            </a>
-
-                        {% endif %}
-
-                    {% endif %}
-
-
-                    {% if session.check_out %}
-
-                        {% if session.check_out.latitude and session.check_out.longitude %}
-
-                            <a href="https://www.google.com/maps?q={{ session.check_out.latitude }},{{ session.check_out.longitude }}"
-                               target="_blank"
-                               title="{% trans 'Check Out Location' %}"
-                               class="location-btn">
-
-                                <i class="fa-solid fa-location-arrow"></i>
-
-                            </a>
-
-                        {% endif %}
-
-                    {% endif %}
-
-
-                    {% if not session.check_in and not session.check_out %}
-
-                        <span class="empty">
-                            ---
-                        </span>
-
-                    {% endif %}
-
-                </td>
-
-            {% endwith %}
 
         </tr>
 
@@ -464,7 +387,6 @@
 {% endfor %}
 
 </tbody>
-
         </div>
 
     </div>
@@ -472,10 +394,57 @@
 </div>
 
 <style>
-body{
-    background:#eeeeee;
+.work-location-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f1f3f5;
+    color: #444;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: center;
+    max-width: 150px;
 }
 
+.work-location-name i {
+    color: #666;
+}
+
+
+/* محاذاة عناوين الجدول مع المحتوى */
+
+.attendance-table th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+/* الحضور والانصراف والموقع */
+
+.attendance-table td:nth-child(3),
+.attendance-table td:nth-child(4),
+.attendance-table td:nth-child(5),
+
+.attendance-table td:nth-child(6),
+.attendance-table td:nth-child(7),
+.attendance-table td:nth-child(8),
+
+.attendance-table td:nth-child(9),
+.attendance-table td:nth-child(10),
+.attendance-table td:nth-child(11) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+body {
+    background: #eeeeee;
+}
 
 .attendance-page{
 
@@ -767,6 +736,79 @@ body{
     color:#aaa;
 
 }
+.location-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 190px;
+}
+
+.location-item {
+    background: #f8f9fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.location-type {
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.location-type i {
+    margin-left: 5px;
+}
+
+.location-coordinates {
+    direction: ltr;
+    font-size: 12px;
+    color: #555;
+    word-break: break-all;
+    margin-bottom: 4px;
+}
+
+.location-distance {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 7px;
+}
+
+.location-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #555;
+    color: #fff;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.location-btn:hover {
+    color: #fff;
+    opacity: .85;
+}
+.work-location-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f1f3f5;
+    color: #444;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.work-location-name i {
+    color: #666;
+}
+
 </style>
 
 {% endblock %}

@@ -1,112 +1,1837 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Payment Vouchers" %}{% endblock %}
+{% block title %}
+    {% trans "Payment Vouchers" %}
+{% endblock %}
+
 
 {% block content %}
 
-<h3 class="mb-4">📤 {% trans "Payment Vouchers" %}</h3>
+<div class="container-fluid payments-page mt-4">
 
-<table class="table table-bordered table-hover text-center align-middle">
+    <div class="payment-card">
 
-    <thead class="table-light">
-        <tr>
-            <th>{% trans "Voucher Number" %}</th>
-            <th>{% trans "Party" %}</th>
-            <th>{% trans "Date" %}</th>
-            <th>{% trans "Amount" %}</th>
-            <th>{% trans "Created By" %}</th>
-            <th>{% trans "Status" %}</th>
-            <th>{% trans "Actions" %}</th>
-        </tr>
-    </thead>
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
 
-    <tbody>
-        {% for v in payments %}
-        <tr class="{% if v.status == 'cancelled' %}table-secondary{% endif %}">
+        <div class="page-header">
 
-            <td>{{ v.voucher_no|default:v.id }}</td>
+            <div>
 
-            <!-- الطرف -->
-            <td>
-                {% if v.supplier %}
-                    {{ v.supplier }}
-                {% elif v.customer %}
-                    {{ v.customer }}
-                {% elif v.cost_center %}
-                    {{ v.cost_center }}
-                {% elif v.other_account %}
-                    {{ v.other_account }}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
+                <h3>
 
-            <td>{{ v.date }}</td>
+                    <i class="fa-solid fa-money-bill-transfer"></i>
 
-            <!-- المبلغ -->
-            <td class="{% if v.status == 'cancelled' %}
-                           text-danger text-decoration-line-through
-                       {% else %}
-                           text-danger fw-bold
-                       {% endif %}">
-                {{ v.amount }}
-            </td>
+                    {% trans "Payment Vouchers" %}
 
-            <td>{{ v.created_by }}</td>
+                </h3>
 
-            <!-- الحالة -->
-            <td>
-                {% if v.status == "posted" %}
-                    <span class="badge bg-success">{% trans "Posted" %}</span>
-                {% elif v.status == "cancelled" %}
-                    <span class="badge bg-danger">{% trans "Cancelled" %}</span>
-                {% else %}
-                    <span class="badge bg-secondary">{% trans "Draft" %}</span>
-                {% endif %}
-            </td>
+                <p>
 
-            <!-- الإجراءات -->
-            <td style="position: relative;">
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-secondary dropdown-toggle"
-                            type="button"
-                            data-bs-toggle="dropdown">
-                        {% trans "Options" %}
-                    </button>
+                    {% trans "Manage payment vouchers and transactions" %}
 
-                    <ul class="dropdown-menu">
+                </p>
 
-                        <li>
-                            <a class="dropdown-item"
-                               href="{% url 'payments:payment_detail' v.id %}">
-                                👁 {% trans "View" %}
-                            </a>
-                        </li>
+            </div>
 
-                        {% if v.status == "posted" %}
-                        <li>
-                            <a class="dropdown-item text-danger"
-                               href="{% url 'payments:payment_cancel' v.id %}"
-                               onclick="return confirm('{% trans "Are you sure you want to cancel this voucher?" %}')">
-                                ❌ {% trans "Cancel" %}
-                            </a>
-                        </li>
-                        {% endif %}
 
-                    </ul>
-                </div>
-            </td>
+            <a href="#"
+               class="add-btn">
 
-        </tr>
+                <i class="fa-solid fa-plus"></i>
 
-        {% empty %}
-        <tr>
-            <td colspan="7">{% trans "No payment vouchers found" %}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+                {% trans "إضافة " %}
 
-</table>
+            </a>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- الجدول -->
+        <!-- ============================= -->
+
+        <div class="table-box">
+
+            <table class="payment-table">
+
+                <thead>
+
+                    <!-- ============================= -->
+                    <!-- صف البحث -->
+                    <!-- ============================= -->
+
+                    <tr class="filter-row">
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search ID' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Voucher No' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Party' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Date' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Amount' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Created By' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Status' %}"
+                            >
+
+                        </th>
+
+
+                        <th></th>
+
+                    </tr>
+
+
+                    <!-- ============================= -->
+                    <!-- عنوان الأعمدة -->
+                    <!-- ============================= -->
+
+                    <tr class="header-row">
+
+                        <th>
+
+                            #
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Voucher Number" %}
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Party" %}
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Date" %}
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Amount" %}
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Created By" %}
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Status" %}
+
+                        </th>
+
+
+                        <th>
+
+                            {% trans "Actions" %}
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                {% for v in payments %}
+
+                    <tr
+                        class="{% if v.status == 'cancelled' %}cancelled-row{% endif %}"
+                    >
+
+
+                        <!-- ============================= -->
+                        <!-- ID -->
+                        <!-- ============================= -->
+
+                        <td>
+
+                            <span class="order-badge">
+
+                                {{ v.id }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- رقم السند -->
+                        <!-- ============================= -->
+
+                        <td class="voucher-number">
+
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                            {{ v.voucher_no|default:v.id }}
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- الطرف -->
+                        <!-- ============================= -->
+
+                        <td class="party-name">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            {% if v.supplier %}
+
+                                {{ v.supplier }}
+
+                            {% elif v.customer %}
+
+                                {{ v.customer }}
+
+                            {% elif v.cost_center %}
+
+                                {{ v.cost_center }}
+
+                            {% elif v.other_account %}
+
+                                {{ v.other_account }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- التاريخ -->
+                        <!-- ============================= -->
+
+                        <td>
+
+                            <span class="date-badge">
+
+                                {{ v.date }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- المبلغ -->
+                        <!-- ============================= -->
+
+                        <td class="amount-cell">
+
+                            <span
+                                class="
+                                    amount-value
+                                    {% if v.status == 'cancelled' %}
+                                        cancelled
+                                    {% endif %}
+                                "
+                            >
+
+                                {{ v.amount }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- المنشئ -->
+                        <!-- ============================= -->
+
+                        <td>
+
+                            {{ v.created_by }}
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- الحالة -->
+                        <!-- ============================= -->
+
+                        <td>
+
+                            <span class="status-badge">
+
+                                {% if v.status == "posted" %}
+
+                                    {% trans "Posted" %}
+
+                                {% elif v.status == "cancelled" %}
+
+                                    {% trans "Cancelled" %}
+
+                                {% else %}
+
+                                    {% trans "Draft" %}
+
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ============================= -->
+                        <!-- الخيارات -->
+                        <!-- ============================= -->
+
+                        <td>
+
+                            <div class="options-dropdown">
+
+                                <button
+                                    type="button"
+                                    class="action-btn options-button"
+                                >
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Options" %}
+
+                                </button>
+
+
+                                <!-- ===================================== -->
+                                <!-- القائمة المنسدلة -->
+                                <!-- ===================================== -->
+
+                                <ul class="dropdown-menu custom-menu text-end">
+
+
+                                    <!-- ============================= -->
+                                    <!-- عرض -->
+                                    <!-- ============================= -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'payments:payment_detail' v.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- ============================= -->
+                                    <!-- إلغاء -->
+                                    <!-- ============================= -->
+
+                                    {% if v.status == "posted" %}
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item cancel-payment-btn"
+                                            href="{% url 'payments:payment_cancel' v.id %}"
+                                            onclick="return confirm('{% trans "Are you sure you want to cancel this voucher?" %}')"
+                                        >
+
+                                            <i class="fa-solid fa-ban"></i>
+
+                                            {% trans "Cancel" %}
+
+                                        </a>
+
+                                    </li>
+
+                                    {% endif %}
+
+
+                                </ul>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                {% empty %}
+
+
+                    <!-- ============================= -->
+                    <!-- لا توجد بيانات -->
+                    <!-- ============================= -->
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="empty"
+                        >
+
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+
+                            <div>
+
+                                {% trans "No payment vouchers found" %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.payments-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.payment-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر إضافة
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.payment-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+.filter-row th{
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+/* =========================================================
+   حقول البحث
+========================================================= */
+
+.filter-input{
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+.filter-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder{
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.payment-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.payment-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.payment-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   الصف الملغي
+========================================================= */
+
+.payment-table tbody tr.cancelled-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+}
+
+
+.payment-table tbody tr.cancelled-row td{
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رقم السند
+========================================================= */
+
+.voucher-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.voucher-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   الطرف
+========================================================= */
+
+.party-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.party-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   رقم ID
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   المبلغ
+========================================================= */
+
+.amount-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+.amount-value{
+
+    font-weight:800;
+
+    color:#444;
+
+}
+
+
+.amount-value.cancelled{
+
+    color:#777;
+
+    text-decoration:line-through;
+
+}
+
+
+/* =========================================================
+   حالة السند
+========================================================= */
+
+.status-badge{
+
+    display:inline-block;
+
+    min-width:85px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.options-dropdown{
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+
+   نفس قائمة صفحة الفواتير تمامًا.
+
+   JavaScript ينقل القائمة إلى body
+   لذلك لا تتأثر بـ overflow الخاص بالجدول.
+========================================================= */
+
+.custom-menu{
+
+    display:none;
+
+    position:fixed !important;
+
+    min-width:210px;
+
+    padding:8px;
+
+    margin:0 !important;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.22),
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index:999999999 !important;
+
+}
+
+
+.custom-menu.menu-open{
+
+    display:block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    margin:2px 0;
+
+    border-radius:9px;
+
+    color:#444;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#333;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+/* =========================================================
+   أيقونات القائمة
+========================================================= */
+
+.custom-menu .dropdown-item i{
+
+    width:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i{
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   زر الإلغاء
+========================================================= */
+
+.custom-menu .cancel-payment-btn{
+
+    color:#555;
+
+}
+
+
+.custom-menu .cancel-payment-btn i{
+
+    color:#777 !important;
+
+}
+
+
+/* =========================================================
+   لا توجد بيانات
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .payments-page{
+
+        padding:15px;
+
+    }
+
+
+    .payment-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .payment-table{
+
+        min-width:1100px;
+
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     JavaScript
+
+     البحث + قائمة الخيارات
+========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       البحث
+    ===================================================== */
+
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
+
+
+    const rows =
+        document.querySelectorAll(
+            ".payment-table tbody tr"
+        );
+
+
+    filterInputs.forEach((input, colIndex) => {
+
+        input.addEventListener("keyup", function () {
+
+            const value =
+                this.value.toLowerCase();
+
+
+            rows.forEach(row => {
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                const cell =
+                    cells[colIndex];
+
+
+                if (cell) {
+
+                    const text =
+                        cell.textContent.toLowerCase();
+
+
+                    row.style.display =
+                        text.includes(value)
+                        ? ""
+                        : "none";
+
+                }
+
+            });
+
+        });
+
+    });
+
+
+
+    /* =====================================================
+       قائمة الخيارات
+
+       نفس نظام صفحة الفواتير.
+
+       القائمة يتم نقلها إلى body.
+
+       وتفتح دائمًا لأعلى الزر.
+    ===================================================== */
+
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".options-button"
+        );
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const dropdown =
+                    this.closest(
+                        ".options-dropdown"
+                    );
+
+
+                if (!dropdown) {
+
+                    return;
+
+                }
+
+
+                const menu =
+                    dropdown.querySelector(
+                        ".custom-menu"
+                    );
+
+
+                if (!menu) {
+
+                    return;
+
+                }
+
+
+
+                /* =============================================
+                   إذا كانت نفس القائمة مفتوحة
+                   أغلقها
+                ============================================= */
+
+                if (
+                    openedMenu === menu &&
+                    menu.classList.contains(
+                        "menu-open"
+                    )
+                ) {
+
+                    closeOptionsMenu();
+
+                    return;
+
+                }
+
+
+
+                /* =============================================
+                   إغلاق أي قائمة أخرى
+                ============================================= */
+
+                closeOptionsMenu();
+
+
+
+                /* =============================================
+                   نقل القائمة إلى body
+
+                   مهم جدًا حتى لا تتأثر بـ:
+
+                   .table-box {
+                       overflow-x:auto;
+                   }
+                ============================================= */
+
+                document.body.appendChild(menu);
+
+
+                menu.classList.add(
+                    "menu-open"
+                );
+
+
+                openedMenu = menu;
+
+                openedButton = this;
+
+
+
+                /* =============================================
+                   تحديد موقع الزر
+                ============================================= */
+
+                const rect =
+                    this.getBoundingClientRect();
+
+
+
+                /* =============================================
+                   معرفة ارتفاع القائمة
+                ============================================= */
+
+                const menuHeight =
+                    menu.offsetHeight;
+
+
+                const menuWidth =
+                    menu.offsetWidth;
+
+
+                const gap = 8;
+
+
+
+                /* =============================================
+                   فتح القائمة لأعلى الزر
+                ============================================= */
+
+                let top =
+                    rect.top -
+                    menuHeight -
+                    gap;
+
+
+
+                /* =============================================
+                   توسيط القائمة أفقيًا مع الزر
+                ============================================= */
+
+                let left =
+                    rect.left +
+                    (
+                        rect.width -
+                        menuWidth
+                    ) / 2;
+
+
+
+                /* =============================================
+                   منع خروج القائمة من يمين الشاشة
+                ============================================= */
+
+                if (
+                    left +
+                    menuWidth >
+                    window.innerWidth - 8
+                ) {
+
+                    left =
+                        window.innerWidth -
+                        menuWidth -
+                        8;
+
+                }
+
+
+
+                /* =============================================
+                   منع خروجها من يسار الشاشة
+                ============================================= */
+
+                if (left < 8) {
+
+                    left = 8;
+
+                }
+
+
+
+                /* =============================================
+                   إذا كان الصف قريبًا جدًا من
+                   أعلى الشاشة
+                ============================================= */
+
+                if (top < 8) {
+
+                    top = 8;
+
+                }
+
+
+
+                /* =============================================
+                   تطبيق الموقع
+                ============================================= */
+
+                menu.style.top =
+                    top + "px";
+
+
+                menu.style.left =
+                    left + "px";
+
+
+                menu.style.right =
+                    "auto";
+
+
+                menu.style.bottom =
+                    "auto";
+
+
+                menu.style.transform =
+                    "none";
+
+
+
+                /* =============================================
+                   منع إغلاق القائمة عند الضغط داخلها
+                ============================================= */
+
+                menu.addEventListener(
+                    "click",
+                    function (e) {
+
+                        e.stopPropagation();
+
+                    }
+                );
+
+            }
+        );
+
+    });
+
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+        if (!openedMenu) {
+
+            return;
+
+        }
+
+
+        openedMenu.classList.remove(
+            "menu-open"
+        );
+
+
+
+        /* =============================================
+           إرجاع القائمة إلى مكانها الأصلي
+        ============================================= */
+
+        if (openedButton) {
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       عند تحريك الصفحة
+
+       القائمة تبقى فوق نفس الزر.
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                openedButton.getBoundingClientRect();
+
+
+            const menuHeight =
+                openedMenu.offsetHeight;
+
+
+            const menuWidth =
+                openedMenu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+
+            if (
+                left +
+                menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+
+            openedMenu.style.top =
+                top + "px";
+
+
+            openedMenu.style.left =
+                left + "px";
+
+        },
+        true
+    );
+
+
+
+    /* =====================================================
+       عند تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+});
+
+</script>
+
 
 {% endblock %}

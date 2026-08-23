@@ -1,0 +1,1025 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<!DOCTYPE html>
+<html
+    lang="{{ LANGUAGE_CODE }}"
+    dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}"
+>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <style>
+
+        /* =========================================================
+           الخلفية العامة
+        ========================================================= */
+
+        body {
+            background-color: #f1f5f9 !important;
+
+            margin: 0;
+
+            padding: 0;
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            direction:
+                {% if LANGUAGE_CODE == 'ar' %}
+                    rtl
+                {% else %}
+                    ltr
+                {% endif %};
+        }
+
+
+        /* =========================================================
+           الحاوية الرئيسية
+        ========================================================= */
+
+        .page-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: stretch;
+
+            width: 100%;
+
+            max-width: 1000px;
+
+            margin: 20px auto;
+
+            padding: 0 15px;
+
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================================
+           ورقة المرتجع
+        ========================================================= */
+
+        .invoice-paper {
+
+            width: 100%;
+
+            background: #ffffff;
+
+            padding: 40px;
+
+            border-radius: 8px;
+
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.05);
+
+            box-sizing: border-box;
+
+            border: 1px solid #e2e8f0;
+        }
+
+
+        /* =========================================================
+           العنوان الرئيسي
+        ========================================================= */
+
+        .invoice-main-title {
+
+            text-align: center;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            color: #000;
+
+            margin: 20px 0;
+        }
+
+
+        /* =========================================================
+           بيانات المرتجع
+        ========================================================= */
+
+        .meta-data-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-bottom: 20px;
+        }
+
+
+        .meta-data-table td {
+
+            padding: 6px 4px;
+
+            font-size: 14px;
+
+            vertical-align: middle;
+
+            color: #000;
+        }
+
+
+        /* =========================================================
+           معلومات المرتجع
+        ========================================================= */
+
+        .top-info {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+        }
+
+
+        .top-info p {
+
+            margin: 6px 0;
+        }
+
+
+        /* =========================================================
+           جدول الأصناف
+        ========================================================= */
+
+        .items-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 15px;
+        }
+
+
+        /*
+           تدرج واحد موحد لجميع عناوين الأعمدة
+        */
+
+        .items-table th {
+
+            background: linear-gradient(
+                135deg,
+                #1e293b 0%,
+                #334155 50%,
+                #475569 100%
+            ) !important;
+
+            color: #ffffff !important;
+
+            padding: 8px 6px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            border: 1px solid #000;
+
+            text-align: center;
+
+            vertical-align: middle;
+        }
+
+
+        .items-table td {
+
+            padding: 10px 6px;
+
+            font-size: 14px;
+
+            border: 1px solid #000;
+
+            text-align: center;
+
+            color: #000;
+        }
+
+
+        /* =========================================================
+           جدول الإجماليات
+        ========================================================= */
+
+        .totals-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: -1px;
+        }
+
+
+        .totals-table td {
+
+            padding: 8px 12px;
+
+            font-size: 14px;
+
+            border: 1px solid #000;
+
+            color: #000;
+        }
+
+
+        .totals-text-ar {
+
+            text-align: right;
+
+            font-weight: bold;
+
+            width: 250px;
+        }
+
+
+        .totals-text-en {
+
+            text-align: left;
+
+            font-weight: bold;
+
+            width: 250px;
+        }
+
+
+        .totals-value {
+
+            text-align: center;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================================================
+           صندوق المبلغ المستحق
+        ========================================================= */
+
+        .amount-text-box {
+
+            width: 100%;
+
+            border: 1px solid #000;
+
+            border-radius: 15px;
+
+            padding: 12px;
+
+            text-align: center;
+
+            font-weight: bold;
+
+            font-size: 15px;
+
+            color: #000;
+
+            margin-top: 15px;
+
+            box-sizing: border-box;
+        }
+
+
+        /* =========================================================
+           رقم المرتجع
+        ========================================================= */
+
+        .return-number {
+
+            font-weight: bold;
+        }
+
+
+        /* =========================================================
+           سبب المرتجع
+        ========================================================= */
+
+        .reason-box {
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border: 1px solid #000;
+
+            background: #f8fafc;
+
+            color: #000;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           QR + الرسالة
+        ========================================================= */
+
+        .invoice-footer {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-top: 20px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .invoice-qr {
+
+            width: 140px;
+        }
+
+
+        .invoice-qr img {
+
+            width: 130px;
+
+            height: 130px;
+
+            border: 1px solid #ccc;
+
+            padding: 4px;
+
+            background: #fff;
+        }
+
+
+        .invoice-note {
+
+            flex: 1;
+
+            text-align: center;
+
+            font-size: 15px;
+
+            color: #444;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================================================
+           زر الطباعة
+        ========================================================= */
+
+        .print-button-container {
+
+            width: 100%;
+
+            display: flex;
+
+            justify-content: center;
+
+            margin-top: 20px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .print-button {
+
+            background: linear-gradient(
+                135deg,
+                #1e293b 0%,
+                #334155 50%,
+                #475569 100%
+            );
+
+            color: #ffffff;
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 12px 35px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+
+            cursor: pointer;
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+            transition: 0.2s ease;
+        }
+
+
+        .print-button:hover {
+
+            transform: translateY(-1px);
+
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.20);
+        }
+
+
+        /* =========================================================
+           الطباعة
+        ========================================================= */
+
+        @media print {
+
+            /*
+               إخفاء زر الطباعة بالكامل من الورقة المطبوعة
+            */
+
+            .print-button-container {
+
+                display: none !important;
+
+                visibility: hidden !important;
+            }
+
+
+            .top-action-bar,
+            .payments-box,
+            #paymentModal,
+            .sidebar,
+            .main-sidebar,
+            #sidebar,
+            .app-menu {
+
+                display: none !important;
+
+                visibility: hidden !important;
+            }
+
+
+            body {
+
+                background: #fff !important;
+            }
+
+
+            .page-container {
+
+                max-width: 100% !important;
+
+                width: 100% !important;
+
+                padding: 0 !important;
+
+                margin: 0 !important;
+            }
+
+
+            .invoice-paper {
+
+                width: 100% !important;
+
+                box-shadow: none !important;
+
+                padding: 0 !important;
+
+                margin: 0 !important;
+
+                border: none !important;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page-container">
+
+
+    <div class="invoice-paper">
+
+
+        <!-- =================================================
+             عنوان المرتجع
+        ================================================= -->
+
+        <div class="invoice-main-title">
+
+            {% trans "مرتجع مشتريات" %}
+
+        </div>
+
+
+        <!-- =================================================
+             بيانات المرتجع
+        ================================================= -->
+
+        <table class="meta-data-table">
+
+            <tr>
+
+                <td style="text-align:right; width:50%;">
+
+                    <strong>
+
+                        {% trans "Supplier:" %}
+
+                    </strong>
+
+                    {{ purchase_return.supplier.commercial_name }}
+
+                </td>
+
+
+                <td style="text-align:left; width:50%; font-family:Arial;">
+
+                    <strong>
+
+                        Supplier:
+
+                    </strong>
+
+                    {{ purchase_return.supplier.name_en|default:"-" }}
+
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+
+                        {% trans "Return Number:" %}
+
+                    </strong>
+
+                    <span class="return-number">
+
+                        {{ purchase_return.return_no }}
+
+                    </span>
+
+                </td>
+
+
+                <td style="text-align:left; font-family:Arial;">
+
+                    <strong>
+
+                        Return No:
+
+                    </strong>
+
+                    {{ purchase_return.return_no }}
+
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+
+                        {% trans "Return Date:" %}
+
+                    </strong>
+
+                    {{ purchase_return.return_date }}
+
+                </td>
+
+
+                <td style="text-align:left; font-family:Arial;">
+
+                    <strong>
+
+                        Return Date:
+
+                    </strong>
+
+                    {{ purchase_return.return_date }}
+
+                </td>
+
+            </tr>
+
+
+            {% if purchase_return.invoice %}
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+
+                        {% trans "Original Invoice:" %}
+
+                    </strong>
+
+                    {{ purchase_return.invoice.invoice_no }}
+
+                </td>
+
+
+                <td style="text-align:left; font-family:Arial;">
+
+                    <strong>
+
+                        Original Invoice:
+
+                    </strong>
+
+                    {{ purchase_return.invoice.invoice_no }}
+
+                </td>
+
+            </tr>
+
+            {% endif %}
+
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+
+                        الرقم الضريبي للمورد:
+
+                    </strong>
+
+                    {{ purchase_return.supplier.tax_number|default:"-" }}
+
+                </td>
+
+
+                <td style="text-align:left; font-family:Arial;">
+
+                    <strong>
+
+                        Supplier VAT No.:
+
+                    </strong>
+
+                    {{ purchase_return.supplier.tax_number|default:"-" }}
+
+                </td>
+
+            </tr>
+
+        </table>
+
+
+        <!-- =================================================
+             سبب المرتجع
+        ================================================= -->
+
+        {% if purchase_return.reason %}
+
+        <div class="reason-box">
+
+            <strong>
+
+                {% trans "Reason:" %}
+
+            </strong>
+
+            {{ purchase_return.reason }}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             جدول الأصناف
+        ================================================= -->
+
+        <table class="items-table">
+
+            <thead>
+
+                <tr>
+
+                    <th style="width:5%;">
+
+                        #
+
+                    </th>
+
+
+                    <th style="width:30%;">
+
+                        {% trans "Product" %}
+
+                    </th>
+
+
+                    <th style="width:20%;">
+
+                        {% trans "Quantity" %}
+
+                    </th>
+
+
+                    <th style="width:20%;">
+
+                        {% trans "Price" %}
+
+                    </th>
+
+
+                    <th style="width:25%;">
+
+                        {% trans "Total" %}
+
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for item in items %}
+
+                <tr>
+
+                    <td>
+
+                        {{ forloop.counter }}
+
+                    </td>
+
+
+                    <td style="text-align:right; font-weight:bold;">
+
+                        {{ item.product.name }}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ item.quantity|floatformat:2 }}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ item.price|floatformat:2 }}
+
+                    </td>
+
+
+                    <td style="font-weight:bold;">
+
+                        {% widthratio item.quantity 1 item.price %}
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="5">
+
+                        {% trans "No items found." %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+                <!-- الصفوف الفارغة -->
+
+                {% for i in "12345678901" %}
+
+                    {% if forloop.counter > items|length %}
+
+                    <tr>
+
+                        <td style="height:22px;"></td>
+
+                        <td></td>
+
+                        <td></td>
+
+                        <td></td>
+
+                        <td></td>
+
+                    </tr>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+
+        <!-- =================================================
+             الإجماليات
+        ================================================= -->
+
+        <table class="totals-table">
+
+
+            <tr>
+
+                <td class="totals-text-ar">
+
+                    {% trans "Total Before Tax:" %}
+
+                </td>
+
+
+                <td class="totals-text-en">
+
+                    Total Before Tax
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ purchase_return.total_before_tax|default:"0.00" }}
+
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="totals-text-ar">
+
+                    {% trans "Total Tax:" %}
+
+                </td>
+
+
+                <td class="totals-text-en">
+
+                    Total VAT
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ purchase_return.tax_value|default:"0.00" }}
+
+                </td>
+
+            </tr>
+
+
+            <tr style="font-weight:bold; background-color:#f8fafc;">
+
+                <td
+                    class="totals-text-ar"
+                    style="font-size:16px;"
+                >
+
+                    {% trans "Total After Tax:" %}
+
+                </td>
+
+
+                <td
+                    class="totals-text-en"
+                    style="font-size:16px;"
+                >
+
+                    Total Including VAT
+
+                </td>
+
+
+                <td
+                    class="totals-value"
+                    style="font-size:16px;"
+                >
+
+                    {{ purchase_return.total_after_tax|default:"0.00" }}
+
+                </td>
+
+            </tr>
+
+
+        </table>
+
+
+        <!-- =================================================
+             المبلغ المستحق
+        ================================================= -->
+
+        <div class="amount-text-box">
+
+            <strong>
+
+                {% trans "Return Amount:" %}
+
+            </strong>
+
+
+            {{ purchase_return.total_after_tax|default:"0.00" }}
+
+
+        </div>
+
+
+        <!-- =================================================
+             QR + رسالة
+        ================================================= -->
+
+        <div class="invoice-footer">
+
+
+            <div class="invoice-qr">
+
+                {% if qr_code %}
+
+                    <img
+                        src="data:image/png;base64,{{ qr_code }}"
+                        alt="QR Code"
+                    >
+
+                {% else %}
+
+                    <span style="font-size:10px;">
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="invoice-note">
+
+                <strong>
+
+
+                </strong>
+
+                <br>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         زر الطباعة - يظهر على الشاشة فقط
+    ================================================= -->
+
+    <div class="print-button-container">
+
+        <button
+            type="button"
+            class="print-button"
+            onclick="window.print();"
+        >
+
+            🖨 {% trans "طباعة" %}
+
+        </button>
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

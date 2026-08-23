@@ -62,6 +62,20 @@ def suppliers_list(request):
                 s.status_color = "success"
 
     return render(request, "suppliers/suppliers_list.html", {"suppliers": suppliers})
+def supplier_view(request, supplier_id):
+
+    supplier = get_object_or_404(
+        Supplier,
+        id=supplier_id
+    )
+
+    return render(
+        request,
+        "suppliers/supplier_view.html",
+        {
+            "supplier": supplier,
+        }
+    )
 
 
 # ===========================

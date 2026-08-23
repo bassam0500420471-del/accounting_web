@@ -12,227 +12,972 @@
 
 {% block content %}
 
-<h3 class="mb-4">
-    {% if edit_mode %}
-        {% trans "Edit Customer" %}
-    {% else %}
-        {% trans "Add Customer" %}
-    {% endif %}
-</h3>
+<style>
 
-<div class="card p-4">
+body {
+    background: #eeeeee;
+}
 
-<form method="POST"
-      enctype="multipart/form-data"
-      action="?{% if request.GET.return %}return={{ request.GET.return }}{% endif %}">
-    {% csrf_token %}
+/* =========================================
+   الصفحة الرئيسية
+========================================= */
 
-    <div class="row">
+.customer-page {
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #d5d5d5 100%
+        );
 
-        <!-- ========== Customer Info ========== -->
-        <div class="col-md-6">
+    min-height: 90vh;
+    padding: 25px;
+}
 
-            <h5 class="mb-3">{% trans "Customer Information" %}</h5>
 
-            <label class="form-label">{% trans "Customer Type" %}</label><br>
+/* =========================================
+   البطاقة الرئيسية 3D
+========================================= */
 
-            <label>
-                <input type="radio"
-                       name="customer_type"
-                       value="individual"
-                       {% if customer.customer_type == "individual" %}checked{% endif %}
-                       onclick="toggleBusinessFields()">
-                {% trans "Individual" %}
-            </label>
+.customer-card {
+    background: #ffffff;
 
-            &nbsp;&nbsp;
+    border-radius: 22px;
 
-            <label>
-                <input type="radio"
-                       name="customer_type"
-                       value="business"
-                       {% if customer.customer_type != "individual" %}checked{% endif %}
-                       onclick="toggleBusinessFields()">
-                {% trans "Business" %}
-            </label>
+    padding: 30px;
 
-            <div class="mt-3">
-                <label>{% trans "Commercial Name" %} *</label>
-                <input name="commercial_name"
-                       value="{{ customer.commercial_name|default:'' }}"
-                       class="form-control"
-                       required>
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, .15),
+        0 4px 10px rgba(0, 0, 0, .05);
+
+    border: 1px solid #eeeeee;
+}
+
+
+/* =========================================
+   رأس الصفحة
+========================================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 28px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.page-header h3 {
+    margin: 0;
+
+    font-weight: 800;
+
+    color: #444;
+
+    font-size: 24px;
+}
+
+.page-header h3 i {
+    margin-left: 8px;
+    margin-right: 8px;
+
+    color: #666;
+}
+
+.page-header p {
+    margin: 6px 0 0;
+
+    color: #888;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   عناوين الأقسام
+========================================= */
+
+.section-title {
+    font-size: 17px;
+
+    font-weight: 800;
+
+    color: #4b4b4b;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 2px solid #e1e1e1;
+}
+
+.section-title i {
+    color: #777;
+    margin-left: 7px;
+}
+
+
+/* =========================================
+   الحقول
+========================================= */
+
+.customer-form label {
+    font-weight: 600;
+
+    color: #555;
+
+    font-size: 13px;
+
+    margin-bottom: 6px;
+}
+
+.customer-form .form-control {
+    border: 1px solid #d0d0d0;
+
+    border-radius: 10px;
+
+    min-height: 43px;
+
+    background: #fafafa;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, .04);
+
+    transition: all .2s ease;
+}
+
+.customer-form .form-control:focus {
+    border-color: #777;
+
+    background: #fff;
+
+    box-shadow:
+        0 0 0 3px rgba(108, 117, 125, .12),
+        inset 0 2px 4px rgba(0, 0, 0, .03);
+}
+
+.customer-form textarea.form-control {
+    min-height: 110px;
+}
+
+
+/* =========================================
+   نوع العميل
+========================================= */
+
+.customer-type-box {
+    background:
+        linear-gradient(
+            135deg,
+            #f7f7f7,
+            #e5e5e5
+        );
+
+    border: 1px solid #d8d8d8;
+
+    border-radius: 14px;
+
+    padding: 14px 16px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        inset 0 1px 2px rgba(255,255,255,.8),
+        0 3px 8px rgba(0,0,0,.05);
+}
+
+.customer-type-title {
+    display: block;
+
+    font-weight: 700;
+
+    color: #555;
+
+    margin-bottom: 10px;
+}
+
+.customer-type-option {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-left: 20px;
+
+    color: #555;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.customer-type-option input {
+    accent-color: #666;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   صندوق كل قسم
+========================================= */
+
+.form-section {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f5f5f5
+        );
+
+    border: 1px solid #e2e2e2;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    height: 100%;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.06),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+/* =========================================
+   الأزرار
+========================================= */
+
+.form-actions {
+    margin-top: 30px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e5e5;
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+}
+
+.save-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #666666,
+            #3f3f3f
+        );
+
+    color: white;
+
+    border: none;
+
+    padding: 11px 25px;
+
+    border-radius: 12px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.15);
+
+    transition: all .2s ease;
+}
+
+.save-btn:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #444444
+        );
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 9px 18px rgba(0,0,0,.22);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.18);
+}
+
+.cancel-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #999999,
+            #666666
+        );
+
+    color: white;
+
+    border: none;
+
+    padding: 11px 25px;
+
+    border-radius: 12px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.15);
+
+    transition: all .2s ease;
+}
+
+.cancel-btn:hover {
+    color: white;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            #888888,
+            #555555
+        );
+}
+
+
+/* =========================================
+   المرفقات
+========================================= */
+
+.attachment-box {
+    padding: 10px;
+
+    background: #eeeeee;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================
+   خط فاصل
+========================================= */
+
+.form-divider {
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #d5d5d5,
+            transparent
+        );
+
+    margin: 20px 0;
+}
+
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 768px) {
+
+    .customer-page {
+        padding: 15px;
+    }
+
+    .customer-card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .page-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .page-header h3 {
+        font-size: 20px;
+    }
+
+    .form-section {
+        padding: 17px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .save-btn,
+    .cancel-btn {
+        width: 100%;
+
+        text-align: center;
+    }
+
+}
+
+</style>
+
+
+<div class="container-fluid customer-page mt-4">
+
+    <div class="customer-card">
+
+        <!-- =========================================
+             رأس الصفحة
+        ========================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-user"></i>
+
+                    {% if edit_mode %}
+                        {% trans "Edit Customer" %}
+                    {% else %}
+                        {% trans "Add Customer" %}
+                    {% endif %}
+
+                </h3>
+
+                <p>
+
+                    {% if edit_mode %}
+                        {% trans "Edit customer information and account details" %}
+                    {% else %}
+                        {% trans "Add a new customer to the system" %}
+                    {% endif %}
+
+                </p>
+
             </div>
 
-            <div class="mt-3">
-                <label>{% trans "Commercial Name (English)" %}</label>
-                <input name="name_en"
-                       value="{{ customer.name_en|default:'' }}"
-                       class="form-control">
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "First Name" %}</label>
-                    <input name="first_name"
-                           value="{{ customer.first_name|default:'' }}"
-                           class="form-control">
-                </div>
-
-                <div class="col">
-                    <label>{% trans "Last Name" %}</label>
-                    <input name="last_name"
-                           value="{{ customer.last_name|default:'' }}"
-                           class="form-control">
-                </div>
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "Phone" %}</label>
-                    <input name="phone"
-                           value="{{ customer.phone|default:'' }}"
-                           class="form-control">
-                </div>
-
-                <div class="col">
-                    <label>{% trans "Mobile" %}</label>
-                    <input name="mobile"
-                           value="{{ customer.mobile|default:'' }}"
-                           class="form-control">
-                </div>
-            </div>
-
-            <!-- تم التعديل هنا: وضع العنوان العربي والإنجليزي بجانب بعض -->
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <label>{% trans "Street Address 1" %}</label>
-                    <input name="street1"
-                           value="{{ customer.street1|default:'' }}"
-                           class="form-control">
-                </div>
-                <div class="col-md-6">
-                    <label>{% trans "Address (English)" %}</label>
-                    <input name="address_en"
-                           value="{{ customer.address_en|default:'' }}"
-                           class="form-control">
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <label>{% trans "Street Address 2" %}</label>
-                <input name="street2"
-                       value="{{ customer.street2|default:'' }}"
-                       class="form-control">
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "City" %}</label>
-                    <input name="city"
-                           value="{{ customer.city|default:'' }}"
-                           class="form-control">
-                </div>
-
-                <div class="col">
-                    <label>{% trans "Region" %}</label>
-                    <input name="region"
-                           value="{{ customer.region|default:'' }}"
-                           class="form-control">
-                </div>
-
-                <div class="col">
-                    <label>{% trans "Postal Code" %}</label>
-                    <input name="postal_code"
-                           value="{{ customer.postal_code|default:'' }}"
-                           class="form-control">
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <label>{% trans "Country" %}</label>
-                <input name="country"
-                       value="{{ customer.country|default:'Saudi Arabia (SA)' }}"
-                       class="form-control">
-            </div>
-
-            <div id="businessFields" class="mt-3">
-                <div class="row">
-                    <div class="col">
-                        <label>{% trans "Tax Number (Optional)" %}</label>
-                        <input name="tax_number"
-                               value="{{ customer.tax_number|default:'' }}"
-                               class="form-control">
-                    </div>
-                    <div class="col">
-                        <label>{% trans "CR Number (Optional)" %}</label>
-                        <input name="cr_number"
-                               value="{{ customer.cr_number|default:'' }}"
-                               class="form-control">
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- ========== Additional Info ========== -->
-        <div class="col-md-6">
-            <h5 class="mb-3">{% trans "Additional Information" %}</h5>
-            <label>{% trans "Email" %}</label>
-            <input name="email"
-                   value="{{ customer.email|default:'' }}"
-                   class="form-control">
 
-            <div class="mt-3">
-                <label>{% trans "Opening Balance" %}</label>
-                <input type="number"
-                       step="0.01"
-                       name="opening_balance"
-                       value="{{ customer.opening_balance|default:'' }}"
-                       class="form-control">
+        <!-- =========================================
+             النموذج
+        ========================================== -->
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              action="?{% if request.GET.return %}return={{ request.GET.return }}{% endif %}"
+              class="customer-form">
+
+            {% csrf_token %}
+
+
+            <div class="row g-4">
+
+
+                <!-- =========================================
+                     Customer Information
+                ========================================== -->
+
+                <div class="col-md-6">
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            {% trans "Customer Information" %}
+
+                        </div>
+
+
+                        <!-- Customer Type -->
+
+                        <div class="customer-type-box">
+
+                            <span class="customer-type-title">
+
+                                {% trans "Customer Type" %}
+
+                            </span>
+
+
+                            <label class="customer-type-option">
+
+                                <input type="radio"
+                                       name="customer_type"
+                                       value="individual"
+                                       {% if customer.customer_type == "individual" %}checked{% endif %}
+                                       onclick="toggleBusinessFields()">
+
+                                {% trans "Individual" %}
+
+                            </label>
+
+
+                            <label class="customer-type-option">
+
+                                <input type="radio"
+                                       name="customer_type"
+                                       value="business"
+                                       {% if customer.customer_type != "individual" %}checked{% endif %}
+                                       onclick="toggleBusinessFields()">
+
+                                {% trans "Business" %}
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- Commercial Name -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Commercial Name" %} *
+
+                            </label>
+
+                            <input name="commercial_name"
+                                   value="{{ customer.commercial_name|default:'' }}"
+                                   class="form-control"
+                                   required>
+
+                        </div>
+
+
+                        <!-- English Name -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Commercial Name (English)" %}
+
+                            </label>
+
+                            <input name="name_en"
+                                   value="{{ customer.name_en|default:'' }}"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <!-- First / Last Name -->
+
+                        <div class="row g-3 mb-3">
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "First Name" %}
+
+                                </label>
+
+                                <input name="first_name"
+                                       value="{{ customer.first_name|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "Last Name" %}
+
+                                </label>
+
+                                <input name="last_name"
+                                       value="{{ customer.last_name|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Phone / Mobile -->
+
+                        <div class="row g-3 mb-3">
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "Phone" %}
+
+                                </label>
+
+                                <input name="phone"
+                                       value="{{ customer.phone|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "Mobile" %}
+
+                                </label>
+
+                                <input name="mobile"
+                                       value="{{ customer.mobile|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Street Address -->
+
+                        <div class="row g-3 mb-3">
+
+                            <div class="col-md-6">
+
+                                <label>
+
+                                    {% trans "Street Address 1" %}
+
+                                </label>
+
+                                <input name="street1"
+                                       value="{{ customer.street1|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label>
+
+                                    {% trans "Address (English)" %}
+
+                                </label>
+
+                                <input name="address_en"
+                                       value="{{ customer.address_en|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Street 2 -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Street Address 2" %}
+
+                            </label>
+
+                            <input name="street2"
+                                   value="{{ customer.street2|default:'' }}"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <!-- City / Region / Postal -->
+
+                        <div class="row g-3 mb-3">
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "City" %}
+
+                                </label>
+
+                                <input name="city"
+                                       value="{{ customer.city|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "Region" %}
+
+                                </label>
+
+                                <input name="region"
+                                       value="{{ customer.region|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+
+                                    {% trans "Postal Code" %}
+
+                                </label>
+
+                                <input name="postal_code"
+                                       value="{{ customer.postal_code|default:'' }}"
+                                       class="form-control">
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Country -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Country" %}
+
+                            </label>
+
+                            <input name="country"
+                                   value="{{ customer.country|default:'Saudi Arabia (SA)' }}"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <!-- Business Fields -->
+
+                        <div id="businessFields">
+
+                            <div class="form-divider"></div>
+
+                            <div class="row g-3">
+
+                                <div class="col">
+
+                                    <label>
+
+                                        {% trans "Tax Number (Optional)" %}
+
+                                    </label>
+
+                                    <input name="tax_number"
+                                           value="{{ customer.tax_number|default:'' }}"
+                                           class="form-control">
+
+                                </div>
+
+
+                                <div class="col">
+
+                                    <label>
+
+                                        {% trans "CR Number (Optional)" %}
+
+                                    </label>
+
+                                    <input name="cr_number"
+                                           value="{{ customer.cr_number|default:'' }}"
+                                           class="form-control">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     Additional Information
+                ========================================== -->
+
+                <div class="col-md-6">
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            {% trans "Additional Information" %}
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Email" %}
+
+                            </label>
+
+                            <input name="email"
+                                   value="{{ customer.email|default:'' }}"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <!-- Opening Balance -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Opening Balance" %}
+
+                            </label>
+
+                            <input type="number"
+                                   step="0.01"
+                                   name="opening_balance"
+                                   value="{{ customer.opening_balance|default:'' }}"
+                                   class="form-control">
+
+                        </div>
+
+
+                        <!-- Notes -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Notes" %}
+
+                            </label>
+
+                            <textarea name="notes"
+                                      class="form-control"
+                                      rows="4">{{ customer.notes|default:'' }}</textarea>
+
+                        </div>
+
+
+                        <!-- Attachment -->
+
+                        <div class="mb-3">
+
+                            <label>
+
+                                {% trans "Attachments" %}
+
+                            </label>
+
+                            <div class="attachment-box">
+
+                                <input type="file"
+                                       name="attachment"
+                                       class="form-control">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="mt-3">
-                <label>{% trans "Notes" %}</label>
-                <textarea name="notes"
-                          class="form-control"
-                          rows="4">{{ customer.notes|default:'' }}</textarea>
+
+            <!-- =========================================
+                 Actions
+            ========================================== -->
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="save-btn">
+
+                    <i class="fa-solid fa-save"></i>
+
+                    {% if edit_mode %}
+                        {% trans "Update" %}
+                    {% else %}
+                        {% trans "Save" %}
+                    {% endif %}
+
+                </button>
+
+
+                <a href="/customers/"
+                   class="cancel-btn">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                    {% trans "Cancel" %}
+
+                </a>
+
             </div>
 
-            <div class="mt-3">
-                <label>{% trans "Attachments" %}</label>
-                <input type="file"
-                       name="attachment"
-                       class="form-control">
-            </div>
-        </div>
+        </form>
+
     </div>
 
-    <div class="mt-4 text-end">
-        <button type="submit"
-                class="btn"
-                style="background:#6c757d; color:white; border-radius:6px;">
-            {% if edit_mode %}
-                {% trans "Update" %}
-            {% else %}
-                {% trans "Save" %}
-            {% endif %}
-        </button>
-        <a href="/customers/" class="btn btn-secondary">
-            {% trans "Cancel" %}
-        </a>
-    </div>
-</form>
 </div>
 
+
 <script>
+
 function toggleBusinessFields() {
-    let type = document.querySelector(
-        "input[name='customer_type']:checked"
-    ).value;
-    document.getElementById("businessFields").style.display =
-        (type === "individual") ? "none" : "block";
+
+    let selected =
+        document.querySelector(
+            "input[name='customer_type']:checked"
+        );
+
+    if (!selected) {
+        return;
+    }
+
+    let type = selected.value;
+
+    document.getElementById(
+        "businessFields"
+    ).style.display =
+        (type === "individual")
+        ? "none"
+        : "block";
+
 }
+
 toggleBusinessFields();
+
 </script>
 
 {% endblock %}

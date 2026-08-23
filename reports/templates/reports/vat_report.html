@@ -1,188 +1,773 @@
 {% extends "layout/base.html" %}
 {% load humanize %}
+
 {% block title %}تقرير ضريبة القيمة المضافة{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
 
-<h3 class="text-center fw-bold mb-4">تقرير ضريبة القيمة المضافة</h3>
+<style>
 
-<form method="get" class="row g-3 mb-4">
-    <div class="col-md-4">
-        <label class="form-label fw-bold">من تاريخ</label>
-        <input type="date" name="date_from" value="{{ date_from }}" class="form-control" required>
+/* =========================================================
+   الخلفية العامة
+   ========================================================= */
+
+body {
+    background: linear-gradient(
+        135deg,
+        #eef1f5 0%,
+        #dfe3e8 50%,
+        #f5f6f8 100%
+    );
+}
+
+
+/* =========================================================
+   الحاوية الرئيسية
+   ========================================================= */
+
+.vat-report-wrapper {
+    max-width: 1250px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+   ========================================================= */
+
+.vat-report-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.10),
+        0 4px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   العنوان
+   ========================================================= */
+
+.vat-report-title {
+    text-align: center;
+    font-weight: 800;
+    color: #212529;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   قسم الفلاتر
+   ========================================================= */
+
+.filter-card {
+    background: linear-gradient(
+        145deg,
+        #f8f9fa,
+        #eef0f3
+    );
+
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 28px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 4px 10px rgba(0,0,0,.05);
+}
+
+
+.filter-card label {
+    color: #343a40;
+}
+
+
+.filter-card .form-control {
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.04);
+}
+
+
+.filter-card .form-control:focus {
+    border-color: #6c757d;
+    box-shadow: 0 0 0 .2rem rgba(108,117,125,.15);
+}
+
+
+/* =========================================================
+   زر العرض
+   ========================================================= */
+
+.btn-report {
+    height: 42px;
+    border-radius: 8px;
+    font-weight: bold;
+
+    background: linear-gradient(
+        145deg,
+        #495057,
+        #343a40
+    );
+
+    border: none;
+    color: #fff;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.15);
+
+    transition: all .2s ease;
+}
+
+
+.btn-report:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.20);
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   البطاقات الداخلية
+   ========================================================= */
+
+.vat-section {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    overflow: hidden;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.07);
+}
+
+
+/* =========================================================
+   رأس القسم
+   ========================================================= */
+
+.vat-section-header {
+    background: linear-gradient(
+        145deg,
+        #343a40,
+        #212529
+    );
+
+    color: #ffffff;
+    padding: 14px 18px;
+
+    font-weight: 800;
+    font-size: 17px;
+
+    border-bottom: 1px solid #1b1e21;
+}
+
+
+/* =========================================================
+   الجداول
+   ========================================================= */
+
+.vat-section table {
+    margin-bottom: 0;
+}
+
+
+.vat-section table th {
+    background: #f1f3f5;
+    color: #212529;
+
+    font-weight: 800;
+    text-align: center;
+
+    padding: 13px 10px;
+    border-color: #dee2e6;
+}
+
+
+.vat-section table td {
+    padding: 13px 10px;
+    vertical-align: middle;
+
+    border-color: #dee2e6;
+}
+
+
+/* =========================================================
+   تأثير الصفوف
+   ========================================================= */
+
+.vat-section tbody tr {
+    transition: background .15s ease;
+}
+
+
+.vat-section tbody tr:hover {
+    background: #f8f9fa;
+}
+
+
+/* =========================================================
+   الروابط
+   ========================================================= */
+
+.vat-section td a {
+    color: #0d6efd;
+    transition: all .15s ease;
+}
+
+
+.vat-section td a:hover {
+    color: #084298;
+    text-decoration: underline !important;
+}
+
+
+/* =========================================================
+   صف الإجمالي
+   ========================================================= */
+
+.total-row td {
+    background: linear-gradient(
+        145deg,
+        #e9ecef,
+        #dee2e6
+    );
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ملخص الفترة
+   ========================================================= */
+
+.summary-row td {
+    background: #f8f9fa;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+
+.summary-value {
+    text-align: left;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   المبالغ
+   ========================================================= */
+
+.amount {
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   موبايل
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .vat-report-wrapper {
+        margin-top: 15px;
+        padding: 0 8px;
+    }
+
+    .vat-report-card {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .vat-report-title {
+        font-size: 22px;
+    }
+
+    .vat-section table {
+        font-size: 13px;
+    }
+
+    .vat-section table th,
+    .vat-section table td {
+        padding: 9px 6px;
+    }
+}
+
+</style>
+
+
+<div class="vat-report-wrapper" dir="rtl">
+
+    <div class="vat-report-card">
+
+        <!-- =================================================
+             العنوان
+             ================================================= -->
+
+        <h3 class="vat-report-title">
+            🧾 تقرير ضريبة القيمة المضافة
+        </h3>
+
+
+        <!-- =================================================
+             الفلاتر
+             ================================================= -->
+
+        <div class="filter-card">
+
+            <form method="get" class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-bold">
+                        من تاريخ
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_from"
+                        value="{{ date_from }}"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-bold">
+                        إلى تاريخ
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_to"
+                        value="{{ date_to }}"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="col-md-4 d-flex align-items-end">
+
+                    <button
+                        type="submit"
+                        class="btn btn-report w-100"
+                    >
+                        عرض التقرير
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        {% if date_from and date_to %}
+
+
+        <!-- =================================================
+             (1) المبيعات
+             ================================================= -->
+
+        <div class="vat-section">
+
+            <div class="vat-section-header">
+                (1) المبيعات
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered text-center">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                البيان
+                            </th>
+
+                            <th>
+                                قبل الضريبة
+                            </th>
+
+                            <th>
+                                ضريبة القيمة المضافة
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <!-- فواتير المبيعات -->
+
+                        <tr>
+
+                            <td>
+                                فواتير المبيعات
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    {{ sales_before_tax|intcomma }}
+                                </a>
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    {{ sales_vat|intcomma }}
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- نقاط البيع -->
+
+                        <tr>
+
+                            <td>
+                                فواتير نقاط البيع POS
+                            </td>
+
+                            <td>
+                                {{ pos_before_tax|intcomma }}
+                            </td>
+
+                            <td>
+                                {{ pos_vat|intcomma }}
+                            </td>
+
+                        </tr>
+
+
+                        <!-- مرتجعات المبيعات -->
+
+                        <tr>
+
+                            <td>
+                                مرتجعات المبيعات
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/sales/returns/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    ({{ sales_return_before_tax|intcomma }})
+                                </a>
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/sales/returns/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    ({{ sales_return_vat|intcomma }})
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ضريبة القيود اليومية -->
+
+                        <tr>
+
+                            <td>
+                                ضريبة من قيود يومية
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/accounting/journals/?vat=output&date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    {{ sales_manual_vat|intcomma }}
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- صافي ضريبة المبيعات -->
+
+                        <tr class="total-row">
+
+                            <td>
+                                صافي ضريبة المبيعات
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+                                {{ net_sales_vat|intcomma }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             (2) المشتريات
+             ================================================= -->
+
+        <div class="vat-section">
+
+            <div class="vat-section-header">
+                (2) المشتريات
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered text-center">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                البيان
+                            </th>
+
+                            <th>
+                                قبل الضريبة
+                            </th>
+
+                            <th>
+                                ضريبة القيمة المضافة
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <!-- فواتير المشتريات -->
+
+                        <tr>
+
+                            <td>
+                                فواتير المشتريات
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/purchase/invoices/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    {{ purchase_before_tax|intcomma }}
+                                </a>
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/purchase/invoices/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    {{ purchase_vat|intcomma }}
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- مرتجعات المشتريات -->
+
+                        <tr>
+
+                            <td>
+                                مرتجعات المشتريات
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/purchase/returns/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    ({{ purchase_return_before_tax|intcomma }})
+                                </a>
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/purchase/returns/?date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    ({{ purchase_return_vat|intcomma }})
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ضريبة القيود اليومية -->
+
+                        <tr>
+
+                            <td>
+                                ضريبة من قيود يومية
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+
+                                <a
+                                    class="fw-bold text-decoration-none"
+                                    href="/accounting/journals/?vat=input&date_from={{ date_from }}&date_to={{ date_to }}"
+                                >
+                                    {{ purchase_manual_vat|intcomma }}
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- صافي ضريبة المشتريات -->
+
+                        <tr class="total-row">
+
+                            <td>
+                                صافي ضريبة المشتريات
+                            </td>
+
+                            <td>
+                                —
+                            </td>
+
+                            <td>
+                                {{ net_purchase_vat|intcomma }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             (3) ملخص الفترة
+             ================================================= -->
+
+        <div class="vat-section">
+
+            <div class="vat-section-header">
+                (3) ملخص الفترة
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered text-center">
+
+                    <tbody>
+
+                        <tr class="summary-row">
+
+                            <td>
+                                صافي ضريبة الفترة الحالية
+                            </td>
+
+                            <td class="summary-value">
+                                {{ vat_period|intcomma }}
+                            </td>
+
+                        </tr>
+
+
+                        <tr class="summary-row">
+
+                            <td>
+                                الرصيد المرحل من الفترات السابقة
+                            </td>
+
+                            <td class="summary-value">
+                                {{ carried_vat|intcomma }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        {% endif %}
+
     </div>
-    <div class="col-md-4">
-        <label class="form-label fw-bold">إلى تاريخ</label>
-        <input type="date" name="date_to" value="{{ date_to }}" class="form-control" required>
-    </div>
-    <div class="col-md-4 d-flex align-items-end">
-        <button class="btn btn-secondary w-100">عرض التقرير</button>
-    </div>
-</form>
-
-{% if date_from and date_to %}
-
-<!-- ================== (1) المبيعات ================== -->
-<div class="card mb-4">
-<div class="card-header bg-dark text-white fw-bold">(1) المبيعات</div>
-<table class="table table-bordered text-center mb-0">
-<thead class="table-light">
-<tr>
-    <th>البيان</th>
-    <th>قبل الضريبة</th>
-    <th>ضريبة القيمة المضافة</th>
-</tr>
-</thead>
-<tbody>
-
-<tr>
-    <td>فواتير المبيعات</td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
-            {{ sales_before_tax|intcomma }}
-    </td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/sales/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
-            {{ sales_vat|intcomma }}
-    </td>
-</tr>
-
-<tr>
-    <td>فواتير نقاط البيع POS</td>
-
-    <td>
-        {{ pos_before_tax|intcomma }}
-    </td>
-
-    <td>
-        {{ pos_vat|intcomma }}
-    </td>
-</tr>
-
-<tr>
-    <td>مرتجعات المبيعات</td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/sales/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
-            ({{ sales_return_before_tax|intcomma }})
-        </a>
-    </td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/sales/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
-            ({{ sales_return_vat|intcomma }})
-        </a>
-    </td>
-</tr>
-
-<tr>
-    <td>ضريبة من قيود يومية</td>
-    <td>—</td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/accounting/journals/?vat=output&date_from={{ date_from }}&date_to={{ date_to }}">
-            {{ sales_manual_vat|intcomma }}
-        </a>
-    </td>
-</tr>
-
-<tr class="table-secondary fw-bold">
-    <td>صافي ضريبة المبيعات</td>
-    <td>—</td>
-    <td>{{ net_sales_vat|intcomma }}</td>
-</tr>
-
-</tbody>
-</table>
-</div>
-
-<!-- ================== (2) المشتريات ================== -->
-<div class="card mb-4">
-<div class="card-header bg-dark text-white fw-bold">(2) المشتريات</div>
-<table class="table table-bordered text-center mb-0">
-<thead class="table-light">
-<tr>
-    <th>البيان</th>
-    <th>قبل الضريبة</th>
-    <th>ضريبة القيمة المضافة</th>
-</tr>
-</thead>
-<tbody>
-
-<tr>
-    <td>فواتير المشتريات</td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/purchase/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
-            {{ purchase_before_tax|intcomma }}
-        </a>
-    </td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/purchase/invoices/?date_from={{ date_from }}&date_to={{ date_to }}">
-            {{ purchase_vat|intcomma }}
-        </a>
-    </td>
-</tr>
-
-<tr>
-    <td>مرتجعات المشتريات</td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/purchase/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
-            ({{ purchase_return_before_tax|intcomma }})
-        </a>
-    </td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/purchase/returns/?date_from={{ date_from }}&date_to={{ date_to }}">
-            ({{ purchase_return_vat|intcomma }})
-        </a>
-    </td>
-</tr>
-
-<tr>
-    <td>ضريبة من قيود يومية</td>
-    <td>—</td>
-    <td>
-        <a class="fw-bold text-decoration-none"
-           href="/accounting/journals/?vat=input&date_from={{ date_from }}&date_to={{ date_to }}">
-            {{ purchase_manual_vat|intcomma }}
-        </a>
-    </td>
-</tr>
-
-<tr class="table-secondary fw-bold">
-    <td>صافي ضريبة المشتريات</td>
-    <td>—</td>
-    <td>{{ net_purchase_vat|intcomma }}</td>
-</tr>
-
-</tbody>
-</table>
-</div>
-
-<!-- ================== (3) ملخص الفترة ================== -->
-<div class="card mb-4">
-<div class="card-header bg-dark text-white fw-bold">(3) ملخص الفترة</div>
-<table class="table table-bordered text-center mb-0">
-<tbody>
-<tr class="fw-bold">
-    <td>صافي ضريبة الفترة الحالية</td>
-    <td>{{ vat_period|intcomma }}</td>
-</tr>
-<tr class="fw-bold">
-    <td>الرصيد المرحل من الفترات السابقة</td>
-    <td>{{ carried_vat|intcomma }}</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-{% endif %}
 
 </div>
+
 {% endblock %}

@@ -1,55 +1,642 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
+{% block title %}
+    {{ account.code }} - {{ account.name }}
+{% endblock %}
+
+
 {% block content %}
-<div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">
-            {{ account.code }} - {{ account.name }}
-        </h3>
+<div class="container-fluid account-page mt-4">
 
-        <a href="{% url 'accounting:chart_tree' %}"
-           class="btn btn-outline-secondary">
-            {% trans "Back to Chart of Accounts" %}
-        </a>
-    </div>
+    <div class="account-card">
 
-    {% if children %}
-    <div class="card">
-        <div class="card-body p-0">
-            <table class="table table-bordered table-hover mb-0 text-center align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>{% trans "Code" %}</th>
-                        <th>{% trans "Account Name" %}</th>
-                        <th>{% trans "Actions" %}</th>
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-book-open"></i>
+
+                    {{ account.code }} - {{ account.name }}
+
+                </h3>
+
+            </div>
+
+
+            <a
+                href="{% url 'accounting:chart_tree' %}"
+                class="add-btn"
+            >
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+                {% trans "Back to Chart of Accounts" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- الحسابات الفرعية -->
+        <!-- ============================= -->
+
+        {% if children %}
+
+        <div class="table-box">
+
+            <table class="account-table">
+
+                <thead>
+
+                    <tr class="header-row">
+
+                        <th>
+                            {% trans "Code" %}
+                        </th>
+
+                        <th>
+                            {% trans "Account Name" %}
+                        </th>
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
                 <tbody>
+
                     {% for c in children %}
+
                     <tr>
-                        <td>{{ c.code }}</td>
-                        <td class="text-end">
-                            {{ c.name }}
-                        </td>
+
+                        <!-- كود الحساب -->
+
                         <td>
-                            <a href="{% url 'accounting:account_view' c.id %}"
-                               class="btn btn-sm btn-outline-primary">
-                                {% trans "View" %}
-                            </a>
+
+                            <span class="account-code-badge">
+
+                                {{ c.code }}
+
+                            </span>
+
                         </td>
+
+
+                        <!-- اسم الحساب -->
+
+                        <td class="account-name">
+
+                            <i class="fa-solid fa-folder"></i>
+
+                            {{ c.name }}
+
+                        </td>
+
+
+                        <!-- الإجراءات -->
+
+                        <td>
+
+                            <a
+                                href="{% url 'accounting:account_view' c.id %}"
+                                class="action-btn"
+                            >
+
+                                <i class="fa-solid fa-eye"></i>
+
+                                {% trans "View" %}
+
+                            </a>
+
+                        </td>
+
                     </tr>
+
                     {% endfor %}
+
                 </tbody>
+
             </table>
+
         </div>
+
+
+        {% else %}
+
+        <!-- ============================= -->
+        <!-- لا توجد حسابات فرعية -->
+        <!-- ============================= -->
+
+        <div class="empty">
+
+            <i class="fa-solid fa-folder-open"></i>
+
+            <div>
+
+                {% trans "No sub accounts found" %}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
     </div>
-    {% else %}
-        <div class="alert alert-secondary text-center">
-            {% trans "No sub accounts found" %}
-        </div>
-    {% endif %}
 
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.account-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.account-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin:0;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   زر الرجوع
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.account-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.account-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.account-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.account-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   كود الحساب
+========================================================= */
+
+.account-code-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:70px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   اسم الحساب
+========================================================= */
+
+.account-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+    text-align:right !important;
+
+}
+
+
+.account-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   زر الإجراءات
+========================================================= */
+
+.action-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    text-decoration:none;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   لا توجد حسابات
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    margin-top:20px;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+    text-align:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+    border:1px solid #ccc;
+
+    border-radius:14px;
+
+    box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.8),
+    0 4px 10px rgba(0,0,0,.08);
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .account-page{
+
+        padding:15px;
+
+    }
+
+
+    .account-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .account-table{
+
+        min-width:700px;
+
+    }
+
+}
+
+</style>
+
 {% endblock %}

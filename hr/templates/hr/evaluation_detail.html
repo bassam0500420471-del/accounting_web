@@ -1,130 +1,988 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Evaluation Details" %}{% endblock %}
+{% block title %}
+    {% trans "Evaluation Details" %}
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   Evaluation Details - 3D Gray Gradient
+========================================================= */
+
+.hr-page {
+
+    background: #eeeeee;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    min-height: calc(100vh - 120px);
+
+}
+
+
+/* =========================
+   العنوان
+========================= */
+
+.hr-title {
+
+    font-weight: 800;
+
+    color: #444;
+
+    margin: 0;
+
+}
+
+
+/* =========================
+   البطاقات
+========================= */
+
+.hr-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+
+        8px 8px 20px #c5c5c5,
+
+        -8px -8px 20px #ffffff;
+
+}
+
+
+/* =========================
+   عنوان البطاقة
+========================= */
+
+.hr-card-header {
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    color: #444;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #c8c8c8;
+
+}
+
+
+/* =========================
+   معلومات التقييم
+========================= */
+
+.info-item {
+
+    background: linear-gradient(
+        145deg,
+        #f8f8f8,
+        #e1e1e1
+    );
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    min-height: 75px;
+
+    box-shadow:
+
+        inset 2px 2px 5px rgba(0,0,0,.08),
+
+        inset -2px -2px 5px rgba(255,255,255,.8);
+
+}
+
+
+.info-label {
+
+    display: block;
+
+    color: #777;
+
+    font-size: 12px;
+
+    margin-bottom: 7px;
+
+    font-weight: 700;
+
+}
+
+
+.info-value {
+
+    color: #333;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================
+   الحالة
+========================= */
+
+.status-badge {
+
+    display: inline-block;
+
+    padding: 6px 14px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    box-shadow:
+
+        0 3px 7px rgba(0,0,0,.15);
+
+}
+
+
+.status-active {
+
+    background: linear-gradient(
+        145deg,
+        #d9f7df,
+        #bde8c5
+    );
+
+    color: #166534;
+
+}
+
+
+.status-draft {
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color: #555;
+
+}
+
+
+.status-closed {
+
+    background: linear-gradient(
+        145deg,
+        #ffdede,
+        #f2bcbc
+    );
+
+    color: #991b1b;
+
+}
+
+
+/* =========================
+   الجداول
+========================= */
+
+.hr-table {
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    margin-bottom: 0;
+
+}
+
+
+.hr-table thead th {
+
+    background: linear-gradient(
+        145deg,
+        #666,
+        #444
+    );
+
+    color: white;
+
+    border: none;
+
+    font-weight: 800;
+
+    text-align: center;
+
+    padding: 13px 10px;
+
+    white-space: nowrap;
+
+}
+
+
+.hr-table tbody td {
+
+    padding: 12px 10px;
+
+    vertical-align: middle;
+
+    text-align: center;
+
+    color: #444;
+
+    background: rgba(255,255,255,.55);
+
+}
+
+
+.hr-table tbody tr {
+
+    transition: .25s;
+
+}
+
+
+.hr-table tbody tr:hover {
+
+    background: #e5e5e5;
+
+    transform: scale(1.005);
+
+}
+
+
+/* =========================
+   أزرار الإجراءات
+========================= */
+
+.hr-action-btn {
+
+    border-radius: 10px;
+
+    padding: 7px 12px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    display: inline-block;
+
+    margin: 2px;
+
+    transition: .25s;
+
+}
+
+
+.hr-action-btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+/* تقييم الزميل */
+
+.btn-peer {
+
+    background: linear-gradient(
+        145deg,
+        #e3e3e3,
+        #c9c9c9
+    );
+
+    color: #333;
+
+    border: 1px solid #bbb;
+
+}
+
+
+/* تقييم المدير */
+
+.btn-manager {
+
+    background: linear-gradient(
+        145deg,
+        #666,
+        #444
+    );
+
+    color: white;
+
+    border: 1px solid #444;
+
+}
+
+
+.btn-manager:hover {
+
+    color: white;
+
+}
+
+
+/* =========================
+   رقم السجل
+========================= */
+
+.number-cell {
+
+    font-weight: 800;
+
+    color: #555;
+
+}
+
+
+/* =========================
+   اسم الموظف
+========================= */
+
+.employee-name {
+
+    font-weight: 800;
+
+    color: #333;
+
+}
+
+
+/* =========================
+   الوزن
+========================= */
+
+.weight-badge {
+
+    display: inline-block;
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #d0d0d0
+    );
+
+    padding: 5px 12px;
+
+    border-radius: 10px;
+
+    font-weight: 800;
+
+    color: #444;
+
+    box-shadow:
+
+        2px 2px 5px rgba(0,0,0,.12),
+
+        -2px -2px 5px rgba(255,255,255,.7);
+
+}
+
+
+/* =========================
+   لا توجد بيانات
+========================= */
+
+.empty-state {
+
+    padding: 30px;
+
+    color: #777;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================
+   زر الرجوع
+========================= */
+
+.hr-back-btn {
+
+    background: linear-gradient(
+        145deg,
+        #777,
+        #444
+    );
+
+    color: white;
+
+    padding: 10px 18px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    font-weight: 800;
+
+    box-shadow:
+
+        0 6px 12px rgba(0,0,0,.2);
+
+    transition: .3s;
+
+}
+
+
+.hr-back-btn:hover {
+
+    color: white;
+
+    transform: translateY(-3px);
+
+}
+
+
+/* =========================
+   الجوال
+========================= */
+
+@media (max-width: 768px) {
+
+    .hr-page {
+
+        padding: 15px;
+
+    }
+
+
+    .hr-card {
+
+        padding: 15px;
+
+    }
+
+
+    .info-item {
+
+        margin-bottom: 10px;
+
+    }
+
+
+    .hr-table {
+
+        min-width: 800px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
 
 {% block content %}
+
 <div class="container-fluid mt-4">
 
-    <h3 class="fw-bold mb-3">
-        📋 {% trans "Evaluation Details:" %} {{ evaluation.name }}
-    </h3>
+<div class="hr-page">
 
-    <!-- معلومات أساسية -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body row">
-            <div class="col-md-3">
-                <strong>{% trans "Type:" %}</strong><br>
-                {{ evaluation.evaluation_type }}
-            </div>
-            <div class="col-md-3">
-                <strong>{% trans "Period:" %}</strong><br>
-                {{ evaluation.start_date }} → {{ evaluation.end_date }}
-            </div>
-            <div class="col-md-3">
-                <strong>{% trans "Department:" %}</strong><br>
-                {{ evaluation.department|default:"—" }}
-            </div>
-            <div class="col-md-3">
-                <strong>{% trans "Status:" %}</strong><br>
-                {{ evaluation.status }}
-            </div>
-        </div>
+
+    <!-- =====================================================
+         رأس الصفحة
+    ====================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <h3 class="hr-title">
+
+            📋
+
+            {% trans "Evaluation Details:" %}
+
+            {{ evaluation.name }}
+
+        </h3>
+
+
+        <a href="{% url 'hr:evaluations' %}"
+           class="hr-back-btn">
+
+            ↩ {% trans "Back" %}
+
+        </a>
+
     </div>
 
-    <!-- المعايير -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header fw-bold">
+
+
+    <!-- =====================================================
+         المعلومات الأساسية
+    ====================================================== -->
+
+    <div class="hr-card">
+
+        <div class="hr-card-header">
+
+            📋 {% trans "Basic Information" %}
+
+        </div>
+
+
+        <div class="row g-3">
+
+
+            <!-- النوع -->
+
+            <div class="col-md-3">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+
+                        {% trans "Type" %}
+
+                    </span>
+
+                    <span class="info-value">
+
+                        {{ evaluation.evaluation_type }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- الفترة -->
+
+            <div class="col-md-3">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+
+                        {% trans "Period" %}
+
+                    </span>
+
+                    <span class="info-value">
+
+                        {{ evaluation.start_date }}
+
+                        →
+
+                        {{ evaluation.end_date }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- القسم -->
+
+            <div class="col-md-3">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+
+                        {% trans "Department" %}
+
+                    </span>
+
+                    <span class="info-value">
+
+                        {{ evaluation.department|default:"—" }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- الحالة -->
+
+            <div class="col-md-3">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+
+                        {% trans "Status" %}
+
+                    </span>
+
+                    <span class="info-value">
+
+
+                        {% if evaluation.status == "active" %}
+
+                            <span class="status-badge status-active">
+
+                                🟢 {% trans "Active" %}
+
+                            </span>
+
+
+                        {% elif evaluation.status == "draft" %}
+
+                            <span class="status-badge status-draft">
+
+                                ⚪ {% trans "Draft" %}
+
+                            </span>
+
+
+                        {% elif evaluation.status == "closed" %}
+
+                            <span class="status-badge status-closed">
+
+                                🔒 {% trans "Closed" %}
+
+                            </span>
+
+
+                        {% else %}
+
+                            {{ evaluation.status }}
+
+                        {% endif %}
+
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         معايير التقييم
+    ====================================================== -->
+
+    <div class="hr-card">
+
+        <div class="hr-card-header">
+
             🧩 {% trans "Evaluation Criteria" %}
+
         </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead class="table-light">
+
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle hr-table">
+
+                <thead>
+
                     <tr>
+
                         <th>#</th>
-                        <th>{% trans "Criteria Name" %}</th>
-                        <th>{% trans "Type" %}</th>
-                        <th>{% trans "Weight" %}</th>
+
+                        <th>
+
+                            {% trans "Criteria Name" %}
+
+                        </th>
+
+                        <th>
+
+                            {% trans "Type" %}
+
+                        </th>
+
+                        <th>
+
+                            {% trans "Weight" %}
+
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
                 <tbody>
+
+
                     {% for c in criteria %}
+
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ c.name }}</td>
-                        <td>{{ c.criteria_type }}</td>
-                        <td>{{ c.weight }}</td>
+
+                        <td class="number-cell">
+
+                            {{ forloop.counter }}
+
+                        </td>
+
+
+                        <td class="text-start fw-bold">
+
+                            {{ c.name }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ c.criteria_type }}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="weight-badge">
+
+                                {{ c.weight }}%
+
+                            </span>
+
+                        </td>
+
                     </tr>
+
+
                     {% empty %}
+
                     <tr>
-                        <td colspan="4" class="text-center">{% trans "No criteria found" %}</td>
+
+                        <td colspan="4">
+
+                            <div class="empty-state">
+
+                                {% trans "No criteria found" %}
+
+                            </div>
+
+                        </td>
+
                     </tr>
+
                     {% endfor %}
+
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
 
-    <!-- الموظفون المستهدفون -->
-    <div class="card shadow-sm">
-        <div class="card-header fw-bold">
+
+
+    <!-- =====================================================
+         الموظفون المستهدفون
+    ====================================================== -->
+
+    <div class="hr-card">
+
+        <div class="hr-card-header">
+
             👥 {% trans "Target Employees" %}
+
         </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead class="table-light">
+
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle hr-table">
+
+                <thead>
+
                     <tr>
+
                         <th>#</th>
-                        <th>{% trans "Target ID" %}</th>
-                        <th>{% trans "Employee" %}</th>
-                        <th>{% trans "Department" %}</th>
-                        <th>{% trans "Actions" %}</th>
+
+                        <th>
+
+                            {% trans "Target ID" %}
+
+                        </th>
+
+                        <th>
+
+                            {% trans "Employee" %}
+
+                        </th>
+
+                        <th>
+
+                            {% trans "Department" %}
+
+                        </th>
+
+                        <th>
+
+                            {% trans "Actions" %}
+
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
                 <tbody>
+
+
                     {% for t in targets %}
+
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ t.id }}</td>
-                        <td>
-                            {% if t.employee %}
-                                {{ t.employee.first_name_ar }} {{ t.employee.last_name_ar }}
-                            {% else %}
-                                —
-                            {% endif %}
+
+
+                        <td class="number-cell">
+
+                            {{ forloop.counter }}
+
                         </td>
+
+
                         <td>
+
+                            #{{ t.id }}
+
+                        </td>
+
+
+                        <td class="employee-name">
+
                             {% if t.employee %}
+
+                                {{ t.employee.first_name_ar }}
+
+                                {{ t.employee.last_name_ar }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if t.employee %}
+
                                 {{ t.employee.department }}
+
                             {% else %}
+
                                 —
+
                             {% endif %}
+
                         </td>
+
+
                         <td>
+
+
                             {% if t.employee %}
+
+
                                 <a href="{% url 'hr:evaluation_fill_peer' evaluation.id t.id %}"
-                                   class="btn btn-sm btn-outline-primary">
-                                   {% trans "Peer Evaluation" %}
+
+                                   class="hr-action-btn btn-peer">
+
+                                    👥
+
+                                    {% trans "Peer Evaluation" %}
+
                                 </a>
+
 
                                 <a href="{% url 'hr:evaluation_fill_manager' evaluation.id t.id %}"
-                                   class="btn btn-sm btn-outline-success">
-                                   {% trans "Manager Evaluation" %}
+
+                                   class="hr-action-btn btn-manager">
+
+                                    👔
+
+                                    {% trans "Manager Evaluation" %}
+
                                 </a>
+
+
                             {% else %}
+
                                 —
+
                             {% endif %}
+
+
                         </td>
+
+
                     </tr>
+
+
                     {% empty %}
+
                     <tr>
-                        <td colspan="5" class="text-center">{% trans "No targets found" %}</td>
+
+                        <td colspan="5">
+
+                            <div class="empty-state">
+
+                                {% trans "No targets found" %}
+
+                            </div>
+
+                        </td>
+
                     </tr>
+
                     {% endfor %}
+
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
 
+
+
 </div>
+
+</div>
+
 {% endblock %}

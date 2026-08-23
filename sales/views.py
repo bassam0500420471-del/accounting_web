@@ -11,8 +11,9 @@ from django.contrib import messages
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from sales.models import SalesInvoice
+from decimal import Decimal, InvalidOperation
 from pos.models import Invoice as PosInvoice
+from pos.models import InvoiceItem as PosInvoiceItem
 from pos.models import PaymentMethod
 from .models import SalesInvoice, SalesItem, ReturnInvoice, ReturnItem
 from customers.models import Customer
@@ -404,6 +405,18 @@ def invoice_view(request, pk):
     else:
         template_name = "sales/invoice_view.html"
 
+    # ==========================================
+    # طرق الدفع المستخدمة فعلياً في فاتورة POS
+    # ==========================================
+
+    pos_payments = []
+
+    if is_pos:
+        pos_payments = invoice.payments.select_related(
+            "method",
+            "method__account"
+        ).all()
+
     return render(
         request,
         template_name,
@@ -412,6 +425,7 @@ def invoice_view(request, pk):
             "items": invoice.items.all(),
             "company": user_company,
             "payment_methods": payment_methods,
+            "pos_payments": pos_payments,
             "customer_previous_balance": customer_previous_balance,
             "invoice_balance": invoice_balance,
             "qr_code": qr_code,
@@ -458,6 +472,112 @@ def invoice_view(request, pk):
         }
     )
 
+def edit_payment_method(request, invoice_id):
+    company = _get_company(request)
+
+    invoice = get_object_or_404(
+        SalesInvoice,
+        id=invoice_id,
+        company=company
+    )
+
+    # ==========================================
+    # العثور على تخصيص السداد المرتبط بالفاتورة
+    # ==========================================
+
+    allocation = VoucherAllocation.objects.filter(
+        sales_invoice=invoice
+    ).select_related(
+        "receipt_voucher"
+    ).order_by("-id").first()
+
+    current_payment = (
+        allocation.receipt_voucher
+        if allocation and allocation.receipt_voucher
+        else None
+    )
+
+    # طرق الدفع التي أنشأها المستخدم
+    payment_methods = PaymentMethod.objects.filter(
+        company=company
+    ).select_related(
+        "account"
+    ).order_by("name")
+
+    if request.method == "POST":
+
+        payment_method_id = request.POST.get("payment_method")
+
+        if not payment_method_id:
+            messages.error(
+                request,
+                "❌ يرجى اختيار طريقة الدفع"
+            )
+            return redirect(
+                "sales:edit_payment_method",
+                invoice_id=invoice.id
+            )
+
+        payment_method = get_object_or_404(
+            PaymentMethod,
+            id=payment_method_id,
+            company=company
+        )
+
+        # الحساب المرتبط بطريقة الدفع
+        payment_account = payment_method.account
+
+        if not payment_account:
+            messages.error(
+                request,
+                "❌ طريقة الدفع غير مرتبطة بحساب محاسبي"
+            )
+            return redirect(
+                "sales:edit_payment_method",
+                invoice_id=invoice.id
+            )
+
+        # ==========================================
+        # التأكد من وجود سند سداد
+        # ==========================================
+
+        if not current_payment:
+            messages.error(
+                request,
+                "❌ لم يتم العثور على سند السداد المرتبط بهذه الفاتورة"
+            )
+            return redirect(
+                "sales:invoices_list"
+            )
+
+        # ==========================================
+        # تغيير حساب الصندوق / البنك
+        # ==========================================
+
+        current_payment.cash_account = payment_account
+
+        current_payment.save(
+            update_fields=["cash_account"]
+        )
+
+        messages.success(
+            request,
+            "✔️ تم تعديل طريقة الدفع بنجاح"
+        )
+
+        return redirect(
+            "sales:invoices_list"
+        )
+
+    return render(
+        request,
+        "sales/edit_payment_method.html",
+        {
+            "invoice": invoice,
+            "current_payment": current_payment,
+            "payment_methods": payment_methods,
+        }
+    )
 
 def invoice_delete(request, pk):
     company = _get_company(request)
@@ -559,8 +679,17 @@ def returns_list(request):
 def return_view(request, pk):
     return_invoice = get_object_or_404(ReturnInvoice, pk=pk)
 
-    # إنشاء QR للفـاتورة الأصلية
-    qr_code = generate_invoice_qr(return_invoice.original_invoice)
+    # إنشاء QR للفاتورة الأصلية
+    if return_invoice.original_invoice:
+        qr_code = generate_invoice_qr(
+            return_invoice.original_invoice
+        )
+    elif return_invoice.pos_invoice:
+        qr_code = generate_invoice_qr(
+            return_invoice.pos_invoice
+        )
+    else:
+        qr_code = None
 
     context = {
         "return_invoice": return_invoice,
@@ -582,6 +711,7 @@ def return_view(request, pk):
         context
     )
 
+
 def create_return(request, pk):
     company = _get_company(request)
 
@@ -592,7 +722,6 @@ def create_return(request, pk):
     )
 
     items = invoice.items.all()
-
     for item in items:
         returned_sum = ReturnItem.objects.filter(
             return_invoice__original_invoice=invoice,
@@ -615,7 +744,55 @@ def create_return(request, pk):
             "items": items
         }
     )
+def create_pos_return(request, pk):
+    company = _get_company(request)
 
+    # =========================================
+    # جلب فاتورة POS
+    # =========================================
+    invoice = get_object_or_404(
+        PosInvoice,
+        pk=pk,
+        company=company
+    )
+
+    # =========================================
+    # جلب أصناف الفاتورة
+    # =========================================
+    items = invoice.items.all()
+
+    # =========================================
+    # حساب الكميات المرتجعة سابقاً
+    # =========================================
+    for item in items:
+
+        returned_sum = ReturnItem.objects.filter(
+            return_invoice__pos_invoice=invoice,
+            product=item.product
+        ).aggregate(
+            total=Sum("qty_return")
+        )["total"] or Decimal("0.00")
+
+        original_qty = Decimal(str(item.quantity))
+        prev_returned = Decimal(str(returned_sum))
+
+        item.returned_qty_calculated = prev_returned
+
+        remaining_qty = original_qty - prev_returned
+
+        if remaining_qty < Decimal("0.00"):
+            remaining_qty = Decimal("0.00")
+
+        item.remaining_qty = remaining_qty
+
+    return render(
+        request,
+        "pos/create_return.html",
+        {
+            "invoice": invoice,
+            "items": items,
+        }
+    )
 def invoice_print(request, pk):
     user_company = _get_company(request)
 
@@ -677,55 +854,131 @@ def invoice_print(request, pk):
             "is_pos": is_pos,
         }
     )
+def get_or_create_cash_customer(company):
+    customer = Customer.objects.filter(
+        company=company,
+        name="عميل نقدي"
+    ).first()
 
+    if customer:
+        return customer
+
+    customer = Customer.objects.create(
+        company=company,
+        name="عميل نقدي",
+        customer_type="cash",
+        commercial_name="عميل نقدي"
+    )
+
+    return customer
 @transaction.atomic
 def save_return(request, pk):
     company = _get_company(request)
 
-    invoice = get_object_or_404(
-        SalesInvoice,
+    invoice = SalesInvoice.objects.filter(
         pk=pk,
         company=company
-    )
+    ).first()
+
+    is_pos = False
+
+    if not invoice:
+        invoice = get_object_or_404(
+            PosInvoice,
+            pk=pk,
+            company=company
+        )
+        is_pos = True
 
     total = Decimal("0.00")
     return_items_data = []
-    
+
     for item in invoice.items.all():
         qty = _to_decimal(request.POST.get(f"qty_{item.id}", "0"))
-        if qty <= 0: continue
-        
+        if qty <= 0:
+            continue
+
         base = qty * item.price
-        discount = (qty * item.discount) / item.qty if item.qty else Decimal("0.00")
-        after_discount = max(base - discount, Decimal("0.00"))
-        tax = after_discount * item.tax / Decimal("100")
+
+        item_qty = getattr(item, "qty", None)
+
+        if item_qty is None:
+            item_qty = getattr(
+                item,
+                "quantity",
+                Decimal("0.00")
+            )
+
+        discount = (
+            (qty * item.discount) / item_qty
+            if item_qty
+            else Decimal("0.00")
+        )
+
+        after_discount = max(
+            base - discount,
+            Decimal("0.00")
+        )
+
+        tax = (
+            after_discount * item.tax
+            / Decimal("100")
+        )
+
         line_total = after_discount + tax
-        
-        return_items_data.append({"item": item, "qty": qty, "line_total": line_total, "discount": discount})
+
+        return_items_data.append({
+            "item": item,
+            "qty": qty,
+            "line_total": line_total,
+            "discount": discount
+        })
+
         total += line_total
 
     if total <= 0:
-        messages.error(request, "❌ لم يتم إدخال كميات")
-        return redirect(f"/sales/return/{invoice.id}/")
+        messages.error(
+            request,
+            "❌ لم يتم إدخال كميات"
+        )
+        return redirect(
+            f"/sales/returns/{invoice.id}/create/"
+        )
 
-    return_invoice = ReturnInvoice.objects.create(
-        company=company, 
-        original_invoice=invoice, 
-        customer=invoice.customer,
-        return_no=get_next_return_number(company), 
-        description=request.POST.get("reason", ""), 
-        total_after_tax=total
-    )
-    
+    if is_pos:
+        customer = invoice.customer
+
+        if not customer:
+            customer = get_or_create_cash_customer(company)
+
+        return_invoice = ReturnInvoice.objects.create(
+            company=company,
+            pos_invoice=invoice,
+            customer=customer,
+            return_no=get_next_return_number(company),
+            description=request.POST.get("reason", ""),
+            total_after_tax=total
+        )
+    else:
+        return_invoice = ReturnInvoice.objects.create(
+            company=company,
+            original_invoice=invoice,
+            customer=invoice.customer,
+            return_no=get_next_return_number(company),
+            description=request.POST.get("reason", ""),
+            total_after_tax=total
+        )
+
     for row in return_items_data:
         item = row["item"]
+
         ReturnItem.objects.create(
-            return_invoice=return_invoice, 
+            return_invoice=return_invoice,
             product=item.product,
-            qty_return=row["qty"], 
-            price=item.price, 
-            discount=row["discount"], 
-            tax=item.tax, 
+            qty_return=row["qty"],
+            price=item.price,
+            discount=row["discount"],
+            tax=item.tax,
             total=row["line_total"]
         )
         

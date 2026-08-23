@@ -1,246 +1,1738 @@
 {% extends "layout/base.html" %}
 {% load static %}
-{% block title %}الميزانية العمومية{% endblock %}
+
+{% block title %}
+    الميزانية العمومية
+{% endblock %}
 
 {% block content %}
 
 <!-- ================= Select2 ================= -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+/>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js">
+</script>
+
 
 <style>
-/* ===== Select2 نفس حجم التاريخ ===== */
-.select2-container {
-    width: 100% !important;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
 }
-.select2-container .select2-selection--single {
-    height: 38px !important;
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-    padding: 4px 8px;
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.balance-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.balance-wrapper {
+
+    max-width: 1250px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.balance-header {
+
     display: flex;
+
     align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 22px 26px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        0 5px 12px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
 }
 
-/* ===== توحيد عرض عمود الرصيد ===== */
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.balance-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.balance-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   وصف الصفحة
+========================================================= */
+
+.balance-header p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   كرت الفلاتر
+========================================================= */
+
+.balance-filter-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 28px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   رأس كرت الفلاتر
+========================================================= */
+
+.balance-filter-header {
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   جسم الفلاتر
+========================================================= */
+
+.balance-filter-body {
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   Labels
+========================================================= */
+
+.balance-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.balance-input,
+.balance-filter-body input[type="date"],
+.balance-filter-body select {
+
+    width: 100%;
+
+    min-height: 44px;
+
+    padding: 9px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+.balance-input:focus,
+.balance-filter-body input[type="date"]:focus,
+.balance-filter-body select:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   Select2
+========================================================= */
+
+.select2-container {
+
+    width: 100% !important;
+
+}
+
+
+.select2-container
+.select2-selection--single {
+
+    height: 44px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    padding: 5px 13px !important;
+
+    color: #444 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        ) !important;
+
+    border: 1px solid #cfcfcf !important;
+
+    border-radius: 11px !important;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+.select2-container
+.select2-selection--single
+.select2-selection__rendered {
+
+    color: #444 !important;
+
+    line-height: 32px !important;
+
+    padding-right: 0 !important;
+
+}
+
+
+.select2-container
+.select2-selection--single
+.select2-selection__arrow {
+
+    height: 42px !important;
+
+}
+
+
+.select2-dropdown {
+
+    border: 1px solid #cfcfcf !important;
+
+    border-radius: 10px !important;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.15);
+
+}
+
+
+.select2-results__option {
+
+    padding: 10px 13px;
+
+    font-size: 14px;
+
+}
+
+
+.select2-results__option--highlighted {
+
+    background: #555 !important;
+
+    color: #fff !important;
+
+}
+
+
+/* =========================================================
+   زر العرض
+========================================================= */
+
+.balance-view-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    width: 100%;
+
+    min-height: 44px;
+
+    padding: 10px 22px;
+
+    color: #fff !important;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
+}
+
+
+.balance-view-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* =========================================================
+   كرت القسم
+========================================================= */
+
+.balance-section {
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-bottom: 28px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   عنوان القسم
+========================================================= */
+
+.balance-section-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   جسم القسم
+========================================================= */
+
+.balance-section-body {
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.balance-table {
+
+    width: 100%;
+
+    margin: 0;
+
+    border-collapse: separate;
+
+    border-spacing: 0 7px;
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.balance-table th,
+.balance-table td {
+
+    padding: 13px 16px;
+
+    vertical-align: middle;
+
+    border: none;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.balance-table thead th {
+
+    color: #555;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            145deg,
+            #dcdcdc,
+            #c7c7c7
+        );
+
+    border-top: 1px solid rgba(255,255,255,.9);
+
+    border-bottom: 1px solid #c5c5c5;
+
+}
+
+
+.balance-table thead th:first-child {
+
+    border-radius: 12px 0 0 12px;
+
+}
+
+
+.balance-table thead th:last-child {
+
+    border-radius: 0 12px 12px 0;
+
+}
+
+
+/* =========================================================
+   صفوف الجدول
+========================================================= */
+
+.balance-table tbody td {
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-top: 1px solid #fff;
+
+    border-bottom: 1px solid #d4d4d4;
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+.balance-table tbody td:first-child {
+
+    border-radius: 12px 0 0 12px;
+
+}
+
+
+.balance-table tbody td:last-child {
+
+    border-radius: 0 12px 12px 0;
+
+}
+
+
+/* =========================================================
+   الحساب الرئيسي
+========================================================= */
+
+.balance-main-row td {
+
+    color: #333 !important;
+
+    font-weight: 900 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #e5e5e5,
+            #d0d0d0
+        ) !important;
+
+}
+
+
+/* =========================================================
+   الحساب الفرعي
+========================================================= */
+
+.balance-child-row td {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f1f1f1
+        );
+
+}
+
+
+/* =========================================================
+   الحساب الحفيد
+========================================================= */
+
+.balance-grandchild-row td {
+
+    color: #777 !important;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #e2e2e2
+        ) !important;
+
+}
+
+
+/* =========================================================
+   عمود الرصيد
+========================================================= */
+
 .col-balance {
-    width: 220px;          /* ثابت */
+
+    width: 220px;
+
     min-width: 220px;
+
     max-width: 220px;
-    text-align: left;      /* الأرقام أقصى اليسار */
-    font-weight: bold;
+
+    text-align: left !important;
+
+    font-weight: 900 !important;
+
+    direction: ltr;
+
 }
 
-/* ===== سهم الأحفاد ===== */
+
+/* =========================================================
+   سهم فتح الحساب
+========================================================= */
+
 .toggle-btn {
-    cursor: pointer;
-    font-weight: bold;
-    margin-left: 6px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 28px;
+
+    height: 28px;
+
+    margin-left: 7px;
+
+    color: #fff !important;
+
     text-decoration: none;
+
+    font-size: 13px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
 }
+
+
+.toggle-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-1px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+}
+
+
+/* =========================================================
+   إجمالي القسم
+========================================================= */
+
+.balance-table tfoot td {
+
+    padding: 16px;
+
+    color: #333;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    background:
+        linear-gradient(
+            145deg,
+            #dcdcdc,
+            #c5c5c5
+        );
+
+    border-top: 2px solid #bcbcbc;
+
+    border-bottom: 1px solid #aaa;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.8),
+        0 4px 9px rgba(0,0,0,.08);
+
+}
+
+
+.balance-table tfoot td:first-child {
+
+    border-radius: 12px 0 0 12px;
+
+}
+
+
+.balance-table tfoot td:last-child {
+
+    border-radius: 0 12px 12px 0;
+
+}
+
+
+/* =========================================================
+   شاشة عدم وجود بيانات
+========================================================= */
+
+.balance-empty {
+
+    padding: 25px;
+
+    text-align: center;
+
+    color: #777;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .balance-page {
+
+        padding: 15px;
+
+    }
+
+
+    .balance-header {
+
+        padding: 18px;
+
+    }
+
+
+    .balance-header h3 {
+
+        font-size: 21px;
+
+    }
+
+
+    .balance-header-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 20px;
+
+    }
+
+
+    .balance-filter-body {
+
+        padding: 14px;
+
+    }
+
+
+    .balance-section-body {
+
+        padding: 12px;
+
+        overflow-x: auto;
+
+    }
+
+
+    .balance-table {
+
+        min-width: 650px;
+
+    }
+
+
+    .col-balance {
+
+        width: 180px;
+
+        min-width: 180px;
+
+        max-width: 180px;
+
+    }
+
+}
+
 </style>
 
-<div class="container mt-4">
 
-    <h2 class="fw-bold text-center mb-4">الميزانية العمومية</h2>
+<div class="balance-page">
 
-    <!-- ================= الفلاتر ================= -->
-    <form method="get" class="row g-3 mb-4 justify-content-center align-items-end">
+    <div class="balance-wrapper">
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">حتى تاريخ</label>
-            <input type="date"
-                   name="date"
-                   value="{{ as_of_date|date:'Y-m-d' }}"
-                   class="form-control">
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="balance-header">
+
+            <div class="balance-header-icon">
+
+                📊
+
+            </div>
+
+            <div>
+
+                <h3>
+
+                    الميزانية العمومية
+
+                </h3>
+
+                <p>
+
+                    عرض الأصول والخصوم وحقوق الملكية حسب التاريخ ومركز التكلفة
+
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">مركز التكلفة</label>
-            <select name="cost_center"
-                    id="costCenterSelect"
-                    class="form-select">
-                <option value=""></option>
-                {% for cc in cost_centers %}
-                    <option value="{{ cc.id }}"
-                        {% if cc.id|stringformat:"s" == selected_cost_center %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ cc.name }}
-                    </option>
-                {% endfor %}
-            </select>
+
+        <!-- =================================================
+             كرت الفلاتر
+        ================================================= -->
+
+        <div class="balance-filter-card">
+
+
+            <div class="balance-filter-header">
+
+                🔎 خيارات عرض الميزانية
+
+            </div>
+
+
+            <div class="balance-filter-body">
+
+
+                <form
+                    method="get"
+                    class="row g-3 align-items-end"
+                >
+
+
+                    <!-- ================= تاريخ ================= -->
+
+                    <div class="col-md-4">
+
+                        <label class="balance-label">
+
+                            حتى تاريخ
+
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date"
+                            value="{{ as_of_date|date:'Y-m-d' }}"
+                            class="balance-input"
+                        >
+
+                    </div>
+
+
+                    <!-- ================= مركز التكلفة ================= -->
+
+                    <div class="col-md-5">
+
+                        <label class="balance-label">
+
+                            مركز التكلفة
+
+                        </label>
+
+                        <select
+                            name="cost_center"
+                            id="costCenterSelect"
+                            class="balance-input"
+                        >
+
+                            <option value=""></option>
+
+                            {% for cc in cost_centers %}
+
+                                <option
+                                    value="{{ cc.id }}"
+                                    {% if cc.id|stringformat:"s" == selected_cost_center %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ cc.name }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ================= زر العرض ================= -->
+
+                    <div class="col-md-3">
+
+                        <button
+                            type="submit"
+                            class="balance-view-btn"
+                        >
+
+                            👁
+
+                            عرض الميزانية
+
+                        </button>
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
         </div>
 
-        <div class="col-md-2">
-<button class="btn btn-secondary w-100 fw-bold">عرض</button>
+
+        <!-- =================================================
+             الأصول
+        ================================================= -->
+
+        <div class="balance-section">
+
+
+            <div class="balance-section-header">
+
+                <span>
+
+                    🏦 الأصول
+
+                </span>
+
+            </div>
+
+
+            <div class="balance-section-body">
+
+
+                <table class="balance-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                الحساب
+
+                            </th>
+
+                            <th class="col-balance">
+
+                                الرصيد
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for a in assets %}
+
+                        <tr class="balance-main-row">
+
+                            <td>
+
+                                {{ a.account.code }}
+                                -
+                                {{ a.account.name }}
+
+                            </td>
+
+                            <td class="col-balance">
+
+                                {{ a.balance|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+
+                        {% for c in a.children %}
+
+                            <tr class="balance-child-row">
+
+                                <td class="ps-4">
+
+
+                                    {% if c.children %}
+
+                                        <a
+                                            class="toggle-btn"
+                                            data-id="gc-{{ c.account.id }}"
+                                        >
+
+                                            ▶
+
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    {{ c.account.code }}
+                                    -
+                                    {{ c.account.name }}
+
+                                </td>
+
+
+                                <td class="col-balance">
+
+                                    {{ c.balance|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+
+                            {% for g in c.children %}
+
+                                <tr
+                                    class="balance-grandchild-row grandchild gc-{{ c.account.id }}"
+                                    style="display:none"
+                                >
+
+                                    <td class="ps-5">
+
+                                        {{ g.account.code }}
+                                        -
+                                        {{ g.account.name }}
+
+                                    </td>
+
+
+                                    <td class="col-balance">
+
+                                        {{ g.balance|floatformat:2 }}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        {% endfor %}
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="2"
+                                class="balance-empty"
+                            >
+
+                                لا توجد بيانات للأصول
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                    <tfoot>
+
+                        <tr>
+
+                            <td>
+
+                                إجمالي الأصول
+
+                            </td>
+
+                            <td class="col-balance">
+
+                                {{ total_assets|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+                    </tfoot>
+
+
+                </table>
+
+
+            </div>
+
         </div>
 
-    </form>
 
-    <!-- ================= الأصول ================= -->
-    <h4 class="fw-bold">الأصول</h4>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>الحساب</th>
-                <th class="col-balance">الرصيد</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for a in assets %}
-            <tr class="fw-bold">
-                <td>{{ a.account.code }} - {{ a.account.name }}</td>
-                <td class="col-balance">{{ a.balance|floatformat:2 }}</td>
-            </tr>
+        <!-- =================================================
+             الخصوم
+        ================================================= -->
 
-            {% for c in a.children %}
-            <tr>
-                <td class="ps-4">
-                    {% if c.children %}
-                        <a class="toggle-btn" data-id="gc-{{ c.account.id }}">▶</a>
-                    {% endif %}
-                    {{ c.account.code }} - {{ c.account.name }}
-                </td>
-                <td class="col-balance">{{ c.balance|floatformat:2 }}</td>
-            </tr>
+        <div class="balance-section">
 
-                {% for g in c.children %}
-                <tr class="grandchild gc-{{ c.account.id }}" style="display:none">
-                    <td class="ps-5 text-muted">
-                        {{ g.account.code }} - {{ g.account.name }}
-                    </td>
-                    <td class="col-balance text-muted">{{ g.balance|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            {% endfor %}
-        {% endfor %}
-        </tbody>
-        <tfoot class="table-light">
-            <tr class="fw-bold">
-                <td>إجمالي الأصول</td>
-                <td class="col-balance">{{ total_assets|floatformat:2 }}</td>
-            </tr>
-        </tfoot>
-    </table>
 
-    <!-- ================= الخصوم ================= -->
-    <h4 class="fw-bold mt-4">الخصوم</h4>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>الحساب</th>
-                <th class="col-balance">الرصيد</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for l in liabilities %}
-            <tr class="fw-bold">
-                <td>{{ l.account.code }} - {{ l.account.name }}</td>
-                <td class="col-balance">{{ l.balance|floatformat:2 }}</td>
-            </tr>
+            <div class="balance-section-header">
 
-            {% for c in l.children %}
-            <tr>
-                <td class="ps-4">
-                    {% if c.children %}
-                        <a class="toggle-btn" data-id="gc-{{ c.account.id }}">▶</a>
-                    {% endif %}
-                    {{ c.account.code }} - {{ c.account.name }}
-                </td>
-                <td class="col-balance">{{ c.balance|floatformat:2 }}</td>
-            </tr>
+                <span>
 
-                {% for g in c.children %}
-                <tr class="grandchild gc-{{ c.account.id }}" style="display:none">
-                    <td class="ps-5 text-muted">
-                        {{ g.account.code }} - {{ g.account.name }}
-                    </td>
-                    <td class="col-balance text-muted">{{ g.balance|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            {% endfor %}
-        {% endfor %}
-        </tbody>
-        <tfoot class="table-light">
-            <tr class="fw-bold">
-                <td>إجمالي الخصوم</td>
-                <td class="col-balance">{{ total_liabilities|floatformat:2 }}</td>
-            </tr>
-        </tfoot>
-    </table>
+                    📋 الخصوم
 
-    <!-- ================= حقوق الملكية ================= -->
-    <h4 class="fw-bold mt-4">حقوق الملكية</h4>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>الحساب</th>
-                <th class="col-balance">الرصيد</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for e in equity %}
-            <tr class="fw-bold">
-                <td>{{ e.account.code }} - {{ e.account.name }}</td>
-                <td class="col-balance">{{ e.balance|floatformat:2 }}</td>
-            </tr>
+                </span>
 
-            {% for c in e.children %}
-            <tr>
-                <td class="ps-4">
-                    {% if c.children %}
-                        <a class="toggle-btn" data-id="gc-{{ c.account.id }}">▶</a>
-                    {% endif %}
-                    {{ c.account.code }} - {{ c.account.name }}
-                </td>
-                <td class="col-balance">{{ c.balance|floatformat:2 }}</td>
-            </tr>
+            </div>
 
-                {% for g in c.children %}
-                <tr class="grandchild gc-{{ c.account.id }}" style="display:none">
-                    <td class="ps-5 text-muted">
-                        {{ g.account.code }} - {{ g.account.name }}
-                    </td>
-                    <td class="col-balance text-muted">{{ g.balance|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            {% endfor %}
-        {% endfor %}
-        </tbody>
-        <tfoot class="table-light">
-            <tr class="fw-bold">
-                <td>إجمالي حقوق الملكية</td>
-                <td class="col-balance">{{ total_equity|floatformat:2 }}</td>
-            </tr>
-        </tfoot>
-    </table>
+
+            <div class="balance-section-body">
+
+
+                <table class="balance-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                الحساب
+
+                            </th>
+
+                            <th class="col-balance">
+
+                                الرصيد
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for l in liabilities %}
+
+                        <tr class="balance-main-row">
+
+                            <td>
+
+                                {{ l.account.code }}
+                                -
+                                {{ l.account.name }}
+
+                            </td>
+
+                            <td class="col-balance">
+
+                                {{ l.balance|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+
+                        {% for c in l.children %}
+
+                            <tr class="balance-child-row">
+
+                                <td class="ps-4">
+
+
+                                    {% if c.children %}
+
+                                        <a
+                                            class="toggle-btn"
+                                            data-id="gc-{{ c.account.id }}"
+                                        >
+
+                                            ▶
+
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    {{ c.account.code }}
+                                    -
+                                    {{ c.account.name }}
+
+                                </td>
+
+
+                                <td class="col-balance">
+
+                                    {{ c.balance|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+
+                            {% for g in c.children %}
+
+                                <tr
+                                    class="balance-grandchild-row grandchild gc-{{ c.account.id }}"
+                                    style="display:none"
+                                >
+
+                                    <td class="ps-5">
+
+                                        {{ g.account.code }}
+                                        -
+                                        {{ g.account.name }}
+
+                                    </td>
+
+
+                                    <td class="col-balance">
+
+                                        {{ g.balance|floatformat:2 }}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        {% endfor %}
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="2"
+                                class="balance-empty"
+                            >
+
+                                لا توجد بيانات للخصوم
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                    <tfoot>
+
+                        <tr>
+
+                            <td>
+
+                                إجمالي الخصوم
+
+                            </td>
+
+                            <td class="col-balance">
+
+                                {{ total_liabilities|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+                    </tfoot>
+
+
+                </table>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             حقوق الملكية
+        ================================================= -->
+
+        <div class="balance-section">
+
+
+            <div class="balance-section-header">
+
+                <span>
+
+                    🏛️ حقوق الملكية
+
+                </span>
+
+            </div>
+
+
+            <div class="balance-section-body">
+
+
+                <table class="balance-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                الحساب
+
+                            </th>
+
+                            <th class="col-balance">
+
+                                الرصيد
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for e in equity %}
+
+                        <tr class="balance-main-row">
+
+                            <td>
+
+                                {{ e.account.code }}
+                                -
+                                {{ e.account.name }}
+
+                            </td>
+
+                            <td class="col-balance">
+
+                                {{ e.balance|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+
+                        {% for c in e.children %}
+
+                            <tr class="balance-child-row">
+
+                                <td class="ps-4">
+
+
+                                    {% if c.children %}
+
+                                        <a
+                                            class="toggle-btn"
+                                            data-id="gc-{{ c.account.id }}"
+                                        >
+
+                                            ▶
+
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    {{ c.account.code }}
+                                    -
+                                    {{ c.account.name }}
+
+                                </td>
+
+
+                                <td class="col-balance">
+
+                                    {{ c.balance|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+
+                            {% for g in c.children %}
+
+                                <tr
+                                    class="balance-grandchild-row grandchild gc-{{ c.account.id }}"
+                                    style="display:none"
+                                >
+
+                                    <td class="ps-5">
+
+                                        {{ g.account.code }}
+                                        -
+                                        {{ g.account.name }}
+
+                                    </td>
+
+
+                                    <td class="col-balance">
+
+                                        {{ g.balance|floatformat:2 }}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        {% endfor %}
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="2"
+                                class="balance-empty"
+                            >
+
+                                لا توجد بيانات لحقوق الملكية
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                    <tfoot>
+
+                        <tr>
+
+                            <td>
+
+                                إجمالي حقوق الملكية
+
+                            </td>
+
+                            <td class="col-balance">
+
+                                {{ total_equity|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+                    </tfoot>
+
+
+                </table>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
 
 </div>
 
-<!-- ================= JS ================= -->
+
+<!-- =========================================================
+     JavaScript
+========================================================= -->
+
 <script>
+
 $(document).ready(function () {
 
+
+    /* =====================================================
+       Select2
+    ===================================================== */
+
     $('#costCenterSelect').select2({
+
         dir: "rtl",
+
         width: '100%',
+
         placeholder: "اختر مركز التكلفة",
+
         allowClear: true
+
     });
+
+
+    /* =====================================================
+       فتح وإغلاق الحسابات الفرعية
+    ===================================================== */
 
     $('.toggle-btn').on('click', function () {
-        const cls = $(this).data('id');
-        const rows = $('.' + cls);
-        const open = $(this).text() === '▼';
 
-        rows.toggle(open);
-        $(this).text(open ? '▶' : '▼');
+
+        const cls = $(this).data('id');
+
+        const rows = $('.' + cls);
+
+        const isOpen = $(this).text().trim() === '▼';
+
+
+        if (isOpen) {
+
+            rows.hide();
+
+            $(this).text('▶');
+
+        } else {
+
+            rows.show();
+
+            $(this).text('▼');
+
+        }
+
+
     });
 
+
 });
+
 </script>
+
 
 {% endblock %}

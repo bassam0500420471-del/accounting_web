@@ -5,164 +5,1351 @@
 {% block content %}
 
 <!-- ================= Select2 ================= -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+/>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<div class="container mt-4">
+<script
+    src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js">
+</script>
 
-    <h2 class="fw-bold text-center mb-4">
-        📈 قائمة الدخل حسب مركز التكلفة
-    </h2>
 
-    <!-- ================= الفلاتر ================= -->
-    <form method="get" class="row g-3 mb-4 justify-content-center">
+<style>
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">من تاريخ</label>
-            <input type="date"
-                   name="date_from"
-                   value="{{ request.GET.date_from }}"
-                   class="form-control">
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.income-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.income-wrapper {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.income-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 22px 26px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        0 5px 12px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.income-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.income-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   وصف الصفحة
+========================================================= */
+
+.income-header p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.income-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.income-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+    z-index: 5;
+
+}
+
+
+/* =========================================================
+   رأس الكرت
+========================================================= */
+
+.income-card-header {
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   جسم الكرت
+========================================================= */
+
+.income-card-body {
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   منطقة الفلاتر
+========================================================= */
+
+.income-filters {
+
+    padding: 18px;
+
+    margin-bottom: 28px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    border: 1px solid #d0d0d0;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9),
+        0 8px 18px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   Labels
+========================================================= */
+
+.income-label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   حقول التاريخ
+========================================================= */
+
+.income-input {
+
+    width: 100%;
+
+    height: 44px;
+
+    padding: 9px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+.income-input:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   Select2
+========================================================= */
+
+.select2-container {
+
+    width: 100% !important;
+
+}
+
+
+.select2-container
+.select2-selection--multiple {
+
+    min-height: 44px !important;
+
+    padding: 5px 8px !important;
+
+    color: #444;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        ) !important;
+
+    border: 1px solid #cfcfcf !important;
+
+    border-radius: 11px !important;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+.select2-container--default
+.select2-selection--multiple
+.select2-selection__choice {
+
+    margin-top: 3px !important;
+
+    margin-bottom: 3px !important;
+
+    padding: 5px 10px !important;
+
+    color: #fff !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        ) !important;
+
+    border: none !important;
+
+    border-radius: 8px !important;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+
+.select2-container--default
+.select2-selection--multiple
+.select2-selection__choice__remove {
+
+    color: #fff !important;
+
+    border: none !important;
+
+    margin-left: 5px;
+
+}
+
+
+/* =========================================================
+   زر العرض
+========================================================= */
+
+.income-show-btn {
+
+    width: 100%;
+
+    height: 44px;
+
+    color: #fff !important;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    border-radius: 11px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
+}
+
+
+.income-show-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* =========================================================
+   عناوين الأقسام
+========================================================= */
+
+.income-section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 28px;
+
+    margin-bottom: 12px;
+
+    padding: 15px 20px;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        0 7px 14px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.income-section-title.revenue {
+
+    background:
+        linear-gradient(
+            135deg,
+            #666666,
+            #303030
+        );
+
+}
+
+
+.income-section-title.expense {
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+}
+
+
+/* =========================================================
+   الجداول
+========================================================= */
+
+.income-table {
+
+    width: 100%;
+
+    margin-bottom: 25px;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    box-shadow:
+        0 7px 16px rgba(0,0,0,.09);
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.income-table thead th {
+
+    padding: 14px 18px;
+
+    color: #fff;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    border: none;
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.income-table tbody td {
+
+    padding: 14px 18px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-bottom: 1px solid #d8d8d8;
+
+}
+
+
+/* =========================================================
+   الكود
+========================================================= */
+
+.income-code {
+
+    width: 160px;
+
+    font-weight: 800 !important;
+
+    color: #555 !important;
+
+}
+
+
+/* =========================================================
+   القيمة
+========================================================= */
+
+.income-amount {
+
+    width: 220px;
+
+    min-width: 220px;
+
+    text-align: left !important;
+
+    direction: ltr;
+
+    font-weight: 900 !important;
+
+}
+
+
+/* =========================================================
+   صف الإجمالي
+========================================================= */
+
+.income-total td {
+
+    color: #333 !important;
+
+    font-weight: 900 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #dedede,
+            #c9c9c9
+        ) !important;
+
+    border-bottom: none !important;
+
+}
+
+
+/* =========================================================
+   الإيرادات
+========================================================= */
+
+.income-revenue-amount {
+
+    color: #555 !important;
+
+}
+
+
+/* =========================================================
+   المصروفات
+========================================================= */
+
+.income-expense-amount {
+
+    color: #555 !important;
+
+}
+
+
+/* =========================================================
+   لا توجد بيانات
+========================================================= */
+
+.income-empty {
+
+    padding: 22px !important;
+
+    color: #777 !important;
+
+    text-align: center;
+
+    font-weight: 600 !important;
+
+}
+
+
+/* =========================================================
+   كرت صافي الربح / الخسارة
+========================================================= */
+
+.income-result {
+
+    position: relative;
+
+    overflow: hidden;
+
+    margin-top: 28px;
+
+    padding: 28px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 15px 30px rgba(0,0,0,.16),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+.income-result-title {
+
+    margin-bottom: 10px;
+
+    color: #555;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+}
+
+
+.income-result-value {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 32px;
+
+    font-weight: 900;
+
+    direction: ltr;
+
+}
+
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .income-page {
+
+        padding: 15px;
+
+    }
+
+
+    .income-header {
+
+        padding: 18px;
+
+    }
+
+
+    .income-header h3 {
+
+        font-size: 21px;
+
+    }
+
+
+    .income-header-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 20px;
+
+    }
+
+
+    .income-card-body {
+
+        padding: 14px;
+
+    }
+
+
+    .income-filters {
+
+        padding: 14px;
+
+    }
+
+
+    .income-table {
+
+        font-size: 12px;
+
+    }
+
+
+    .income-table td,
+    .income-table thead th {
+
+        padding: 10px;
+
+    }
+
+
+    .income-code {
+
+        width: 90px;
+
+    }
+
+
+    .income-amount {
+
+        width: 130px;
+
+        min-width: 130px;
+
+    }
+
+
+    .income-result {
+
+        padding: 22px 14px;
+
+    }
+
+
+    .income-result-value {
+
+        font-size: 26px;
+
+    }
+
+}
+
+</style>
+
+
+<div class="income-page">
+
+    <div class="income-wrapper">
+
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="income-header">
+
+            <div class="income-header-icon">
+
+                📈
+
+            </div>
+
+            <div>
+
+                <h3>
+
+                    قائمة الدخل حسب مركز التكلفة
+
+                </h3>
+
+                <p>
+
+                    عرض الإيرادات والمصروفات وصافي الربح أو الخسارة
+
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">إلى تاريخ</label>
-            <input type="date"
-                   name="date_to"
-                   value="{{ request.GET.date_to }}"
-                   class="form-control">
-        </div>
 
-        <!-- ✅ مراكز تكلفة متعددة -->
-        <div class="col-md-4">
-            <label class="form-label fw-bold">مراكز التكلفة</label>
-            <select name="cost_centers"
-                    class="form-select select2"
-                    multiple
-                    data-placeholder="اختر مراكز التكلفة">
-                {% for cc in cost_centers %}
-                    <option value="{{ cc.id }}"
-                        {% if cc.id|stringformat:"s" in selected_cost_centers %}
-                            selected
-                        {% endif %}
+        <!-- =================================================
+             الكرت الرئيسي
+        ================================================= -->
+
+        <div class="income-card">
+
+
+            <div class="income-card-header">
+
+                قائمة الدخل
+
+            </div>
+
+
+            <div class="income-card-body">
+
+
+                <!-- =================================================
+                     الفلاتر
+                ================================================= -->
+
+                <div class="income-filters">
+
+                    <form
+                        method="get"
+                        class="row g-3 justify-content-center align-items-end"
                     >
-                        {{ cc.name }}
-                    </option>
-                {% endfor %}
-            </select>
+
+
+                        <!-- من تاريخ -->
+
+                        <div class="col-md-3">
+
+                            <label class="income-label">
+
+                                من تاريخ
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_from"
+                                value="{{ request.GET.date_from }}"
+                                class="income-input"
+                            >
+
+                        </div>
+
+
+                        <!-- إلى تاريخ -->
+
+                        <div class="col-md-3">
+
+                            <label class="income-label">
+
+                                إلى تاريخ
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_to"
+                                value="{{ request.GET.date_to }}"
+                                class="income-input"
+                            >
+
+                        </div>
+
+
+                        <!-- مراكز التكلفة -->
+
+                        <div class="col-md-4">
+
+                            <label class="income-label">
+
+                                مراكز التكلفة
+
+                            </label>
+
+                            <select
+                                name="cost_centers"
+                                class="form-select select2"
+                                multiple
+                                data-placeholder="اختر مراكز التكلفة"
+                            >
+
+                                {% for cc in cost_centers %}
+
+                                    <option
+                                        value="{{ cc.id }}"
+                                        {% if cc.id|stringformat:"s" in selected_cost_centers %}
+                                            selected
+                                        {% endif %}
+                                    >
+
+                                        {{ cc.name }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- زر العرض -->
+
+                        <div class="col-md-2 d-flex align-items-end">
+
+                            <button
+                                type="submit"
+                                class="income-show-btn"
+                            >
+
+                                👁 عرض
+
+                            </button>
+
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+
+                <!-- =================================================
+                     الإيرادات
+                ================================================= -->
+
+                <div class="income-section-title revenue">
+
+                    <span>
+
+                        💰 الإيرادات
+
+                    </span>
+
+                </div>
+
+
+                <table class="income-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="income-code">
+
+                                الكود
+
+                            </th>
+
+                            <th>
+
+                                الحساب
+
+                            </th>
+
+                            <th class="income-amount">
+
+                                القيمة
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for r in revenues %}
+
+                            <tr>
+
+                                <td class="income-code">
+
+                                    {{ r.code }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ r.name }}
+
+                                </td>
+
+                                <td class="income-amount income-revenue-amount">
+
+                                    {{ r.amount|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="3"
+                                    class="income-empty"
+                                >
+
+                                    لا توجد إيرادات
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                        <tr class="income-total">
+
+                            <td colspan="2">
+
+                                إجمالي الإيرادات
+
+                            </td>
+
+                            <td class="income-amount">
+
+                                {{ total_revenues|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- =================================================
+                     المصروفات
+                ================================================= -->
+
+                <div class="income-section-title expense">
+
+                    <span>
+
+                        💸 المصروفات
+
+                    </span>
+
+                </div>
+
+
+                <table class="income-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="income-code">
+
+                                الكود
+
+                            </th>
+
+                            <th>
+
+                                الحساب
+
+                            </th>
+
+                            <th class="income-amount">
+
+                                القيمة
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for e in expenses %}
+
+                            <tr>
+
+                                <td class="income-code">
+
+                                    {{ e.code }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ e.name }}
+
+                                </td>
+
+                                <td class="income-amount income-expense-amount">
+
+                                    {{ e.amount|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="3"
+                                    class="income-empty"
+                                >
+
+                                    لا توجد مصروفات
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                        <tr class="income-total">
+
+                            <td colspan="2">
+
+                                إجمالي المصروفات
+
+                            </td>
+
+                            <td class="income-amount">
+
+                                {{ total_expenses|floatformat:2 }}
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- =================================================
+                     صافي الربح / الخسارة
+                ================================================= -->
+
+                <div class="income-result">
+
+                    <div class="income-result-title">
+
+                        صافي الربح / الخسارة
+
+                    </div>
+
+                    <h2 class="income-result-value">
+
+                        {{ net_profit|floatformat:2 }}
+
+                    </h2>
+
+                </div>
+
+
+            </div>
+
         </div>
 
-        <div class="col-md-2 d-flex align-items-end">
-            <button class="btn btn-primary w-100 fw-bold">
-                عرض
-            </button>
-        </div>
-
-    </form>
-
-    <!-- ================= الإيرادات ================= -->
-    <h4 class="fw-bold text-success">الإيرادات</h4>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>الكود</th>
-                <th>الحساب</th>
-                <th class="text-end">القيمة</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in revenues %}
-            <tr>
-                <td>{{ r.code }}</td>
-                <td>{{ r.name }}</td>
-                <td class="text-end text-success fw-bold">
-                    {{ r.amount|floatformat:2 }}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center text-muted">
-                    لا توجد إيرادات
-                </td>
-            </tr>
-            {% endfor %}
-            <tr class="fw-bold">
-                <td colspan="2">إجمالي الإيرادات</td>
-                <td class="text-end text-success">
-                    {{ total_revenues|floatformat:2 }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <!-- ================= المصروفات ================= -->
-    <h4 class="fw-bold text-danger mt-4">المصروفات</h4>
-    <table class="table table-bordered">
-        <thead class="table-light">
-            <tr>
-                <th>الكود</th>
-                <th>الحساب</th>
-                <th class="text-end">القيمة</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for e in expenses %}
-            <tr>
-                <td>{{ e.code }}</td>
-                <td>{{ e.name }}</td>
-                <td class="text-end text-danger fw-bold">
-                    {{ e.amount|floatformat:2 }}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center text-muted">
-                    لا توجد مصروفات
-                </td>
-            </tr>
-            {% endfor %}
-            <tr class="fw-bold">
-                <td colspan="2">إجمالي المصروفات</td>
-                <td class="text-end text-danger">
-                    {{ total_expenses|floatformat:2 }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <!-- ================= الصافي ================= -->
-    <div class="card mt-4 shadow-sm
-        {% if net_profit >= 0 %}
-            border-success
-        {% else %}
-            border-danger
-        {% endif %}
-    ">
-        <div class="card-body text-center">
-            <h4 class="fw-bold mb-2">صافي الربح / الخسارة</h4>
-            <h2 class="fw-bold
-                {% if net_profit >= 0 %}
-                    text-success
-                {% else %}
-                    text-danger
-                {% endif %}
-            ">
-                {{ net_profit|floatformat:2 }}
-            </h2>
-        </div>
     </div>
 
 </div>
 
-<!-- ================= تفعيل Select2 ================= -->
+
+<!-- =========================================================
+     تفعيل Select2
+========================================================= -->
+
 <script>
+
 $(document).ready(function () {
+
     $('.select2').select2({
+
         width: '100%',
-        dir: 'rtl'
+
+        dir: 'rtl',
+
+        placeholder: 'اختر مراكز التكلفة'
+
     });
+
 });
+
 </script>
+
 
 {% endblock %}

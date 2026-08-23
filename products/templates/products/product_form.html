@@ -4,363 +4,1500 @@
 {% load l10n %}
 
 {% block title %}
-{% if product %}{% trans "Edit Product" %}{% else %}{% trans "Add Product" %}{% endif %}
+    {% if product %}
+        {% trans "Edit Product" %}
+    {% else %}
+        {% trans "Add Product" %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+/>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js">
+</script>
+
 
 <style>
-    .btn-grey {
-        background: #6c757d !important;
-        color: #fff !important;
-        border: none !important;
+
+    /* =========================================================
+       الصفحة
+    ========================================================= */
+
+    .product-page {
+        width: 100%;
+        padding: 20px;
     }
 
-    .nav-tabs .nav-link {
-        color: #6c757d !important;
+
+    /* =========================================================
+       رأس الصفحة
+    ========================================================= */
+
+    .product-header {
+        background: linear-gradient(
+            135deg,
+            #6c757d,
+            #495057
+        );
+
+        color: #fff;
+
+        padding: 18px 22px;
+
+        border-radius: 12px;
+
+        margin-bottom: 20px;
+
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.15);
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .product-header h3 {
+        margin: 0;
+
+        font-size: 22px;
+
         font-weight: bold;
     }
 
+
+    /* =========================================================
+       الكرت الرئيسي
+    ========================================================= */
+
+    .product-card {
+        background: #fff;
+
+        border-radius: 14px;
+
+        padding: 25px;
+
+        border: 1px solid #e1e1e1;
+
+        box-shadow:
+            0 3px 12px rgba(0, 0, 0, 0.10);
+    }
+
+
+    /* =========================================================
+       العناوين
+    ========================================================= */
+
+    .product-card .form-label {
+        font-weight: bold;
+
+        color: #495057;
+
+        margin-bottom: 7px;
+    }
+
+
+    /* =========================================================
+       الحقول
+    ========================================================= */
+
+    .product-card .form-control,
+    .product-card .form-select {
+
+        border-radius: 7px;
+
+        border: 1px solid #ced4da;
+
+        min-height: 40px;
+
+        transition: 0.2s;
+    }
+
+    .product-card .form-control:focus,
+    .product-card .form-select:focus {
+
+        border-color: #6c757d;
+
+        box-shadow:
+            0 0 0 0.15rem rgba(108, 117, 125, 0.15);
+    }
+
+    textarea.form-control {
+
+        min-height: 100px;
+
+        resize: vertical;
+    }
+
+
+    /* =========================================================
+       التبويبات
+    ========================================================= */
+
+    .nav-tabs {
+
+        border-bottom: 2px solid #6c757d;
+
+        margin-bottom: 25px !important;
+    }
+
+    .nav-tabs .nav-link {
+
+        color: #6c757d !important;
+
+        font-weight: bold;
+
+        border: none;
+
+        border-radius: 8px 8px 0 0;
+
+        padding: 11px 22px;
+
+        margin-left: 4px;
+
+        cursor: pointer;
+
+        transition: 0.2s;
+    }
+
+    .nav-tabs .nav-link:hover {
+
+        background: #f1f3f5;
+
+        color: #495057 !important;
+    }
+
     .nav-tabs .nav-link.active {
+
         background: #6c757d !important;
+
         color: #fff !important;
+
         border-color: #6c757d !important;
     }
-</style>
 
-<h3 class="mb-4 text-end">
-    {% if product %}{% trans "Edit Product" %}{% else %}{% trans "Add Product" %}{% endif %}
-</h3>
 
-<div class="card p-4">
+    /* =========================================================
+       Select2
+    ========================================================= */
 
-    <!-- Tabs -->
-    <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-            <a class="nav-link" id="tab-normal">{% trans "Normal Product" %}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="tab-bundle">{% trans "Bundle Product" %}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="tab-service">{% trans "Service" %}</a>
-        </li>
-    </ul>
+    .account-select + .select2-container,
+    .category-select + .select2-container {
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <input type="hidden" name="type" id="product_type"
-               value="{{ product.type|default:'normal' }}">
-
-        <!-- Basic Info -->
-        <div class="row mb-3">
-            <div class="col-md-4 text-end">
-                <label class="form-label">{% trans "Product Name" %}</label>
-                <input required type="text" name="name"
-                       value="{{ product.name|default:'' }}"
-                       class="form-control">
-            </div>
-
-            <div class="col-md-4 text-end">
-                <label class="form-label">{% trans "SKU" %}</label>
-                <input type="text" name="sku"
-                       value="{{ product.sku|default:'' }}"
-                       class="form-control">
-            </div>
-
-            <div class="col-md-4 text-end">
-                <label class="form-label">{% trans "Category" %}</label>
-                <select name="category" class="form-select category-select">
-                    <option value="">{% trans "Select Category" %}</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat.id }}"
-                            {% if product.category_id == cat.id %}selected{% endif %}>
-                            {{ cat.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <!-- Prices -->
-        <div class="row mb-3">
-            <div class="col-md-6 text-end">
-                <label class="form-label">{% trans "Purchase Price" %}</label>
-<input type="number" step="0.01" name="purchase_price"
-       value="{% localize off %}{{ product.purchase_price|default:0 }}{% endlocalize %}"
-       class="form-control">
-            </div>
-
-            <div class="col-md-6 text-end">
-                <label class="form-label">{% trans "Sale Price" %}</label>
-<input type="number" step="0.01" name="sale_price"
-       value="{% localize off %}{{ product.sale_price|default:0 }}{% endlocalize %}"
-       class="form-control">
-            </div>
-        </div>
-
-        <!-- Stock -->
-        <div class="row mb-3">
-            <div class="col-md-6 text-end">
-                <label class="form-label">{% trans "Minimum Stock" %}</label>
-                <input type="number" name="min_stock"
-                       value="{{ product.min_stock|default:0 }}"
-                       class="form-control">
-            </div>
-
-            <div class="col-md-6 text-end">
-                <label class="form-label">{% trans "Low Stock Alert" %}</label>
-                <input type="number" name="alert_stock"
-                       value="{{ product.alert_stock|default:0 }}"
-                       class="form-control">
-            </div>
-        </div>
-
-        <!-- Accounts -->
-        <div class="row mb-4">
-            <div class="col-md-4 text-end">
-                <label class="form-label fw-bold">{% trans "Inventory Account" %}</label>
-                <select name="inventory_account" class="form-select account-select">
-                    <option value="">{% trans "Select Account" %}</option>
-                    {% for acc in accounts %}
-                        <option value="{{ acc.id }}"
-                            {% if product.inventory_account_id == acc.id %}selected{% endif %}>
-                            {{ acc.code }} - {{ acc.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-md-4 text-end">
-                <label class="form-label fw-bold">{% trans "Cost of Sales Account" %}</label>
-                <select name="cost_account" class="form-select account-select">
-                    <option value="">{% trans "Select Account" %}</option>
-                    {% for acc in accounts %}
-                        <option value="{{ acc.id }}"
-                            {% if product.cost_account_id == acc.id %}selected{% endif %}>
-                            {{ acc.code }} - {{ acc.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="col-md-4 text-end">
-                <label class="form-label fw-bold">{% trans "Revenue Account" %}</label>
-                <select name="revenue_account" class="form-select account-select">
-                    <option value="">{% trans "Select Account" %}</option>
-                    {% for acc in accounts %}
-                        <option value="{{ acc.id }}"
-                            {% if product.revenue_account_id == acc.id %}selected{% endif %}>
-                            {{ acc.code }} - {{ acc.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-3 text-end">
-            <label class="form-label">{% trans "Description" %}</label>
-            <textarea name="description" class="form-control"
-                      rows="3">{{ product.description|default:'' }}</textarea>
-        </div>
-
-        <!-- Image -->
-        <div class="mb-3 text-end">
-            <label class="form-label">{% trans "Image" %}</label>
-            <input type="file" name="image" class="form-control">
-            {% if product.image %}
-                <img src="{{ product.image.url }}" style="height:70px;margin-top:10px;">
-            {% endif %}
-        </div>
-
-        <!-- Bundle -->
-        <div id="bundle_area" style="display:none">
-            <hr>
-            <h5 class="mb-3 text-end">{% trans "Product Components" %}</h5>
-
-            <div id="bundle_container">
-                {% for c in components %}
-                <div class="row mb-2">
-                    <div class="col-md-6 text-end">
-                        <select name="component_{{ forloop.counter }}" class="form-select">
-                            {% for p in products %}
-                                <option value="{{ p.id }}"
-                                    {% if p.id == c.component.id %}selected{% endif %}>
-                                    {{ p.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <input type="number" name="qty_{{ forloop.counter }}" value="{{ c.quantity }}" class="form-control">
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger w-100"
-                                onclick="this.parentNode.parentNode.remove()">
-                                {% trans "Delete" %}
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <button type="button" class="btn btn-secondary mt-2" id="add_component">
-                + {% trans "Add Component" %}
-            </button>
-
-            <input
-    type="hidden"
-    id="bundle_count"
-    name="bundle_count"
-    value="{{ components|length|default:0 }}">
-        </div>
-
-        <div class="text-end mt-3">
-            <button type="submit" class="btn btn-grey px-5">
-                {% trans "Save Product" %}
-            </button>
-        </div>
-
-    </form>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const hidden = document.getElementById("product_type");
-
-    const tabNormal = document.getElementById("tab-normal");
-    const tabBundle = document.getElementById("tab-bundle");
-    const tabService = document.getElementById("tab-service");
-
-    const bundleArea = document.getElementById("bundle_area");
-    const bundleContainer = document.getElementById("bundle_container");
-    const addBtn = document.getElementById("add_component");
-    const bundleCount = document.getElementById("bundle_count");
-    const form = document.querySelector("form");
-
-    function activate(type){
-
-        hidden.value = type;
-
-        tabNormal.classList.remove("active");
-        tabBundle.classList.remove("active");
-        tabService.classList.remove("active");
-
-        bundleArea.style.display = "none";
-
-        if(type==="normal"){
-            tabNormal.classList.add("active");
-        }
-
-        if(type==="bundle"){
-            tabBundle.classList.add("active");
-            bundleArea.style.display="block";
-        }
-
-        if(type==="service"){
-            tabService.classList.add("active");
-        }
-
+        width: 100% !important;
     }
 
-    tabNormal.onclick=function(e){
-        e.preventDefault();
-        activate("normal");
-    };
+    .select2-container--default
+    .select2-selection--single {
 
-    tabBundle.onclick=function(e){
-        e.preventDefault();
-        activate("bundle");
-    };
+        height: 40px !important;
 
-    tabService.onclick=function(e){
-        e.preventDefault();
-        activate("service");
-    };
+        border: 1px solid #ced4da !important;
 
-    let counter = parseInt(bundleCount.value || "0");
+        border-radius: 7px !important;
 
-    addBtn.addEventListener("click", function(){
+        display: flex !important;
 
-        counter++;
-        bundleCount.value = counter;
+        align-items: center !important;
 
-        bundleContainer.insertAdjacentHTML("beforeend", `
-            <div class="row mb-2 bundle-row">
-                <div class="col-md-6 text-end">
-                    <select name="component_${counter}" class="form-select" required>
-                        <option value="">اختر المنتج</option>
+        background: #fff !important;
+    }
 
-                        {% for p in products %}
-                            <option value="{{ p.id }}">{{ p.name }}</option>
+    .select2-container--default
+    .select2-selection--single
+    .select2-selection__rendered {
+
+        line-height: 38px !important;
+
+        padding-right: 12px !important;
+
+        padding-left: 12px !important;
+
+        color: #495057 !important;
+    }
+
+    .select2-container--default
+    .select2-selection--single
+    .select2-selection__arrow {
+
+        height: 38px !important;
+    }
+
+    .select2-container--default
+    .select2-selection--single:focus {
+
+        border-color: #6c757d !important;
+    }
+
+    .select2-container--default.select2-container--focus
+    .select2-selection--single {
+
+        border-color: #6c757d !important;
+
+        box-shadow:
+            0 0 0 0.15rem rgba(108, 117, 125, 0.15);
+    }
+
+
+    /* =========================================================
+       صورة المنتج
+    ========================================================= */
+
+    .product-image {
+
+        display: block;
+
+        height: 90px;
+
+        max-width: 130px;
+
+        object-fit: contain;
+
+        margin-top: 10px;
+
+        padding: 5px;
+
+        border: 1px solid #ddd;
+
+        border-radius: 8px;
+
+        background: #f8f9fa;
+    }
+
+
+    /* =========================================================
+       منطقة المكونات
+    ========================================================= */
+
+    #bundle_area {
+
+        background: #f8f9fa;
+
+        border: 1px solid #dee2e6;
+
+        border-radius: 10px;
+
+        padding: 20px;
+
+        margin-top: 15px;
+    }
+
+    #bundle_area hr {
+
+        margin-top: 0;
+
+        margin-bottom: 20px;
+
+        border-color: #adb5bd;
+
+        opacity: 0.5;
+    }
+
+    #bundle_area h5 {
+
+        font-weight: bold;
+
+        color: #495057;
+    }
+
+
+    /* =========================================================
+       صفوف المكونات
+    ========================================================= */
+
+    .bundle-row {
+
+        background: #fff;
+
+        padding: 10px;
+
+        border: 1px solid #dee2e6;
+
+        border-radius: 8px;
+
+        margin-bottom: 10px !important;
+    }
+
+    .bundle-row .form-control,
+    .bundle-row .form-select {
+
+        min-height: 40px;
+    }
+
+
+    /* =========================================================
+       الأزرار
+    ========================================================= */
+
+    .btn-grey {
+
+        background: #6c757d !important;
+
+        color: #fff !important;
+
+        border: none !important;
+
+        border-radius: 7px;
+
+        font-weight: bold;
+
+        padding: 10px 30px;
+
+        box-shadow:
+            0 3px 6px rgba(0, 0, 0, 0.12);
+
+        transition: 0.2s;
+    }
+
+    .btn-grey:hover {
+
+        background: #5a6268 !important;
+
+        color: #fff !important;
+
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+
+        border-radius: 7px;
+    }
+
+    .btn-danger {
+
+        border-radius: 7px;
+    }
+
+
+    /* =========================================================
+       تنسيق Select2 داخل المكونات
+    ========================================================= */
+
+    .bundle-row .select2-container {
+
+        width: 100% !important;
+    }
+
+
+    /* =========================================================
+       رسائل الأخطاء
+    ========================================================= */
+
+    .field-error {
+
+        color: #dc3545;
+
+        font-size: 13px;
+
+        margin-top: 5px;
+    }
+
+
+    /* =========================================================
+       الهاتف
+    ========================================================= */
+
+    @media (max-width: 768px) {
+
+        .product-page {
+            padding: 10px;
+        }
+
+        .product-card {
+            padding: 15px;
+        }
+
+        .product-header {
+            padding: 15px;
+        }
+
+        .product-header h3 {
+            font-size: 18px;
+        }
+
+        .nav-tabs .nav-link {
+            padding: 9px 12px;
+            font-size: 14px;
+        }
+    }
+
+</style>
+
+
+<div class="product-page">
+
+
+    <!-- =====================================================
+         رأس الصفحة
+    ====================================================== -->
+
+    <div class="product-header">
+
+        <h3>
+
+            {% if product %}
+
+                {% trans "Edit Product" %}
+
+            {% else %}
+
+                {% trans "Add Product" %}
+
+            {% endif %}
+
+        </h3>
+
+    </div>
+
+
+    <!-- =====================================================
+         الكرت الرئيسي
+    ====================================================== -->
+
+    <div class="product-card">
+
+
+        <!-- =================================================
+             التبويبات
+        ================================================== -->
+
+        <ul class="nav nav-tabs mb-4">
+
+            <li class="nav-item">
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    id="tab-normal">
+
+                    {% trans "Normal Product" %}
+
+                </a>
+
+            </li>
+
+
+            <li class="nav-item">
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    id="tab-bundle">
+
+                    {% trans "Bundle Product" %}
+
+                </a>
+
+            </li>
+
+
+            <li class="nav-item">
+
+                <a
+                    href="#"
+                    class="nav-link"
+                    id="tab-service">
+
+                    {% trans "Service" %}
+
+                </a>
+
+            </li>
+
+        </ul>
+
+
+        <!-- =================================================
+             النموذج
+        ================================================== -->
+
+        <form
+            method="POST"
+            enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+
+            <!-- نوع المنتج -->
+
+            <input
+                type="hidden"
+                name="type"
+                id="product_type"
+                value="{{ product.type|default:'normal' }}">
+
+
+            <!-- =================================================
+                 المعلومات الأساسية
+            ================================================== -->
+
+            <div class="row mb-4">
+
+
+                <!-- اسم المنتج -->
+
+                <div class="col-md-4 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "Product Name" %}
+
+                    </label>
+
+                    <input
+                        required
+                        type="text"
+                        name="name"
+                        value="{{ product.name|default:'' }}"
+                        class="form-control">
+
+                </div>
+
+
+                <!-- SKU -->
+
+                <div class="col-md-4 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "SKU" %}
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="sku"
+                        value="{{ product.sku|default:'' }}"
+                        class="form-control">
+
+                </div>
+
+
+                <!-- التصنيف -->
+
+                <div class="col-md-4 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "Category" %}
+
+                    </label>
+
+                    <select
+                        name="category"
+                        class="form-select category-select">
+
+                        <option value="">
+
+                            {% trans "Select Category" %}
+
+                        </option>
+
+
+                        {% for cat in categories %}
+
+                            <option
+                                value="{{ cat.id }}"
+                                {% if product.category_id == cat.id %}
+                                    selected
+                                {% endif %}>
+
+                                {{ cat.name }}
+
+                            </option>
+
                         {% endfor %}
 
                     </select>
+
                 </div>
 
+            </div>
+
+
+            <!-- =================================================
+                 الأسعار
+            ================================================== -->
+
+            <div class="row mb-4">
+
+
+                <!-- سعر الشراء -->
+
+                <div class="col-md-6 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "Purchase Price" %}
+
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        name="purchase_price"
+                        value="{% localize off %}{{ product.purchase_price|default:0 }}{% endlocalize %}"
+                        class="form-control">
+
+                </div>
+
+
+                <!-- سعر البيع -->
+
+                <div class="col-md-6 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "Sale Price" %}
+
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        name="sale_price"
+                        value="{% localize off %}{{ product.sale_price|default:0 }}{% endlocalize %}"
+                        class="form-control">
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 المخزون
+            ================================================== -->
+
+            <div class="row mb-4">
+
+
+                <!-- الحد الأدنى -->
+
+                <div class="col-md-6 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "Minimum Stock" %}
+
+                    </label>
+
+                    <input
+                        type="number"
+                        step="1"
+                        min="0"
+                        name="min_stock"
+                        value="{{ product.min_stock|default:0 }}"
+                        class="form-control">
+
+                </div>
+
+
+                <!-- تنبيه المخزون -->
+
+                <div class="col-md-6 text-end">
+
+                    <label class="form-label">
+
+                        {% trans "Low Stock Alert" %}
+
+                    </label>
+
+                    <input
+                        type="number"
+                        step="1"
+                        min="0"
+                        name="alert_stock"
+                        value="{{ product.alert_stock|default:0 }}"
+                        class="form-control">
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 الحسابات
+            ================================================== -->
+
+            <div class="row mb-4">
+
+
+                <!-- حساب المخزون -->
+
                 <div class="col-md-4 text-end">
+
+                    <label class="form-label fw-bold">
+
+                        {% trans "Inventory Account" %}
+
+                    </label>
+
+
+                    <select
+                        name="inventory_account"
+                        class="form-select account-select">
+
+                        <option value="">
+
+                            {% trans "Select Account" %}
+
+                        </option>
+
+
+                        {% for acc in accounts %}
+
+                            <option
+                                value="{{ acc.id }}"
+                                {% if product.inventory_account_id == acc.id %}
+                                    selected
+                                {% endif %}>
+
+                                {{ acc.code }} - {{ acc.name }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- حساب تكلفة المبيعات -->
+
+                <div class="col-md-4 text-end">
+
+                    <label class="form-label fw-bold">
+
+                        {% trans "Cost of Sales Account" %}
+
+                    </label>
+
+
+                    <select
+                        name="cost_account"
+                        class="form-select account-select">
+
+                        <option value="">
+
+                            {% trans "Select Account" %}
+
+                        </option>
+
+
+                        {% for acc in accounts %}
+
+                            <option
+                                value="{{ acc.id }}"
+                                {% if product.cost_account_id == acc.id %}
+                                    selected
+                                {% endif %}>
+
+                                {{ acc.code }} - {{ acc.name }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- حساب الإيرادات -->
+
+                <div class="col-md-4 text-end">
+
+                    <label class="form-label fw-bold">
+
+                        {% trans "Revenue Account" %}
+
+                    </label>
+
+
+                    <select
+                        name="revenue_account"
+                        class="form-select account-select">
+
+                        <option value="">
+
+                            {% trans "Select Account" %}
+
+                        </option>
+
+
+                        {% for acc in accounts %}
+
+                            <option
+                                value="{{ acc.id }}"
+                                {% if product.revenue_account_id == acc.id %}
+                                    selected
+                                {% endif %}>
+
+                                {{ acc.code }} - {{ acc.name }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 الوصف
+            ================================================== -->
+
+            <div class="mb-4 text-end">
+
+                <label class="form-label">
+
+                    {% trans "Description" %}
+
+                </label>
+
+
+                <textarea
+                    name="description"
+                    class="form-control"
+                    rows="3">{{ product.description|default:'' }}</textarea>
+
+            </div>
+
+
+            <!-- =================================================
+                 صورة المنتج
+            ================================================== -->
+
+            <div class="mb-4 text-end">
+
+                <label class="form-label">
+
+                    {% trans "Image" %}
+
+                </label>
+
+
+                <input
+                    type="file"
+                    name="image"
+                    class="form-control"
+                    accept="image/*">
+
+
+                {% if product.image %}
+
+                    <img
+                        src="{{ product.image.url }}"
+                        class="product-image"
+                        alt="{{ product.name }}">
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 منطقة Bundle
+            ================================================== -->
+
+            <div
+                id="bundle_area"
+                style="display:none;">
+
+                <hr>
+
+
+                <h5 class="mb-3 text-end">
+
+                    {% trans "Product Components" %}
+
+                </h5>
+
+
+                <!-- حاوية المكونات -->
+
+                <div id="bundle_container">
+
+
+                    {% for c in components %}
+
+                        <div class="row mb-2 bundle-row">
+
+
+                            <!-- المنتج -->
+
+                            <div class="col-md-6 text-end">
+
+                                <select
+                                    name="component_{{ forloop.counter }}"
+                                    class="form-select component-select"
+                                    required>
+
+                                    <option value="">
+
+                                        {% trans "Select Product" %}
+
+                                    </option>
+
+
+                                    {% for p in products %}
+
+                                        <option
+                                            value="{{ p.id }}"
+                                            {% if p.id == c.component.id %}
+                                                selected
+                                            {% endif %}>
+
+                                            {{ p.name }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- الكمية -->
+
+                            <div class="col-md-4 text-end">
+
+                                <input
+                                    type="number"
+                                    name="qty_{{ forloop.counter }}"
+                                    value="{{ c.quantity }}"
+                                    class="form-control"
+                                    min="1"
+                                    step="1"
+                                    required>
+
+                            </div>
+
+
+                            <!-- حذف -->
+
+                            <div class="col-md-2">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-danger w-100 remove-row">
+
+                                    {% trans "Delete" %}
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- إضافة مكون -->
+
+                <button
+                    type="button"
+                    class="btn btn-secondary mt-2"
+                    id="add_component">
+
+                    + {% trans "Add Component" %}
+
+                </button>
+
+
+                <!-- عدد المكونات -->
+
+                <input
+                    type="hidden"
+                    id="bundle_count"
+                    name="bundle_count"
+                    value="{{ components|length|default:0 }}">
+
+            </div>
+
+
+            <!-- =================================================
+                 زر الحفظ
+            ================================================== -->
+
+            <div class="text-end mt-4">
+
+                <button
+                    type="submit"
+                    class="btn btn-grey px-5">
+
+                    {% trans "Save Product" %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================================
+       العناصر الرئيسية
+    ========================================================= */
+
+    const hidden =
+        document.getElementById("product_type");
+
+    const tabNormal =
+        document.getElementById("tab-normal");
+
+    const tabBundle =
+        document.getElementById("tab-bundle");
+
+    const tabService =
+        document.getElementById("tab-service");
+
+    const bundleArea =
+        document.getElementById("bundle_area");
+
+    const bundleContainer =
+        document.getElementById("bundle_container");
+
+    const addBtn =
+        document.getElementById("add_component");
+
+    const bundleCount =
+        document.getElementById("bundle_count");
+
+    const form =
+        document.querySelector("form");
+
+
+    /* =========================================================
+       تفعيل Select2
+    ========================================================= */
+
+    function initializeSelect2() {
+
+        $(".account-select").select2({
+            width: "100%",
+            dir: "rtl",
+            placeholder: "{% trans 'Select Account' %}",
+            allowClear: true
+        });
+
+
+        $(".category-select").select2({
+            width: "100%",
+            dir: "rtl",
+            placeholder: "{% trans 'Select Category' %}",
+            allowClear: true
+        });
+
+    }
+
+
+    initializeSelect2();
+
+
+    /* =========================================================
+       تفعيل Select2 للمكونات
+    ========================================================= */
+
+    function initializeComponentSelect(element) {
+
+        $(element).select2({
+            width: "100%",
+            dir: "rtl",
+            placeholder: "{% trans 'Select Product' %}",
+            allowClear: true
+        });
+
+    }
+
+
+    $(".component-select").each(function () {
+
+        initializeComponentSelect(this);
+
+    });
+
+
+    /* =========================================================
+       تفعيل نوع المنتج
+    ========================================================= */
+
+    function activate(type) {
+
+        if (!type) {
+            type = "normal";
+        }
+
+
+        hidden.value = type;
+
+
+        tabNormal.classList.remove("active");
+
+        tabBundle.classList.remove("active");
+
+        tabService.classList.remove("active");
+
+
+        bundleArea.style.display = "none";
+
+
+        /* المنتج العادي */
+
+        if (type === "normal") {
+
+            tabNormal.classList.add("active");
+
+        }
+
+
+        /* المنتج المركب */
+
+        if (type === "bundle") {
+
+            tabBundle.classList.add("active");
+
+            bundleArea.style.display = "block";
+
+        }
+
+
+        /* الخدمة */
+
+        if (type === "service") {
+
+            tabService.classList.add("active");
+
+        }
+
+    }
+
+
+    /* =========================================================
+       تبويب المنتج العادي
+    ========================================================= */
+
+    tabNormal.addEventListener("click", function (e) {
+
+        e.preventDefault();
+
+        activate("normal");
+
+    });
+
+
+    /* =========================================================
+       تبويب المنتج المركب
+    ========================================================= */
+
+    tabBundle.addEventListener("click", function (e) {
+
+        e.preventDefault();
+
+        activate("bundle");
+
+    });
+
+
+    /* =========================================================
+       تبويب الخدمة
+    ========================================================= */
+
+    tabService.addEventListener("click", function (e) {
+
+        e.preventDefault();
+
+        activate("service");
+
+    });
+
+
+    /* =========================================================
+       عداد المكونات
+    ========================================================= */
+
+    let counter =
+        parseInt(bundleCount.value || "0", 10);
+
+
+    /* =========================================================
+       إضافة مكون جديد
+    ========================================================= */
+
+    addBtn.addEventListener("click", function () {
+
+        counter++;
+
+        bundleCount.value = counter;
+
+
+        const html = `
+
+            <div class="row mb-2 bundle-row">
+
+                <div class="col-md-6 text-end">
+
+                    <select
+                        name="component_${counter}"
+                        class="form-select component-select"
+                        required>
+
+                        <option value="">
+
+                            {% trans "Select Product" %}
+
+                        </option>
+
+
+                        {% for p in products %}
+
+                            <option value="{{ p.id }}">
+
+                                {{ p.name }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-4 text-end">
+
                     <input
                         type="number"
                         name="qty_${counter}"
                         class="form-control"
                         min="1"
+                        step="1"
                         value="1"
                         required>
+
                 </div>
+
 
                 <div class="col-md-2">
-                    <button type="button"
-                            class="btn btn-danger w-100 remove-row">
-                        حذف
+
+                    <button
+                        type="button"
+                        class="btn btn-danger w-100 remove-row">
+
+                        {% trans "Delete" %}
+
                     </button>
+
                 </div>
+
             </div>
-        `);
+
+        `;
+
+
+        bundleContainer.insertAdjacentHTML(
+            "beforeend",
+            html
+        );
+
+
+        /* آخر Select تم إضافته */
+
+        const newRow =
+            bundleContainer.lastElementChild;
+
+        const newSelect =
+            newRow.querySelector(".component-select");
+
+
+        initializeComponentSelect(newSelect);
 
     });
 
-    bundleContainer.addEventListener("click", function(e){
 
-        if(e.target.classList.contains("remove-row")){
+    /* =========================================================
+       حذف مكون
+    ========================================================= */
 
-            e.target.closest(".bundle-row").remove();
+    bundleContainer.addEventListener(
+        "click",
+        function (e) {
+
+            const removeButton =
+                e.target.closest(".remove-row");
+
+
+            if (!removeButton) {
+                return;
+            }
+
+
+            const row =
+                removeButton.closest(".bundle-row");
+
+
+            if (row) {
+
+                /* تدمير Select2 قبل حذف العنصر */
+
+                const select =
+                    row.querySelector(".component-select");
+
+
+                if (select && $(select).hasClass("select2-hidden-accessible")) {
+
+                    $(select).select2("destroy");
+
+                }
+
+
+                row.remove();
+
+            }
+
+
+            /* تحديث العدد */
 
             bundleCount.value =
-                bundleContainer.querySelectorAll(".bundle-row").length;
+                bundleContainer.querySelectorAll(
+                    ".bundle-row"
+                ).length;
 
         }
+    );
 
-    });
 
-    form.addEventListener("submit", function(e){
+    /* =========================================================
+       التحقق قبل الحفظ
+    ========================================================= */
 
-        if(hidden.value==="bundle"){
+    form.addEventListener(
+        "submit",
+        function (e) {
+
+            /* فقط Bundle */
+
+            if (hidden.value !== "bundle") {
+
+                return;
+
+            }
+
 
             const rows =
-                bundleContainer.querySelectorAll(".bundle-row");
+                bundleContainer.querySelectorAll(
+                    ".bundle-row"
+                );
 
-            if(rows.length===0){
+
+            /* يجب وجود مكون واحد */
+
+            if (rows.length === 0) {
 
                 e.preventDefault();
 
-                alert("يجب إضافة مكون واحد على الأقل.");
+                alert(
+                    "{% trans 'You must add at least one component.' %}"
+                );
 
                 return false;
             }
 
+
+            /* التحقق من المكونات */
+
+            let valid = true;
+
+
+            rows.forEach(function (row) {
+
+                const select =
+                    row.querySelector(
+                        ".component-select"
+                    );
+
+                const quantity =
+                    row.querySelector(
+                        'input[type="number"]'
+                    );
+
+
+                if (!select || !select.value) {
+
+                    valid = false;
+
+                }
+
+
+                if (
+                    !quantity ||
+                    !quantity.value ||
+                    parseFloat(quantity.value) <= 0
+                ) {
+
+                    valid = false;
+
+                }
+
+            });
+
+
+            if (!valid) {
+
+                e.preventDefault();
+
+                alert(
+                    "{% trans 'Please select a product and enter a valid quantity for every component.' %}"
+                );
+
+                return false;
+
+            }
+
+
+            /* تحديث العدد النهائي */
+
+            bundleCount.value =
+                rows.length;
+
         }
+    );
 
-    });
 
-    activate(hidden.value || "normal");
+    /* =========================================================
+       تشغيل النوع الحالي
+    ========================================================= */
+
+    activate(
+        hidden.value || "normal"
+    );
 
 });
+
 </script>
+
+
 {% endblock %}

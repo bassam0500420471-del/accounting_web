@@ -8,153 +8,747 @@
 {% endblock %}
 
 
-
 {% block extra_css %}
 
 <style>
 
-/* =========================
-   HR 3D Gray Design
-========================= */
+/* =========================================================
+   صفحة إدارة التقييمات
+   3D + رمادي متدرج + كرت أبيض
+   نفس تصميم إدارة الإجازات والرواتب
+   ========================================================= */
 
 
-.hr-page {
+/* =========================================================
+   الصفحة الخارجية
+   ========================================================= */
 
-    background: #eeeeee;
-
-    padding: 25px;
-
-    border-radius: 20px;
-
-}
-
-
-
-.hr-card {
+.evaluations-management-page {
 
     background: linear-gradient(
-        145deg,
-        #ffffff,
-        #dddddd
+        135deg,
+        #f8f8f8,
+        #d9d9d9
     );
 
-    border-radius: 20px;
+    min-height: 90vh;
 
     padding: 25px;
 
-    box-shadow:
-
-        8px 8px 20px #c5c5c5,
-
-        -8px -8px 20px #ffffff;
+    direction: rtl;
 
 }
 
 
+/* =========================================================
+   الكرت الرئيسي
+   ========================================================= */
 
-.hr-title {
+.evaluations-page-card {
+
+    background: #ffffff;
+
+    border-radius: 22px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, .15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+   ========================================================= */
+
+.evaluations-page-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    text-align: right;
+
+    margin-bottom: 25px;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.evaluations-page-header h3 {
+
+    margin: 0;
+
+    font-size: 26px;
 
     font-weight: 800;
 
-    color:#444;
+    color: #444;
 
 }
 
 
+.evaluations-page-header h3 i {
 
-.hr-add-btn {
+    color: #666;
+
+    margin-left: 8px;
+
+}
+
+
+.evaluations-page-header p {
+
+    color: #777;
+
+    margin: 6px 0 0;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   زر إضافة التقييم
+   ========================================================= */
+
+.evaluation-add-btn {
 
     background: linear-gradient(
         145deg,
-        #777,
-        #444
+        #444,
+        #666
     );
 
-    color:white;
+    color: #fff;
 
-    padding:10px 20px;
+    border: none;
 
-    border-radius:15px;
+    padding: 10px 18px;
 
-    text-decoration:none;
+    border-radius: 10px;
 
-    font-weight:bold;
+    text-decoration: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 700;
 
     box-shadow:
+        3px 3px 8px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.12);
 
-    0 6px 12px rgba(0,0,0,.2);
-
-    transition:.3s;
-
-}
-
-
-
-.hr-add-btn:hover {
-
-    color:white;
-
-    transform:translateY(-3px);
+    transition: .25s;
 
 }
 
 
+.evaluation-add-btn:hover {
 
-.hr-table {
-
-    border-radius:15px;
-
-    overflow:hidden;
-
-}
-
-
-
-.hr-table thead th {
-
-    background:linear-gradient(
+    background: linear-gradient(
         145deg,
-        #666,
-        #444
+        #333,
+        #555
     );
 
-    color:white;
+    color: #fff;
 
-    border:none;
-
-}
-
-
-
-.hr-table tbody tr {
-
-    transition:.3s;
+    transform: translateY(-1px);
 
 }
 
 
+/* =========================================================
+   كرت الجدول
+   ========================================================= */
 
-.hr-table tbody tr:hover {
+.evaluations-table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    min-height: 220px;
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(0,0,0,.05);
+}
 
-    background:#e9e9e9;
+/* =========================================================
+   عنوان الجدول
+   ========================================================= */
 
-    transform:scale(1.01);
+.evaluations-section-title {
+
+    margin: 0 0 18px;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #444;
 
 }
 
 
+.evaluations-section-title i {
 
-.dropdown button {
+    color: #666;
 
-    border-radius:12px;
-
-    background:#666;
-
-    border:none;
+    margin-left: 7px;
 
 }
 
 
+/* =========================================================
+   صندوق الجدول
+   ========================================================= */
+
+.evaluations-table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    min-height: 290px;
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(0,0,0,.05);
+}
+
+/* =========================================================
+   الجدول
+   ========================================================= */
+
+.evaluations-table {
+
+    width: 100%;
+
+    min-width: 1050px;
+
+    table-layout: fixed;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    background: #fff;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+   تدرج رمادي واحد متصل
+   ========================================================= */
+
+.evaluations-table thead {
+
+    background: linear-gradient(
+        90deg,
+        #444 0%,
+        #666 50%,
+        #888 100%
+    ) !important;
+
+    color: #fff !important;
+
+}
+
+
+.evaluations-table thead tr {
+
+    background: transparent !important;
+
+}
+
+
+.evaluations-table thead th {
+
+    background: transparent !important;
+
+    color: #fff !important;
+
+    padding: 16px 10px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    border: 0 !important;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   الحواف العلوية
+   ========================================================= */
+
+.evaluations-table thead th:first-child {
+
+    border-top-right-radius: 18px;
+
+}
+
+
+.evaluations-table thead th:last-child {
+
+    border-top-left-radius: 18px;
+
+}
+
+
+/* =========================================================
+   عرض الأعمدة
+   ========================================================= */
+
+.evaluations-table thead th:nth-child(1) {
+    width: 5%;
+}
+
+
+.evaluations-table thead th:nth-child(2) {
+    width: 19%;
+}
+
+
+.evaluations-table thead th:nth-child(3) {
+    width: 12%;
+}
+
+
+.evaluations-table thead th:nth-child(4) {
+    width: 18%;
+}
+
+
+.evaluations-table thead th:nth-child(5) {
+    width: 13%;
+}
+
+
+.evaluations-table thead th:nth-child(6) {
+    width: 10%;
+}
+
+
+.evaluations-table thead th:nth-child(7) {
+    width: 10%;
+}
+
+
+.evaluations-table thead th:nth-child(8) {
+    width: 13%;
+}
+
+
+/* =========================================================
+   خلايا الجسم
+   ========================================================= */
+
+.evaluations-table tbody td {
+
+    padding: 13px 10px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #eee;
+
+    color: #444 !important;
+
+    background: #fff;
+
+}
+
+
+/* =========================================================
+   حركة الصف
+   ========================================================= */
+
+.evaluations-table tbody tr {
+
+    transition: .25s;
+
+}
+
+
+.evaluations-table tbody tr:hover td {
+
+    background: #f3f3f3;
+
+}
+
+
+/* =========================================================
+   اسم التقييم
+   ========================================================= */
+
+.evaluation-name {
+
+    text-align: right !important;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+/* =========================================================
+   النوع
+   ========================================================= */
+
+.evaluation-type {
+
+    font-weight: 600;
+
+    color: #555;
+
+}
+
+
+/* =========================================================
+   الفترة
+   ========================================================= */
+
+.evaluation-period {
+
+    color: #555;
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+}
+
+
+.evaluation-period .period-to {
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   القسم
+   ========================================================= */
+
+.evaluation-department {
+
+    color: #555;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   عدد الموظفين
+   ========================================================= */
+
+.evaluation-employees {
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+/* =========================================================
+   حالات التقييم
+   ========================================================= */
+
+.evaluation-status {
+
+    display: inline-block;
+
+    padding: 6px 15px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    min-width: 80px;
+
+    text-align: center;
+
+}
+
+
+/* مسودة */
+
+.status-draft {
+
+    background: #eeeeee;
+
+    color: #555;
+
+    border: 1px solid #d5d5d5;
+
+    box-shadow:
+        inset 0 1px 2px rgba(0,0,0,.05);
+
+}
+
+
+/* نشط */
+
+.status-active {
+
+    background: #e8e8e8;
+
+    color: #444;
+
+    border: 1px solid #cfcfcf;
+
+    box-shadow:
+        inset 0 1px 2px rgba(0,0,0,.05);
+
+}
+
+
+/* مغلق */
+
+.status-closed {
+
+    background: #dedede;
+
+    color: #555;
+
+    border: 1px solid #c4c4c4;
+
+    box-shadow:
+        inset 0 1px 2px rgba(0,0,0,.05);
+
+}
+
+
+/* =========================================================
+   قائمة الخيارات
+   ========================================================= */
+
+.evaluation-actions {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+.evaluation-options-btn {
+
+    background: linear-gradient(
+        145deg,
+        #444,
+        #666
+    ) !important;
+
+    color: #fff !important;
+
+    border: none !important;
+
+    border-radius: 10px !important;
+
+    padding: 8px 14px !important;
+
+    font-size: 13px !important;
+
+    font-weight: 700 !important;
+
+    box-shadow:
+        3px 3px 8px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.12);
+
+}
+
+
+.evaluation-options-btn:hover {
+
+    background: linear-gradient(
+        145deg,
+        #333,
+        #555
+    ) !important;
+
+    color: #fff !important;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+   ========================================================= */
+
+.evaluation-dropdown-menu {
+
+    border: none !important;
+
+    border-radius: 12px !important;
+
+    padding: 6px !important;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.18) !important;
+
+    background: #ffffff !important;
+
+}
+
+
+.evaluation-dropdown-menu .dropdown-item {
+
+    border-radius: 8px;
+
+    padding: 9px 12px;
+
+    color: #444;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: .2s;
+
+}
+
+
+.evaluation-dropdown-menu .dropdown-item:hover {
+
+    background: #eeeeee;
+
+    color: #333;
+
+}
+
+
+/* =========================================================
+   حالة عدم وجود بيانات
+   ========================================================= */
+
+.evaluations-empty {
+
+    padding: 40px 20px !important;
+
+    text-align: center;
+
+    color: #999 !important;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background: #fafafa !important;
+
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    .evaluations-management-page {
+
+        padding: 15px;
+
+    }
+
+
+    .evaluations-page-card {
+
+        padding: 20px;
+
+        border-radius: 18px;
+
+    }
+
+
+    .evaluations-page-header h3 {
+
+        font-size: 22px;
+
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .evaluations-page-header {
+
+        display: block;
+
+    }
+
+
+    .evaluation-add-btn {
+
+        margin-top: 15px;
+
+        width: 100%;
+
+    }
+
+
+    .evaluations-table {
+
+        min-width: 1050px;
+
+    }
+
+}
+
+
+/* =========================================================
+   التأكيد النهائي على تدرج الرأس
+   ========================================================= */
+
+.evaluations-table thead,
+.evaluations-table thead tr {
+
+    background:
+        linear-gradient(
+            90deg,
+            #444 0%,
+            #666 50%,
+            #888 100%
+        ) !important;
+
+}
+
+
+.evaluations-table thead th {
+
+    background: transparent !important;
+
+    color: #fff !important;
+
+    border: 0 !important;
+
+}
 
 </style>
 
@@ -162,370 +756,417 @@
 
 
 
-
 {% block content %}
 
 
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 evaluations-management-page">
 
 
-<div class="hr-page">
+    <!-- =====================================================
+         الكرت الرئيسي
+         ===================================================== -->
+
+    <div class="evaluations-page-card">
 
 
+        <!-- =================================================
+             رأس الصفحة
+             ================================================= -->
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-
-<h3 class="hr-title">
-
-📋 {% trans "Evaluations Management" %}
-
-</h3>
+        <div class="evaluations-page-header">
 
 
+            <div>
 
-<a href="{% url 'hr:add_evaluation' %}" 
-   class="hr-add-btn">
+                <h3>
 
-➕ {% trans "Add Evaluation" %}
+                    <i class="fa-solid fa-clipboard-check"></i>
 
-</a>
+                    {% trans "Evaluations Management" %}
+
+                </h3>
+
+
+                <p>
+
+                    {% trans "Manage employee evaluations and performance reviews" %}
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'hr:add_evaluation' %}"
+                class="evaluation-add-btn"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add Evaluation" %}
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             كرت الجدول
+             ================================================= -->
+
+        <div class="evaluations-table-card">
+
+
+            <h2 class="evaluations-section-title">
+
+                <i class="fa-solid fa-list-check"></i>
+
+                {% trans "Evaluations List" %}
+
+            </h2>
+
+
+            <!-- =================================================
+                 الجدول
+                 ================================================= -->
+
+            <div class="evaluations-table-wrapper">
+
+
+                <table class="evaluations-table">
+
+
+                    <thead>
+
+                        <tr>
+
+
+                            <th>
+
+                                #
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Evaluation Name" %}
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Type" %}
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Period" %}
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Department" %}
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Employees" %}
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Status" %}
+
+                            </th>
+
+
+                            <th>
+
+                                {% trans "Actions" %}
+
+                            </th>
+
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for evaluation in evaluations %}
+
+
+                        <tr>
+
+
+                            <!-- الرقم -->
+
+                            <td>
+
+                                {{ forloop.counter }}
+
+                            </td>
+
+
+                            <!-- اسم التقييم -->
+
+                            <td class="evaluation-name">
+
+                                {{ evaluation.name }}
+
+                            </td>
+
+
+                            <!-- النوع -->
+
+                            <td class="evaluation-type">
+
+                                {{ evaluation.evaluation_type }}
+
+                            </td>
+
+
+                            <!-- الفترة -->
+
+                            <td class="evaluation-period">
+
+                                <div>
+
+                                    {% trans "From" %}
+
+                                    {{ evaluation.start_date|date:"d-m-Y" }}
+
+                                </div>
+
+
+                                <div class="period-to">
+
+                                    {% trans "To" %}
+
+                                    {{ evaluation.end_date|date:"d-m-Y" }}
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- القسم -->
+
+                            <td class="evaluation-department">
+
+                                {{ evaluation.department|default:"—" }}
+
+                            </td>
+
+
+                            <!-- الموظفين -->
+
+                            <td class="evaluation-employees">
+
+                                {{ evaluation.targets_count }}
+
+                            </td>
+
+
+                            <!-- الحالة -->
+
+                            <td>
+
+
+                                {% if evaluation.status == "draft" %}
+
+
+                                    <span class="evaluation-status status-draft">
+
+                                        {% trans "Draft" %}
+
+                                    </span>
+
+
+                                {% elif evaluation.status == "active" %}
+
+
+                                    <span class="evaluation-status status-active">
+
+                                        {% trans "Active" %}
+
+                                    </span>
+
+
+                                {% elif evaluation.status == "closed" %}
+
+
+                                    <span class="evaluation-status status-closed">
+
+                                        {% trans "Closed" %}
+
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- الإجراءات -->
+
+                            <td>
+
+
+                                <div class="dropdown evaluation-actions">
+
+
+                                    <button
+                                        class="btn btn-sm evaluation-options-btn dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+
+                                        <i class="fa-solid fa-gear"></i>
+
+                                        {% trans "Options" %}
+
+                                    </button>
+
+
+                                    <ul class="dropdown-menu dropdown-menu-end evaluation-dropdown-menu">
+
+
+                                        <!-- عرض -->
+
+                                        <li>
+
+                                            <a
+                                                class="dropdown-item"
+                                                href="{% url 'hr:evaluation_detail' evaluation.id %}"
+                                            >
+
+                                                <i class="fa-solid fa-eye"></i>
+
+                                                {% trans "View" %}
+
+                                            </a>
+
+                                        </li>
+
+
+                                        <!-- تعديل -->
+
+                                        <li>
+
+                                            <a
+                                                class="dropdown-item"
+                                                href="{% url 'hr:evaluation_edit' evaluation.id %}"
+                                            >
+
+                                                <i class="fa-solid fa-pen-to-square"></i>
+
+                                                {% trans "Edit" %}
+
+                                            </a>
+
+                                        </li>
+
+
+                                        {% if evaluation.status != "closed" %}
+
+
+                                            <li>
+
+                                                <hr class="dropdown-divider">
+
+                                            </li>
+
+
+                                            <!-- إغلاق -->
+
+                                            <li>
+
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="{% url 'hr:evaluation_close' evaluation.id %}"
+                                                    onclick="return confirm('{% trans "Are you sure you want to close the evaluation?" %}');"
+                                                >
+
+                                                    <i class="fa-solid fa-lock"></i>
+
+                                                    {% trans "Close" %}
+
+                                                </a>
+
+                                            </li>
+
+
+                                        {% endif %}
+
+
+                                    </ul>
+
+
+                                </div>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="evaluations-empty"
+                            >
+
+                                <i class="fa-solid fa-clipboard-list fa-2x"></i>
+
+                                <br><br>
+
+                                {% trans "No evaluations available" %}
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
 
 
 </div>
-
-
-
-
-<div class="hr-card">
-
-
-
-<div class="table-responsive">
-
-
-<table class="table table-bordered table-hover text-center align-middle hr-table mb-0">
-
-
-
-<thead>
-
-
-<tr>
-
-
-<th>#</th>
-
-
-<th>
-{% trans "Evaluation Name" %}
-</th>
-
-
-<th>
-{% trans "Type" %}
-</th>
-
-
-<th>
-{% trans "Period" %}
-</th>
-
-
-<th>
-{% trans "Department" %}
-</th>
-
-
-<th>
-{% trans "Employees" %}
-</th>
-
-
-<th>
-{% trans "Status" %}
-</th>
-
-
-<th>
-{% trans "Actions" %}
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-
-<tbody>
-
-
-
-{% for evaluation in evaluations %}
-
-
-<tr>
-
-
-
-<td>
-{{ forloop.counter }}
-</td>
-
-
-
-<td class="text-start fw-bold">
-
-{{ evaluation.name }}
-
-</td>
-
-
-
-
-<td>
-
-{{ evaluation.evaluation_type }}
-
-</td>
-
-
-
-
-<td>
-
-<div>
-
-{% trans "From" %}
-
-{{ evaluation.start_date|date:"d-m-Y" }}
-
-</div>
-
-
-<div class="fw-bold">
-
-{% trans "To" %}
-
-{{ evaluation.end_date|date:"d-m-Y" }}
-
-</div>
-
-
-</td>
-
-
-
-
-
-<td>
-
-{{ evaluation.department|default:"—" }}
-
-</td>
-
-
-
-
-<td>
-
-{{ evaluation.targets_count }}
-
-</td>
-
-
-
-
-<td>
-
-
-{% if evaluation.status == "draft" %}
-
-
-<span class="badge bg-secondary">
-
-{% trans "Draft" %}
-
-</span>
-
-
-
-{% elif evaluation.status == "active" %}
-
-
-
-<span class="badge bg-success">
-
-{% trans "Active" %}
-
-</span>
-
-
-
-{% elif evaluation.status == "closed" %}
-
-
-
-<span class="badge bg-danger">
-
-{% trans "Closed" %}
-
-</span>
-
-
-
-{% endif %}
-
-
-</td>
-
-
-
-
-
-
-<td>
-
-
-<div class="dropdown">
-
-
-<button class="btn btn-sm btn-secondary dropdown-toggle"
-data-bs-toggle="dropdown">
-
-
-⚙ {% trans "Options" %}
-
-
-</button>
-
-
-
-<ul class="dropdown-menu">
-
-
-
-<li>
-
-<a class="dropdown-item"
-href="{% url 'hr:evaluation_detail' evaluation.id %}">
-
-👁 {% trans "View" %}
-
-</a>
-
-</li>
-
-
-
-
-<li>
-
-<a class="dropdown-item"
-href="{% url 'hr:evaluation_edit' evaluation.id %}">
-
-
-✏️ {% trans "Edit" %}
-
-
-</a>
-
-</li>
-
-
-
-
-{% if evaluation.status != "closed" %}
-
-
-<li>
-
-<hr class="dropdown-divider">
-
-</li>
-
-
-
-<li>
-
-<a class="dropdown-item text-danger"
-href="{% url 'hr:evaluation_close' evaluation.id %}"
-onclick="return confirm('{% trans "Are you sure you want to close the evaluation?" %}');">
-
-
-🔒 {% trans "Close" %}
-
-
-</a>
-
-
-</li>
-
-
-{% endif %}
-
-
-
-</ul>
-
-
-</div>
-
-
-</td>
-
-
-
-
-</tr>
-
-
-
-
-{% empty %}
-
-
-
-<tr>
-
-<td colspan="8" class="text-center py-4 text-muted">
-
-{% trans "No evaluations available" %}
-
-</td>
-
-</tr>
-
-
-
-{% endfor %}
-
-
-
-
-</tbody>
-
-
-
-</table>
-
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
 
 
 {% endblock %}

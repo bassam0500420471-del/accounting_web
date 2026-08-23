@@ -1,91 +1,115 @@
 {% load i18n %}
+
 <!DOCTYPE html>
-<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+
+<html
+    lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}"
+    dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}"
+>
 
 <head>
+
     <meta charset="UTF-8">
-    <title>{% trans "Purchase Invoice" %}</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% trans "Purchase Invoice" %}
+    </title>
 
     <style>
 
-        body {
-            font-family: "Tahoma";
-            background: #fff;
-            margin: 0;
-            padding: 0;
-            direction: {% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %};
-        }
-
-        .invoice-container {
-            width: 794px;
-            min-height: 1123px;
-            margin: auto;
-            background: #fff;
-            padding: 30px 40px;
+        * {
             box-sizing: border-box;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .fw-bold {
-            font-weight: bold;
-        }
-
-        table {
+        html,
+        body {
+            margin: 0;
+            padding: 0;
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            min-height: 100%;
         }
 
-        table th, table td {
-            border: 1px solid #000;
-            padding: 6px;
-            text-align: center;
-            font-size: 14px;
+
+        body {
+            font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+            background: #fff;
+            direction:
+                {% if LANGUAGE_CODE == 'ar' %}
+                    rtl
+                {% else %}
+                    ltr
+                {% endif %};
         }
 
-        table th {
-            background: #f5f5f5;
+
+        button,
+        a {
+            font-family: inherit;
         }
 
-        hr {
-            border: none;
-            border-top: 1px solid #aaa;
-            margin: 20px 0;
-        }
+
+        /* =====================================================
+           الطباعة العامة
+           ===================================================== */
 
         @media print {
-            body {
-                background: #fff;
-            }
-
-            .invoice-container {
-                margin: 0;
-                width: 100%;
-                box-shadow: none;
-            }
 
             @page {
                 size: A4;
-                margin: 0;
+                margin: 10mm;
             }
+
+
+            html,
+            body {
+                width: 100% !important;
+                min-height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+            }
+
+
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
         }
 
     </style>
+
 </head>
+
 
 <body>
 
     {% block content %}
-    <!-- purchase_view or purchase_print content goes here -->
+
     {% endblock %}
+
+
+    <script>
+
+        function printInvoice() {
+
+            window.focus();
+
+            setTimeout(function () {
+
+                window.print();
+
+            }, 200);
+
+        }
+
+    </script>
 
 </body>
 

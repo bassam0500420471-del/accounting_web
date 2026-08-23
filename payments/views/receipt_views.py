@@ -44,13 +44,18 @@ def receipt_create(request):
     print("ENTER RECEIPT CREATE VIEW")
     print("METHOD =", request.method)
 
-    cash_accounts = Account.objects.filter(
-        company=company,
-        is_active=True
-    ).order_by("code")
+    # =========================================
+    # البيانات الأساسية
+    # =========================================
 
-    customers = Customer.objects.filter(company=company).order_by("name")
-    suppliers = Supplier.objects.filter(company=company).order_by("commercial_name")
+    customers = Customer.objects.filter(
+        company=company
+    ).order_by("name")
+
+    suppliers = Supplier.objects.filter(
+        company=company
+    ).order_by("commercial_name")
+
     cost_centers = CostCenter.objects.filter(
         company=company,
         is_active=True
@@ -61,12 +66,29 @@ def receipt_create(request):
         is_active=True
     ).order_by("code")
 
+    # =========================================
+    # طرق الدفع
+    # =========================================
+
     payment_methods = PaymentMethod.objects.filter(
-        company=company,
+        company=company
+    ).select_related(
+        "account"
     ).order_by("name")
+
+    # =========================================
+    # POST
+    # =========================================
+
     if request.method == "POST":
-        party_type = (request.POST.get("party_type") or "").strip()
-        party_id = (request.POST.get("party_id") or "").strip()
+
+        party_type = (
+            request.POST.get("party_type") or ""
+        ).strip()
+
+        party_id = (
+            request.POST.get("party_id") or ""
+        ).strip()
 
         customer_id = (
             request.POST.get("customer")
@@ -77,53 +99,173 @@ def receipt_create(request):
             request.POST.get("supplier")
             or party_id
         ).strip()
-        cost_center_id = (request.POST.get("cost_center") or "").strip()
-        other_account_id = (request.POST.get("other_account") or "").strip()
-        cash_account_id = (request.POST.get("cash_account") or "").strip()
 
-        if not cash_account_id or cash_account_id == "None":
-            messages.error(request, "الرجاء اختيار حساب الصندوق/البنك")
-            return redirect("payments:receipt_create")
+        cost_center_id = (
+            request.POST.get("cost_center") or ""
+        ).strip()
 
-        if not cash_account_id.isdigit():
-            messages.error(request, "حساب الصندوق/البنك غير صحيح")
-            return redirect("payments:receipt_create")
+        other_account_id = (
+            request.POST.get("other_account") or ""
+        ).strip()
 
-        amount = (request.POST.get("amount") or "").strip()
-        description = (request.POST.get("description") or "").strip()
-        invoice_id = request.POST.get("invoice_id")
-        if invoice_id == "None" or invoice_id == "":
-            invoice_id = None
-        if not party_type:
-            messages.error(request, "الرجاء اختيار نوع الجهة")
-            return redirect("payments:receipt_create")
-        if not cash_account_id:
-            messages.error(request, "الرجاء اختيار حساب الصندوق/البنك")
-            return redirect("payments:receipt_create")
-        if not amount:
-            messages.error(request, "الرجاء إدخال المبلغ")
-            return redirect("payments:receipt_create")
+        # =========================================
+        # طريقة الدفع
+        # =========================================
 
-        try:
-            amount_decimal = Decimal(amount)
+        payment_method_id = (
+            request.POST.get("payment_method") or ""
+        ).strip()
 
-        except InvalidOperation:
-            messages.error(request, "المبلغ غير صحيح")
-            return redirect("payments:receipt_create")
+        if (
+            not payment_method_id
+            or payment_method_id == "None"
+        ):
+            messages.error(
+                request,
+                "الرجاء اختيار طريقة الدفع"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
 
+        if not payment_method_id.isdigit():
+            messages.error(
+                request,
+                "طريقة الدفع غير صحيحة"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
 
-        
+        payment_method = (
+            PaymentMethod.objects.filter(
+                id=payment_method_id,
+                company=company
+            )
+            .select_related("account")
+            .first()
+        )
 
-        cash_account = Account.objects.filter(
-            id=cash_account_id,
-            company=company,
-            is_active=True
-        ).first()
+        if not payment_method:
+            messages.error(
+                request,
+                "طريقة الدفع غير موجودة"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        # =========================================
+        # حساب البنك / الصندوق
+        # من الحساب المرتبط بطريقة الدفع
+        # =========================================
+
+        cash_account = payment_method.account
 
         if not cash_account:
-            messages.error(request, "حساب الصندوق/البنك غير موجود")
-            return redirect("payments:receipt_create")
-        customer = supplier = cost_center = other_account = None
+            messages.error(
+                request,
+                "طريقة الدفع غير مرتبطة بحساب صندوق/بنك"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        if not cash_account.is_active:
+            messages.error(
+                request,
+                "حساب طريقة الدفع غير نشط"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        # =========================================
+        # المبلغ والوصف والفاتورة
+        # =========================================
+
+        amount = (
+            request.POST.get("amount") or ""
+        ).strip()
+
+        description = (
+            request.POST.get("description") or ""
+        ).strip()
+
+        invoice_id = request.POST.get(
+            "invoice_id"
+        )
+
+        if invoice_id in ["None", ""]:
+            invoice_id = None
+
+        # =========================================
+        # التحقق من نوع الجهة
+        # =========================================
+
+        if not party_type:
+            messages.error(
+                request,
+                "الرجاء اختيار نوع الجهة"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        # =========================================
+        # التحقق من المبلغ
+        # =========================================
+
+        if not amount:
+            messages.error(
+                request,
+                "الرجاء إدخال المبلغ"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        try:
+            amount_decimal = Decimal(
+                amount
+            ).quantize(
+                Decimal("0.01")
+            )
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+            messages.error(
+                request,
+                "المبلغ غير صحيح"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        if amount_decimal <= Decimal("0.00"):
+            messages.error(
+                request,
+                "يجب أن يكون المبلغ أكبر من صفر"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        # =========================================
+        # تحديد الجهة
+        # =========================================
+
+        customer = None
+        supplier = None
+        cost_center = None
+        other_account = None
+
+        # =========================================
+        # عميل
+        # =========================================
 
         if party_type == "customer":
 
@@ -135,11 +277,18 @@ def receipt_create(request):
             ).first()
 
             if not customer:
-                messages.error(request, "العميل غير موجود")
-                return redirect("payments:receipt_create")
-            if not customer:
-                messages.error(request, "العميل غير موجود")
-                return redirect("payments:receipt_create")
+                messages.error(
+                    request,
+                    "العميل غير موجود"
+                )
+                return redirect(
+                    "payments:receipt_create"
+                )
+
+        # =========================================
+        # مورد
+        # =========================================
+
         elif party_type == "supplier":
 
             selected_id = supplier_id
@@ -148,27 +297,94 @@ def receipt_create(request):
                 company=company,
                 id=selected_id
             ).first()
-            if not supplier:
-                messages.error(request, "المورد غير موجود")
-                return redirect("payments:receipt_create")
-        elif party_type == "cost_center":
-            selected_id = cost_center_id or party_id
-            cost_center = CostCenter.objects.filter(company=company, is_active=True, id=selected_id).first()
-            if not cost_center:
-                messages.error(request, "مركز التكلفة غير موجود")
-                return redirect("payments:receipt_create")
-        elif party_type == "other":
-            selected_id = other_account_id or party_id
-            other_account = Account.objects.filter(company=company, is_active=True, id=selected_id).first()
-            if not other_account:
-                messages.error(request, "الحساب الآخر غير موجود")
-                return redirect("payments:receipt_create")
-        else:
-            messages.error(request, "نوع الجهة غير صحيح")
-            return redirect("payments:receipt_create")
 
-        last_no = ReceiptVoucher.objects.filter(company=company).aggregate(m=Max("voucher_no"))["m"] or 0
+            if not supplier:
+                messages.error(
+                    request,
+                    "المورد غير موجود"
+                )
+                return redirect(
+                    "payments:receipt_create"
+                )
+
+        # =========================================
+        # مركز تكلفة
+        # =========================================
+
+        elif party_type == "cost_center":
+
+            selected_id = (
+                cost_center_id
+                or party_id
+            )
+
+            cost_center = CostCenter.objects.filter(
+                company=company,
+                is_active=True,
+                id=selected_id
+            ).first()
+
+            if not cost_center:
+                messages.error(
+                    request,
+                    "مركز التكلفة غير موجود"
+                )
+                return redirect(
+                    "payments:receipt_create"
+                )
+
+        # =========================================
+        # حساب آخر
+        # =========================================
+
+        elif party_type == "other":
+
+            selected_id = (
+                other_account_id
+                or party_id
+            )
+
+            other_account = Account.objects.filter(
+                company=company,
+                is_active=True,
+                id=selected_id
+            ).first()
+
+            if not other_account:
+                messages.error(
+                    request,
+                    "الحساب الآخر غير موجود"
+                )
+                return redirect(
+                    "payments:receipt_create"
+                )
+
+        else:
+            messages.error(
+                request,
+                "نوع الجهة غير صحيح"
+            )
+            return redirect(
+                "payments:receipt_create"
+            )
+
+        # =========================================
+        # رقم سند القبض
+        # =========================================
+
+        last_no = (
+            ReceiptVoucher.objects
+            .filter(company=company)
+            .aggregate(
+                m=Max("voucher_no")
+            )["m"] or 0
+        )
+
         next_voucher_no = last_no + 1
+
+        # =========================================
+        # إنشاء سند القبض
+        # =========================================
 
         voucher = ReceiptVoucher.objects.create(
             company=company,
@@ -178,18 +394,32 @@ def receipt_create(request):
             supplier=supplier,
             cost_center=cost_center,
             other_account=other_account,
+
+            # الحساب يأتي من طريقة الدفع
             cash_account=cash_account,
+
             amount=amount_decimal,
             description=description,
             created_by=request.user,
             status="posted"
         )
+
+        # =========================================
+        # إنشاء القيد المحاسبي
+        # =========================================
+
         post_receipt_voucher(voucher)
+
+        # =========================================
+        # ربط السند بالفاتورة
+        # =========================================
+
         if invoice_id and str(invoice_id).isdigit():
 
-            # ==========================================
-            # أولاً: محاولة ربطها بفاتورة مبيعات
-            # ==========================================
+            # =========================================
+            # أولاً: فاتورة المبيعات العادية
+            # =========================================
+
             try:
 
                 invoice = SalesInvoice.objects.get(
@@ -197,41 +427,79 @@ def receipt_create(request):
                     company=company
                 )
 
-
                 VoucherAllocation.objects.create(
                     receipt_voucher=voucher,
                     sales_invoice=invoice,
                     amount=amount_decimal
                 )
 
-                print("========== CHECK ==========")
-                print("Invoice :", invoice.invoice_no)
-                print("Voucher :", voucher.voucher_no)
-                print("Cash Account :", voucher.cash_account)
                 print(
-                    "Cash Account Name :",
-                    voucher.cash_account.name if voucher.cash_account else ""
+                    "========== SALES INVOICE PAYMENT =========="
                 )
-                print("===========================")
+
+                print(
+                    "Invoice :",
+                    invoice.invoice_no
+                )
+
+                print(
+                    "Voucher :",
+                    voucher.voucher_no
+                )
+
+                print(
+                    "Payment Method :",
+                    payment_method.name
+                )
+
+                print(
+                    "Cash Account :",
+                    cash_account.name
+                )
+
+                print(
+                    "Amount :",
+                    amount_decimal
+                )
+
+                print(
+                    "=========================================="
+                )
+
+                # =====================================
+                # تحديث المدفوع للفاتورة العادية
+                # =====================================
+
+                current_paid = (
+                    invoice.paid_amount
+                    or Decimal("0.00")
+                )
 
                 invoice.paid_amount = min(
                     invoice.total_after_tax,
-                    invoice.paid_amount + amount_decimal
+                    current_paid + amount_decimal
                 )
 
                 invoice.payment_status = (
                     "paid"
-                    if invoice.paid_amount >= invoice.total_after_tax
+                    if invoice.paid_amount
+                    >= invoice.total_after_tax
                     else "partial"
                 )
 
-                invoice.save()
+                invoice.save(
+                    update_fields=[
+                        "paid_amount",
+                        "payment_status"
+                    ]
+                )
 
             except SalesInvoice.DoesNotExist:
 
-                # ==========================================
-                # ثانياً: محاولة ربطها بفاتورة نقاط البيع
-                # ==========================================
+                # =========================================
+                # ثانياً: فاتورة نقاط البيع
+                # =========================================
+
                 try:
 
                     pos_invoice = PosInvoice.objects.get(
@@ -248,27 +516,59 @@ def receipt_create(request):
                     Payment.objects.create(
                         invoice=pos_invoice,
                         amount=amount_decimal,
-                        method=None
+                        method=payment_method,
+                        date=timezone.now()
                     )
 
                 except PosInvoice.DoesNotExist:
                     pass
-        messages.success(request, f"تم حفظ سند القبض بنجاح رقم {voucher.voucher_no}")
+
+        # =========================================
+        # رسالة النجاح
+        # =========================================
+
+        messages.success(
+            request,
+            f"تم حفظ سند القبض بنجاح رقم {voucher.voucher_no}"
+        )
 
         if invoice_id:
-            return redirect("sales:invoices_list")
+            return redirect(
+                "sales:invoices_list"
+            )
 
-        return redirect("payments:receipt_list")
+        return redirect(
+            "payments:receipt_list"
+        )
 
-    return render(request, "payments/receipt_form.html", {
-        "cash_accounts": cash_accounts,
-        "customers": customers,
-        "suppliers": suppliers,
-        "cost_centers": cost_centers,
-        "other_accounts": other_accounts,
-        "payment_methods": payment_methods,
-        "invoice_id": request.GET.get("invoice_id"),
-    })
+    # =========================================
+    # GET
+    # =========================================
+
+    return render(
+        request,
+        "payments/receipt_form.html",
+        {
+            "cash_accounts": Account.objects.filter(
+                company=company,
+                is_active=True
+            ).order_by("code"),
+
+            "customers": customers,
+
+            "suppliers": suppliers,
+
+            "cost_centers": cost_centers,
+
+            "other_accounts": other_accounts,
+
+            "payment_methods": payment_methods,
+
+            "invoice_id": request.GET.get(
+                "invoice_id"
+            ),
+        }
+    )
 
 @login_required
 def receipt_detail(request, pk):

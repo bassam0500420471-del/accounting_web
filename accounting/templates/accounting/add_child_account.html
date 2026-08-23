@@ -2,234 +2,743 @@
 <!DOCTYPE html>
 <html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}"
       dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>{% trans "Add Sub Account" %}</title>
 
+
     <style>
+
+        /* =========================================================
+           الخلفية العامة
+        ========================================================= */
+
         body {
+
+            background: #eeeeee;
+
             font-family: Tahoma, Arial, sans-serif;
-            background: #f5f7fb;
+
             margin: 0;
-            padding: 20px;
+
         }
 
-        .page-wrap {
-            width: 100%;
-            margin: 0;
+
+        /* =========================================================
+           الصفحة
+        ========================================================= */
+
+        .account-page {
+
+            background:
+            linear-gradient(
+                135deg,
+                #f8f8f8,
+                #d5d5d5
+            );
+
+            min-height: 90vh;
+
+            padding: 25px;
+
         }
 
-        .card {
-            width: 100%;
-            min-height: calc(100vh - 40px);
-            background: #ffffff;
-            border-radius: 18px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
 
-        .card-header {
-            padding: 24px 30px;
-            background: #f0f2f5;
-            border-bottom: 1px solid #e5e7eb;
-        }
+        /* =========================================================
+           الكرت الرئيسي
+        ========================================================= */
 
-        .card-header h3 {
-            margin: 0;
-            font-size: 32px;
-        }
+        .account-card {
 
-        .card-body {
+            background: white;
+
+            border-radius: 22px;
+
             padding: 30px;
+
+            box-shadow:
+            0 15px 40px rgba(0,0,0,.15);
+
         }
+
+
+        /* =========================================================
+           رأس الصفحة
+        ========================================================= */
+
+        .page-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            padding-bottom: 20px;
+
+            border-bottom: 1px solid #ddd;
+
+        }
+
+
+        .page-header h3 {
+
+            font-weight: 800;
+
+            color: #444;
+
+            margin: 0;
+
+            font-size: 24px;
+
+        }
+
+
+        /* =========================================================
+           محتوى الصفحة
+        ========================================================= */
+
+        .account-body {
+
+            padding-top: 5px;
+
+        }
+
+
+        /* =========================================================
+           مجموعات الحقول
+        ========================================================= */
 
         .form-group {
+
             margin-bottom: 24px;
+
         }
 
-        label {
+
+        .form-label {
+
             display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 22px;
+
+            margin-bottom: 9px;
+
+            font-weight: 700;
+
+            font-size: 15px;
+
+            color: #555;
+
         }
+
+
+        /* =========================================================
+           الحقول
+        ========================================================= */
 
         input,
         select {
+
             width: 100%;
-            padding: 16px 18px;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 20px;
+
+            min-height: 45px;
+
+            padding: 10px 14px;
+
+            border: 1px solid #aaa;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
             box-sizing: border-box;
-            background: #fff;
+
+            background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f1f1f1
+            );
+
+            color: #444;
+
+            box-shadow:
+            inset 0 2px 4px rgba(0,0,0,.06),
+            0 2px 4px rgba(0,0,0,.04);
+
+            transition: .3s;
+
         }
+
+
+        input:focus,
+        select:focus {
+
+            outline: none;
+
+            border-color: #666;
+
+            box-shadow:
+            0 0 0 3px rgba(100,100,100,.12),
+            inset 0 2px 4px rgba(0,0,0,.06);
+
+        }
+
+
+        /* =========================================================
+           الحقول للقراءة فقط
+        ========================================================= */
 
         .readonly-box {
+
             width: 100%;
-            padding: 16px 18px;
-            border: 1px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 20px;
+
+            min-height: 45px;
+
+            padding: 10px 14px;
+
+            border: 1px solid #aaa;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
             box-sizing: border-box;
-            background: #f9fafb;
-        }
 
-        .actions {
+            background:
+            linear-gradient(
+                145deg,
+                #eeeeee,
+                #d8d8d8
+            );
+
+            color: #555;
+
             display: flex;
-            gap: 12px;
-            margin-top: 30px;
+
+            align-items: center;
+
+            box-shadow:
+            0 3px 6px rgba(0,0,0,.10),
+            inset 0 1px 1px rgba(255,255,255,.8);
+
         }
 
-        .btn {
-            display: inline-block;
-            padding: 14px 22px;
-            border-radius: 12px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-        }
 
-        .btn-primary {
-            background: #2563eb;
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-            color: #fff;
-        }
+        /* =========================================================
+           الرسائل
+        ========================================================= */
 
         .alert {
-            padding: 14px 16px;
+
+            padding: 12px 18px;
+
             border-radius: 12px;
+
             margin-bottom: 18px;
-            font-size: 18px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            box-shadow:
+            0 4px 8px rgba(0,0,0,.08);
+
         }
+
 
         .alert-error,
         .alert-danger {
-            background: #fee2e2;
-            color: #991b1b;
+
+            background:
+            linear-gradient(
+                135deg,
+                #f8d7da,
+                #eeeeee
+            );
+
+            color: #842029;
+
+            border: 1px solid #e5b8bc;
+
         }
+
 
         .alert-success {
-            background: #dcfce7;
-            color: #166534;
+
+            background:
+            linear-gradient(
+                135deg,
+                #d1e7dd,
+                #eeeeee
+            );
+
+            color: #0f5132;
+
+            border: 1px solid #badbcc;
+
         }
+
 
         .alert-warning {
-            background: #fef3c7;
-            color: #92400e;
+
+            background:
+            linear-gradient(
+                135deg,
+                #fff3cd,
+                #eeeeee
+            );
+
+            color: #664d03;
+
+            border: 1px solid #ffecb5;
+
         }
+
 
         .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
+
+            background:
+            linear-gradient(
+                135deg,
+                #cff4fc,
+                #eeeeee
+            );
+
+            color: #055160;
+
+            border: 1px solid #b6effb;
+
         }
 
-        @media (max-width: 768px) {
-            .card-header h3 {
-                font-size: 24px;
+
+        /* =========================================================
+           الأزرار
+        ========================================================= */
+
+        .actions {
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-top: 30px;
+
+            align-items: center;
+
+        }
+
+
+        .btn {
+
+            display: inline-block;
+
+            padding: 11px 24px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            border: 0;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            transition: .3s;
+
+            box-shadow:
+            0 4px 8px rgba(0,0,0,.15),
+            inset 0 1px 1px rgba(255,255,255,.18);
+
+        }
+
+
+        /* =========================================================
+           زر الحفظ
+        ========================================================= */
+
+        .btn-primary {
+
+            background:
+            linear-gradient(
+                135deg,
+                #666,
+                #444
+            );
+
+            color: white;
+
+        }
+
+
+        .btn-primary:hover {
+
+            background:
+            linear-gradient(
+                135deg,
+                #555,
+                #333
+            );
+
+            color: white;
+
+            transform: translateY(-2px);
+
+            box-shadow:
+            0 7px 12px rgba(0,0,0,.25);
+
+        }
+
+
+        /* =========================================================
+           زر الرجوع
+        ========================================================= */
+
+        .btn-secondary {
+
+            background:
+            linear-gradient(
+                135deg,
+                #eeeeee,
+                #cccccc
+            );
+
+            color: #444;
+
+            border: 1px solid #aaa;
+
+        }
+
+
+        .btn-secondary:hover {
+
+            background:
+            linear-gradient(
+                135deg,
+                #dddddd,
+                #bbbbbb
+            );
+
+            color: #333;
+
+            transform: translateY(-2px);
+
+        }
+
+
+        /* =========================================================
+           الشاشات الصغيرة
+        ========================================================= */
+
+        @media(max-width:768px) {
+
+            .account-page {
+
+                padding: 15px;
+
             }
 
-            label,
-            input,
-            select,
-            .readonly-box {
-                font-size: 16px;
+
+            .account-card {
+
+                padding: 18px;
+
             }
+
+
+            .page-header {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                gap: 15px;
+
+                text-align: center;
+
+            }
+
+
+            .page-header h3 {
+
+                font-size: 21px;
+
+            }
+
+
+            .actions {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
 
             .btn {
-                font-size: 16px;
+
+                width: 100%;
+
+                text-align: center;
+
+                box-sizing: border-box;
+
             }
+
         }
+
     </style>
+
 </head>
 
-<body>
-<div class="page-wrap">
-    <div class="card">
 
-        <div class="card-header">
-            <h3>{% trans "Add Sub Account" %}</h3>
+<body>
+
+
+<div class="account-page">
+
+
+    <div class="account-card">
+
+
+        <!-- =====================================================
+             رأس الصفحة
+        ====================================================== -->
+
+        <div class="page-header">
+
+            <h3>
+
+                {% trans "Add Sub Account" %}
+
+            </h3>
+
         </div>
 
-        <div class="card-body">
+
+        <!-- =====================================================
+             محتوى الصفحة
+        ====================================================== -->
+
+        <div class="account-body">
+
 
             {% if messages %}
+
                 {% for message in messages %}
+
                     <div class="alert alert-{{ message.tags|default:'info' }}">
+
                         {{ message }}
+
                     </div>
+
                 {% endfor %}
+
             {% endif %}
 
+
+            <!-- =================================================
+                 الحساب الأب
+            ================================================== -->
+
             <div class="form-group">
-                <label>{% trans "Parent Account" %}</label>
+
+                <label class="form-label">
+
+                    {% trans "Parent Account" %}
+
+                </label>
+
+
                 <div class="readonly-box">
+
                     {{ parent.code }} - {{ parent.name }}
+
                 </div>
+
             </div>
 
+
             <form method="post">
+
                 {% csrf_token %}
 
+
+                <!-- =============================================
+                     كود الحساب
+                ============================================== -->
+
                 <div class="form-group">
-                    <label>{% trans "Account Code" %}</label>
-                    <div class="readonly-box">{{ suggested_code }}</div>
+
+                    <label class="form-label">
+
+                        {% trans "Account Code" %}
+
+                    </label>
+
+
+                    <div class="readonly-box">
+
+                        {{ suggested_code }}
+
+                    </div>
+
                 </div>
 
+
+                <!-- =============================================
+                     اسم الحساب
+                ============================================== -->
+
                 <div class="form-group">
-                    <label for="name">{% trans "Account Name" %}</label>
-                    <input type="text" id="name" name="name" required>
+
+                    <label
+                        for="name"
+                        class="form-label">
+
+                        {% trans "Account Name" %}
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required>
+
                 </div>
 
-                <div class="form-group">
-                    <label for="account_type">{% trans "Account Type" %}</label>
-                    <select id="account_type" name="account_type">
 
-                        <option value="asset" {% if parent.account_type == 'asset' %}selected{% endif %}>
+                <!-- =============================================
+                     نوع الحساب
+                ============================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="account_type"
+                        class="form-label">
+
+                        {% trans "Account Type" %}
+
+                    </label>
+
+
+                    <select
+                        id="account_type"
+                        name="account_type">
+
+
+                        <option
+                            value="asset"
+                            {% if parent.account_type == 'asset' %}
+                                selected
+                            {% endif %}>
+
                             {% trans "Assets" %}
+
                         </option>
 
-                        <option value="liability" {% if parent.account_type == 'liability' %}selected{% endif %}>
+
+                        <option
+                            value="liability"
+                            {% if parent.account_type == 'liability' %}
+                                selected
+                            {% endif %}>
+
                             {% trans "Liabilities" %}
+
                         </option>
 
-                        <option value="equity" {% if parent.account_type == 'equity' %}selected{% endif %}>
+
+                        <option
+                            value="equity"
+                            {% if parent.account_type == 'equity' %}
+                                selected
+                            {% endif %}>
+
                             {% trans "Equity" %}
+
                         </option>
 
-                        <option value="revenue" {% if parent.account_type == 'revenue' %}selected{% endif %}>
+
+                        <option
+                            value="revenue"
+                            {% if parent.account_type == 'revenue' %}
+                                selected
+                            {% endif %}>
+
                             {% trans "Revenue" %}
+
                         </option>
 
-                        <option value="expense" {% if parent.account_type == 'expense' %}selected{% endif %}>
+
+                        <option
+                            value="expense"
+                            {% if parent.account_type == 'expense' %}
+                                selected
+                            {% endif %}>
+
                             {% trans "Expenses" %}
+
                         </option>
+
 
                     </select>
+
                 </div>
+
+
+                <!-- =============================================
+                     الأزرار
+                ============================================== -->
 
                 <div class="actions">
-                    <button type="submit" class="btn btn-primary">
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+
                         {% trans "Save Sub Account" %}
+
                     </button>
 
-                    <a href="{% url 'accounting:account_view' parent.pk %}"
-                       class="btn btn-secondary">
+
+                    <a
+                        href="{% url 'accounting:account_view' parent.pk %}"
+                        class="btn btn-secondary">
+
                         {% trans "Back" %}
+
                     </a>
+
+
                 </div>
 
+
             </form>
+
 
         </div>
 
     </div>
+
 </div>
+
+
 </body>
+
 </html>

@@ -4,301 +4,1172 @@
 
 {% block content %}
 
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"/>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <style>
-.btn-main {
-    background:#6c757d;
-    color:#fff;
-    border-radius:6px;
-    height:34px;
-    font-size:14px;
-    padding:0 16px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    border:none;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:#eeeeee;
+
 }
-.btn-main:hover { background:#5c636a; color:#fff; }
 
-.balance-ok { color:#198754; font-weight:bold; }
-.balance-bad { color:#dc3545; font-weight:bold; }
 
-.select2-container { width:100% !important; }
+/* =========================================================
+   الصفحة
+========================================================= */
 
-.select2-container--default .select2-selection--single {
-    height:38px !important;
-    padding:4px 10px;
-    border-radius:6px;
-    border:1px solid #ced4da;
-    font-size:14px;
+.journal-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.journal-card {
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
     display:flex;
+
+    justify-content:space-between;
+
     align-items:center;
+
+    margin-bottom:25px;
+
 }
+
+
+.page-header h3 {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i {
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   الأزرار الرئيسية
+========================================================= */
+
+.btn-main {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:11px 20px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-height:42px;
+
+    cursor:pointer;
+
+}
+
+
+.btn-main:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+.btn-main:disabled {
+
+    opacity:.55;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+
+/* =========================================================
+   الكروت الداخلية
+========================================================= */
+
+.form-card {
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+    border-radius:18px;
+
+    border:1px solid #e2e2e2;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+    margin-bottom:20px;
+
+    overflow:hidden;
+
+}
+
+
+.form-card-body {
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الصفوف
+========================================================= */
+
+.form-row {
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:20px;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.form-group {
+
+    flex:1;
+
+    min-width:250px;
+
+}
+
+
+.form-group label {
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:700;
+
+    color:#444;
+
+}
+
+
+.form-control {
+
+    border:1px solid #aaa !important;
+
+    border-radius:10px !important;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    ) !important;
+
+    color:#444 !important;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+}
+
+
+.form-control:focus {
+
+    outline:none !important;
+
+    border-color:#666 !important;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08) !important;
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.table-box {
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+#linesTable {
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+    margin:0 !important;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+#linesTable thead {
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+#linesTable thead th {
+
+    padding:16px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    border:0;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+#linesTable tbody td {
+
+    padding:13px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   صفوف الجدول
+========================================================= */
+
+#linesTable tbody tr {
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+#linesTable tbody tr:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   حقول الجدول
+========================================================= */
+
+#linesTable input {
+
+    width:100%;
+
+    padding:9px 10px;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    box-sizing:border-box;
+
+}
+
+
+#linesTable input:focus {
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   Select2
+========================================================= */
+
+.select2-container {
+
+    width:100% !important;
+
+}
+
+
+.select2-container--default
+.select2-selection--single {
+
+    height:42px !important;
+
+    padding:6px 10px !important;
+
+    border:1px solid #aaa !important;
+
+    border-radius:9px !important;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    ) !important;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+}
+
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__rendered {
+
+    color:#444 !important;
+
+    line-height:28px !important;
+
+    font-size:13px;
+
+}
+
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__arrow {
+
+    height:40px !important;
+
+}
+
+
+/* =========================================================
+   قائمة Select2
+========================================================= */
+
+.select2-dropdown {
+
+    border:1px solid #aaa !important;
+
+    border-radius:10px !important;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.18);
+
+}
+
+
+.select2-results__option {
+
+    padding:9px 12px;
+
+    font-size:13px;
+
+}
+
+
+.select2-container--default
+.select2-results__option--highlighted[aria-selected] {
+
+    background:#666 !important;
+
+    color:white !important;
+
+}
+
+
+/* =========================================================
+   Footer
+========================================================= */
+
+#linesTable tfoot {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+}
+
+
+#linesTable tfoot td {
+
+    padding:14px;
+
+    border-top:1px solid #ccc;
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   الإجماليات
+========================================================= */
+
+#totalDebit,
+#totalCredit {
+
+    font-weight:800;
+
+    font-size:15px;
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   حالة التوازن
+========================================================= */
+
+.balance-ok {
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.balance-bad {
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #888,
+        #555
+    );
+
+    color:white;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   زر حذف الصف
+========================================================= */
+
+.remove-row {
+
+    background:
+    linear-gradient(
+        135deg,
+        #888,
+        #555
+    ) !important;
+
+    color:white !important;
+
+    border:0 !important;
+
+    width:32px;
+
+    height:32px;
+
+    border-radius:9px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.18);
+
+    transition:.3s;
+
+}
+
+
+.remove-row:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #333
+    ) !important;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   أزرار أسفل الصفحة
+========================================================= */
+
+.bottom-actions {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:20px;
+
+    gap:15px;
+
+}
+
+
+.balance-area {
+
+    flex:1;
+
+    text-align:center;
+
+}
+
+
+/* =========================================================
+   اتجاه Select2
+========================================================= */
+
+{% if LANGUAGE_CODE == "ar" %}
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__arrow {
+
+    left:8px !important;
+
+    right:auto !important;
+
+}
+
+{% endif %}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .journal-page {
+
+        padding:15px;
+
+    }
+
+
+    .journal-card {
+
+        padding:18px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .page-header h3 {
+
+        font-size:22px;
+
+    }
+
+
+    .btn-main {
+
+        width:100%;
+
+    }
+
+
+    .form-card-body {
+
+        padding:18px;
+
+    }
+
+
+    .form-group {
+
+        min-width:100%;
+
+    }
+
+
+    .bottom-actions {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+
+    .balance-area {
+
+        order:2;
+
+    }
+
+
+    #linesTable {
+
+        min-width:900px;
+
+    }
+
+}
+
 </style>
 
 
-<div class="container mt-4">
+<div class="journal-page">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
-        <h3 class="fw-bold">
-            {% trans "Add Manual Journal Entry" %}
-        </h3>
-
-        <a href="{% url 'accounting:journals_list' %}" class="btn-main">
-            {% trans "Back" %}
-        </a>
-
-    </div>
+    <div class="journal-card">
 
 
-    <form method="post" id="journalForm">
+        <!-- =====================================================
+             رأس الصفحة
+        ====================================================== -->
 
-        {% csrf_token %}
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                    {% trans "Add Manual Journal Entry" %}
+
+                </h3>
+
+            </div>
 
 
-        <div class="card mb-3">
+            <a href="{% url 'accounting:journals_list' %}"
+               class="btn-main">
 
-            <div class="card-body">
+                {% trans "Back" %}
 
-                <div class="row g-3">
+            </a>
+
+        </div>
 
 
-                    <div class="col-md-3">
 
-                        <label class="fw-bold">
-                            {% trans "Date" %}
-                        </label>
+        <!-- =====================================================
+             النموذج
+        ====================================================== -->
 
-                        <input type="date"
-                               name="date"
-                               id="journalDate"
-                               class="form-control"
-                               required>
+        <form method="post" id="journalForm">
+
+            {% csrf_token %}
+
+
+
+            <!-- =================================================
+                 بيانات القيد
+            ================================================== -->
+
+            <div class="form-card">
+
+                <div class="form-card-body">
+
+                    <div class="form-row">
+
+
+                        <div class="form-group">
+
+                            <label class="fw-bold">
+
+                                {% trans "Date" %}
+
+                            </label>
+
+
+                            <input type="date"
+                                   name="date"
+                                   id="journalDate"
+                                   class="form-control"
+                                   required>
+
+                        </div>
+
+
+
+                        <div class="form-group"
+                             style="flex:3;">
+
+                            <label class="fw-bold">
+
+                                {% trans "Description" %}
+
+                            </label>
+
+
+                            <input type="text"
+                                   name="description"
+                                   class="form-control"
+                                   placeholder="{% trans 'Enter description' %}"
+                                   required>
+
+                        </div>
+
 
                     </div>
 
+                </div>
+
+            </div>
 
 
-                    <div class="col-md-9">
 
-                        <label class="fw-bold">
-                            {% trans "Description" %}
-                        </label>
+            <!-- =================================================
+                 جدول القيود
+            ================================================== -->
 
-                        <input type="text"
-                               name="description"
-                               class="form-control"
-                               placeholder="{% trans 'Enter description' %}"
-                               required>
+            <div class="form-card">
 
-                    </div>
+                <div class="table-box">
+
+
+                    <table class="table text-center align-middle mb-0"
+                           id="linesTable">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>
+
+                                    {% trans "Account" %}
+
+                                </th>
+
+                                <th>
+
+                                    {% trans "Debit" %}
+
+                                </th>
+
+                                <th>
+
+                                    {% trans "Credit" %}
+
+                                </th>
+
+                                <th width="50">
+
+                                    ×
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+
+                        <tbody>
+
+
+                            {% for i in "12"|make_list %}
+
+                            {% if forloop.counter <= 2 %}
+
+                            <tr>
+
+
+                                <td>
+
+                                    {{ forloop.counter }}
+
+                                </td>
+
+
+
+                                <td class="text-start">
+
+
+                                    <select name="row_{{ forloop.counter }}_account"
+                                            class="form-select account-select">
+
+
+                                        <option value="">
+
+                                            {% trans "Select Account" %}
+
+                                        </option>
+
+
+                                        {% for a in accounts %}
+
+                                        <option value="{{ a.id }}">
+
+                                            {{ a.code }} - {{ a.name }}
+
+                                        </option>
+
+                                        {% endfor %}
+
+
+                                    </select>
+
+
+                                </td>
+
+
+
+                                <td>
+
+                                    <input type="number"
+                                           step="0.01"
+                                           name="row_{{ forloop.counter }}_debit"
+                                           class="form-control debit">
+
+                                </td>
+
+
+
+                                <td>
+
+                                    <input type="number"
+                                           step="0.01"
+                                           name="row_{{ forloop.counter }}_credit"
+                                           class="form-control credit">
+
+                                </td>
+
+
+
+                                <td></td>
+
+
+                            </tr>
+
+
+                            {% endif %}
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+
+                        <tfoot>
+
+                            <tr class="fw-bold">
+
+
+                                <td colspan="2">
+
+                                    {% trans "Total" %}
+
+                                </td>
+
+
+                                <td id="totalDebit">
+
+                                    0.00
+
+                                </td>
+
+
+                                <td id="totalCredit">
+
+                                    0.00
+
+                                </td>
+
+
+                                <td></td>
+
+
+                            </tr>
+
+                        </tfoot>
+
+
+                    </table>
 
 
                 </div>
 
             </div>
 
-        </div>
 
 
+            <input type="hidden"
+                   name="total_rows"
+                   id="totalRows"
+                   value="2">
 
-        <div class="card">
 
-            <div class="card-body p-0">
 
+            <!-- =================================================
+                 أزرار أسفل الصفحة
+            ================================================== -->
 
-                <table class="table table-bordered text-center align-middle mb-0"
-                       id="linesTable">
+            <div class="bottom-actions">
 
 
-                    <thead class="table-light">
+                <button type="button"
+                        class="btn-main"
+                        onclick="addRow()">
 
-                        <tr>
+                    ➕ {% trans "Add Row" %}
 
-                            <th>#</th>
+                </button>
 
-                            <th>
-                                {% trans "Account" %}
-                            </th>
 
-                            <th>
-                                {% trans "Debit" %}
-                            </th>
 
-                            <th>
-                                {% trans "Credit" %}
-                            </th>
+                <div id="balanceMsg"
+                     class="balance-area"></div>
 
-                            <th width="50">
-                                ×
-                            </th>
 
-                        </tr>
 
-                    </thead>
+                <button type="submit"
+                        class="btn-main"
+                        id="saveBtn"
+                        disabled>
 
+                    💾 {% trans "Save Entry" %}
 
-
-                    <tbody>
-
-
-                        {% for i in "12"|make_list %}
-
-                        {% if forloop.counter <= 2 %}
-
-                        <tr>
-
-                            <td>
-                                {{ forloop.counter }}
-                            </td>
-
-
-                            <td class="text-start">
-
-                                <select name="row_{{ forloop.counter }}_account"
-                                        class="form-select account-select">
-
-                                    <option value="">
-                                        {% trans "Select Account" %}
-                                    </option>
-
-
-                                    {% for a in accounts %}
-
-                                    <option value="{{ a.id }}">
-                                        {{ a.code }} - {{ a.name }}
-                                    </option>
-
-                                    {% endfor %}
-
-
-                                </select>
-
-                            </td>
-
-
-
-                            <td>
-
-                                <input type="number"
-                                       step="0.01"
-                                       name="row_{{ forloop.counter }}_debit"
-                                       class="form-control debit">
-
-                            </td>
-
-
-
-                            <td>
-
-                                <input type="number"
-                                       step="0.01"
-                                       name="row_{{ forloop.counter }}_credit"
-                                       class="form-control credit">
-
-                            </td>
-
-
-
-                            <td></td>
-
-
-                        </tr>
-
-
-                        {% endif %}
-
-                        {% endfor %}
-
-
-
-                    </tbody>
-
-
-
-                    <tfoot>
-
-                        <tr class="fw-bold">
-
-                            <td colspan="2">
-                                {% trans "Total" %}
-                            </td>
-
-                            <td id="totalDebit">
-                                0.00
-                            </td>
-
-                            <td id="totalCredit">
-                                0.00
-                            </td>
-
-                            <td></td>
-
-                        </tr>
-
-                    </tfoot>
-
-
-                </table>
+                </button>
 
 
             </div>
 
-        </div>
+
+        </form>
 
 
-
-        <input type="hidden"
-               name="total_rows"
-               id="totalRows"
-               value="2">
-
-
-
-        <div class="d-flex justify-content-between align-items-center mt-3">
-
-
-            <button type="button"
-                    class="btn-main"
-                    onclick="addRow()">
-
-                ➕ {% trans "Add Row" %}
-
-            </button>
-
-
-            <div id="balanceMsg"></div>
-
-
-
-            <button type="submit"
-                    class="btn-main"
-                    id="saveBtn"
-                    disabled>
-
-                💾 {% trans "Save Entry" %}
-
-            </button>
-
-
-        </div>
-
-
-    </form>
-
+    </div>
 
 </div>
 
 
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-      rel="stylesheet"/>
-
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
-
 <script>
+
+/* =========================================================
+   التاريخ الافتراضي
+========================================================= */
 
 document.getElementById("journalDate").value =
     new Date().toISOString().split("T")[0];
@@ -307,6 +1178,10 @@ document.getElementById("journalDate").value =
 let totalRows = 2;
 
 
+
+/* =========================================================
+   Select2
+========================================================= */
 
 function initSelect2(){
 
@@ -330,22 +1205,34 @@ function initSelect2(){
 
 
 
-
+/* =========================================================
+   إضافة صف
+========================================================= */
 
 function addRow(){
 
 
-    totalRows = document.querySelectorAll("#linesTable tbody tr").length + 1;
+    totalRows =
+        document.querySelectorAll(
+            "#linesTable tbody tr"
+        ).length + 1;
 
 
-    document.getElementById("totalRows").value = totalRows;
+    document.getElementById(
+        "totalRows"
+    ).value = totalRows;
 
 
 
-    const tbody = document.querySelector("#linesTable tbody");
+    const tbody =
+        document.querySelector(
+            "#linesTable tbody"
+        );
 
 
-    const row = document.createElement("tr");
+
+    const row =
+        document.createElement("tr");
 
 
 
@@ -372,9 +1259,7 @@ function addRow(){
 
                 {% endfor %}
 
-
             </select>
-
 
         </td>
 
@@ -399,18 +1284,16 @@ function addRow(){
         </td>
 
 
-
         <td>
 
             <button type="button"
-                    class="btn btn-sm btn-danger remove-row">
+                    class="btn btn-sm remove-row">
 
                 ×
 
             </button>
 
         </td>
-
 
     `;
 
@@ -424,21 +1307,25 @@ function addRow(){
 
     initSelect2();
 
-
 }
 
 
 
-
+/* =========================================================
+   إعادة ترقيم الصفوف
+========================================================= */
 
 function renumberRows(){
 
 
-    document.querySelectorAll("#linesTable tbody tr")
+    document.querySelectorAll(
+        "#linesTable tbody tr"
+    )
     .forEach(function(row,index){
 
 
-        row.cells[0].innerText = index + 1;
+        row.cells[0].innerText =
+            index + 1;
 
 
     });
@@ -446,49 +1333,76 @@ function renumberRows(){
 
 
     totalRows =
-        document.querySelectorAll("#linesTable tbody tr").length;
+        document.querySelectorAll(
+            "#linesTable tbody tr"
+        ).length;
 
 
-    document.getElementById("totalRows").value = totalRows;
-
+    document.getElementById(
+        "totalRows"
+    ).value = totalRows;
 
 }
 
 
 
-
+/* =========================================================
+   حساب التوازن
+========================================================= */
 
 function calculateBalance(){
 
 
     let debit = 0;
+
     let credit = 0;
 
 
 
     document.querySelectorAll(".debit")
-    .forEach(i => debit += parseFloat(i.value) || 0);
+    .forEach(i => {
+
+        debit +=
+            parseFloat(i.value) || 0;
+
+    });
 
 
 
     document.querySelectorAll(".credit")
-    .forEach(i => credit += parseFloat(i.value) || 0);
+    .forEach(i => {
+
+        credit +=
+            parseFloat(i.value) || 0;
+
+    });
 
 
 
-    document.getElementById("totalDebit").innerText =
+    document.getElementById(
+        "totalDebit"
+    ).innerText =
         debit.toFixed(2);
 
 
 
-    document.getElementById("totalCredit").innerText =
+    document.getElementById(
+        "totalCredit"
+    ).innerText =
         credit.toFixed(2);
 
 
 
-    const msg = document.getElementById("balanceMsg");
+    const msg =
+        document.getElementById(
+            "balanceMsg"
+        );
 
-    const saveBtn = document.getElementById("saveBtn");
+
+    const saveBtn =
+        document.getElementById(
+            "saveBtn"
+        );
 
 
 
@@ -508,8 +1422,11 @@ function calculateBalance(){
 
 
         msg.innerHTML =
+
         `<span class="balance-bad">
+
             ❌ {% trans "Not Balanced" %}
+
         </span>`;
 
 
@@ -520,8 +1437,11 @@ function calculateBalance(){
 
 
         msg.innerHTML =
+
         `<span class="balance-ok">
+
             ✔ {% trans "Balanced Entry" %}
+
         </span>`;
 
 
@@ -535,43 +1455,61 @@ function calculateBalance(){
 
 
 
+/* =========================================================
+   مراقبة الإدخال
+========================================================= */
+
+document.addEventListener(
+    "input",
+    calculateBalance
+);
 
 
-document.addEventListener("input", calculateBalance);
+
+/* =========================================================
+   حذف الصف
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(e){
 
 
-
-document.addEventListener("click",function(e){
-
-
-    if(e.target.classList.contains("remove-row")){
-
-
-        e.target.closest("tr").remove();
+        if(
+            e.target.classList.contains(
+                "remove-row"
+            )
+        ){
 
 
-        renumberRows();
+            e.target
+                .closest("tr")
+                .remove();
 
 
-        calculateBalance();
+            renumberRows();
+
+
+            calculateBalance();
+
+
+        }
 
 
     }
-
-
-});
-
+);
 
 
 
+/* =========================================================
+   تشغيل Select2
+========================================================= */
 
 $(document).ready(function(){
 
     initSelect2();
 
 });
-
-
 
 </script>
 

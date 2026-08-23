@@ -1,0 +1,1641 @@
+{% extends "layout/base.html" %}
+{% load i18n l10n %}
+
+{% block title %}
+
+    {% if payroll_run %}
+        تعديل مسير الرواتب
+    {% else %}
+        إضافة مسير رواتب
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+        /* =========================================================
+           صفحة إضافة / تعديل مسير الرواتب
+           نفس تصميم إدارة الإجازات
+           3D + رمادي متدرج + كروت بيضاء
+           ========================================================= */
+
+
+        /* =========================================================
+           الخلفية العامة
+           ========================================================= */
+
+        body {
+
+            margin: 0;
+
+            background: #eeeeee !important;
+
+            font-family: Tahoma, Arial, sans-serif;
+
+            color: #444;
+
+        }
+
+
+        /* =========================================================
+           الصفحة الخارجية
+           ========================================================= */
+
+        .payroll-management-page {
+
+            background: linear-gradient(
+                135deg,
+                #f8f8f8,
+                #d9d9d9
+            );
+
+            min-height: 100vh;
+
+            padding: 25px;
+
+            direction: rtl;
+
+        }
+
+
+        /* =========================================================
+           الكرت الرئيسي
+           ========================================================= */
+
+        .payroll-page-card {
+
+            background: #ffffff;
+
+            border-radius: 22px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.15);
+
+        }
+
+
+        /* =========================================================
+           رأس الصفحة
+           ========================================================= */
+
+        .payroll-page-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            text-align: right;
+
+            margin-bottom: 25px;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .payroll-page-header h1 {
+
+            margin: 0;
+
+            font-size: 26px;
+
+            font-weight: 800;
+
+            color: #444;
+
+        }
+
+
+        .payroll-page-header h1 i {
+
+            color: #666;
+
+            margin-left: 8px;
+
+        }
+
+
+        .payroll-page-header .subtitle {
+
+            color: #777;
+
+            margin-top: 7px;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =========================================================
+           أزرار الرأس
+           ========================================================= */
+
+        .payroll-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .payroll-btn {
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 10px 18px;
+
+            text-decoration: none;
+
+            font-family: Tahoma, Arial, sans-serif;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            transition: .25s;
+
+            box-shadow:
+                3px 3px 8px rgba(0,0,0,.18),
+                inset 0 1px 0 rgba(255,255,255,.12);
+
+        }
+
+
+        .payroll-btn:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .payroll-btn-back {
+
+            background: linear-gradient(
+                145deg,
+                #444,
+                #666
+            );
+
+            color: #fff;
+
+        }
+
+
+        .payroll-btn-back:hover {
+
+            background: linear-gradient(
+                145deg,
+                #333,
+                #555
+            );
+
+            color: #fff;
+
+        }
+
+
+        .payroll-btn-save {
+
+            background: linear-gradient(
+                145deg,
+                #555,
+                #777
+            );
+
+            color: #fff;
+
+        }
+
+
+        .payroll-btn-save:hover {
+
+            background: linear-gradient(
+                145deg,
+                #444,
+                #666
+            );
+
+            color: #fff;
+
+        }
+
+
+        /* =========================================================
+           كرت معلومات المسير
+           ========================================================= */
+
+        .payroll-info-card {
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 22px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 7px 18px rgba(0,0,0,.07);
+
+        }
+
+
+        .payroll-section-title {
+
+            margin: 0 0 18px;
+
+            font-size: 18px;
+
+            font-weight: 800;
+
+            color: #444;
+
+        }
+
+
+        .payroll-section-title i {
+
+            color: #666;
+
+            margin-left: 7px;
+
+        }
+
+
+        /* =========================================================
+           التاريخ
+           ========================================================= */
+
+        .payroll-date-row {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(200px, 350px);
+
+            gap: 15px;
+
+        }
+
+
+        .payroll-field {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+
+        .payroll-field label {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #555;
+
+        }
+
+
+        .payroll-field input {
+
+            width: 100%;
+
+            border: 1px solid #cfcfcf;
+
+            border-radius: 10px;
+
+            padding: 11px 12px;
+
+            font-family: Tahoma, Arial, sans-serif;
+
+            font-size: 13px;
+
+            outline: none;
+
+            background: #ffffff;
+
+            box-shadow:
+                inset 2px 2px 5px rgba(0,0,0,.04);
+
+        }
+
+
+        .payroll-field input:focus {
+
+            border-color: #777;
+
+            box-shadow:
+                0 0 0 3px rgba(100,100,100,.10),
+                inset 2px 2px 5px rgba(0,0,0,.04);
+
+        }
+
+
+        /* =========================================================
+           كرت جدول الموظفين
+           ========================================================= */
+
+        .payroll-table-card {
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 22px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 7px 18px rgba(0,0,0,.07);
+
+        }
+
+
+        /* =========================================================
+           صندوق الجدول
+           ========================================================= */
+
+        .payroll-table-wrapper {
+
+            overflow-x: auto;
+
+            overflow-y: visible;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,.05);
+
+        }
+
+
+        /* =========================================================
+           الجدول
+           ========================================================= */
+
+        .payroll-table {
+
+            width: 100%;
+
+            min-width: 1350px;
+
+            border-collapse: separate;
+
+            border-spacing: 0;
+
+            background: #fff;
+
+        }
+
+
+        /* =========================================================
+           رأس الجدول
+           تدرج رمادي واحد متصل
+           ========================================================= */
+
+        .payroll-table thead {
+
+            background: linear-gradient(
+                90deg,
+                #444 0%,
+                #666 50%,
+                #888 100%
+            ) !important;
+
+            color: #fff !important;
+
+        }
+
+
+        .payroll-table thead tr {
+
+            background: transparent !important;
+
+        }
+
+
+        .payroll-table thead th {
+
+            background: transparent !important;
+
+            color: #fff !important;
+
+            padding: 16px 10px;
+
+            text-align: center;
+
+            vertical-align: middle;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            border: 0 !important;
+
+            white-space: nowrap;
+
+        }
+
+
+        /* =========================================================
+           الحواف العلوية
+           ========================================================= */
+
+        .payroll-table thead th:first-child {
+
+            border-top-right-radius: 18px;
+
+        }
+
+
+        .payroll-table thead th:last-child {
+
+            border-top-left-radius: 18px;
+
+        }
+
+
+        /* =========================================================
+           خلايا الجدول
+           ========================================================= */
+
+        .payroll-table tbody td {
+
+            padding: 11px 8px;
+
+            text-align: center;
+
+            vertical-align: middle;
+
+            border-bottom: 1px solid #eeeeee;
+
+            color: #444 !important;
+
+            background: #fff;
+
+        }
+
+
+        /* =========================================================
+           حركة الصف
+           ========================================================= */
+
+        .payroll-table tbody tr {
+
+            transition: .25s;
+
+        }
+
+
+        .payroll-table tbody tr:hover td {
+
+            background: #f3f3f3;
+
+        }
+
+
+        /* =========================================================
+           رقم الموظف
+           ========================================================= */
+
+        .employee-number {
+
+            color: #666;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =========================================================
+           اسم الموظف
+           ========================================================= */
+
+        .employee-name {
+
+            min-width: 180px;
+
+            text-align: right !important;
+
+            font-weight: 800;
+
+            color: #444;
+
+        }
+
+
+        /* =========================================================
+           حقول الرواتب
+           ========================================================= */
+
+        .salary-input {
+
+            width: 115px;
+
+            padding: 9px 8px;
+
+            border: 1px solid #cfcfcf;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+            font-family: Arial, Tahoma, sans-serif;
+
+            font-size: 13px;
+
+            outline: none;
+
+            direction: ltr;
+
+            unicode-bidi: bidi-override;
+
+            text-orientation: mixed;
+
+            font-variant-numeric: lining-nums;
+
+            -webkit-appearance: none;
+
+            appearance: none;
+
+            background: #ffffff;
+
+            box-shadow:
+                inset 2px 2px 5px rgba(0,0,0,.04);
+
+            transition: .2s;
+
+        }
+
+
+        .salary-input:hover {
+
+            border-color: #aaa;
+
+        }
+
+
+        .salary-input:focus {
+
+            border-color: #666;
+
+            box-shadow:
+                0 0 0 3px rgba(100,100,100,.10),
+                inset 2px 2px 5px rgba(0,0,0,.04);
+
+        }
+
+
+        /* =========================================================
+           حقول الخصومات
+           ========================================================= */
+
+        .deduction-field {
+
+            color: #555;
+
+        }
+
+
+        /* =========================================================
+           الملاحظات
+           ========================================================= */
+
+        .notes-input {
+
+            width: 180px;
+
+            padding: 9px 8px;
+
+            border: 1px solid #cfcfcf;
+
+            border-radius: 8px;
+
+            font-family: Tahoma, Arial, sans-serif;
+
+            font-size: 12px;
+
+            outline: none;
+
+            background: #ffffff;
+
+            box-shadow:
+                inset 2px 2px 5px rgba(0,0,0,.04);
+
+        }
+
+
+        .notes-input:focus {
+
+            border-color: #666;
+
+            box-shadow:
+                0 0 0 3px rgba(100,100,100,.10);
+
+        }
+
+
+        /* =========================================================
+           صافي الراتب
+           ========================================================= */
+
+        .net-cell {
+
+            font-weight: 800;
+
+            color: #444;
+
+            min-width: 110px;
+
+            direction: ltr;
+
+            unicode-bidi: plaintext;
+
+            background: #f3f3f3 !important;
+
+        }
+
+
+        /* =========================================================
+           حالة الخصم
+           ========================================================= */
+
+        .deduction {
+
+            color: #555;
+
+        }
+
+
+        /* =========================================================
+           لا يوجد موظفون
+           ========================================================= */
+
+        .empty {
+
+            padding: 50px 20px;
+
+            text-align: center;
+
+            color: #999;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =========================================================
+           أزرار أسفل الصفحة
+           ========================================================= */
+
+        .payroll-footer-actions {
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 7px 18px rgba(0,0,0,.07);
+
+            display: flex;
+
+            justify-content: flex-start;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        /* =========================================================
+           Responsive
+           ========================================================= */
+
+        @media (max-width: 992px) {
+
+            .payroll-management-page {
+
+                padding: 15px;
+
+            }
+
+
+            .payroll-page-card {
+
+                padding: 20px;
+
+                border-radius: 18px;
+
+            }
+
+
+            .payroll-page-header h1 {
+
+                font-size: 22px;
+
+            }
+
+        }
+
+
+        @media (max-width: 768px) {
+
+            .payroll-page-header {
+
+                display: block;
+
+            }
+
+
+            .payroll-actions {
+
+                width: 100%;
+
+                margin-top: 15px;
+
+            }
+
+
+            .payroll-actions .payroll-btn {
+
+                flex: 1;
+
+            }
+
+
+            .payroll-table {
+
+                min-width: 1350px;
+
+            }
+
+
+            .payroll-footer-actions {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+
+            .payroll-footer-actions .payroll-btn {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           التأكيد النهائي على تدرج الرأس
+           ========================================================= */
+
+        .payroll-table thead,
+        .payroll-table thead tr {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #444 0%,
+                    #666 50%,
+                    #888 100%
+                ) !important;
+
+        }
+
+
+        .payroll-table thead th {
+
+            background: transparent !important;
+
+            color: #fff !important;
+
+            border: 0 !important;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container-fluid payroll-management-page">
+
+
+    <div class="payroll-page-card">
+
+
+        <!-- =================================================
+             رأس الصفحة
+             ================================================= -->
+
+        <div class="payroll-page-header">
+
+
+            <div>
+
+                <h1>
+
+                    {% if payroll_run %}
+
+                        ✏️ تعديل مسير الرواتب
+
+                    {% else %}
+
+                        ➕ إضافة مسير رواتب
+
+                    {% endif %}
+
+                </h1>
+
+
+                <div class="subtitle">
+
+                    {% if payroll_run %}
+
+                        مسير شهر
+                        {{ payroll_run.month }}
+                        /
+                        {{ payroll_run.year }}
+
+                    {% else %}
+
+                        إنشاء مسير رواتب جديد
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="payroll-actions">
+
+
+                {% if payroll_run %}
+
+                    <a
+                        href="{% url 'hr:payroll_detail' payroll_run_id=payroll_run.id %}"
+                        class="payroll-btn payroll-btn-back"
+                    >
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                        رجوع
+
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'hr:payrolls' %}"
+                        class="payroll-btn payroll-btn-back"
+                    >
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                        رجوع
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             معلومات المسير
+             ================================================= -->
+
+        <div class="payroll-info-card">
+
+
+            <h2 class="payroll-section-title">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                معلومات المسير
+
+            </h2>
+
+
+            <div class="payroll-date-row">
+
+
+                <div class="payroll-field">
+
+
+                    <label>
+
+                        تاريخ الرواتب
+
+                    </label>
+
+
+                    {% if payroll_run %}
+
+                        {% with first_payroll=payroll_run.payrolls.first %}
+
+                            <input
+                                type="date"
+                                name="date_display"
+                                value="{% if first_payroll %}{{ first_payroll.date|date:'Y-m-d' }}{% endif %}"
+                                form="payroll-form"
+                            >
+
+                        {% endwith %}
+
+                    {% else %}
+
+                        <input
+                            type="date"
+                            name="date_display"
+                            value="{{ today|date:'Y-m-d' }}"
+                            form="payroll-form"
+                        >
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             نموذج التعديل
+             ================================================= -->
+
+        <form
+            method="POST"
+            id="payroll-form"
+        >
+
+            {% csrf_token %}
+
+
+            <input
+                type="hidden"
+                name="date"
+                id="payroll-date"
+            >
+
+
+
+            <!-- =================================================
+                 جدول الموظفين
+                 ================================================= -->
+
+            <div class="payroll-table-card">
+
+
+                <h2 class="payroll-section-title">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    رواتب الموظفين
+
+                </h2>
+
+
+                <div class="payroll-table-wrapper">
+
+
+                    <table class="payroll-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+
+                                    #
+
+                                </th>
+
+
+                                <th>
+
+                                    رقم الموظف
+
+                                </th>
+
+
+                                <th>
+
+                                    الموظف
+
+                                </th>
+
+
+                                <th>
+
+                                    الأساسي
+
+                                </th>
+
+
+                                <th>
+
+                                    البدلات
+
+                                </th>
+
+
+                                <th>
+
+                                    العمل الإضافي
+
+                                </th>
+
+
+                                <th>
+
+                                    خصم الغياب
+
+                                </th>
+
+
+                                <th>
+
+                                    خصم السلف
+
+                                </th>
+
+
+                                <th>
+
+                                    خصومات أخرى
+
+                                </th>
+
+
+                                <th>
+
+                                    صافي الراتب
+
+                                </th>
+
+
+                                <th>
+
+                                    ملاحظات
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+
+                        <tbody>
+
+
+                            {% for item in employee_payrolls %}
+
+
+                                <tr>
+
+
+                                    <!-- الرقم -->
+
+                                    <td>
+
+                                        {{ forloop.counter }}
+
+                                    </td>
+
+
+
+                                    <!-- رقم الموظف -->
+
+                                    <td class="employee-number">
+
+                                        {{ item.employee.employee_number }}
+
+                                    </td>
+
+
+
+                                    <!-- الموظف -->
+
+                                    <td class="employee-name">
+
+                                        <strong>
+
+                                            {{ item.employee }}
+
+                                        </strong>
+
+                                    </td>
+
+
+
+                                    <!-- الأساسي -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            lang="en"
+                                            dir="ltr"
+                                            class="salary-input salary-field"
+                                            data-employee="{{ item.employee.id }}"
+                                            name="emp_{{ item.employee.id }}_base_salary"
+                                            value="{{ item.payroll.base_salary|unlocalize|default:'0.00' }}"
+                                        >
+
+                                    </td>
+
+
+
+                                    <!-- البدلات -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            lang="en"
+                                            dir="ltr"
+                                            class="salary-input salary-field"
+                                            data-employee="{{ item.employee.id }}"
+                                            name="emp_{{ item.employee.id }}_allowances"
+                                            value="{{ item.payroll.allowances|unlocalize|default:'0.00' }}"
+                                        >
+
+                                    </td>
+
+
+
+                                    <!-- العمل الإضافي -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            lang="en"
+                                            dir="ltr"
+                                            class="salary-input salary-field"
+                                            data-employee="{{ item.employee.id }}"
+                                            name="emp_{{ item.employee.id }}_overtime"
+                                            value="{{ item.payroll.overtime|unlocalize|default:'0.00' }}"
+                                        >
+
+                                    </td>
+
+
+
+                                    <!-- خصم الغياب -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            lang="en"
+                                            dir="ltr"
+                                            class="salary-input deduction-field"
+                                            data-employee="{{ item.employee.id }}"
+                                            name="emp_{{ item.employee.id }}_absence_deduction"
+                                            value="{{ item.payroll.absence_deduction|unlocalize|default:'0.00' }}"
+                                        >
+
+                                    </td>
+
+
+
+                                    <!-- خصم السلف -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            lang="en"
+                                            dir="ltr"
+                                            class="salary-input deduction-field"
+                                            data-employee="{{ item.employee.id }}"
+                                            name="emp_{{ item.employee.id }}_advance_deduction"
+                                            value="{{ item.payroll.advance_deduction|unlocalize|default:'0.00' }}"
+                                        >
+
+                                    </td>
+
+
+
+                                    <!-- خصومات أخرى -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            inputmode="decimal"
+                                            lang="en"
+                                            dir="ltr"
+                                            class="salary-input deduction-field"
+                                            data-employee="{{ item.employee.id }}"
+                                            name="emp_{{ item.employee.id }}_other_deductions"
+                                            value="{{ item.payroll.other_deductions|unlocalize|default:'0.00' }}"
+                                        >
+
+                                    </td>
+
+
+
+                                    <!-- صافي الراتب -->
+
+                                    <td
+                                        class="net-cell"
+                                        id="net-{{ item.employee.id }}"
+                                    >
+
+                                        {% if item.payroll %}
+
+                                            {{ item.payroll.net_salary|unlocalize|floatformat:2 }}
+
+                                        {% else %}
+
+                                            0.00
+
+                                        {% endif %}
+
+                                    </td>
+
+
+
+                                    <!-- الملاحظات -->
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            class="notes-input"
+                                            name="emp_{{ item.employee.id }}_notes"
+                                            value="{{ item.payroll.notes|default:'' }}"
+                                        >
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% empty %}
+
+
+                                <tr>
+
+                                    <td colspan="11">
+
+                                        <div class="empty">
+
+                                            <i class="fa-solid fa-users-slash fa-2x"></i>
+
+                                            <br><br>
+
+                                            لا يوجد موظفون في الشركة.
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 أزرار الحفظ
+                 ================================================= -->
+
+            <div class="payroll-footer-actions">
+
+
+                <button
+                    type="submit"
+                    class="payroll-btn payroll-btn-save"
+                >
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    💾 حفظ التعديلات
+
+                </button>
+
+
+
+                {% if payroll_run %}
+
+                    <a
+                        href="{% url 'hr:payroll_detail' payroll_run_id=payroll_run.id %}"
+                        class="payroll-btn payroll-btn-back"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        إلغاء
+
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'hr:payrolls' %}"
+                        class="payroll-btn payroll-btn-back"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        إلغاء
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* ==============================================
+           التاريخ
+        ============================================== */
+
+        const dateDisplay =
+            document.querySelector(
+                '[name="date_display"]'
+            );
+
+
+        const dateHidden =
+            document.getElementById(
+                "payroll-date"
+            );
+
+
+        if (dateDisplay && dateHidden) {
+
+            dateHidden.value =
+                dateDisplay.value;
+
+
+            dateDisplay.addEventListener(
+                "change",
+                function () {
+
+                    dateHidden.value =
+                        this.value;
+
+                }
+            );
+
+        }
+
+
+
+        /* ==============================================
+           حساب صافي الراتب
+        ============================================== */
+
+        function calculateNet(employeeId) {
+
+
+            const base =
+                parseFloat(
+                    document.querySelector(
+                        `[name="emp_${employeeId}_base_salary"]`
+                    )?.value
+                ) || 0;
+
+
+            const allowances =
+                parseFloat(
+                    document.querySelector(
+                        `[name="emp_${employeeId}_allowances"]`
+                    )?.value
+                ) || 0;
+
+
+            const overtime =
+                parseFloat(
+                    document.querySelector(
+                        `[name="emp_${employeeId}_overtime"]`
+                    )?.value
+                ) || 0;
+
+
+            const absence =
+                parseFloat(
+                    document.querySelector(
+                        `[name="emp_${employeeId}_absence_deduction"]`
+                    )?.value
+                ) || 0;
+
+
+            const advance =
+                parseFloat(
+                    document.querySelector(
+                        `[name="emp_${employeeId}_advance_deduction"]`
+                    )?.value
+                ) || 0;
+
+
+            const other =
+                parseFloat(
+                    document.querySelector(
+                        `[name="emp_${employeeId}_other_deductions"]`
+                    )?.value
+                ) || 0;
+
+
+            const net =
+                base
+                + allowances
+                + overtime
+                - absence
+                - advance
+                - other;
+
+
+            const cell =
+                document.getElementById(
+                    `net-${employeeId}`
+                );
+
+
+            if (cell) {
+
+                cell.textContent =
+                    net.toFixed(2);
+
+            }
+
+        }
+
+
+
+        /* ==============================================
+           ربط الحقول بالحساب
+        ============================================== */
+
+        document.querySelectorAll(
+            ".salary-field, .deduction-field"
+        ).forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "input",
+                    function () {
+
+                        calculateNet(
+                            this.dataset.employee
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        /* ==============================================
+           الحساب عند فتح الصفحة
+        ============================================== */
+
+        document.querySelectorAll(
+            ".salary-field"
+        ).forEach(
+            function (input) {
+
+                calculateNet(
+                    input.dataset.employee
+                );
+
+            }
+        );
+
+
+
+        /* ==============================================
+           التأكد من إرسال التاريخ
+        ============================================== */
+
+        const form =
+            document.getElementById(
+                "payroll-form"
+            );
+
+
+        if (form) {
+
+            form.addEventListener(
+                "submit",
+                function () {
+
+                    if (dateDisplay && dateHidden) {
+
+                        dateHidden.value =
+                            dateDisplay.value;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+    }
+);
+
+</script>
+
+
+{% endblock %}

@@ -170,7 +170,7 @@ def create_sales_return_journal(return_invoice):
         source_type="sales_return",
         source_id=return_invoice.id
     ).first()
-    
+
     if existing_entry:
         return existing_entry
 
@@ -188,6 +188,13 @@ def create_sales_return_journal(return_invoice):
 
     total = return_invoice.total_after_tax or Decimal("0.00")
 
+    if total <= 0:
+        entry.delete()
+        raise ValueError("❌ قيمة المرتجع يجب أن تكون أكبر من صفر")
+
+    # ==================================================
+    # 1️⃣ حساب الإيرادات
+    # ==================================================
     revenue_account = Account.objects.filter(
         company=return_invoice.company,
         name__icontains="إيراد"
@@ -204,22 +211,117 @@ def create_sales_return_journal(return_invoice):
         credit=Decimal("0.00")
     )
 
-    customer_account = return_invoice.customer.account
-    if not customer_account:
-        entry.delete()
-        raise ValueError("❌ العميل لا يملك حسابًا محاسبيًا")
+    # ==================================================
+    # 2️⃣ مرتجع فاتورة POS
+    # ==================================================
+    if return_invoice.pos_invoice_id:
 
-    JournalLine.objects.create(
-        entry=entry,
-        account=customer_account,
-        debit=Decimal("0.00"),
-        credit=total
-    )
+        pos_invoice = return_invoice.pos_invoice
 
+        payments = pos_invoice.payments.select_related(
+            "method",
+            "method__account"
+        ).all()
+
+        if not payments.exists():
+            entry.delete()
+            raise ValueError(
+                "❌ فاتورة نقاط البيع لا تحتوي على طريقة دفع"
+            )
+
+        payment_total = sum(
+            (
+                payment.amount or Decimal("0.00")
+                for payment in payments
+            ),
+            Decimal("0.00")
+        )
+
+        if payment_total <= 0:
+            entry.delete()
+            raise ValueError(
+                "❌ لا توجد مبالغ مدفوعة في فاتورة نقاط البيع"
+            )
+
+        allocated_total = Decimal("0.00")
+
+        for index, payment in enumerate(payments):
+
+            if not payment.method:
+                entry.delete()
+                raise ValueError(
+                    "❌ توجد دفعة في فاتورة نقاط البيع بدون طريقة دفع"
+                )
+
+            payment_account = payment.method.account
+
+            if not payment_account:
+                entry.delete()
+                raise ValueError(
+                    f"❌ طريقة الدفع ({payment.method.name}) "
+                    "ليس لها حساب محاسبي"
+                )
+
+            # ==========================================
+            # توزيع قيمة المرتجع على طرق الدفع
+            # ==========================================
+            if index == len(payments) - 1:
+                refund_amount = total - allocated_total
+            else:
+                refund_amount = (
+                    total * payment.amount / payment_total
+                )
+
+                refund_amount = refund_amount.quantize(
+                    Decimal("0.01")
+                )
+
+            if refund_amount <= 0:
+                continue
+
+            allocated_total += refund_amount
+
+            JournalLine.objects.create(
+                entry=entry,
+                account=payment_account,
+                debit=Decimal("0.00"),
+                credit=refund_amount
+            )
+
+    # ==================================================
+    # 3️⃣ مرتجع فاتورة مبيعات عادية
+    # ==================================================
+    else:
+
+        customer = return_invoice.customer
+
+        if not customer:
+            entry.delete()
+            raise ValueError(
+                "❌ فاتورة المبيعات لا تحتوي على عميل"
+            )
+
+        customer_account = customer.account
+
+        if not customer_account:
+            entry.delete()
+            raise ValueError(
+                "❌ العميل لا يملك حسابًا محاسبيًا"
+            )
+
+        JournalLine.objects.create(
+            entry=entry,
+            account=customer_account,
+            debit=Decimal("0.00"),
+            credit=total
+        )
+
+    # ==================================================
+    # 4️⃣ التأكد من توازن القيد
+    # ==================================================
     _validate_journal_balance(entry)
+
     return entry
-
-
 # ==================================================
 # 🔴 قيد مرتجع مشتريات
 # ==================================================
@@ -231,7 +333,7 @@ def create_purchase_return_journal(purchase_return):
         source_type="purchase_return",
         source_id=purchase_return.id
     ).first()
-    
+
     if existing_entry:
         return existing_entry
 
@@ -249,7 +351,21 @@ def create_purchase_return_journal(purchase_return):
 
     total = purchase_return.total_after_tax or Decimal("0.00")
 
-    supplier_account = purchase_return.supplier.account
+    if total <= 0:
+        entry.delete()
+        raise ValueError("❌ قيمة مرتجع المشتريات يجب أن تكون أكبر من صفر")
+
+    # ==========================================
+    # 1️⃣ حساب المورد
+    # ==========================================
+    supplier = purchase_return.supplier
+
+    if not supplier:
+        entry.delete()
+        raise ValueError("❌ مرتجع المشتريات لا يحتوي على مورد")
+
+    supplier_account = supplier.account
+
     if not supplier_account:
         entry.delete()
         raise ValueError("❌ المورد لا يملك حسابًا محاسبيًا")
@@ -261,17 +377,29 @@ def create_purchase_return_journal(purchase_return):
         credit=Decimal("0.00")
     )
 
+    # ==========================================
+    # 2️⃣ حساب المشتريات أو المخزون
+    # ==========================================
     purchase_account = Account.objects.filter(
         company=purchase_return.company,
-        name__icontains="مشتريات"
-    ).first() or Account.objects.filter(
-        company=purchase_return.company,
-        name__icontains="مخزون"
+        name__icontains="مشتريات",
+        is_group=False,
+        is_active=True
     ).first()
 
     if not purchase_account:
+        purchase_account = Account.objects.filter(
+            company=purchase_return.company,
+            name__icontains="مخزون",
+            is_group=False,
+            is_active=True
+        ).first()
+
+    if not purchase_account:
         entry.delete()
-        raise ValueError("❌ يجب تعريف حساب مشتريات أو مخزون")
+        raise ValueError(
+            "❌ يجب تعريف حساب مشتريات أو مخزون في شجرة الحسابات"
+        )
 
     JournalLine.objects.create(
         entry=entry,
@@ -280,10 +408,12 @@ def create_purchase_return_journal(purchase_return):
         credit=total
     )
 
+    # ==========================================
+    # 3️⃣ التأكد من توازن القيد
+    # ==========================================
     _validate_journal_balance(entry)
+
     return entry
-
-
 # ==================================================
 # 🟡 قيد فاتورة مشتريات
 # ==================================================

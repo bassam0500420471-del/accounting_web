@@ -6,222 +6,1163 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
-/* ===============================
-   Labels + Help Icons
-================================ */
-.field-label {
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    direction: rtl;
-    text-align: right;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
 }
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.cost-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.cost-wrapper {
+
+    max-width: 850px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.cost-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 24px 28px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border:
+        1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.cost-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.cost-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+.cost-header p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   كرت النموذج
+========================================================= */
+
+.cost-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 28px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:
+        1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 18px 38px rgba(0,0,0,.17),
+        0 5px 12px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.cost-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+}
+
+
+/* =========================================================
+   عنوان القسم
+========================================================= */
+
+.form-section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 24px;
+
+    padding-bottom: 12px;
+
+    color: #555;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    border-bottom:
+        1px solid #d8d8d8;
+
+}
+
+
+.form-section-title i {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777,
+            #333
+        );
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.form-group {
+
+    margin-bottom: 20px;
+
+}
+
+
+.field-label {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 8px;
+
+    color: #444;
+
+    font-weight: 700;
+
+    direction: rtl;
+
+    text-align: right;
+
+}
+
 
 .field-label .help-icon {
-    order: -1;          /* الأيقونة يمين النص */
-    margin-left: 6px;
+
+    order: -1;
+
+    margin-left: 4px;
+
 }
+
 
 .help-icon {
+
     font-size: 14px;
-    color: #0d6efd;
+
+    color: #666;
+
     cursor: pointer;
+
+    transition: .2s;
+
 }
 
-/* ===============================
-   توحيد حجم كل الحقول
-================================ */
+
+.help-icon:hover {
+
+    color: #222;
+
+    transform: scale(1.1);
+
+}
+
+
+/* =========================================================
+   الحقول العادية
+========================================================= */
+
 .form-control,
 .form-select {
-    height: 44px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+
+    width: 100%;
+
+    height: 46px;
+
+    padding:
+        10px 13px;
+
+    color: #444;
+
     font-size: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:
+        1px solid #d0d0d0;
+
+    border-radius: 11px;
+
+    box-shadow:
+        inset 0 2px 5px rgba(0,0,0,.05),
+        0 2px 5px rgba(0,0,0,.04);
+
+    transition: .2s;
+
 }
 
-/* Select2 */
-.select2-container .select2-selection--single {
-    height: 44px !important;
-    display: flex !important;
-    align-items: center !important;
-    border-radius: 0.375rem;
+
+.form-control:focus,
+.form-select:focus {
+
+    color: #222;
+
+    background: #fff;
+
+    border-color: #999;
+
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.10),
+        inset 0 2px 5px rgba(0,0,0,.04);
+
 }
+
+
+/* =========================================================
+   Select2
+========================================================= */
+
+.select2-container {
+
+    width: 100% !important;
+
+}
+
+
+.select2-container
+.select2-selection--single {
+
+    height: 46px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    border:
+        1px solid #d0d0d0 !important;
+
+    border-radius: 11px !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        ) !important;
+
+    box-shadow:
+        inset 0 2px 5px rgba(0,0,0,.05),
+        0 2px 5px rgba(0,0,0,.04);
+
+}
+
 
 .select2-container--default
 .select2-selection--single
 .select2-selection__rendered {
-    line-height: 44px !important;
-    padding-right: 12px !important;
-    padding-left: 12px !important;
+
+    line-height: 46px !important;
+
+    padding-right: 13px !important;
+
+    padding-left: 13px !important;
+
+    color: #444 !important;
+
     font-size: 15px;
+
 }
+
 
 .select2-container--default
 .select2-selection--single
 .select2-selection__arrow {
-    height: 44px !important;
+
+    height: 46px !important;
+
 }
+
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__placeholder {
+
+    color: #999 !important;
+
+}
+
+
+/* =========================================================
+   قائمة Select2
+========================================================= */
+
+.select2-dropdown {
+
+    border:
+        1px solid #cfcfcf !important;
+
+    border-radius: 11px !important;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    box-shadow:
+        0 15px 30px rgba(0,0,0,.18);
+
+}
+
+
+.select2-container--default
+.select2-results__option {
+
+    padding: 10px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+}
+
+
+.select2-container--default
+.select2-results__option--highlighted {
+
+    background:
+        linear-gradient(
+            135deg,
+            #777,
+            #3b3b3b
+        ) !important;
+
+    color: #fff !important;
+
+}
+
+
+/* =========================================================
+   النص المساعد
+========================================================= */
+
+.form-help {
+
+    display: block;
+
+    margin-top: 7px;
+
+    color: #888;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   حقول المورد والعميل
+========================================================= */
+
+.related-box {
+
+    padding: 16px;
+
+    margin-bottom: 20px;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f7f7f7,
+            #e4e4e4
+        );
+
+    border:
+        1px solid #d5d5d5;
+
+    box-shadow:
+        inset 0 1px 2px rgba(255,255,255,.8),
+        0 5px 12px rgba(0,0,0,.06);
+
+}
+
+
+/* =========================================================
+   أزرار الإجراءات
+========================================================= */
+
+.form-actions {
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    margin-top: 28px;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid #d8d8d8;
+
+}
+
+
+.btn-3d {
+
+    min-width: 110px;
+
+    height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        8px 20px;
+
+    border-radius: 11px;
+
+    border: 1px solid rgba(255,255,255,.35);
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+.btn-save {
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777,
+            #2f2f2f
+        );
+
+}
+
+
+.btn-save:hover {
+
+    color: #fff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.20);
+
+}
+
+
+.btn-cancel {
+
+    color: #444;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d5d5d5
+        );
+
+}
+
+
+.btn-cancel:hover {
+
+    color: #222;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   الجوال
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .cost-page {
+
+        padding: 15px;
+
+    }
+
+
+    .cost-header {
+
+        padding: 20px;
+
+    }
+
+
+    .cost-header h3 {
+
+        font-size: 22px;
+
+    }
+
+
+    .cost-header-icon {
+
+        width: 52px;
+
+        height: 52px;
+
+    }
+
+
+    .cost-card {
+
+        padding: 20px;
+
+        border-radius: 18px;
+
+    }
+
+
+    .form-actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .btn-3d {
+
+        width: 100%;
+
+    }
+
+}
+
 </style>
 {% endblock %}
 
-<div class="container mt-4" style="max-width:650px">
-    <h4 class="mb-4 text-center">إضافة مركز تكلفة</h4>
 
-    <form method="post">
-        {% csrf_token %}
+<!-- =========================================================
+     الصفحة
+========================================================= -->
 
-        <!-- ================= اسم مركز التكلفة ================= -->
-        <div class="mb-3">
-            <label class="field-label">
-                اسم مركز التكلفة
-                <i class="bi bi-info-circle help-icon"
-                   data-bs-toggle="tooltip"
-                   title="اسم الجهة أو النشاط الذي سيتم تحميل التكاليف عليه"></i>
-            </label>
-            <input type="text" name="name" class="form-control" required>
+<div class="cost-page">
+
+    <div class="cost-wrapper">
+
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="cost-header">
+
+            <div class="cost-header-icon">
+
+                <i class="bi bi-diagram-3-fill"></i>
+
+            </div>
+
+            <div>
+
+                <h3>
+                    إضافة مركز تكلفة
+                </h3>
+
+                <p>
+                    إنشاء مركز تكلفة رئيسي أو فرعي وربطه بالفرع المناسب
+                </p>
+
+            </div>
+
         </div>
 
-        <!-- ================= مستوى مركز التكلفة ================= -->
-        <div class="mb-3">
-            <label class="field-label">
-                مستوى مركز التكلفة (اختياري)
-                <i class="bi bi-info-circle help-icon"
-                   data-bs-toggle="tooltip"
-                   title="بدون اختيار = مركز رئيسي
+
+        <!-- =================================================
+             كرت النموذج
+        ================================================= -->
+
+        <div class="cost-card">
+
+            <div class="form-section-title">
+
+                <i class="bi bi-plus-lg"></i>
+
+                بيانات مركز التكلفة
+
+            </div>
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <!-- ================= اسم مركز التكلفة ================= -->
+
+                <div class="form-group">
+
+                    <label class="field-label">
+
+                        اسم مركز التكلفة
+
+                        <i class="bi bi-info-circle help-icon"
+                           data-bs-toggle="tooltip"
+                           title="اسم الجهة أو النشاط الذي سيتم تحميل التكاليف عليه"></i>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ================= مستوى مركز التكلفة ================= -->
+
+                <div class="form-group">
+
+                    <label class="field-label">
+
+                        مستوى مركز التكلفة (اختياري)
+
+                        <i class="bi bi-info-circle help-icon"
+                           data-bs-toggle="tooltip"
+                           title="بدون اختيار = مركز رئيسي
 مع اختيار = مركز فرعي تابع لمركز آخر"></i>
-            </label>
 
-            <select name="parent" id="parent-select" class="form-select select2">
-                <option value="">— مركز رئيسي —</option>
-                <option value="__add__">➕ إضافة مركز جديد</option>
-                {% for p in parents %}
-                    <option value="{{ p.id }}">{{ p.name }}</option>
-                {% endfor %}
-            </select>
+                    </label>
 
-            <small class="text-muted">
-                يستخدم هذا الحقل لبناء شجرة مراكز التكلفة
-            </small>
+
+                    <select
+                        name="parent"
+                        id="parent-select"
+                        class="form-select select2"
+                    >
+
+                        <option value="">
+                            — مركز رئيسي —
+                        </option>
+
+                        <option value="__add__">
+                            ➕ إضافة مركز جديد
+                        </option>
+
+                        {% for p in parents %}
+
+                            <option value="{{ p.id }}">
+                                {{ p.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+                    <small class="form-help">
+
+                        يستخدم هذا الحقل لبناء شجرة مراكز التكلفة
+
+                    </small>
+
+                </div>
+
+
+                <!-- ================= النوع ================= -->
+
+                <div class="form-group">
+
+                    <label class="field-label">
+
+                        النوع
+
+                        <i class="bi bi-info-circle help-icon"
+                           data-bs-toggle="tooltip"
+                           title="يحدد طبيعة مركز التكلفة داخل النظام"></i>
+
+                    </label>
+
+
+                    <select
+                        name="type"
+                        id="type-select"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            — اختر النوع —
+                        </option>
+
+                        {% for k, v in type_choices %}
+
+                            <option value="{{ k }}">
+                                {{ v }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= المورد ================= -->
+
+                <div
+                    class="form-group related-box"
+                    id="supplier-box"
+                    style="display:none;"
+                >
+
+                    <label class="field-label">
+
+                        المورد
+
+                        <i class="bi bi-info-circle help-icon"
+                           data-bs-toggle="tooltip"
+                           title="يظهر عند اختيار النوع (مورد) فقط"></i>
+
+                    </label>
+
+
+                    <select
+                        name="supplier"
+                        class="form-select select2"
+                    >
+
+                        <option value="">
+                            — اختر المورد —
+                        </option>
+
+                        {% for s in suppliers %}
+
+                            <option value="{{ s.id }}">
+                                {{ s.commercial_name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= العميل ================= -->
+
+                <div
+                    class="form-group related-box"
+                    id="customer-box"
+                    style="display:none;"
+                >
+
+                    <label class="field-label">
+
+                        العميل
+
+                        <i class="bi bi-info-circle help-icon"
+                           data-bs-toggle="tooltip"
+                           title="يظهر عند اختيار النوع (عميل) فقط"></i>
+
+                    </label>
+
+
+                    <select
+                        name="customer"
+                        class="form-select select2"
+                    >
+
+                        <option value="">
+                            — اختر العميل —
+                        </option>
+
+                        {% for c in customers %}
+
+                            <option value="{{ c.id }}">
+                                {{ c.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= الفرع ================= -->
+
+                <div class="form-group">
+
+                    <label class="field-label">
+
+                        الفرع
+
+                        <i class="bi bi-info-circle help-icon"
+                           data-bs-toggle="tooltip"
+                           title="ربط مركز التكلفة بفرع محدد إن وجد"></i>
+
+                    </label>
+
+
+                    <select
+                        name="branch"
+                        id="branch-select"
+                        class="form-select select2"
+                    >
+
+                        <option value="">
+                            — اختر الفرع —
+                        </option>
+
+                        <option value="__add__">
+                            ➕ إضافة فرع جديد
+                        </option>
+
+                        {% for b in branches %}
+
+                            <option value="{{ b.id }}">
+                                {{ b.name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= الأزرار ================= -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn-3d btn-save"
+                    >
+
+                        <i class="bi bi-check-lg"></i>
+
+                        حفظ
+
+                    </button>
+
+
+                    <a
+                        href="{% url 'cost_centers_list' %}"
+                        class="btn-3d btn-cancel"
+                    >
+
+                        <i class="bi bi-x-lg"></i>
+
+                        إلغاء
+
+                    </a>
+
+                </div>
+
+            </form>
+
         </div>
 
-        <!-- ================= النوع ================= -->
-        <div class="mb-3">
-            <label class="field-label">
-                النوع
-                <i class="bi bi-info-circle help-icon"
-                   data-bs-toggle="tooltip"
-                   title="يحدد طبيعة مركز التكلفة داخل النظام"></i>
-            </label>
-            <select name="type" id="type-select" class="form-select" required>
-                <option value="">— اختر النوع —</option>
-                {% for k, v in type_choices %}
-                    <option value="{{ k }}">{{ v }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    </div>
 
-        <!-- ================= المورد ================= -->
-        <div class="mb-3" id="supplier-box" style="display:none;">
-            <label class="field-label">
-                المورد
-                <i class="bi bi-info-circle help-icon"
-                   data-bs-toggle="tooltip"
-                   title="يظهر عند اختيار النوع (مورد) فقط"></i>
-            </label>
-            <select name="supplier" class="form-select select2">
-                <option value="">— اختر المورد —</option>
-                {% for s in suppliers %}
-                    <option value="{{ s.id }}">{{ s.commercial_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- ================= العميل ================= -->
-        <div class="mb-3" id="customer-box" style="display:none;">
-            <label class="field-label">
-                العميل
-                <i class="bi bi-info-circle help-icon"
-                   data-bs-toggle="tooltip"
-                   title="يظهر عند اختيار النوع (عميل) فقط"></i>
-            </label>
-            <select name="customer" class="form-select select2">
-                <option value="">— اختر العميل —</option>
-                {% for c in customers %}
-                    <option value="{{ c.id }}">{{ c.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- ================= الفرع ================= -->
-        <div class="mb-3">
-            <label class="field-label">
-                الفرع
-                <i class="bi bi-info-circle help-icon"
-                   data-bs-toggle="tooltip"
-                   title="ربط مركز التكلفة بفرع محدد إن وجد"></i>
-            </label>
-            <select name="branch" id="branch-select" class="form-select select2">
-                <option value="">— اختر الفرع —</option>
-                <option value="__add__">➕ إضافة فرع جديد</option>
-                {% for b in branches %}
-                    <option value="{{ b.id }}">{{ b.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="text-end">
-            <button class="btn btn-primary">حفظ</button>
-            <a href="{% url 'cost_centers_list' %}" class="btn btn-secondary">إلغاء</a>
-        </div>
-    </form>
 </div>
 
+
 {% block extra_js %}
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
 <script>
+
 $(function () {
 
     /* Select2 عام */
+
     $('.select2').select2({
+
         width: '100%',
+
         dir: 'rtl',
+
         placeholder: 'اكتب للبحث...'
+
     });
+
 
     /* زر إضافة مركز من القائمة */
+
     $('#parent-select').on('select2:select', function (e) {
+
         if (e.params.data.id === '__add__') {
+
             $(this).val(null).trigger('change');
+
             $('#addParentModal').modal('show');
+
         }
+
     });
 
+
     /* إظهار مورد / عميل حسب النوع */
+
     const typeSelect = $('#type-select');
+
     const supplierBox = $('#supplier-box');
+
     const customerBox = $('#customer-box');
 
+
     function toggleRelated() {
+
         supplierBox.hide();
+
         customerBox.hide();
+
         if (typeSelect.val() === 'SUPPLIER') supplierBox.show();
+
         if (typeSelect.val() === 'CUSTOMER') customerBox.show();
+
     }
 
+
     typeSelect.on('change', toggleRelated);
+
     toggleRelated();
 
+
     /* Tooltips */
+
     const tooltipTriggerList = [].slice.call(
+
         document.querySelectorAll('[data-bs-toggle="tooltip"]')
+
     );
-    tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+
+
+    tooltipTriggerList.map(
+
+        el => new bootstrap.Tooltip(el)
+
+    );
 
 });
+
 </script>
+
 {% endblock %}
 
 {% endblock %}

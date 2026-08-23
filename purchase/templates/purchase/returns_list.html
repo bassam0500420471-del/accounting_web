@@ -1,176 +1,1678 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
+
+{% block title %}
+{% trans "Purchase Returns" %}
+{% endblock %}
+
 {% block content %}
 
-<div class="container-fluid mt-4">
+<div class="container-fluid returns-page mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">{% trans "Purchase Returns" %}</h3>
+<div class="return-card">
+
+
+<!-- ============================= -->
+<!-- رأس الصفحة -->
+<!-- ============================= -->
+
+<div class="page-header">
+
+    <div>
+
+        <h3>
+
+            <i class="fa-solid fa-rotate-left"></i>
+
+            {% trans "Purchase Returns" %}
+
+        </h3>
+
+        <p>
+
+            {% trans "Manage purchase returns and debit notes" %}
+
+        </p>
+
     </div>
 
-{% if returns %}
-<table class="table table-hover text-center align-middle">
-
-    <thead>
-
-        <!-- Filter Row -->
-        <tr>
-            <th></th>
-
-            <th>
-                <input data-col="1"
-                       class="filter-input form-control form-control-sm"
-                       placeholder="{% trans 'Search Original Invoice' %}">
-            </th>
-
-            <th>
-                <input data-col="2"
-                       class="filter-input form-control form-control-sm"
-                       placeholder="{% trans 'Search Debit Note' %}">
-            </th>
-
-            <th>
-                <input data-col="3"
-                       class="filter-input form-control form-control-sm"
-                       placeholder="{% trans 'Search Supplier' %}">
-            </th>
-
-            <th>
-                <input data-col="4"
-                       class="filter-input form-control form-control-sm"
-                       placeholder="{% trans 'Search Date' %}">
-            </th>
-
-            <th>
-                <input data-col="5"
-                       class="filter-input form-control form-control-sm"
-                       placeholder="{% trans 'Search Total' %}">
-            </th>
-
-            <th></th>
-        </tr>
-
-        <!-- Header Row -->
-        <tr class="table-dark">
-            <th>#</th>
-            <th>{% trans "Original Invoice No." %}</th>
-            <th>{% trans "Debit Note No." %}</th>
-            <th>{% trans "Supplier" %}</th>
-            <th>{% trans "Return Date" %}</th>
-            <th>{% trans "Total" %}</th>
-            <th>{% trans "Actions" %}</th>
-        </tr>
-
-    </thead>
-
-    <tbody>
-        {% for r in returns %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ r.invoice.invoice_no }}</td>
-            <td>{{ r.return_no }}</td>
-            <td>{{ r.supplier.commercial_name }}</td>
-            <td>{{ r.return_date|date:"Y-m-d" }}</td>
-            <td>{{ r.total_after_tax }}</td>
-
-            <td>
-                <div class="dropdown">
-                    <button class="btn-action dropdown-toggle"
-                            data-bs-toggle="dropdown">
-                        {% trans "Options" %}
-                    </button>
-
-                    <ul class="dropdown-menu text-end">
-
-                        <li>
-                            <a class="dropdown-item"
-                               href="{% url 'purchase:purchase_return_from_invoice' r.invoice.pk %}">
-                                {% trans "Open Return" %}
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                {% trans "PDF (Later)" %}
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                {% trans "Print (Later)" %}
-                            </a>
-                        </li>
-
-                    </ul>
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-
-</table>
-
-{% else %}
-<div class="alert alert-info text-center">
-    {% trans "No purchase returns yet." %}
 </div>
-{% endif %}
+
+
+<!-- ============================= -->
+<!-- الجدول -->
+<!-- ============================= -->
+
+<div class="table-box">
+
+    <table class="return-table">
+
+        <thead>
+
+            <!-- ============================= -->
+            <!-- صف البحث -->
+            <!-- ============================= -->
+
+            <tr class="filter-row">
+
+                <!-- No. -->
+                <th></th>
+
+
+                <!-- Original Invoice -->
+                <th>
+
+                    <input
+                        type="text"
+                        class="filter-input"
+                        data-column="1"
+                        placeholder="{% trans 'Search الفاتورة الاصلية' %}"
+                    >
+
+                </th>
+
+
+                <!-- Debit Note -->
+                <th>
+
+                    <input
+                        type="text"
+                        class="filter-input"
+                        data-column="2"
+                        placeholder="{% trans 'Search Debit Note' %}"
+                    >
+
+                </th>
+
+
+                <!-- Supplier -->
+                <th>
+
+                    <input
+                        type="text"
+                        class="filter-input"
+                        data-column="3"
+                        placeholder="{% trans 'Search Supplier' %}"
+                    >
+
+                </th>
+
+
+                <!-- Date -->
+                <th>
+
+                    <input
+                        type="text"
+                        class="filter-input"
+                        data-column="4"
+                        placeholder="{% trans 'Search Date' %}"
+                    >
+
+                </th>
+
+
+                <!-- Total -->
+                <th>
+
+                    <input
+                        type="text"
+                        class="filter-input"
+                        data-column="5"
+                        placeholder="{% trans 'Search Total' %}"
+                    >
+
+                </th>
+
+
+                <!-- Actions -->
+                <th></th>
+
+            </tr>
+
+
+            <!-- ============================= -->
+            <!-- عنوان الأعمدة -->
+            <!-- ============================= -->
+
+            <tr class="header-row">
+
+                <th>
+                    {% trans "No." %}
+                </th>
+
+                <th>
+                    {% trans "Original Invoice No." %}
+                </th>
+
+                <th>
+                    {% trans "Debit Note No." %}
+                </th>
+
+                <th>
+                    {% trans "Supplier" %}
+                </th>
+
+                <th>
+                    {% trans "Return Date" %}
+                </th>
+
+                <th>
+                    {% trans "Total" %}
+                </th>
+
+                <th>
+                    {% trans "Actions" %}
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        {% for r in returns %}
+
+            <tr>
+
+                <!-- ============================= -->
+                <!-- الرقم -->
+                <!-- ============================= -->
+
+                <td>
+
+                    <span class="order-badge">
+
+                        {{ r.id }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- ============================= -->
+                <!-- الفاتورة الأصلية -->
+                <!-- ============================= -->
+
+                <td class="invoice-number">
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                    {{ r.invoice.invoice_no }}
+
+                </td>
+
+
+                <!-- ============================= -->
+                <!-- رقم إشعار الخصم -->
+                <!-- ============================= -->
+
+                <td class="return-number">
+
+                    <i class="fa-solid fa-file-circle-minus"></i>
+
+                    {{ r.return_no }}
+
+                </td>
+
+
+                <!-- ============================= -->
+                <!-- المورد -->
+                <!-- ============================= -->
+
+                <td class="supplier-name">
+
+                    <i class="fa-solid fa-truck-field"></i>
+
+                    {{ r.supplier.commercial_name }}
+
+                </td>
+
+
+                <!-- ============================= -->
+                <!-- تاريخ المرتجع -->
+                <!-- ============================= -->
+
+                <td>
+
+                    <span class="date-badge">
+
+                        {{ r.return_date|date:"Y-m-d" }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- ============================= -->
+                <!-- الإجمالي -->
+                <!-- ============================= -->
+
+                <td class="total-cell">
+
+                    {{ r.total_after_tax|floatformat:2 }}
+
+                </td>
+
+
+                <!-- ============================= -->
+                <!-- الخيارات -->
+                <!-- ============================= -->
+
+                <td>
+
+                    <div class="options-dropdown">
+
+                        <button
+                            type="button"
+                            class="action-btn options-button"
+                        >
+
+                            <i class="fa-solid fa-gear"></i>
+
+                            {% trans "Options" %}
+
+                        </button>
+
+
+                        <ul class="dropdown-menu custom-menu text-end">
+
+
+                            <!-- ================= -->
+                            <!-- عرض المرتجع -->
+                            <!-- ================= -->
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'purchase:purchase_return_from_invoice' r.invoice.pk %}"
+                                >
+
+                                    <i class="fa-solid fa-eye"></i>
+
+                                    {% trans "View" %}
+
+                                </a>
+
+                            </li>
+
+
+<!-- ================= -->
+<!-- PDF -->
+<!-- ================= -->
+
+<li>
+
+    <a
+        class="dropdown-item"
+        href="{% url 'purchase:purchase_return_pdf' r.pk %}"
+    >
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        {% trans "Download PDF" %}
+
+    </a>
+
+</li>
+
+<!-- ================= -->
+<!-- طباعة -->
+<!-- ================= -->
+
+<li>
+
+    <a
+        class="dropdown-item"
+        href="{% url 'purchase:purchase_return_print' r.pk %}"
+    >
+
+        <i class="fa-solid fa-print"></i>
+
+        {% trans "Print" %}
+
+    </a>
+
+</li>
+
+                            <!-- ================= -->
+                            <!-- الفاتورة الأصلية -->
+                            <!-- ================= -->
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'purchase:purchase_invoice_view' r.invoice.id %}"
+                                >
+
+                                    <i class="fa-solid fa-file-invoice"></i>
+
+                                    {% trans "الفاتورة الاصلية" %}
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+
+        {% empty %}
+
+            <tr>
+
+                <td colspan="7" class="empty">
+
+                    <i class="fa-solid fa-file-circle-xmark"></i>
+
+                    <div>
+
+                        {% trans "No purchase returns yet." %}
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+</div>
 
 </div>
 
 <style>
-.filter-input {
-    text-align: center;
-    border: 1px solid #6c757d !important;
-    border-radius: 6px;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+    font-family:"Tahoma", sans-serif;
+
 }
-.filter-input::placeholder {
-    text-align: center;
-    color: #6c757d;
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.returns-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
 }
 
-.btn-action {
-    background: #6c757d;
-    color: white;
-    border-radius: 6px;
-    font-size: 15px;
-    padding: 4px 15px;
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.return-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
 }
-</style>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
 
-    const filters = document.querySelectorAll(".filter-input");
-    const rows = document.querySelectorAll("tbody tr");
+/* =========================================================
+   رأس الصفحة
+========================================================= */
 
-    function applyFilters() {
-        rows.forEach(row => {
-            const cells = row.querySelectorAll("td");
-            let visible = true;
+.page-header{
 
-            filters.forEach(input => {
-                const value = input.value.trim().toLowerCase();
-                if (!value) return;
+    display:flex;
 
-                const colIndex = parseInt(input.dataset.col, 10);
-                const cell = cells[colIndex];
-                if (!cell) return;
+    justify-content:space-between;
 
-                if (!cell.textContent.toLowerCase().includes(value)) {
-                    visible = false;
-                }
-            });
+    align-items:center;
 
-            row.style.display = visible ? "" : "none";
-        });
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.return-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+.filter-row th{
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+/* =========================================================
+   حقول البحث
+========================================================= */
+
+.filter-input{
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+.filter-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder{
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.return-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   الصفوف
+========================================================= */
+
+.return-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.return-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم ID
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   رقم الفاتورة
+========================================================= */
+
+.invoice-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.invoice-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   رقم المرتجع
+========================================================= */
+
+.return-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.return-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   المورد
+========================================================= */
+
+.supplier-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.supplier-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الإجمالي
+========================================================= */
+
+.total-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الحاوية الأصلية
+========================================================= */
+
+.options-dropdown{
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+========================================================= */
+
+.custom-menu{
+
+    display:none;
+
+    position:fixed !important;
+
+    min-width:210px;
+
+    padding:8px;
+
+    margin:0 !important;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.22),
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index:999999999 !important;
+
+}
+
+
+.custom-menu.menu-open{
+
+    display:block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    margin:2px 0;
+
+    border-radius:9px;
+
+    color:#444;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#333;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+/* =========================================================
+   أيقونات القائمة
+========================================================= */
+
+.custom-menu .dropdown-item i{
+
+    width:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i{
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   لا توجد مرتجعات
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .returns-page{
+
+        padding:15px;
+
     }
 
-    filters.forEach(input => {
-        input.addEventListener("keyup", applyFilters);
+
+    .return-card{
+
+        padding:18px;
+
+    }
+
+
+    .return-table{
+
+        min-width:1000px;
+
+    }
+
+}
+
+</style>
+
+<!-- =========================================================
+     JavaScript
+     البحث المتعدد + القائمة المنسدلة
+========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       البحث
+       كل الفلاتر تعمل مع بعضها AND
+    ===================================================== */
+
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
+
+
+    const table =
+        document.querySelector(".return-table");
+
+
+    if (table) {
+
+
+        const rows =
+            table.querySelectorAll("tbody tr");
+
+
+        filterInputs.forEach(input => {
+
+
+            input.addEventListener(
+                "input",
+                function () {
+
+                    applyFilters();
+
+                }
+            );
+
+
+        });
+
+
+        function applyFilters() {
+
+
+            /*
+             * نجمع الفلاتر التي تحتوي على قيمة
+             */
+
+            const activeFilters = [];
+
+
+            filterInputs.forEach(input => {
+
+
+                const value =
+                    input.value
+                        .toLowerCase()
+                        .trim();
+
+
+                if (value !== "") {
+
+
+                    const column =
+                        parseInt(
+                            input.dataset.column,
+                            10
+                        );
+
+
+                    activeFilters.push({
+
+                        column: column,
+
+                        value: value
+
+                    });
+
+                }
+
+            });
+
+
+            /*
+             * فحص كل صف
+             */
+
+            rows.forEach(row => {
+
+
+                /*
+                 * نتجاهل صف رسالة عدم وجود البيانات
+                 */
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                if (!cells.length) {
+
+                    return;
+
+                }
+
+
+                /*
+                 * نفترض أن الصف مطابق
+                 */
+
+                let matches = true;
+
+
+                /*
+                 * نطبق جميع الفلاتر
+                 */
+
+                activeFilters.forEach(filter => {
+
+
+                    const cell =
+                        cells[filter.column];
+
+
+                    if (!cell) {
+
+                        matches = false;
+
+                        return;
+
+                    }
+
+
+                    const text =
+                        cell.textContent
+                            .toLowerCase()
+                            .trim();
+
+
+                    /*
+                     * يجب أن يطابق كل الفلاتر
+                     */
+
+                    if (
+                        !text.includes(
+                            filter.value
+                        )
+                    ) {
+
+                        matches = false;
+
+                    }
+
+                });
+
+
+                /*
+                 * إظهار / إخفاء الصف
+                 */
+
+                row.style.display =
+                    matches
+                    ? ""
+                    : "none";
+
+
+            });
+
+        }
+
+
+    }
+
+
+
+    /* =====================================================
+       قائمة الخيارات
+    ===================================================== */
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".options-button"
+        );
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener(
+            "click",
+            function (event) {
+
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const dropdown =
+                    this.closest(
+                        ".options-dropdown"
+                    );
+
+
+                if (!dropdown) {
+
+                    return;
+
+                }
+
+
+                const menu =
+                    dropdown.querySelector(
+                        ".custom-menu"
+                    );
+
+
+                if (!menu) {
+
+                    return;
+
+                }
+
+
+                /* ============================
+                   إذا كانت القائمة مفتوحة
+                ============================ */
+
+                if (
+                    openedMenu === menu &&
+                    menu.classList.contains(
+                        "menu-open"
+                    )
+                ) {
+
+                    closeOptionsMenu();
+
+                    return;
+
+                }
+
+
+                /* ============================
+                   إغلاق أي قائمة أخرى
+                ============================ */
+
+                closeOptionsMenu();
+
+
+                /* ============================
+                   نقل القائمة إلى body
+                ============================ */
+
+                document.body.appendChild(menu);
+
+
+                menu.classList.add(
+                    "menu-open"
+                );
+
+
+                openedMenu = menu;
+
+                openedButton = this;
+
+
+                /* ============================
+                   تحديد مكان القائمة
+                ============================ */
+
+                positionMenu();
+
+
+                /*
+                 * منع الضغط داخل القائمة
+                 * من إغلاقها
+                 */
+
+                menu.onclick =
+                    function (e) {
+
+                        e.stopPropagation();
+
+                    };
+
+
+            }
+        );
+
     });
 
+
+
+    /* =====================================================
+       تحديد مكان القائمة
+    ===================================================== */
+
+    function positionMenu() {
+
+
+        if (
+            !openedMenu ||
+            !openedButton
+        ) {
+
+            return;
+
+        }
+
+
+        const rect =
+            openedButton.getBoundingClientRect();
+
+
+        const menuHeight =
+            openedMenu.offsetHeight;
+
+
+        const menuWidth =
+            openedMenu.offsetWidth;
+
+
+        const gap = 8;
+
+        const screenPadding = 8;
+
+
+        /*
+         * المكان الأساسي:
+         * أعلى الزر
+         */
+
+        let top =
+            rect.top -
+            menuHeight -
+            gap;
+
+
+        /*
+         * إذا لم توجد مساحة بالأعلى
+         * نضع القائمة أسفل الزر
+         */
+
+        if (
+            top < screenPadding
+        ) {
+
+            top =
+                rect.bottom +
+                gap;
+
+        }
+
+
+        /*
+         * منع خروج القائمة من أسفل الشاشة
+         */
+
+        if (
+            top + menuHeight >
+            window.innerHeight -
+            screenPadding
+        ) {
+
+            top =
+                Math.max(
+                    screenPadding,
+                    window.innerHeight -
+                    menuHeight -
+                    screenPadding
+                );
+
+        }
+
+
+        /*
+         * توسيط القائمة بالنسبة للزر
+         */
+
+        let left =
+            rect.left +
+            (
+                rect.width -
+                menuWidth
+            ) / 2;
+
+
+        /*
+         * منع الخروج من اليمين
+         */
+
+        if (
+            left + menuWidth >
+            window.innerWidth -
+            screenPadding
+        ) {
+
+            left =
+                window.innerWidth -
+                menuWidth -
+                screenPadding;
+
+        }
+
+
+        /*
+         * منع الخروج من اليسار
+         */
+
+        if (
+            left < screenPadding
+        ) {
+
+            left =
+                screenPadding;
+
+        }
+
+
+        openedMenu.style.top =
+            top + "px";
+
+
+        openedMenu.style.left =
+            left + "px";
+
+
+        openedMenu.style.right =
+            "auto";
+
+
+        openedMenu.style.bottom =
+            "auto";
+
+
+        openedMenu.style.transform =
+            "none";
+
+    }
+
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+
+        if (!openedMenu) {
+
+            return;
+
+        }
+
+
+        openedMenu.classList.remove(
+            "menu-open"
+        );
+
+
+        if (openedButton) {
+
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+        openedMenu.onclick = null;
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       Scroll
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            positionMenu();
+
+
+        },
+        true
+    );
+
+
+
+    /* =====================================================
+       Resize
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+
+            if (
+                openedMenu &&
+                openedButton
+            ) {
+
+                positionMenu();
+
+            }
+
+
+        }
+    );
+
+
 });
+
 </script>
 
 {% endblock %}

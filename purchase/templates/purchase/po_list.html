@@ -1,114 +1,1270 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
+
 {% block content %}
 
-<div class="container-fluid mt-4">
+<div class="container-fluid invoices-page mt-4">
 
-    <!-- Create Purchase Order Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">{% trans "Purchase Orders Management" %}</h3>
-        <a href="/purchase/orders/add/" class="btn btn-secondary">+ {% trans "Create Purchase Order" %}</a>
+    <div class="invoice-card">
+
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    {% trans "Purchase Orders Management" %}
+                </h3>
+
+                <p>
+                    {% trans "Manage purchase orders" %}
+                </p>
+
+            </div>
+
+            <a href="/purchase/orders/add/"
+               class="add-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Create Purchase Order" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- الجدول -->
+        <!-- ============================= -->
+
+        <div class="table-box">
+
+            <table class="invoice-table">
+
+                <thead>
+
+                    <!-- ============================= -->
+                    <!-- صف البحث -->
+                    <!-- ============================= -->
+
+                    <tr class="filter-row">
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="#"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Purchase Order No' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Supplier' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Date' %}"
+                            >
+                        </th>
+
+                        <th>
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Total' %}"
+                            >
+                        </th>
+
+                        <th></th>
+
+                    </tr>
+
+
+                    <!-- ============================= -->
+                    <!-- عناوين الأعمدة -->
+                    <!-- ============================= -->
+
+                    <tr class="header-row">
+
+                        <th>#</th>
+
+                        <th>
+                            {% trans "Purchase Order No" %}
+                        </th>
+
+                        <th>
+                            {% trans "Supplier" %}
+                        </th>
+
+                        <th>
+                            {% trans "Date" %}
+                        </th>
+
+                        <th>
+                            {% trans "Total" %}
+                        </th>
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for p in pos %}
+
+                    <tr>
+
+                        <td>
+
+                            <span class="order-badge">
+                                {{ forloop.counter }}
+                            </span>
+
+                        </td>
+
+
+                        <td class="invoice-number">
+
+                            <i class="fa-solid fa-file-invoice"></i>
+
+                            {{ p.invoice_no }}
+
+                        </td>
+
+
+                        <td class="supplier-name">
+
+                            <i class="fa-solid fa-truck-field"></i>
+
+                            {{ p.supplier.commercial_name }}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="date-badge">
+                                {{ p.date_issue }}
+                            </span>
+
+                        </td>
+
+
+                        <td class="total-cell">
+
+                            {{ p.total_after_tax|floatformat:2 }}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="options-dropdown">
+
+                                <button
+                                    type="button"
+                                    class="action-btn options-button"
+                                >
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Options" %}
+
+                                </button>
+
+
+                                <ul class="dropdown-menu custom-menu text-end">
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="/purchase/orders/{{ p.id }}/"
+                                        >
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="/purchase/orders/{{ p.id }}/print/"
+                                        >
+
+                                            <i class="fa-solid fa-print"></i>
+
+                                            {% trans "Print" %}
+
+                                        </a>
+
+                                    </li>
+
+
+<li>
+
+    <form
+        method="POST"
+       action="{% url 'purchase:purchase_orders_delete' p.id %}"
+        style="margin:0;"
+        onsubmit="return confirm('هل أنت متأكد من حذف أمر الشراء؟');"
+    >
+
+        {% csrf_token %}
+
+        <button
+            type="submit"
+            class="dropdown-item text-danger"
+            style="
+                width:100%;
+                border:0;
+                cursor:pointer;
+            "
+        >
+
+            <i class="fa-solid fa-trash"></i>
+
+            {% trans "Delete" %}
+
+        </button>
+
+    </form>
+
+</li>
+                                </ul>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="6" class="empty">
+
+                            <i class="fa-solid fa-cart-shopping"></i>
+
+                            <div>
+
+                                {% trans "No purchase orders found" %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
-
-    <table class="table table-hover text-center align-middle">
-
-        <thead>
-
-            <!-- Filter Row -->
-            <tr>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="#"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Purchase Order No' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Supplier' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Date' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Total' %}"></th>
-                <th></th>
-            </tr>
-
-            <!-- Table Headers -->
-            <tr class="table-dark">
-                <th>#</th>
-                <th>{% trans "Purchase Order No" %}</th>
-                <th>{% trans "Supplier" %}</th>
-                <th>{% trans "Date" %}</th>
-                <th>{% trans "Total" %}</th>
-                <th>{% trans "Actions" %}</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {% for p in pos %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ p.invoice_no }}</td>
-                <td>{{ p.supplier.commercial_name }}</td>
-                <td>{{ p.date_issue }}</td>
-                <td>{{ p.total_after_tax|floatformat:2 }}</td>
-
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                            {% trans "Options" %}
-                        </button>
-
-                        <ul class="dropdown-menu text-end">
-                            <li><a class="dropdown-item" href="/purchase/orders/{{ p.id }}/">{% trans "View" %}</a></li>
-                            <li><a class="dropdown-item" href="/purchase/orders/{{ p.id }}/print/">{% trans "Print" %}</a></li>
-                            <li><a class="dropdown-item text-danger" href="/purchase/orders/{{ p.id }}/delete/">{% trans "Delete" %}</a></li>
-                        </ul>
-                    </div>
-                </td>
-
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center text-muted">{% trans "No purchase orders found" %}</td>
-            </tr>
-            {% endfor %}
-
-        </tbody>
-
-    </table>
 
 </div>
 
+
 <style>
-.filter-input {
-    text-align: center;
-    border: 1px solid #6c757d !important;
-    border-radius: 6px;
+
+/* =========================================================
+   الخلفية
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+    font-family:"Tahoma", sans-serif;
+
 }
-.filter-input::placeholder {
-    text-align: center;
-    color: #6c757d;
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.invoices-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
 }
+
+
+/* =========================================================
+   الكرت
+========================================================= */
+
+.invoice-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر الإضافة
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.invoice-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+.filter-row th{
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+/* =========================================================
+   البحث
+========================================================= */
+
+.filter-input{
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+.filter-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder{
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+}
+
+
+/* =========================================================
+   الخلايا
+========================================================= */
+
+.invoice-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   الصفوف
+========================================================= */
+
+.invoice-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.invoice-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم الأمر
+========================================================= */
+
+.invoice-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.invoice-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   المورد
+========================================================= */
+
+.supplier-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.supplier-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   رقم الصف
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الإجمالي
+========================================================= */
+
+.total-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   القائمة
+========================================================= */
+
+.options-dropdown{
+
+    position:relative;
+
+}
+
+
+.custom-menu {
+    display: none !important;
+    position: fixed !important;
+    min-width: 210px;
+    padding: 8px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    ) !important;
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.22),
+        0 3px 6px rgba(0,0,0,.12);
+
+    z-index: 999999999 !important;
+}
+
+.custom-menu.menu-open {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.custom-menu .dropdown-item {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 10px 14px;
+    margin: 2px 0;
+
+    border-radius: 9px;
+
+    color: #444 !important;
+    font-size: 13px;
+    font-weight: 600;
+
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    ) !important;
+
+    text-decoration: none;
+
+    transition: .2s;
+}
+
+.custom-menu .dropdown-item:hover {
+    background: linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    ) !important;
+
+    color: #333 !important;
+}
+
+/* =========================================================
+   لا توجد أوامر
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .invoices-page{
+
+        padding:15px;
+
+    }
+
+
+    .invoice-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .invoice-table{
+
+        min-width:900px;
+
+    }
+
+}
+
 </style>
 
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-    const filterInputs = document.querySelectorAll(".filter-input");
-    const rows = document.querySelectorAll("tbody tr");
+    let openedMenu = null;
+    let openedButton = null;
 
-    filterInputs.forEach((input, colIndex) => {
 
-        input.addEventListener("keyup", function () {
-            const value = this.value.toLowerCase();
+    /* =====================================================
+       فتح قائمة الخيارات
+    ===================================================== */
 
-            rows.forEach(row => {
-                const cell = row.querySelectorAll("td")[colIndex];
-                if (cell) {
-                    const text = cell.textContent.toLowerCase();
-                    row.style.display = text.includes(value) ? "" : "none";
-                }
-            });
+    document.querySelectorAll(".options-button").forEach(function (button) {
+
+        button.addEventListener("click", function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const menu =
+                button
+                .closest(".options-dropdown")
+                .querySelector(".custom-menu");
+
+
+            if (!menu) {
+                return;
+            }
+
+
+            /* إذا كانت نفس القائمة مفتوحة */
+            if (
+                openedMenu === menu &&
+                menu.classList.contains("menu-open")
+            ) {
+                closeOptionsMenu();
+                return;
+            }
+
+
+            /* إغلاق أي قائمة أخرى */
+            closeOptionsMenu();
+
+
+            /* نقل القائمة إلى body */
+            document.body.appendChild(menu);
+
+
+            /* فتح القائمة */
+            menu.classList.add("menu-open");
+
+
+            openedMenu = menu;
+            openedButton = button;
+
+
+            positionMenu();
 
         });
 
     });
 
+
+    /* =====================================================
+       تحديد مكان القائمة
+    ===================================================== */
+
+    function positionMenu() {
+
+        if (!openedMenu || !openedButton) {
+            return;
+        }
+
+
+        const buttonRect =
+            openedButton.getBoundingClientRect();
+
+
+        /*
+         * نجعل القائمة ظاهرة أولاً حتى نستطيع
+         * معرفة ارتفاعها الحقيقي
+         */
+
+        openedMenu.style.display = "block";
+
+
+        const menuRect =
+            openedMenu.getBoundingClientRect();
+
+
+        const gap = 8;
+
+
+        let top =
+            buttonRect.top -
+            menuRect.height -
+            gap;
+
+
+        let left =
+            buttonRect.left +
+            (
+                buttonRect.width -
+                menuRect.width
+            ) / 2;
+
+
+        /*
+         * إذا لم توجد مساحة فوق الزر
+         * نضع القائمة أسفل الزر
+         */
+
+        if (top < 8) {
+
+            top =
+                buttonRect.bottom +
+                gap;
+
+        }
+
+
+        /*
+         * منع خروج القائمة من اليمين
+         */
+
+        if (
+            left + menuRect.width >
+            window.innerWidth - 8
+        ) {
+
+            left =
+                window.innerWidth -
+                menuRect.width -
+                8;
+
+        }
+
+
+        /*
+         * منع خروج القائمة من اليسار
+         */
+
+        if (left < 8) {
+
+            left = 8;
+
+        }
+
+
+        openedMenu.style.top =
+            top + "px";
+
+
+        openedMenu.style.left =
+            left + "px";
+
+
+        openedMenu.style.right =
+            "auto";
+
+
+        openedMenu.style.bottom =
+            "auto";
+
+    }
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+        if (!openedMenu) {
+            return;
+        }
+
+
+        openedMenu.classList.remove(
+            "menu-open"
+        );
+
+
+        openedMenu.style.display = "";
+
+
+        /*
+         * إعادة القائمة إلى مكانها الأصلي
+         */
+
+        if (openedButton) {
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+        openedMenu.style.left = "";
+        openedMenu.style.right = "";
+        openedMenu.style.bottom = "";
+
+
+        openedMenu = null;
+        openedButton = null;
+
+    }
+
+
+    /* =====================================================
+       الضغط داخل القائمة
+       لا يغلقها
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                openedMenu &&
+                openedMenu.contains(event.target)
+            ) {
+                return;
+            }
+
+
+            if (
+                openedButton &&
+                openedButton.contains(event.target)
+            ) {
+                return;
+            }
+
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+    /* =====================================================
+       عند التمرير
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+            if (openedMenu) {
+                positionMenu();
+            }
+
+        },
+        true
+    );
+
+
+    /* =====================================================
+       تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            if (openedMenu) {
+                positionMenu();
+            }
+
+        }
+    );
+
 });
 </script>
 
 {% endblock %}
+

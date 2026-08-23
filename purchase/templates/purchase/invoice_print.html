@@ -1,0 +1,774 @@
+{% extends "sales/invoice_base_a4.html" %}
+{% load l10n %}
+{% load i18n %}
+
+{% block content %}
+
+<style>
+
+body {
+    background-color: #f1f5f9 !important;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    direction: rtl;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+.top-action-bar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+    background: #111827;
+    padding: 14px 24px;
+    border-radius: 8px 8px 0 0;
+    box-sizing: border-box;
+}
+
+.top-action-btn {
+    background: #1f2937;
+    color: #fff !important;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid #374151;
+}
+
+.invoice-paper {
+    width: 100%;
+    background: #fff;
+    padding: 40px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.05);
+    box-sizing: border-box;
+    border: 1px solid #e2e8f0;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #000;
+    margin: 10px 0 25px;
+}
+
+.meta-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+.meta-data-table td {
+    padding: 8px 6px;
+    font-size: 14px;
+    color: #000;
+}
+
+.section-title {
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    border-right: 5px solid #6c757d;
+    padding-right: 10px;
+    color: #111827;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.items-table th {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 9px 6px;
+    font-size: 14px;
+    border: 1px solid #000;
+    text-align: center;
+}
+
+.items-table td {
+    padding: 9px 6px;
+    font-size: 14px;
+    border: 1px solid #000;
+    text-align: center;
+    color: #000;
+}
+
+.totals-table {
+    width: 55%;
+    margin-right: auto;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.totals-table td {
+    padding: 9px 12px;
+    font-size: 14px;
+    border: 1px solid #000;
+    color: #000;
+}
+
+.totals-label {
+    font-weight: bold;
+    text-align: right;
+}
+
+.totals-value {
+    text-align: center;
+    font-weight: bold;
+}
+
+.final-total {
+    background: #f8fafc;
+    font-size: 16px;
+}
+
+.description-box {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #000;
+    background: #f8fafc;
+    color: #000;
+}
+/* =========================================================
+   زر الطباعة أسفل الفاتورة
+   ========================================================= */
+
+.bottom-print-bar {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.bottom-print-btn {
+    background: #1e293b;
+    color: #fff !important;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.bottom-print-btn:hover {
+    background: #334155;
+}
+
+/* =========================================================
+   الطباعة
+   ========================================================= */
+
+@media print {
+
+    .bottom-print-area {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    html,
+    body {
+        width: 100% !important;
+        min-height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .top-action-bar,
+    .sidebar,
+    .main-sidebar,
+    #sidebar,
+    .app-menu,
+    .no-print {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    .page-container {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .invoice-paper {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        background: #fff !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .main-title,
+    .meta-data-table,
+    .section-title,
+    .items-table,
+    .totals-table,
+    .description-box {
+        visibility: visible !important;
+    }
+
+    .items-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto !important;
+    }
+
+    .items-table thead {
+        display: table-header-group !important;
+    }
+
+    .items-table tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .items-table th {
+        background-color: #1e293b !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .totals-table {
+        width: 55% !important;
+        margin-right: auto !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .final-total {
+        background: #f8fafc !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .description-box {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+}
+</style>
+
+
+<div class="page-container">
+
+
+    <!-- =====================================================
+         شريط الأزرار
+         ===================================================== -->
+
+<div class="top-action-bar no-print">
+
+    <a href="javascript:history.back();"
+       class="top-action-btn">
+
+        ↩ {% trans "Back" %}
+
+    </a>
+
+</div>
+    <!-- =====================================================
+         الفاتورة
+         ===================================================== -->
+
+<div class="invoice-paper">
+
+    <!-- =================================================
+         بيانات الفاتورة والمورد
+         ================================================= -->
+
+    <h2 class="main-title">
+        {% trans "Purchase Invoice" %}
+    </h2>
+
+
+    <table class="meta-data-table">
+
+        <tbody>
+
+            <!-- اسم المورد -->
+
+            <tr>
+
+                <td style="text-align:right; width:50%;">
+
+                    <strong>
+                        {% trans "Supplier Name:" %}
+                    </strong>
+
+                    {{ invoice.supplier.commercial_name|default:"-" }}
+
+                </td>
+
+
+                <td style="
+                    text-align:left;
+                    width:50%;
+                    font-family:Arial;
+                    direction:ltr;
+                ">
+
+                    <strong>
+                        Supplier Name:
+                    </strong>
+
+                    {{ invoice.supplier.name_en|default:"-" }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- تاريخ الفاتورة -->
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+                        {% trans "Invoice Date:" %}
+                    </strong>
+
+                    {{ invoice.date_invoice|date:"Y-m-d" }}
+
+                </td>
+
+
+                <td style="
+                    text-align:left;
+                    font-family:Arial;
+                    direction:ltr;
+                ">
+
+                    <strong>
+                        Invoice Date:
+                    </strong>
+
+                    {{ invoice.date_invoice|date:"d/m/Y" }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- رقم الفاتورة -->
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+                        {% trans "Invoice No:" %}
+                    </strong>
+
+                    {{ invoice.invoice_no }}
+
+                </td>
+
+
+                <td style="
+                    text-align:left;
+                    font-family:Arial;
+                    direction:ltr;
+                ">
+
+                    <strong>
+                        Invoice No:
+                    </strong>
+
+                    {{ invoice.invoice_no }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- الرقم الضريبي للمورد -->
+
+            <tr>
+
+                <td style="text-align:right;">
+
+                    <strong>
+                        {% trans "Supplier VAT No.:" %}
+                    </strong>
+
+                    {{ invoice.supplier.tax_number|default:"-" }}
+
+                </td>
+
+
+                <td style="
+                    text-align:left;
+                    font-family:Arial;
+                    direction:ltr;
+                ">
+
+                    <strong>
+                        Supplier VAT No.:
+                    </strong>
+
+                    {{ invoice.supplier.tax_number|default:"-" }}
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <!-- =================================================
+         الأصناف
+         ================================================= -->
+
+    <h4 class="section-title">
+
+        {% trans "Items" %}
+
+    </h4>
+
+
+
+        <table class="items-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        {% trans "Item" %}
+                    </th>
+
+                    <th>
+                        {% trans "Quantity" %}
+                    </th>
+
+                    <th>
+                        {% trans "Price" %}
+                    </th>
+
+                    <th>
+                        {% trans "Discount" %}
+                    </th>
+
+                    <th>
+                        {% trans "Tax %" %}
+                    </th>
+
+                    <th>
+                        {% trans "Tax Value" %}
+                    </th>
+
+                    <th>
+                        {% trans "Total After Tax" %}
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for item in items %}
+
+                <tr>
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+
+                    <td style="
+                        text-align:right;
+                        font-weight:bold;
+                    ">
+
+                        {{ item.product.name }}
+
+                    </td>
+
+
+                    <td>
+                        {{ item.quantity|unlocalize }}
+                    </td>
+
+
+                    <td>
+                        {{ item.price|unlocalize }}
+                    </td>
+
+
+                    <td>
+                        {{ item.discount|unlocalize }}
+                    </td>
+
+
+                    <td>
+                        {{ item.tax_rate|unlocalize }}%
+                    </td>
+
+
+                    <td>
+                        {{ item.tax_value|unlocalize }}
+                    </td>
+
+
+                    <td style="font-weight:bold;">
+
+                        {{ item.total_after_tax|unlocalize }}
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td colspan="8">
+
+                        {% trans "No items found" %}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <!-- =================================================
+             الإجماليات
+             ================================================= -->
+
+        <h4 class="section-title">
+
+            {% trans "Totals" %}
+
+        </h4>
+
+
+        <table class="totals-table">
+
+
+            <!-- الإجمالي قبل الضريبة -->
+
+            <tr>
+
+                <td class="totals-label">
+
+                    {% trans "Total Before Tax:" %}
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ invoice.total_before_tax|unlocalize }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- إجمالي الضريبة -->
+
+            <tr>
+
+                <td class="totals-label">
+
+                    {% trans "Total Tax:" %}
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ invoice.total_tax|unlocalize }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- الإجمالي بعد الضريبة -->
+
+            <tr class="final-total">
+
+                <td class="totals-label">
+
+                    {% trans "Total After Tax:" %}
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ invoice.total_after_tax|unlocalize }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- المبلغ المدفوع -->
+
+            <tr>
+
+                <td class="totals-label">
+
+                    {% trans "المبلغ المدفوع:" %}
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ invoice.paid_amount|unlocalize }}
+
+                </td>
+
+            </tr>
+
+
+            <!-- المتبقي -->
+
+            <tr>
+
+                <td class="totals-label">
+
+                    {% trans "المتبقي:" %}
+
+                </td>
+
+
+                <td class="totals-value">
+
+                    {{ invoice.total_after_tax|default:0|add:"-"|add:invoice.paid_amount }}
+
+                </td>
+
+            </tr>
+
+
+        </table>
+
+
+        <!-- =================================================
+             الوصف
+             ================================================= -->
+
+        {% if invoice.description %}
+
+        <h4 class="section-title">
+
+            {% trans "Description" %}
+
+        </h4>
+
+
+        <div class="description-box">
+
+            {{ invoice.description }}
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+    <!-- نهاية invoice-paper -->
+
+
+    <!-- =====================================================
+         زر الطباعة أسفل الفاتورة
+         يظهر على الشاشة فقط
+         ===================================================== -->
+
+<!-- =====================================================
+     زر الطباعة أسفل الفاتورة
+     ===================================================== -->
+
+<div
+    class="bottom-print-area"
+    style="
+        display:block !important;
+        width:100% !important;
+        text-align:center !important;
+        margin:25px 0 40px 0 !important;
+        padding:15px !important;
+        box-sizing:border-box !important;
+    "
+>
+
+    <button
+        type="button"
+        onclick="window.print();"
+        style="
+            display:inline-block !important;
+            visibility:visible !important;
+            opacity:1 !important;
+            background:#1e293b !important;
+            color:#ffffff !important;
+            border:none !important;
+            padding:13px 40px !important;
+            border-radius:8px !important;
+            font-size:16px !important;
+            font-weight:bold !important;
+            cursor:pointer !important;
+            font-family:Tahoma, Arial, sans-serif !important;
+        "
+    >
+
+        🖨️ {% trans "Print Invoice" %}
+
+    </button>
+
+</div>
+
+</div>
+<!-- نهاية page-container -->
+
+{% endblock %}

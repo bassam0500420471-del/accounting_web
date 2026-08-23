@@ -84,7 +84,35 @@
     <strong>منشئ الفاتورة:</strong>
     {{ invoice.created_by }}
 </div>
-    
+<!-- طريقة الدفع -->
+<div style="
+    margin-top: 8px;
+    border-top: 1px dotted #000;
+    border-bottom: 1px dotted #000;
+    padding: 6px 0;
+">
+
+    <strong>طريقة الدفع:</strong>
+
+    {% for payment in invoice.payments.all %}
+
+        {% if payment.method %}
+            {{ payment.method.name }}
+        {% else %}
+            غير محددة
+        {% endif %}
+
+        {% if not forloop.last %}
+            ،
+        {% endif %}
+
+    {% empty %}
+
+        لا توجد دفعة مسجلة
+
+    {% endfor %}
+
+</div>
     <div style="margin-top: 10px; border-top: 1px dotted #000; padding-top: 5px;">
 
         {% if invoice.customer %}

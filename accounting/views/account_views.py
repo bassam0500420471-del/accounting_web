@@ -513,10 +513,6 @@ def account_delete(request, pk):
     )
 
 
-    if request.method != "POST":
-        return redirect(
-            "accounting:chart_tree"
-        )
 
 
     # منع حذف الحسابات التي لها أبناء

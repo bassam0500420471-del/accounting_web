@@ -5,483 +5,1223 @@
 {% block title %}{{ role_label }}{% endblock %}
 
 
-{% block content %}
+{% block extra_css %}
 
 <style>
 
+/* =========================================================
+   Evaluation Record - 3D Gray Design
+========================================================= */
+
+.evaluation-page {
+
+    background: #eeeeee;
+
+    min-height: calc(100vh - 120px);
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+}
+
+
+/* =========================
+   العنوان
+========================= */
+
+.evaluation-title {
+
+    font-weight: 800;
+
+    color: #444;
+
+    margin: 0;
+
+}
+
+
+/* =========================
+   البطاقات
+========================= */
+
+.evaluation-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    border-radius: 20px;
+
+    padding: 22px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+
+        8px 8px 20px #c5c5c5,
+
+        -8px -8px 20px #ffffff;
+
+}
+
+
+/* =========================
+   معلومات الموظف
+========================= */
+
+.info-item {
+
+    background: linear-gradient(
+        145deg,
+        #f8f8f8,
+        #dddddd
+    );
+
+    border-radius: 15px;
+
+    padding: 15px;
+
+    box-shadow:
+
+        inset 2px 2px 5px #cccccc,
+
+        inset -2px -2px 5px #ffffff;
+
+}
+
+
+.info-label {
+
+    display: block;
+
+    color: #777;
+
+    font-size: 13px;
+
+    margin-bottom: 6px;
+
+    font-weight: bold;
+
+}
+
+
+.info-value {
+
+    color: #333;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================
+   عنوان القسم
+========================= */
+
+.section-title {
+
+    font-weight: 800;
+
+    color: #444;
+
+    margin-bottom: 18px;
+
+}
+
+
+/* =========================
+   الجدول
+========================= */
+
 .evaluation-table {
-    width:100%;
-    table-layout:fixed;
-    font-size:14px;
+
+    width: 100%;
+
+    table-layout: fixed;
+
+    font-size: 14px;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
 }
 
 
-.evaluation-table th {
-    background:#f8f9fa;
-    font-weight:bold;
-    text-align:center;
-    padding:10px;
+.evaluation-table thead th {
+
+    background: linear-gradient(
+        145deg,
+        #666666,
+        #444444
+    );
+
+    color: white;
+
+    font-weight: 800;
+
+    text-align: center;
+
+    padding: 13px 10px;
+
+    border: none;
+
 }
 
 
-.evaluation-table td {
-    padding:8px;
-    vertical-align:middle;
+.evaluation-table tbody td {
+
+    padding: 12px 10px;
+
+    vertical-align: middle;
+
+    border-color: #d5d5d5;
+
+    background: #f8f8f8;
+
 }
 
 
-/* رقم */
+.evaluation-table tbody tr {
+
+    transition: .25s ease;
+
+}
+
+
+.evaluation-table tbody tr:hover {
+
+    background: #e9e9e9;
+
+    transform: scale(1.005);
+
+}
+
+
+/* =========================
+   عرض الأعمدة
+========================= */
+
 .col-number {
-    width:5%;
+
+    width: 5%;
+
 }
 
 
-/* المعيار */
 .col-criteria {
-    width:18%;
+
+    width: 18%;
+
 }
 
 
-/* الوزن */
 .col-weight {
-    width:8%;
+
+    width: 8%;
+
 }
 
 
-/* الدرجة */
 .col-score {
-    width:10%;
+
+    width: 10%;
+
 }
 
 
-/* الملاحظات */
 .col-notes {
-    width:39%;
+
+    width: 39%;
+
 }
 
 
-/* المرفقات */
 .col-files {
-    width:20%;
-}
 
-
-
-.notes-box {
-
-    width:100%;
-    height:90px;
-    resize:vertical;
-    font-size:14px;
+    width: 20%;
 
 }
 
 
-
-.score-box {
-
-    width:90px;
-    margin:auto;
-    text-align:center;
-
-}
-
-
+/* =========================
+   الوزن
+========================= */
 
 .weight-text {
 
-    font-weight:bold;
+    display: inline-block;
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    padding: 7px 12px;
+
+    border-radius: 10px;
+
+    font-weight: 800;
+
+    color: #444;
+
+    box-shadow:
+
+        3px 3px 7px #c5c5c5,
+
+        -3px -3px 7px #ffffff;
 
 }
 
 
+/* =========================
+   الدرجة
+========================= */
+
+.score-box {
+
+    width: 90px;
+
+    margin: auto;
+
+    text-align: center;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    background: #f7f7f7;
+
+    box-shadow:
+
+        inset 2px 2px 5px #d0d0d0,
+
+        inset -2px -2px 5px #ffffff;
+
+    font-weight: bold;
+
+}
+
+
+.score-box:focus {
+
+    border-color: #777;
+
+    box-shadow:
+
+        0 0 0 3px rgba(100,100,100,.15);
+
+}
+
+
+/* =========================
+   الملاحظات
+========================= */
+
+.notes-box {
+
+    width: 100%;
+
+    min-height: 90px;
+
+    resize: vertical;
+
+    font-size: 13px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    background: #f8f8f8;
+
+    box-shadow:
+
+        inset 2px 2px 5px #d0d0d0,
+
+        inset -2px -2px 5px #ffffff;
+
+}
+
+
+.notes-box:focus {
+
+    border-color: #777;
+
+    box-shadow:
+
+        0 0 0 3px rgba(100,100,100,.15);
+
+}
+
+
+/* =========================================================
+   المرفقات
+========================================================= */
+
+.evaluation-attachments {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 7px;
+
+    width: 100%;
+
+    max-width: 220px;
+
+    margin: 0 auto;
+
+}
+
+
+/* =========================================================
+   رابط المرفق
+========================================================= */
+
+.attachment-link {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+}
+
+
+/* =========================================================
+   صورة المرفق
+========================================================= */
+
+.attachment-thumb {
+
+    width: 50px;
+
+    height: 50px;
+
+    object-fit: cover;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    border: 2px solid #ddd;
+
+    background: #fff;
+
+    box-shadow:
+
+        3px 3px 8px rgba(0,0,0,.15),
+
+        -2px -2px 5px rgba(255,255,255,.8);
+
+    transition: .25s;
+
+}
+
+
+.attachment-thumb:hover {
+
+    transform: scale(1.10);
+
+    border-color: #888;
+
+}
+
+
+/* =========================================================
+   ملف غير صورة
+========================================================= */
+
+.attachment-file {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    min-width: 70px;
+
+    max-width: 150px;
+
+    padding: 6px 10px;
+
+    border-radius: 10px;
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color: #444;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    box-shadow:
+
+        3px 3px 7px #c5c5c5,
+
+        -3px -3px 7px #ffffff;
+
+    transition: .25s;
+
+}
+
+
+.attachment-file:hover {
+
+    color: #222;
+
+    transform: translateY(-2px);
+
+}
+
+
+/* =========================================================
+   عدد المرفقات
+========================================================= */
+
+.attachments-count {
+
+    width: 100%;
+
+    margin-top: 7px;
+
+    text-align: center;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #777;
+
+}
+
+
+/* =========================================================
+   رفع الملفات
+========================================================= */
 
 .file-box {
 
-    font-size:13px;
+    width: 100%;
+
+    font-size: 12px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    background: #f8f8f8;
+
+    box-shadow:
+
+        inset 2px 2px 5px #d0d0d0,
+
+        inset -2px -2px 5px #ffffff;
 
 }
 
 
+/* =========================
+   أزرار الصفحة
+========================= */
+
+.evaluation-btn {
+
+    border: none;
+
+    border-radius: 13px;
+
+    padding: 10px 22px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    transition: .25s ease;
+
+    box-shadow:
+
+        5px 5px 10px #c5c5c5,
+
+        -5px -5px 10px #ffffff;
+
+}
+
+
+/* حفظ */
+
+.btn-save {
+
+    background: linear-gradient(
+        145deg,
+        #666666,
+        #444444
+    );
+
+    color: white;
+
+}
+
+
+.btn-save:hover {
+
+    color: white;
+
+    transform: translateY(-2px);
+
+}
+
+
+/* رجوع */
+
+.btn-back {
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color: #444;
+
+}
+
+
+.btn-back:hover {
+
+    color: #222;
+
+    transform: translateY(-2px);
+
+}
+
+
+/* =========================
+   حالة عدم وجود معايير
+========================= */
+
+.empty-state {
+
+    padding: 35px;
+
+    text-align: center;
+
+    color: #777;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================
+   الجوال
+========================= */
+
+@media (max-width: 900px) {
+
+    .evaluation-page {
+
+        padding: 15px;
+
+    }
+
+    .evaluation-card {
+
+        padding: 15px;
+
+    }
+
+    .evaluation-table {
+
+        min-width: 1000px;
+
+    }
+
+}
+
 </style>
 
+{% endblock %}
 
+
+{% block content %}
 
 <div class="container-fluid mt-4">
 
-
-    <h3 class="fw-bold mb-3">
-
-        📝 {{ role_label }} - {{ evaluation.name }}
-
-    </h3>
+    <div class="evaluation-page">
 
 
+        <!-- =================================================
+             العنوان
+        ================================================= -->
 
-    <div class="card shadow-sm mb-4">
+        <div class="evaluation-card">
 
-        <div class="card-body row">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
+                <div>
 
-            <div class="col-md-4">
+                    <h3 class="evaluation-title">
 
-                <strong>
-                    {% trans "Target Employee:" %}
-                </strong>
+                        📝 {{ role_label }}
 
-                <br>
+                    </h3>
 
-                {% if target.employee %}
+                    <div class="text-muted mt-2">
 
-                    {{ target.employee.first_name_ar }}
-                    {{ target.employee.last_name_ar }}
+                        {{ evaluation.name }}
 
-                {% else %}
+                    </div>
 
-                    —
-
-                {% endif %}
+                </div>
 
             </div>
-
-
-
-            <div class="col-md-4">
-
-                <strong>
-                    {% trans "Department:" %}
-                </strong>
-
-                <br>
-
-
-                {% if target.employee and target.employee.department %}
-
-                    {{ target.employee.department }}
-
-                {% else %}
-
-                    —
-
-                {% endif %}
-
-
-            </div>
-
-
-
-            <div class="col-md-4">
-
-                <strong>
-                    {% trans "Period:" %}
-                </strong>
-
-                <br>
-
-                {{ evaluation.start_date }}
-                →
-                {{ evaluation.end_date }}
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-
-
-
-    <form method="post"
-          enctype="multipart/form-data"
-          class="card shadow-sm">
-
-
-        {% csrf_token %}
-
-
-
-        <div class="card-header fw-bold">
-
-            ✅ {% trans "Enter Scores" %}
 
         </div>
 
 
+        <!-- =================================================
+             معلومات التقييم
+        ================================================= -->
 
+        <div class="evaluation-card">
 
-        <div class="card-body">
+            <h5 class="section-title">
 
+                📋 {% trans "Evaluation Information" %}
 
+            </h5>
 
-            <table class="table table-bordered align-middle evaluation-table">
 
+            <div class="row g-3">
 
 
-                <thead>
+                <!-- الموظف -->
 
+                <div class="col-md-4">
 
-                    <tr>
+                    <div class="info-item">
 
+                        <span class="info-label">
 
-                        <th class="col-number">
+                            {% trans "Target Employee" %}
 
-                            #
+                        </span>
 
-                        </th>
+                        <span class="info-value">
 
+                            {% if target.employee %}
 
+                                {{ target.employee.first_name_ar }}
 
-                        <th class="col-criteria">
+                                {{ target.employee.last_name_ar }}
 
-                            {% trans "Criteria" %}
+                            {% else %}
 
-                        </th>
+                                —
 
+                            {% endif %}
 
+                        </span>
 
+                    </div>
 
-                        <th class="col-weight">
+                </div>
 
-                            {% trans "Weight" %}
 
-                        </th>
+                <!-- القسم -->
 
+                <div class="col-md-4">
 
+                    <div class="info-item">
 
+                        <span class="info-label">
 
-                        <th class="col-score">
+                            {% trans "Department" %}
 
-                            {% trans "Score" %}
+                        </span>
 
-                        </th>
+                        <span class="info-value">
 
+                            {% if target.employee and target.employee.department %}
 
+                                {{ target.employee.department }}
 
+                            {% else %}
 
+                                —
 
-                        <th class="col-notes">
+                            {% endif %}
 
-                            {% trans "Notes" %}
+                        </span>
 
-                        </th>
+                    </div>
 
+                </div>
 
 
+                <!-- الفترة -->
 
+                <div class="col-md-4">
 
-                        <th class="col-files">
+                    <div class="info-item">
 
-                            {% trans "Attachments" %}
+                        <span class="info-label">
 
-                        </th>
+                            {% trans "Period" %}
 
+                        </span>
 
-                    </tr>
+                        <span class="info-value">
 
+                            {{ evaluation.start_date }}
 
-                </thead>
+                            →
 
+                            {{ evaluation.end_date }}
 
+                        </span>
 
+                    </div>
 
+                </div>
 
-                <tbody>
 
+            </div>
 
+        </div>
 
 
-                {% for c in criteria %}
+        <!-- =================================================
+             إدخال الدرجات
+        ================================================= -->
 
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            class="evaluation-card"
+        >
 
+            {% csrf_token %}
 
-                    <tr>
 
+            <h5 class="section-title">
 
+                ✅ {% trans "Enter Scores" %}
 
-                        <td class="text-center">
+            </h5>
 
-                            {{ forloop.counter }}
 
-                        </td>
+            <div class="table-responsive">
 
 
+                <table class="table table-bordered align-middle evaluation-table mb-0">
 
 
+                    <thead>
 
-                        <td>
+                        <tr>
 
-                            <strong>
+                            <th class="col-number">
 
-                                {{ c.name }}
+                                #
 
-                            </strong>
+                            </th>
 
-                        </td>
 
+                            <th class="col-criteria">
 
+                                {% trans "Criteria" %}
 
+                            </th>
 
 
-                        <td class="text-center">
+                            <th class="col-weight">
 
-                            <span class="weight-text">
+                                {% trans "Weight" %}
 
-                                {{ c.weight }}%
+                            </th>
 
-                            </span>
 
-                        </td>
+                            <th class="col-score">
 
+                                {% trans "Score" %}
 
+                            </th>
 
 
+                            <th class="col-notes">
 
-                        <td class="text-center">
+                                {% trans "Notes" %}
 
+                            </th>
 
-                            <input
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                max="100"
-                                class="form-control score-box"
-                                name="score_{{ c.id }}"
-                                value="{{ existing_scores|get_item:c.id|default_if_none:'' }}"
-                                placeholder="{% trans '0 - 100' %}">
 
+                            <th class="col-files">
 
+                                {% trans "Attachments" %}
 
-                        </td>
+                            </th>
 
+                        </tr>
 
+                    </thead>
 
 
+                    <tbody>
 
-                        <td>
 
-                            <textarea
-                                class="form-control notes-box"
-                                name="notes_{{ c.id }}"
-                                placeholder="اكتب ملاحظات لهذا المعيار...">{{ existing_notes|get_item:c.id|default_if_none:'' }}</textarea>
+                    {% for c in criteria %}
 
-                        </td>
 
+                        <tr>
 
 
+                            <!-- =================================================
+                                 الرقم
+                            ================================================= -->
 
-                        <td>
+                            <td class="text-center">
 
+                                <strong>
 
-                            <input
+                                    {{ forloop.counter }}
 
-                                type="file"
+                                </strong>
 
-                                class="form-control file-box"
+                            </td>
 
-                                name="attachment_{{ c.id }}"
 
-                                multiple>
+                            <!-- =================================================
+                                 المعيار
+                            ================================================= -->
 
+                            <td>
 
+                                <strong>
 
-                        </td>
+                                    {{ c.name }}
 
+                                </strong>
 
+                            </td>
 
 
-                    </tr>
+                            <!-- =================================================
+                                 الوزن
+                            ================================================= -->
 
+                            <td class="text-center">
 
+                                <span class="weight-text">
 
-                {% empty %}
+                                    {{ c.weight }}%
 
+                                </span>
 
+                            </td>
 
-                    <tr>
 
+                            <!-- =================================================
+                                 الدرجة
+                            ================================================= -->
 
-                        <td colspan="6"
-                            class="text-center">
+                            <td class="text-center">
 
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    max="100"
+                                    class="form-control score-box"
+                                    name="score_{{ c.id }}"
+                                    value="{{ existing_scores|get_item:c.id|default_if_none:'' }}"
+                                    placeholder="{% trans '0 - 100' %}"
+                                >
 
-                            {% trans "No criteria for this evaluation." %}
+                            </td>
 
 
-                        </td>
+                            <!-- =================================================
+                                 الملاحظات
+                            ================================================= -->
 
+                            <td>
 
-                    </tr>
+                                <textarea
+                                    class="form-control notes-box"
+                                    name="notes_{{ c.id }}"
+                                    placeholder="{% trans 'Write notes for this criterion...' %}"
+                                >{{ existing_notes|get_item:c.id|default_if_none:'' }}</textarea>
 
+                            </td>
 
 
-                {% endfor %}
+                            <!-- =================================================
+                                 المرفقات
+                            ================================================= -->
 
+                            <td>
 
+                                <div class="evaluation-attachments">
 
 
-                </tbody>
+                                    {% with attachments=existing_attachments|get_item:c.id %}
 
 
+                                        <!-- =====================================
+                                             المرفقات القديمة
+                                        ====================================== -->
 
-            </table>
+                                        {% if attachments %}
 
 
+                                            {% for attachment in attachments %}
 
 
+                                                {% if attachment.file %}
 
 
-            <div class="mt-4 d-flex gap-2">
+                                                    {% if attachment.file.url|lower|slice:"-5:" == ".jpeg" %}
 
+
+                                                        <a
+                                                            href="{{ attachment.file.url }}"
+                                                            target="_blank"
+                                                            class="attachment-link"
+                                                            title="{{ attachment.file.name }}"
+                                                        >
+
+                                                            <img
+                                                                src="{{ attachment.file.url }}"
+                                                                class="attachment-thumb"
+                                                                alt="Attachment"
+                                                            >
+
+                                                        </a>
+
+
+                                                    {% elif attachment.file.url|lower|slice:"-4:" == ".jpg" %}
+
+
+                                                        <a
+                                                            href="{{ attachment.file.url }}"
+                                                            target="_blank"
+                                                            class="attachment-link"
+                                                            title="{{ attachment.file.name }}"
+                                                        >
+
+                                                            <img
+                                                                src="{{ attachment.file.url }}"
+                                                                class="attachment-thumb"
+                                                                alt="Attachment"
+                                                            >
+
+                                                        </a>
+
+
+                                                    {% elif attachment.file.url|lower|slice:"-4:" == ".png" %}
+
+
+                                                        <a
+                                                            href="{{ attachment.file.url }}"
+                                                            target="_blank"
+                                                            class="attachment-link"
+                                                            title="{{ attachment.file.name }}"
+                                                        >
+
+                                                            <img
+                                                                src="{{ attachment.file.url }}"
+                                                                class="attachment-thumb"
+                                                                alt="Attachment"
+                                                            >
+
+                                                        </a>
+
+
+                                                    {% elif attachment.file.url|lower|slice:"-5:" == ".webp" %}
+
+
+                                                        <a
+                                                            href="{{ attachment.file.url }}"
+                                                            target="_blank"
+                                                            class="attachment-link"
+                                                            title="{{ attachment.file.name }}"
+                                                        >
+
+                                                            <img
+                                                                src="{{ attachment.file.url }}"
+                                                                class="attachment-thumb"
+                                                                alt="Attachment"
+                                                            >
+
+                                                        </a>
+
+
+                                                    {% else %}
+
+
+                                                        <a
+                                                            href="{{ attachment.file.url }}"
+                                                            target="_blank"
+                                                            class="attachment-file"
+                                                            title="{{ attachment.file.name }}"
+                                                        >
+
+                                                            📎
+
+                                                            {% trans "File" %}
+
+                                                        </a>
+
+
+                                                    {% endif %}
+
+
+                                                {% endif %}
+
+
+                                            {% endfor %}
+
+
+                                            <!-- =================================
+                                                 عدد المرفقات
+                                            ================================== -->
+
+                                            <div class="attachments-count">
+
+                                                📎
+
+                                                {{ attachments|length }}
+
+                                                {% trans "Attachments" %}
+
+                                            </div>
+
+
+                                        {% endif %}
+
+
+                                    {% endwith %}
+
+
+                                </div>
+
+
+                                <!-- =========================================
+                                     رفع مرفقات جديدة
+                                ========================================== -->
+
+                                <input
+                                    type="file"
+                                    class="form-control file-box mt-2"
+                                    name="attachment_{{ c.id }}"
+                                    multiple
+                                >
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="empty-state"
+                            >
+
+                                {% trans "No criteria for this evaluation." %}
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 الأزرار
+            ================================================= -->
+
+            <div class="mt-4 d-flex gap-2 flex-wrap">
 
 
                 <button
-
                     type="submit"
-
-                    class="btn btn-success fw-bold">
-
+                    class="evaluation-btn btn-save"
+                >
 
                     💾 {% trans "Save" %}
-
 
                 </button>
 
 
-
-
-
                 <a
-
                     href="{% url 'hr:evaluation_detail' evaluation.id %}"
+                    class="evaluation-btn btn-back"
+                >
 
-                    class="btn btn-secondary fw-bold">
-
-
-
-                    {% trans "Back" %}
-
-
+                    ↩ {% trans "Back" %}
 
                 </a>
-
-
 
 
             </div>
 
 
-
-        </div>
-
+        </form>
 
 
-    </form>
-
-
+    </div>
 
 </div>
-
 
 
 {% endblock %}

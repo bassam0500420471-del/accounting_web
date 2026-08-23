@@ -6,228 +6,960 @@
 
 {% block content %}
 
-<style>
-/* ===== Select2 RTL Enhancement ===== */
-.select2-container--default .select2-selection--single {
-    height: 42px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    text-align: right;
-}
+<div class="container-fluid suppliers-page mt-4">
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 28px;
-    padding-right: 8px;
-}
+```
+<div class="supplier-card">
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 40px;
-    left: 6px;
-    right: auto;
-}
+    <!-- ============================= -->
+    <!-- رأس الصفحة -->
+    <!-- ============================= -->
 
-.select2-dropdown {
-    direction: rtl;
-    text-align: right;
-    font-size: 15px;
-}
-</style>
+    <div class="page-header">
 
-<h3 class="mb-4">{% trans "Edit Supplier" %}</h3>
+        <div>
 
-<div class="card p-4">
+            <h3>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+                <i class="fa-solid fa-pen-to-square"></i>
 
-    <div class="row">
+                {% trans "Edit Supplier" %}
 
-        <!-- ========== Supplier Information ========== -->
-        <div class="col-md-6">
+            </h3>
 
-            <h5 class="mb-3">{% trans "Supplier Information" %}</h5>
+            <p>
 
-            <div class="mt-3">
-                <label>{% trans "Commercial Name" %} *</label>
-                <input name="commercial_name"
-                       class="form-control"
-                       value="{{ supplier.commercial_name }}"
-                       required>
-            </div>
+                {% trans "Edit supplier information and account details" %}
 
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "First Name" %}</label>
-                    <input name="first_name"
-                           class="form-control"
-                           value="{{ supplier.first_name }}">
-                </div>
-                <div class="col">
-                    <label>{% trans "Last Name" %}</label>
-                    <input name="last_name"
-                           class="form-control"
-                           value="{{ supplier.last_name }}">
-                </div>
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "Phone" %}</label>
-                    <input name="phone"
-                           class="form-control"
-                           value="{{ supplier.phone }}">
-                </div>
-                <div class="col">
-                    <label>{% trans "Mobile" %}</label>
-                    <input name="mobile"
-                           class="form-control"
-                           value="{{ supplier.mobile }}">
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <label>{% trans "Street Address 1" %}</label>
-                <input name="street1"
-                       class="form-control"
-                       value="{{ supplier.street1 }}">
-            </div>
-
-            <div class="mt-3">
-                <label>{% trans "Street Address 2" %}</label>
-                <input name="street2"
-                       class="form-control"
-                       value="{{ supplier.street2 }}">
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "City" %}</label>
-                    <input name="city"
-                           class="form-control"
-                           value="{{ supplier.city }}">
-                </div>
-                <div class="col">
-                    <label>{% trans "Region" %}</label>
-                    <input name="region"
-                           class="form-control"
-                           value="{{ supplier.region }}">
-                </div>
-                <div class="col">
-                    <label>{% trans "Postal Code" %}</label>
-                    <input name="postal_code"
-                           class="form-control"
-                           value="{{ supplier.postal_code }}">
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <label>{% trans "Country" %}</label>
-                <input name="country"
-                       class="form-control"
-                       value="{{ supplier.country }}">
-            </div>
-
-            <div class="row mt-3">
-                <div class="col">
-                    <label>{% trans "Tax Number (Optional)" %}</label>
-                    <input name="tax_number"
-                           class="form-control"
-                           value="{{ supplier.tax_number }}">
-                </div>
-                <div class="col">
-                    <label>{% trans "CR Number (Optional)" %}</label>
-                    <input name="cr_number"
-                           class="form-control"
-                           value="{{ supplier.cr_number }}">
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ========== Account Information ========== -->
-        <div class="col-md-6">
-
-            <h5 class="mb-3">{% trans "Account Information" %}</h5>
-
-            <!-- Supplier Account -->
-            <div class="mb-3">
-                <label class="fw-bold">{% trans "Supplier Account (Payables)" %} *</label>
-                <select name="account"
-                        id="supplier_account"
-                        class="form-select"
-                        required>
-                    <option value="">{% trans "-- Select Supplier Account --" %}</option>
-
-                    {% for acc in accounts %}
-                        <option value="{{ acc.id }}"
-                            {% if supplier.account_id == acc.id %}selected{% endif %}>
-                            {{ acc.code }} - {{ acc.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <label>{% trans "Email" %}</label>
-            <input name="email"
-                   class="form-control"
-                   value="{{ supplier.email }}">
-
-            <div class="mt-3">
-                <label>{% trans "Opening Balance" %}</label>
-                <input type="number" step="0.01"
-                       name="opening_balance"
-                       class="form-control"
-                       value="{{ supplier.opening_balance }}">
-
-                <label class="mt-2">{% trans "Notes" %}</label>
-                <textarea name="notes"
-                          class="form-control"
-                          rows="4">{{ supplier.notes }}</textarea>
-            </div>
-
-            <div class="mt-3">
-                <label>{% trans "Attachments" %}</label>
-                <input type="file"
-                       name="attachment"
-                       class="form-control">
-            </div>
+            </p>
 
         </div>
 
     </div>
 
-    <div class="mt-4 text-end">
-        <button type="submit"
-                class="btn"
-                style="background:#6c757d; color:white; border-radius:6px;">
-            {% trans "Save Changes" %}
-        </button>
-        <a href="/suppliers/" class="btn btn-secondary">
-            {% trans "Cancel" %}
-        </a>
-    </div>
 
-</form>
+    <!-- ============================= -->
+    <!-- النموذج -->
+    <!-- ============================= -->
+
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <div class="form-box">
+
+            <div class="row g-4">
+
+
+                <!-- ============================= -->
+                <!-- معلومات المورد -->
+                <!-- ============================= -->
+
+                <div class="col-md-6">
+
+                    <div class="section-card">
+
+                        <h5 class="section-title">
+
+                            <i class="fa-solid fa-building"></i>
+
+                            {% trans "Supplier Information" %}
+
+                        </h5>
+
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Commercial Name" %} *
+                            </label>
+
+                            <input
+                                name="commercial_name"
+                                class="form-control custom-input"
+                                value="{{ supplier.commercial_name }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="row mt-3">
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "First Name" %}
+                                </label>
+
+                                <input
+                                    name="first_name"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.first_name }}"
+                                >
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "Last Name" %}
+                                </label>
+
+                                <input
+                                    name="last_name"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.last_name }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mt-3">
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "Phone" %}
+                                </label>
+
+                                <input
+                                    name="phone"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.phone }}"
+                                >
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "Mobile" %}
+                                </label>
+
+                                <input
+                                    name="mobile"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.mobile }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Street Address 1" %}
+                            </label>
+
+                            <input
+                                name="street1"
+                                class="form-control custom-input"
+                                value="{{ supplier.street1 }}"
+                            >
+
+                        </div>
+
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Street Address 2" %}
+                            </label>
+
+                            <input
+                                name="street2"
+                                class="form-control custom-input"
+                                value="{{ supplier.street2 }}"
+                            >
+
+                        </div>
+
+
+                        <div class="row mt-3">
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "City" %}
+                                </label>
+
+                                <input
+                                    name="city"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.city }}"
+                                >
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "Region" %}
+                                </label>
+
+                                <input
+                                    name="region"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.region }}"
+                                >
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "Postal Code" %}
+                                </label>
+
+                                <input
+                                    name="postal_code"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.postal_code }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Country" %}
+                            </label>
+
+                            <input
+                                name="country"
+                                class="form-control custom-input"
+                                value="{{ supplier.country }}"
+                            >
+
+                        </div>
+
+
+                        <div class="row mt-3">
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "Tax Number (Optional)" %}
+                                </label>
+
+                                <input
+                                    name="tax_number"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.tax_number }}"
+                                >
+
+                            </div>
+
+
+                            <div class="col">
+
+                                <label>
+                                    {% trans "CR Number (Optional)" %}
+                                </label>
+
+                                <input
+                                    name="cr_number"
+                                    class="form-control custom-input"
+                                    value="{{ supplier.cr_number }}"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ============================= -->
+                <!-- معلومات الحساب -->
+                <!-- ============================= -->
+
+                <div class="col-md-6">
+
+                    <div class="section-card">
+
+                        <h5 class="section-title">
+
+                            <i class="fa-solid fa-wallet"></i>
+
+                            {% trans "Account Information" %}
+
+                        </h5>
+
+
+                        <!-- حساب المورد -->
+
+                        <div class="mt-3">
+
+                            <label class="fw-bold">
+
+                                {% trans "Supplier Account (Payables)" %} *
+
+                            </label>
+
+
+                            <select
+                                name="account"
+                                id="supplier_account"
+                                class="form-select custom-input"
+                                required
+                            >
+
+                                <option value="">
+
+                                    {% trans "-- Select Supplier Account --" %}
+
+                                </option>
+
+
+                                {% for acc in accounts %}
+
+                                    <option
+                                        value="{{ acc.id }}"
+                                        {% if supplier.account_id == acc.id %}selected{% endif %}
+                                    >
+
+                                        {{ acc.code }} - {{ acc.name }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- البريد -->
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Email" %}
+                            </label>
+
+                            <input
+                                name="email"
+                                class="form-control custom-input"
+                                value="{{ supplier.email }}"
+                            >
+
+                        </div>
+
+
+                        <!-- الرصيد الافتتاحي -->
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Opening Balance" %}
+                            </label>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="opening_balance"
+                                class="form-control custom-input"
+                                value="{{ supplier.opening_balance }}"
+                            >
+
+                        </div>
+
+
+                        <!-- الملاحظات -->
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Notes" %}
+                            </label>
+
+                            <textarea
+                                name="notes"
+                                class="form-control custom-input"
+                                rows="4"
+                            >{{ supplier.notes }}</textarea>
+
+                        </div>
+
+
+                        <!-- المرفقات -->
+
+                        <div class="mt-3">
+
+                            <label>
+                                {% trans "Attachments" %}
+                            </label>
+
+                            <input
+                                type="file"
+                                name="attachment"
+                                class="form-control custom-input"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- الأزرار -->
+            <!-- ============================= -->
+
+            <div class="form-actions mt-4">
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    {% trans "Save Changes" %}
+
+                </button>
+
+
+                <a
+                    href="/suppliers/"
+                    class="cancel-btn"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                    {% trans "Cancel" %}
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
 
 </div>
+```
+
+</div>
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.suppliers-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.supplier-card {
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3 {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i {
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p {
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   صندوق النموذج
+========================================================= */
+
+.form-box {
+
+    width:100%;
+
+}
+
+
+/* =========================================================
+   أقسام النموذج
+========================================================= */
+
+.section-card {
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+    border:1px solid #dddddd;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+.section-title {
+
+    color:#444;
+
+    font-weight:800;
+
+    padding-bottom:12px;
+
+    margin-bottom:15px;
+
+    border-bottom:2px solid #dddddd;
+
+}
+
+
+.section-title i {
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.section-card label {
+
+    display:block;
+
+    margin-bottom:6px;
+
+    color:#555;
+
+    font-weight:600;
+
+    font-size:14px;
+
+}
+
+
+.custom-input {
+
+    border:1px solid #aaa !important;
+
+    border-radius:9px !important;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    ) !important;
+
+    color:#444;
+
+    padding:9px 12px;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+}
+
+
+.custom-input:focus {
+
+    outline:none;
+
+    border-color:#666 !important;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   Select2
+========================================================= */
+
+.select2-container {
+
+    width:100% !important;
+
+}
+
+
+.select2-container--default
+.select2-selection--single {
+
+    height:42px !important;
+
+    padding:6px 10px !important;
+
+    border-radius:9px !important;
+
+    border:1px solid #aaa !important;
+
+    text-align:right;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    ) !important;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+}
+
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__rendered {
+
+    line-height:28px !important;
+
+    padding-right:8px !important;
+
+    color:#444 !important;
+
+}
+
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__arrow {
+
+    height:40px !important;
+
+    left:6px !important;
+
+    right:auto !important;
+
+}
+
+
+.select2-dropdown {
+
+    direction:rtl;
+
+    text-align:right;
+
+    font-size:14px;
+
+    border-radius:10px;
+
+    border:1px solid #aaa;
+
+}
+
+
+.select2-container--default
+.select2-results__option {
+
+    padding:9px 12px;
+
+}
+
+
+.select2-container--default
+.select2-results__option--highlighted[aria-selected] {
+
+    background:#666;
+
+    color:white;
+
+}
+
+
+/* =========================================================
+   أزرار النموذج
+========================================================= */
+
+.form-actions {
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.save-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:1px solid #3f3f3f;
+
+    padding:10px 22px;
+
+    border-radius:10px;
+
+    font-weight:700;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.save-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #777,
+        #444
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 14px rgba(0,0,0,.25);
+
+}
+
+
+.cancel-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+    border:1px solid #aaa;
+
+    padding:10px 22px;
+
+    border-radius:10px;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.3s;
+
+}
+
+
+.cancel-btn:hover {
+
+    color:#222;
+
+    background:
+    linear-gradient(
+        135deg,
+        #e0e0e0,
+        #bbbbbb
+    );
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .suppliers-page {
+
+        padding:15px;
+
+    }
+
+
+    .supplier-card {
+
+        padding:18px;
+
+    }
+
+
+    .section-card {
+
+        padding:18px;
+
+    }
+
+
+    .form-actions {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+
+    .save-btn,
+    .cancel-btn {
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+}
+
+</style>
 
 {% endblock %}
 
 {% block scripts %}
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+
 $(document).ready(function () {
+
     $('#supplier_account').select2({
+
         placeholder: "{% trans '-- Select Supplier Account --' %}",
+
         allowClear: true,
+
         width: '100%',
+
         dir: "rtl",
+
         minimumResultsForSearch: 0
+
     });
+
 });
+
 </script>
+
 {% endblock %}

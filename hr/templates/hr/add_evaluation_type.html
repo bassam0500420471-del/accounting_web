@@ -1,47 +1,576 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-{% block title %}{% trans "Add New Evaluation Type" %}{% endblock %}
+
+{% block title %}
+    {% trans "Add New Evaluation Type" %}
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   إضافة نوع تقييم
+   3D + Gray Gradient Design
+   ========================================================= */
+
+.evaluation-type-page {
+
+    background: #eeeeee;
+
+    min-height: calc(100vh - 80px);
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    direction: rtl;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+   ========================================================= */
+
+.evaluation-type-main-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    border-radius: 22px;
+
+    padding: 30px;
+
+    box-shadow:
+
+        8px 8px 20px #c5c5c5,
+
+        -8px -8px 20px #ffffff;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+   ========================================================= */
+
+.evaluation-type-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.evaluation-type-title {
+
+    margin: 0;
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+.evaluation-type-subtitle {
+
+    margin-top: 7px;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   كرت البيانات
+   ========================================================= */
+
+.evaluation-type-form-card {
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow:
+
+        0 7px 18px rgba(0,0,0,.08),
+
+        inset 0 1px 0
+        rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   عنوان القسم
+   ========================================================= */
+
+.evaluation-type-section-title {
+
+    margin: 0 0 20px;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+.evaluation-type-section-title i {
+
+    color: #666;
+
+    margin-left: 7px;
+
+}
+
+
+/* =========================================================
+   الحقول
+   ========================================================= */
+
+.evaluation-type-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    max-width: 600px;
+
+}
+
+
+.evaluation-type-field label {
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    color: #555;
+
+}
+
+
+.evaluation-type-field input {
+
+    width: 100%;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    padding: 12px 14px;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    color: #444;
+
+    background: #fff;
+
+    outline: none;
+
+    box-shadow:
+
+        inset 2px 2px 5px
+        rgba(0,0,0,.05);
+
+    transition: .25s;
+
+}
+
+
+.evaluation-type-field input:hover {
+
+    border-color: #aaa;
+
+}
+
+
+.evaluation-type-field input:focus {
+
+    border-color: #666;
+
+    box-shadow:
+
+        0 0 0 3px
+        rgba(100,100,100,.10),
+
+        inset 2px 2px 5px
+        rgba(0,0,0,.05);
+
+}
+
+
+/* =========================================================
+   أزرار الحفظ
+   ========================================================= */
+
+.evaluation-type-actions {
+
+    margin-top: 25px;
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    box-shadow:
+
+        0 7px 18px rgba(0,0,0,.07);
+
+}
+
+
+.evaluation-type-btn {
+
+    border: none;
+
+    border-radius: 11px;
+
+    padding: 11px 20px;
+
+    text-decoration: none;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    transition: .25s;
+
+    box-shadow:
+
+        4px 4px 10px
+        rgba(0,0,0,.18),
+
+        inset 0 1px 0
+        rgba(255,255,255,.12);
+
+}
+
+
+.evaluation-type-btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+/* =========================================================
+   زر الحفظ
+   ========================================================= */
+
+.evaluation-type-btn-save {
+
+    background: linear-gradient(
+        145deg,
+        #777,
+        #444
+    );
+
+    color: #fff;
+
+}
+
+
+.evaluation-type-btn-save:hover {
+
+    background: linear-gradient(
+        145deg,
+        #666,
+        #333
+    );
+
+    color: #fff;
+
+}
+
+
+/* =========================================================
+   زر الرجوع
+   ========================================================= */
+
+.evaluation-type-btn-back {
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color: #444;
+
+}
+
+
+.evaluation-type-btn-back:hover {
+
+    background: linear-gradient(
+        145deg,
+        #dddddd,
+        #bbbbbb
+    );
+
+    color: #333;
+
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    .evaluation-type-page {
+
+        padding: 15px;
+
+    }
+
+
+    .evaluation-type-main-card {
+
+        padding: 20px;
+
+        border-radius: 18px;
+
+    }
+
+
+    .evaluation-type-title {
+
+        font-size: 22px;
+
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .evaluation-type-actions {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .evaluation-type-actions
+    .evaluation-type-btn {
+
+        width: 100%;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
 
 {% block content %}
-<div class="container-fluid mt-4"
-     style="background:#f1f3f5; min-height: calc(100vh - 120px); padding:20px; border-radius:10px;">
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+<div class="container-fluid evaluation-type-page">
 
-            <h3 class="fw-bold mb-4">➕ {% trans "Add New Evaluation Type" %}</h3>
 
-            <form method="post">
-                {% csrf_token %}
+    <div class="evaluation-type-main-card">
 
-                <!-- ✅ (الأضمن) خذ next من الرابط GET ولو ما موجود خذه من context -->
-                <input type="hidden" name="next" value="{{ request.GET.next|default:next|default:'' }}">
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">{% trans "Evaluation Type" %}</label>
-                    <input type="text" name="name" class="form-control" placeholder="{% trans 'Enter evaluation type' %}" required>
+        <!-- =================================================
+             رأس الصفحة
+             ================================================= -->
+
+        <div class="evaluation-type-header">
+
+
+            <div>
+
+                <h1 class="evaluation-type-title">
+
+                    ➕
+                    {% trans "Add New Evaluation Type" %}
+
+                </h1>
+
+
+                <div class="evaluation-type-subtitle">
+
+                    {% trans "Create a new evaluation type for employee evaluations" %}
+
                 </div>
 
-                <div class="card shadow-sm mt-3">
-                    <div class="card-body text-end">
-                        <button type="submit" class="btn btn-secondary px-4">💾 {% trans "Save" %}</button>
+            </div>
 
-                        {% if request.GET.next or next %}
-                            <a href="{{ request.GET.next|default:next }}" class="btn btn-secondary px-4">
-                                ↩ {% trans "Back to Create Evaluation" %}
-                            </a>
-                        {% else %}
-                            <a href="{% url 'hr:evaluations' %}" class="btn btn-secondary px-4">
-                                ↩ {% trans "Back to Evaluation List" %}
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-
-            </form>
 
         </div>
+
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <!-- =================================================
+                 next
+                 ================================================= -->
+
+            <input
+                type="hidden"
+                name="next"
+                value="{{ request.GET.next|default:next|default:'' }}"
+            >
+
+
+
+            <!-- =================================================
+                 معلومات نوع التقييم
+                 ================================================= -->
+
+            <div class="evaluation-type-form-card">
+
+
+                <h2 class="evaluation-type-section-title">
+
+                    📋
+                    {% trans "Evaluation Type Information" %}
+
+                </h2>
+
+
+                <div class="evaluation-type-field">
+
+
+                    <label>
+
+                        {% trans "Evaluation Type" %}
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="{% trans 'Enter evaluation type' %}"
+                        required
+                        autofocus
+                    >
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 أزرار الحفظ والرجوع
+                 ================================================= -->
+
+            <div class="evaluation-type-actions">
+
+
+                <button
+                    type="submit"
+                    class="evaluation-type-btn evaluation-type-btn-save"
+                >
+
+                    💾
+                    {% trans "Save" %}
+
+                </button>
+
+
+
+                {% if request.GET.next or next %}
+
+                    <a
+                        href="{{ request.GET.next|default:next }}"
+                        class="evaluation-type-btn evaluation-type-btn-back"
+                    >
+
+                        ↩
+                        {% trans "Back to Create Evaluation" %}
+
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'hr:evaluations' %}"
+                        class="evaluation-type-btn evaluation-type-btn-back"
+                    >
+
+                        ↩
+                        {% trans "Back to Evaluation List" %}
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </form>
+
+
     </div>
 
+
 </div>
+
 {% endblock %}

@@ -1,115 +1,1393 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
+{% block title %}
+{% trans "Customer List" %}
+{% endblock %}
+
+
 {% block content %}
 
-<div class="container-fluid mt-4">
-<style>
-.filter-input {
-    text-align: center;
-    border: 1px solid #6c757d !important;
-    border-radius: 6px;
-}
 
-.filter-input::placeholder {
-    text-align: center;
-    color: #6c757d;
-}
-</style>
+<div class="container-fluid customers-page mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-center mb-4">{% trans "Customer List" %}</h3>
 
-        <div style="display: flex; justify-content: flex-start; margin-bottom: 10px;">
-            <a href="/customers/add" class="btn btn-secondary">+ {% trans "Add Customer" %}</a>
+    <div class="customer-card">
+
+
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
+
+        <div class="page-header">
+
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-users"></i>
+
+                    {% trans "Customer List" %}
+
+                </h3>
+
+                <p>
+
+                    {% trans "Manage customers and their accounts" %}
+
+                </p>
+
+            </div>
+
+
+            <a href="/customers/add" class="add-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add Customer" %}
+
+            </a>
+
+
         </div>
+
+
+
+        <!-- ============================= -->
+        <!-- الجدول -->
+        <!-- ============================= -->
+
+        <div class="table-box">
+
+
+            <table class="customer-table">
+
+
+                <thead>
+
+
+                    <!-- ============================= -->
+                    <!-- صف البحث -->
+                    <!-- ============================= -->
+
+                    <tr class="filter-row">
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search No.' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Customer' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Invoice Count' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Balance' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Status' %}"
+                            >
+
+                        </th>
+
+
+                        <th></th>
+
+
+                    </tr>
+
+
+
+                    <!-- ============================= -->
+                    <!-- عنوان الأعمدة -->
+                    <!-- ============================= -->
+
+                    <tr class="header-row">
+
+
+                        <th>
+                            #
+                        </th>
+
+
+                        <th>
+                            {% trans "Customer" %}
+                        </th>
+
+
+                        <th>
+                            {% trans "Invoice Count" %}
+                        </th>
+
+
+                        <th>
+                            {% trans "Balance" %}
+                        </th>
+
+
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
+
+                    </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                {% for c in customers %}
+
+
+                    <tr>
+
+
+                        <!-- الرقم -->
+
+                        <td>
+
+                            <span class="order-badge">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- العميل -->
+
+                        <td class="customer-name">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            {{ c.name }}
+
+                        </td>
+
+
+
+                        <!-- عدد الفواتير -->
+
+                        <td>
+
+                            <span class="number-badge">
+
+                                {{ c.invoice_count }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- الرصيد -->
+
+                        <td class="balance-cell">
+
+                            {{ c.balance }}
+
+                        </td>
+
+
+
+                        <!-- الحالة -->
+
+                        <td>
+
+
+                            {% if c.balance > 0 %}
+
+
+                                <span class="status-badge">
+
+                                    {% trans "Debtor" %}
+
+                                </span>
+
+
+                            {% elif c.balance < 0 %}
+
+
+                                <span class="status-badge">
+
+                                    {% trans "Creditor" %}
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <span class="status-badge">
+
+                                    {% trans "Balanced" %}
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+                        <!-- الإجراءات -->
+
+                        <td>
+
+
+                            <div class="dropdown">
+
+
+                                <button
+                                    class="action-btn dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    type="button"
+                                >
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Options" %}
+
+                                </button>
+
+
+
+                                <ul class="dropdown-menu text-end">
+
+
+                                    <li>
+
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="/customers/view/{{ c.id }}"
+                                        >
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
+                                        </a>
+
+
+                                    </li>
+
+
+
+                                    <li>
+
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="/customers/edit/{{ c.id }}"
+                                        >
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                            {% trans "Edit" %}
+
+                                        </a>
+
+
+                                    </li>
+
+
+
+                                    <li>
+
+
+                                        <a
+                                            class="dropdown-item text-danger"
+                                            href="/customers/delete/{{ c.id }}"
+                                        >
+
+                                            <i class="fa-solid fa-trash"></i>
+
+                                            {% trans "Delete" %}
+
+                                        </a>
+
+
+                                    </li>
+
+
+                                </ul>
+
+
+                            </div>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% empty %}
+
+
+                    <tr>
+
+
+                        <td colspan="6" class="empty">
+
+
+                            <i class="fa-solid fa-users-slash"></i>
+
+
+                            <div>
+
+                                {% trans "No customers found" %}
+
+                            </div>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
     </div>
 
-    <table class="table text-center">
-        <thead>
-
-            <!-- Filter Row -->
-            <tr>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search No.' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Customer' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Invoice Count' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Balance' %}"></th>
-                <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Status' %}"></th>
-                <th></th>
-            </tr>
-
-            <!-- Original Header Row -->
-            <tr class="table-dark">
-                <th>#</th>
-                <th>{% trans "Customer" %}</th>
-                <th>{% trans "Invoice Count" %}</th>
-                <th>{% trans "Balance" %}</th>
-                <th>{% trans "Status" %}</th>
-                <th>{% trans "Actions" %}</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-            {% for c in customers %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-
-                <td>{{ c.name }}</td>
-
-                <td>{{ c.invoice_count }}</td>
-
-                <td>{{ c.balance }}</td>
-
-                <td>
-                    {% if c.balance > 0 %}
-                        <span class="badge" style="background:#6c757d; color:white;">{% trans "Debtor" %}</span>
-                    {% elif c.balance < 0 %}
-                        <span class="badge" style="background:#6c757d; color:white;">{% trans "Creditor" %}</span>
-                    {% else %}
-                        <span class="badge" style="background:#6c757d; color:white;">{% trans "Balanced" %}</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" type="button">
-                            {% trans "Options" %}
-                        </button>
-
-                        <ul class="dropdown-menu text-end">
-                            <li><a class="dropdown-item" href="/customers/view/{{ c.id }}">{% trans "View" %}</a></li>
-                            <li><a class="dropdown-item" href="/customers/edit/{{ c.id }}">{% trans "Edit" %}</a></li>
-                            <li><a class="dropdown-item text-danger" href="/customers/delete/{{ c.id }}">{% trans "Delete" %}</a></li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
 </div>
 
+
+
+<style>
+
+/* =========================================================
+   قوائم خيارات العملاء - دائماً للأعلى
+========================================================= */
+
+.customer-table .dropdown {
+    position: relative;
+}
+
+.customer-table .dropdown-menu {
+    top: auto !important;
+    bottom: calc(100% + 8px) !important;
+    left: auto !important;
+    right: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+
+    border: 1px solid #c8c8c8;
+    border-radius: 14px;
+    padding: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8f8f8,
+            #d2d2d2
+        );
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.20),
+        0 4px 8px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.85);
+}
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.customers-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.customer-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+
+/* =========================================================
+   زر إضافة العميل
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.customer-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+
+.filter-row th{
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+
+.filter-input{
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+
+.filter-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+
+.filter-input::placeholder{
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.customer-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.customer-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+
+.customer-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+
+/* =========================================================
+   اسم العميل
+========================================================= */
+
+.customer-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+
+.customer-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+
+/* =========================================================
+   رقم العميل
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+
+/* =========================================================
+   عدد الفواتير
+========================================================= */
+
+.number-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:40px;
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#444;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+
+/* =========================================================
+   الرصيد
+========================================================= */
+
+.balance-cell{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+
+/* =========================================================
+   حالة العميل
+========================================================= */
+
+.status-badge{
+
+    display:inline-block;
+
+    min-width:85px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+
+/* =========================================================
+   زر الإجراءات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+}
+
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+
+/* =========================================================
+   القائمة المنسدلة - 3D رمادي متدرج
+========================================================= */
+
+.dropdown-menu{
+
+    min-width:180px;
+
+    border:1px solid #c8c8c8;
+
+    border-radius:14px;
+
+    padding:8px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #f8f8f8,
+        #d2d2d2
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.20),
+    0 4px 8px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.85);
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.dropdown-item{
+
+    position:relative;
+
+    border-radius:10px;
+
+    padding:10px 14px;
+
+    margin-bottom:4px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#444;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e2e2e2
+    );
+
+    border:1px solid #d0d0d0;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.90);
+
+    transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+
+}
+
+
+/* =========================================================
+   آخر عنصر بدون مسافة
+========================================================= */
+
+.dropdown-item:last-child{
+
+    margin-bottom:0;
+
+}
+
+
+/* =========================================================
+   Hover - تأثير 3D
+========================================================= */
+
+.dropdown-item:hover{
+
+    color:#222;
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cfcfcf
+    );
+
+    transform:
+    translateX(-3px)
+    translateY(-1px);
+
+    box-shadow:
+    0 6px 12px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.85);
+
+}
+
+
+/* =========================================================
+   الأيقونات
+========================================================= */
+
+.dropdown-item i{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:22px;
+
+    margin-left:5px;
+
+    color:#666;
+
+    text-shadow:
+    0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   حذف - نفس التصميم لكن أحمر عند المرور
+========================================================= */
+
+.dropdown-item.text-danger{
+
+    color:#555 !important;
+
+}
+
+
+.dropdown-item.text-danger i{
+
+    color:#666;
+
+}
+
+
+.dropdown-item.text-danger:hover{
+
+    color:#8b0000 !important;
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d0d0d0
+    );
+
+}
+
+
+/* =========================================================
+   سهم القائمة
+========================================================= */
+
+.action-btn.dropdown-toggle::after{
+
+    margin-right:6px;
+
+    vertical-align:middle;
+
+}
+
+
+/* =========================================================
+   زر الخيارات نفسه - 3D
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:1px solid #3f3f3f;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #777,
+        #444
+    );
+
+    color:white;
+
+    transform:
+    translateY(-2px);
+
+    box-shadow:
+    0 7px 14px rgba(0,0,0,.25),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   عند فتح القائمة
+========================================================= */
+
+.dropdown.show .action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.25),
+    inset 0 2px 3px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .customers-page{
+
+        padding:15px;
+
+    }
+
+
+    .customer-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .customer-table{
+
+        min-width:900px;
+
+    }
+
+}
+
+</style>
+
+
+
+<!-- =========================================================
+     JavaScript البحث
+========================================================= -->
+
 <script>
+
 document.addEventListener("DOMContentLoaded", function() {
-    const filterInputs = document.querySelectorAll(".filter-input");
-    const rows = document.querySelectorAll("tbody tr");
+
+
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
+
+
+    const rows =
+        document.querySelectorAll("tbody tr");
+
 
     filterInputs.forEach((input, colIndex) => {
+
+
         input.addEventListener("keyup", function () {
-            const value = this.value.toLowerCase();
+
+
+            const value =
+                this.value.toLowerCase();
+
 
             rows.forEach(row => {
-                const cell = row.querySelectorAll("td")[colIndex];
+
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                const cell =
+                    cells[colIndex];
+
+
                 if (cell) {
-                    const text = cell.textContent.toLowerCase();
-                    row.style.display = text.includes(value) ? "" : "none";
+
+
+                    const text =
+                        cell.textContent.toLowerCase();
+
+
+                    row.style.display =
+                        text.includes(value)
+                        ? ""
+                        : "none";
+
+
                 }
+
+
             });
+
+
         });
+
+
     });
+
+
 });
+
 </script>
+
 
 {% endblock %}

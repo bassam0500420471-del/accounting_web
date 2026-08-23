@@ -1,162 +1,1270 @@
 {% extends "layout/base.html" %}
 {% load static %}
-{% block title %}قائمة التدفقات النقدية{% endblock %}
+
+{% block title %}
+    قائمة التدفقات النقدية
+{% endblock %}
 
 {% block content %}
 
 <!-- ================= Select2 ================= -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+/>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+
 <style>
-/* ===== Select2 نفس حجم حقل التاريخ ===== */
-.select2-container { width: 100% !important; }
-.select2-container .select2-selection--single {
-    height: 38px !important;
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-    padding: 4px 8px;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.cash-flow-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.cash-flow-wrapper {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.cash-flow-header {
+
     display: flex;
+
     align-items: center;
-    background-color: #fff;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 22px 26px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        0 5px 12px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
 }
 
-/* ===== نقل زر ✖ لليمين (RTL) – نفس ميزان المراجعة ===== */
-.select2-container--default
-.select2-selection--single
-.select2-selection__clear {
-    float: right !important;
-    margin-right: 6px;
-    margin-left: 0 !important;
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.cash-flow-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
 }
 
-/* ===== الأرقام أقصى اليسار ===== */
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.cash-flow-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   وصف الصفحة
+========================================================= */
+
+.cash-flow-header p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.cash-flow-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.cash-flow-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+    z-index: 5;
+
+}
+
+
+/* =========================================================
+   رأس الكرت
+========================================================= */
+
+.cash-flow-card-header {
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   جسم الكرت
+========================================================= */
+
+.cash-flow-card-body {
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   منطقة الفلاتر
+========================================================= */
+
+.cash-flow-filters {
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    border: 1px solid #d0d0d0;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9),
+        0 8px 18px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   عناوين الفلاتر
+========================================================= */
+
+.cash-flow-filters .form-label {
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+
+}
+
+
+/* =========================================================
+   حقول الإدخال
+========================================================= */
+
+.cash-flow-filters .form-control,
+.cash-flow-filters .select2-container {
+
+    width: 100% !important;
+
+}
+
+
+/* =========================================================
+   حقول التاريخ
+========================================================= */
+
+.cash-flow-filters .form-control {
+
+    min-height: 44px;
+
+    padding: 9px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+.cash-flow-filters .form-control:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   Select2
+========================================================= */
+
+.cash-flow-filters
+.select2-container
+.select2-selection--single {
+
+    height: 44px !important;
+
+    padding: 7px 13px;
+
+    color: #444;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+.cash-flow-filters
+.select2-container
+.select2-selection__rendered {
+
+    color: #444 !important;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: normal !important;
+
+}
+
+
+.cash-flow-filters
+.select2-container
+.select2-selection__arrow {
+
+    height: 42px !important;
+
+}
+
+
+/* =========================================================
+   زر عرض
+========================================================= */
+
+.cash-flow-view-btn {
+
+    min-height: 44px;
+
+    padding: 10px 24px;
+
+    color: #fff !important;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    border-radius: 11px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
+}
+
+
+.cash-flow-view-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* =========================================================
+   أزرار نوع العرض
+========================================================= */
+
+.cash-flow-view-switch {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-bottom: 24px;
+
+    padding: 14px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d5d5d5
+        );
+
+    border: 1px solid #d0d0d0;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9),
+        0 6px 14px rgba(0,0,0,.08);
+
+}
+
+
+.cash-flow-view-switch .btn {
+
+    min-width: 130px;
+
+    min-height: 40px;
+
+    padding: 8px 18px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    border: 1px solid #999;
+
+    color: #444;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dddddd
+        );
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+    transition: .2s ease;
+
+}
+
+
+.cash-flow-view-switch .btn:hover {
+
+    transform: translateY(-1px);
+
+    color: #222;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f5f5f5,
+            #cccccc
+        );
+
+}
+
+
+.cash-flow-view-switch .btn.active {
+
+    color: #fff !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #333333
+        );
+
+    border-color: #444;
+
+}
+
+
+/* =========================================================
+   جداول التقرير
+========================================================= */
+
+.cash-flow-table-wrapper {
+
+    overflow-x: auto;
+
+    margin-bottom: 22px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.10);
+
+}
+
+
+.cash-flow-table {
+
+    width: 100%;
+
+    margin: 0;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.cash-flow-table thead th {
+
+    padding: 13px 15px;
+
+    color: #fff;
+
+    text-align: right;
+
+    background:
+        linear-gradient(
+            135deg,
+            #666666,
+            #292929
+        );
+
+    border: 1px solid #444;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.cash-flow-table tbody td {
+
+    padding: 12px 15px;
+
+    color: #444;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f3f3f3
+        );
+
+    border: 1px solid #d5d5d5;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   Hover
+========================================================= */
+
+.cash-flow-table tbody tr:hover td {
+
+    background:
+        linear-gradient(
+            145deg,
+            #f2f2f2,
+            #e3e3e3
+        );
+
+}
+
+
+/* =========================================================
+   الأرقام
+========================================================= */
+
 .amount {
-    text-align: left;
-    font-weight: bold;
+
     width: 200px;
+
+    min-width: 200px;
+
+    text-align: left !important;
+
+    direction: ltr;
+
+    white-space: nowrap;
+
+    font-weight: 800 !important;
+
 }
+
+
+/* =========================================================
+   الصفوف المهمة
+========================================================= */
+
+.cash-flow-opening td,
+.cash-flow-change td,
+.cash-flow-closing td {
+
+    font-weight: 800 !important;
+
+}
+
+
+/* =========================================================
+   رصيد آخر الفترة
+========================================================= */
+
+.cash-flow-closing td {
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        ) !important;
+
+    border-top: 2px solid #aaa;
+
+}
+
+
+/* =========================================================
+   عناوين الأقسام التفصيلية
+========================================================= */
+
+.cash-flow-section-title {
+
+    margin-top: 28px;
+
+    margin-bottom: 12px;
+
+    padding: 13px 18px;
+
+    border-radius: 14px;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #707070,
+            #333333
+        );
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.2);
+
+}
+
+
+/* =========================================================
+   الخط الفاصل
+========================================================= */
+
+.cash-flow-divider {
+
+    height: 1px;
+
+    margin: 20px 0;
+
+    border: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #c8c8c8,
+            transparent
+        );
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .cash-flow-page {
+
+        padding: 15px;
+
+    }
+
+
+    .cash-flow-header {
+
+        padding: 18px;
+
+    }
+
+
+    .cash-flow-header h3 {
+
+        font-size: 21px;
+
+    }
+
+
+    .cash-flow-header-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 20px;
+
+    }
+
+
+    .cash-flow-card-body {
+
+        padding: 14px;
+
+    }
+
+
+    .cash-flow-filters {
+
+        padding: 14px;
+
+    }
+
+
+    .cash-flow-view-switch {
+
+        flex-direction: column;
+
+    }
+
+
+    .cash-flow-view-switch .btn {
+
+        width: 100%;
+
+    }
+
+
+    .cash-flow-table {
+
+        min-width: 650px;
+
+    }
+
+}
+
 </style>
 
-<div class="container mt-4">
 
-    <h2 class="fw-bold text-center mb-4">💰 قائمة التدفقات النقدية</h2>
+<div class="cash-flow-page">
 
-    <!-- ================= الفلاتر ================= -->
-    <form method="get" class="row g-3 mb-4 align-items-end">
+    <div class="cash-flow-wrapper">
 
-        <!-- من تاريخ -->
-        <div class="col-md-3">
-            <label class="form-label fw-bold">من تاريخ</label>
-            <input type="date"
-                   name="date_from"
-                   value="{{ date_from|date:'Y-m-d' }}"
-                   class="form-control">
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="cash-flow-header">
+
+            <div class="cash-flow-header-icon">
+
+                💰
+
+            </div>
+
+            <div>
+
+                <h3>
+                    قائمة التدفقات النقدية
+                </h3>
+
+                <p>
+                    عرض حركة النقدية والتدفقات التشغيلية والاستثمارية والتمويلية
+                </p>
+
+            </div>
+
         </div>
 
-        <!-- إلى تاريخ -->
-        <div class="col-md-3">
-            <label class="form-label fw-bold">إلى تاريخ</label>
-            <input type="date"
-                   name="date_to"
-                   value="{{ date_to|date:'Y-m-d' }}"
-                   class="form-control">
-        </div>
 
-        <!-- مركز التكلفة (نفس ميزان المراجعة) -->
-        <div class="col-md-3">
-            <label class="form-label fw-bold">مركز التكلفة</label>
-            <select name="cost_center"
-                    id="costCenterSelect"
-                    class="form-select">
-                <option value=""></option>
-                {% for cc in cost_centers %}
-                    <option value="{{ cc.id }}"
-                        {% if cc.id|stringformat:"s" == selected_cost_center %}
-                            selected
-                        {% endif %}
+        <!-- =================================================
+             الكرت الرئيسي
+        ================================================= -->
+
+        <div class="cash-flow-card">
+
+
+            <div class="cash-flow-card-header">
+
+                قائمة التدفقات النقدية
+
+            </div>
+
+
+            <div class="cash-flow-card-body">
+
+
+                <!-- =================================================
+                     الفلاتر
+                ================================================= -->
+
+                <div class="cash-flow-filters">
+
+                    <form
+                        method="get"
+                        class="row g-3 align-items-end"
                     >
-                        {{ cc.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
 
-        <!-- زر عرض -->
-        <div class="col-md-3">
-            <button class="btn btn-secondary w-100 fw-bold">
-                عرض
-            </button>
-        </div>
 
-        <input type="hidden" name="view_mode" value="{{ view_mode }}">
-    </form>
+                        <!-- من تاريخ -->
 
-    <!-- ================= اختيار العرض ================= -->
-    <div class="text-center mb-3">
-        <a href="?view_mode=summary"
-           class="btn btn-outline-secondary btn-sm {% if view_mode == 'summary' %}active{% endif %}">
-            عرض مختصر
-        </a>
-        <a href="?view_mode=detailed"
-           class="btn btn-outline-secondary btn-sm {% if view_mode == 'detailed' %}active{% endif %}">
-            عرض تفصيلي
-        </a>
-    </div>
+                        <div class="col-md-3">
 
-    <!-- ================= ملخص النقدية ================= -->
-    <table class="table table-bordered">
-        <tbody>
-            <tr>
-                <td class="fw-bold">رصيد النقدية أول الفترة</td>
-                <td class="amount">{{ opening_cash|floatformat:2 }}</td>
-            </tr>
-            <tr>
-                <td class="fw-bold">صافي التغير في النقدية</td>
-                <td class="amount">{{ net_cash_change|floatformat:2 }}</td>
-            </tr>
-            <tr class="table-light">
-                <td class="fw-bold">رصيد النقدية آخر الفترة</td>
-                <td class="amount">{{ closing_cash|floatformat:2 }}</td>
-            </tr>
-        </tbody>
-    </table>
+                            <label class="form-label">
 
-    <!-- ================= العرض التفصيلي ================= -->
-    {% if view_mode == "detailed" %}
-        {% for section, rows in detailed_sections.items %}
-            <h5 class="fw-bold mt-4">
-                {% if section == "operating" %}أنشطة تشغيلية{% endif %}
-                {% if section == "investing" %}أنشطة استثمارية{% endif %}
-                {% if section == "financing" %}أنشطة تمويلية{% endif %}
-            </h5>
+                                من تاريخ
 
-            <table class="table table-bordered">
-                <tbody>
-                    {% for name, value in rows.items %}
-                        <tr>
-                            <td>{{ name }}</td>
-                            <td class="amount">{{ value|floatformat:2 }}</td>
-                        </tr>
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_from"
+                                value="{{ date_from|date:'Y-m-d' }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- إلى تاريخ -->
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+
+                                إلى تاريخ
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_to"
+                                value="{{ date_to|date:'Y-m-d' }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- مركز التكلفة -->
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+
+                                مركز التكلفة
+
+                            </label>
+
+                            <select
+                                name="cost_center"
+                                id="costCenterSelect"
+                                class="form-select"
+                            >
+
+                                <option value=""></option>
+
+                                {% for cc in cost_centers %}
+
+                                    <option
+                                        value="{{ cc.id }}"
+                                        {% if cc.id|stringformat:"s" == selected_cost_center %}
+                                            selected
+                                        {% endif %}
+                                    >
+
+                                        {{ cc.name }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- زر العرض -->
+
+                        <div class="col-md-3">
+
+                            <button
+                                type="submit"
+                                class="btn cash-flow-view-btn w-100"
+                            >
+
+                                🔍
+                                عرض
+
+                            </button>
+
+                        </div>
+
+
+                        <input
+                            type="hidden"
+                            name="view_mode"
+                            value="{{ view_mode }}"
+                        >
+
+                    </form>
+
+                </div>
+
+
+                <!-- =================================================
+                     اختيار العرض
+                ================================================= -->
+
+                <div class="cash-flow-view-switch">
+
+                    <a
+                        href="?view_mode=summary"
+                        class="btn
+                            {% if view_mode == 'summary' %}
+                                active
+                            {% endif %}
+                        "
+                    >
+
+                        📋
+                        عرض مختصر
+
+                    </a>
+
+
+                    <a
+                        href="?view_mode=detailed"
+                        class="btn
+                            {% if view_mode == 'detailed' %}
+                                active
+                            {% endif %}
+                        "
+                    >
+
+                        📊
+                        عرض تفصيلي
+
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     ملخص النقدية
+                ================================================= -->
+
+                <div class="cash-flow-table-wrapper">
+
+                    <table class="cash-flow-table">
+
+                        <tbody>
+
+
+                            <tr class="cash-flow-opening">
+
+                                <td>
+                                    رصيد النقدية أول الفترة
+                                </td>
+
+                                <td class="amount">
+
+                                    {{ opening_cash|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr class="cash-flow-change">
+
+                                <td>
+                                    صافي التغير في النقدية
+                                </td>
+
+                                <td class="amount">
+
+                                    {{ net_cash_change|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+
+                            <tr class="cash-flow-closing">
+
+                                <td>
+                                    رصيد النقدية آخر الفترة
+                                </td>
+
+                                <td class="amount">
+
+                                    {{ closing_cash|floatformat:2 }}
+
+                                </td>
+
+                            </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- =================================================
+                     العرض التفصيلي
+                ================================================= -->
+
+                {% if view_mode == "detailed" %}
+
+                    {% for section, rows in detailed_sections.items %}
+
+
+                        <div class="cash-flow-section-title">
+
+                            {% if section == "operating" %}
+
+                                🔄 أنشطة تشغيلية
+
+                            {% endif %}
+
+
+                            {% if section == "investing" %}
+
+                                📈 أنشطة استثمارية
+
+                            {% endif %}
+
+
+                            {% if section == "financing" %}
+
+                                💳 أنشطة تمويلية
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="cash-flow-table-wrapper">
+
+                            <table class="cash-flow-table">
+
+                                <tbody>
+
+                                    {% for name, value in rows.items %}
+
+                                        <tr>
+
+                                            <td>
+
+                                                {{ name }}
+
+                                            </td>
+
+                                            <td class="amount">
+
+                                                {{ value|floatformat:2 }}
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
                     {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
-    {% endif %}
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-<!-- ================= تفعيل Select2 (بدون أي حركات) ================= -->
+
+<!-- =========================================================
+     تفعيل Select2
+========================================================= -->
+
 <script>
+
 $(document).ready(function () {
+
     $('#costCenterSelect').select2({
+
         dir: "rtl",
+
         width: '100%',
+
         placeholder: "— كل المراكز —",
+
         allowClear: true
+
     });
+
 });
+
 </script>
+
 
 {% endblock %}

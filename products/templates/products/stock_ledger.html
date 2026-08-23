@@ -1,103 +1,583 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Inventory Transactions Log" %}{% endblock %}
+{% block title %}
+    {% trans "Inventory Transactions Log" %}
+{% endblock %}
 
 {% block content %}
-<h2>{% trans "Inventory Transactions Log" %}</h2>
-
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{% url 'products:stock_adjust' %}" class="btn btn-secondary">{% trans "Adjust Inventory" %}</a>
-    <form method="get" class="mb-3 d-flex">
-        <input type="text" name="q" placeholder="{% trans 'Search...' %}" value="{{ q }}" class="form-control" style="width: 300px;">
-        <button type="submit" class="btn btn-secondary ms-2">{% trans "Search" %}</button>
-    </form>
-</div>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th>{% trans "Product" %}</th>
-      <th>{% trans "Type" %}</th>
-      <th>{% trans "Change" %}</th>
-      <th>{% trans "Stock After Adjustment" %}</th>
-      <th>{% trans "Date" %}</th>
-      <th>{% trans "Note" %}</th>
-      <th>{% trans "Actions" %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for move in moves %}
-    <tr>
-      <td>{{ move.product.name }}</td>
-      <td>{{ move.reason.name }}</td>
-      <td class="text-center">
-        {% if move.qty_delta < 0 %}-{{ move.qty_abs }}{% else %}+{{ move.qty_abs }}{% endif %}
-      </td>
-      <td class="text-center">{{ move.stock_after }}</td>
-      <td>{{ move.created_at|date:"Y-m-d H:i" }}</td>
-      <td>{{ move.note }}</td>
-      <td>
-        {% if move.move_type == "ADJUST" %}
-        <div class="dropdown">
-          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button"
-                  id="actionMenu{{ forloop.counter }}" data-bs-toggle="dropdown"
-                  aria-expanded="false" data-bs-auto-close="true">
-            {% trans "Actions" %}
-          </button>
-          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="actionMenu{{ forloop.counter }}">
-            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_edit' move.id %}">{% trans "Edit" %}</a></li>
-            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_delete' move.id %}" onclick="return confirm('{% trans "Are you sure you want to delete this transaction?" %}');">{% trans "Delete" %}</a></li>
-            <li><a class="dropdown-item" href="{% url 'products:stock_adjust_view' move.id %}">{% trans "View" %}</a></li>
-          </ul>
-        </div>
-        {% else %}
-        <a href="{% url 'products:stock_adjust_view' move.id %}" class="btn btn-sm btn-secondary">{% trans "View Only" %}</a>
-        {% endif %}
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="7" class="text-center">{% trans "No data available" %}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
 
 <style>
-.table th, .table td { width: auto; }
 
-/* Adjust Date & Note columns */
-.table th:nth-child(5), .table td:nth-child(5) { width: 15%; }
-.table th:nth-child(6), .table td:nth-child(6) { width: 25%; }
+    body {
+        background: #f0f2f5;
+        font-family: Tahoma, Arial, sans-serif;
+    }
 
-/* Center stock column */
-.table th:nth-child(4), .table td:nth-child(4) {
-    text-align: center;
-    vertical-align: middle;
-}
+    .page-wrapper {
+        max-width: 1400px;
+        margin: 30px auto;
+    }
 
-/* Actions column */
-.table th:nth-child(7), .table td:nth-child(7) {
-    width: 12%;
-    text-align: center;
-}
+    /* =========================================================
+       Main Card
+    ========================================================= */
 
-/* Ensure dropdown appears above all elements */
-.dropdown-menu {
-    z-index: 2000 !important;
-}
+    .main-card {
+        background: #fff;
+        border: none;
+        border-radius: 14px;
+        overflow: visible;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+    }
+
+    /* =========================================================
+       Header
+    ========================================================= */
+
+    .page-header {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: #fff;
+        padding: 18px 25px;
+        border-radius: 14px 14px 0 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .page-header h4 {
+        margin: 0;
+        font-weight: bold;
+    }
+
+    /* =========================================================
+       Toolbar
+    ========================================================= */
+
+    .toolbar {
+        padding: 20px 25px;
+        border-bottom: 1px solid #e9ecef;
+        background: #fff;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .search-input {
+        width: 300px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        height: 40px;
+    }
+
+    .search-input:focus {
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.15rem rgba(108, 117, 125, 0.15);
+    }
+
+    /* =========================================================
+       Buttons
+    ========================================================= */
+
+    .btn-grey {
+        background: #6c757d !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 8px;
+    }
+
+    .btn-grey:hover {
+        background: #5c636a !important;
+        color: #fff !important;
+    }
+
+    .btn-action {
+        background: #6c757d !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 7px;
+    }
+
+    .btn-action:hover {
+        background: #5c636a !important;
+        color: #fff !important;
+    }
+
+    /* =========================================================
+       Table
+    ========================================================= */
+
+    .table-wrapper {
+        padding: 0 25px 25px 25px;
+        overflow: visible;
+    }
+
+    .inventory-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .inventory-table thead th {
+        background: #f1f3f5;
+        color: #495057;
+        font-weight: bold;
+        padding: 13px 10px;
+        border-bottom: 2px solid #dee2e6;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .inventory-table tbody td {
+        padding: 12px 10px;
+        vertical-align: middle;
+        border-color: #e9ecef;
+    }
+
+    .inventory-table tbody tr:hover td {
+        background: #f8f9fa;
+    }
+
+    /* Product */
+
+    .product-name {
+        font-weight: bold;
+        color: #343a40;
+    }
+
+    /* Change */
+
+    .change-value {
+        font-weight: bold;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /* Stock */
+
+    .stock-value {
+        text-align: center;
+        font-weight: bold;
+        color: #495057;
+        white-space: nowrap;
+    }
+
+    /* Date */
+
+    .date-value {
+        white-space: nowrap;
+        color: #6c757d;
+    }
+
+    /* Note */
+
+    .note-value {
+        max-width: 280px;
+        word-break: break-word;
+    }
+
+    /* Actions */
+
+    .actions-column {
+        width: 12%;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /* =========================================================
+       Dropdown
+    ========================================================= */
+
+    .dropdown-menu {
+        z-index: 2000 !important;
+        border: none;
+        border-radius: 9px;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
+        padding: 6px;
+        min-width: 150px;
+    }
+
+    .dropdown-item {
+        border-radius: 6px;
+        padding: 8px 12px;
+        text-align: right;
+    }
+
+    .dropdown-item:hover {
+        background: #f1f3f5;
+    }
+
+    .dropdown-item.text-danger:hover {
+        background: #f8d7da;
+    }
+
+    /* =========================================================
+       Empty
+    ========================================================= */
+
+    .empty-row {
+        padding: 35px !important;
+        color: #6c757d;
+        text-align: center;
+    }
+
+    /* =========================================================
+       Responsive
+    ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .page-wrapper {
+            margin: 15px;
+        }
+
+        .toolbar {
+            padding: 15px;
+        }
+
+        .table-wrapper {
+            padding: 0 15px 15px 15px;
+            overflow-x: auto;
+        }
+
+        .search-input {
+            width: 220px;
+        }
+
+    }
+
 </style>
+
+
+<div class="page-wrapper">
+
+    <div class="main-card">
+
+        <!-- =====================================================
+             Header
+        ====================================================== -->
+
+        <div class="page-header">
+
+            <h4>
+                {% trans "Inventory Transactions Log" %}
+            </h4>
+
+        </div>
+
+
+        <!-- =====================================================
+             Toolbar
+        ====================================================== -->
+
+        <div class="toolbar">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                <!-- Adjust Inventory -->
+
+                <a href="{% url 'products:stock_adjust' %}"
+                   class="btn btn-grey px-4">
+
+                    ➕ {% trans "Adjust Inventory" %}
+
+                </a>
+
+
+                <!-- Search -->
+
+                <form method="get"
+                      class="search-form mb-0">
+
+                    <input
+                        type="text"
+                        name="q"
+                        placeholder="{% trans 'Search...' %}"
+                        value="{{ q }}"
+                        class="form-control search-input">
+
+                    <button
+                        type="submit"
+                        class="btn btn-grey px-4">
+
+                        🔍 {% trans "Search" %}
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             Table
+        ====================================================== -->
+
+        <div class="table-wrapper">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered inventory-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                {% trans "Product" %}
+                            </th>
+
+                            <th>
+                                {% trans "Type" %}
+                            </th>
+
+                            <th class="text-center">
+                                {% trans "Change" %}
+                            </th>
+
+                            <th class="text-center">
+                                {% trans "Stock After Adjustment" %}
+                            </th>
+
+                            <th>
+                                {% trans "Date" %}
+                            </th>
+
+                            <th>
+                                {% trans "Note" %}
+                            </th>
+
+                            <th class="actions-column">
+                                {% trans "Actions" %}
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for move in moves %}
+
+                        <tr>
+
+                            <!-- Product -->
+
+                            <td class="product-name">
+                                {{ move.product.name }}
+                            </td>
+
+
+                            <!-- Type -->
+
+                            <td>
+                                {% if move.reason %}
+                                    {{ move.reason.name }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
+
+                            <!-- Change -->
+
+                            <td class="change-value">
+
+                                {% if move.qty_delta < 0 %}
+
+                                    <span class="text-danger">
+                                        -{{ move.qty_abs }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="text-success">
+                                        +{{ move.qty_abs }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Stock After -->
+
+                            <td class="stock-value">
+
+                                {{ move.stock_after }}
+
+                            </td>
+
+
+                            <!-- Date -->
+
+                            <td class="date-value">
+
+                                {{ move.created_at|date:"Y-m-d H:i" }}
+
+                            </td>
+
+
+                            <!-- Note -->
+
+                            <td class="note-value">
+
+                                {{ move.note|default:"-" }}
+
+                            </td>
+
+
+                            <!-- Actions -->
+
+                            <td class="actions-column">
+
+                                {% if move.move_type == "ADJUST" %}
+
+                                <div class="dropdown">
+
+                                    <button
+                                        class="btn btn-action btn-sm dropdown-toggle"
+                                        type="button"
+                                        id="actionMenu{{ forloop.counter }}"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        data-bs-auto-close="true">
+
+                                        {% trans "Actions" %}
+
+                                    </button>
+
+
+                                    <ul
+                                        class="dropdown-menu dropdown-menu-end"
+                                        aria-labelledby="actionMenu{{ forloop.counter }}">
+
+                                        <!-- View -->
+
+                                        <li>
+
+                                            <a
+                                                class="dropdown-item"
+                                                href="{% url 'products:stock_adjust_view' move.id %}">
+
+                                                👁️ {% trans "View" %}
+
+                                            </a>
+
+                                        </li>
+
+
+                                        <!-- Edit -->
+
+                                        <li>
+
+                                            <a
+                                                class="dropdown-item"
+                                                href="{% url 'products:stock_adjust_edit' move.id %}">
+
+                                                ✏️ {% trans "Edit" %}
+
+                                            </a>
+
+                                        </li>
+
+
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+
+
+                                        <!-- Delete -->
+
+                                        <li>
+
+                                            <a
+                                                class="dropdown-item text-danger"
+                                                href="{% url 'products:stock_adjust_delete' move.id %}"
+                                                onclick="return confirm('{% trans "Are you sure you want to delete this transaction?" %}');">
+
+                                                🗑️ {% trans "Delete" %}
+
+                                            </a>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                                {% else %}
+
+                                    <a
+                                        href="{% url 'products:stock_adjust_view' move.id %}"
+                                        class="btn btn-sm btn-grey">
+
+                                        👁️ {% trans "View Only" %}
+
+                                    </a>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="empty-row">
+
+                                {% trans "No data available" %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 {% endblock %}
 
+
 {% block scripts %}
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.dropdown-toggle').forEach(function(btn){
-        new bootstrap.Dropdown(btn);
-    });
+
+    document
+        .querySelectorAll('.dropdown-toggle')
+        .forEach(function (btn) {
+
+            new bootstrap.Dropdown(btn);
+
+        });
+
 });
+
 </script>
+
 {% endblock %}

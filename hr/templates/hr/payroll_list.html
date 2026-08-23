@@ -2,483 +2,939 @@
 {% load i18n %}
 
 {% block title %}
-{% trans "إدارة الرواتب" %}
+    {% trans "مسيرات الرواتب" %}
 {% endblock %}
-
 
 {% block content %}
 
 <style>
+/* ==========================
+   قائمة الإجراءات
+   تظهر كاملة بدون تمرير
+   ========================== */
 
-.payroll-page {
-    background: linear-gradient(
-        145deg,
-        #eeeeee,
-        #d6d6d6
-    );
-    min-height: 100vh;
-    padding: 30px;
+.payroll-table .dropdown {
+    position: relative;
+}
+
+.payroll-table .dropdown-menu {
+    z-index: 9999 !important;
+}
+
+/*
+   السماح للكرت بإظهار القائمة
+*/
+.payroll-card {
+    overflow: visible !important;
+}
+/* ==========================
+   زر إجراءات المسير
+   ========================== */
+
+.payroll-action-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #555,
+            #777
+        );
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 8px 14px;
+
+    font-weight: 700;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,.15);
+
+    transition: .2s;
+
 }
 
 
-/* العنوان */
+.payroll-action-btn:hover {
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #555
+        );
+
+    transform: translateY(-1px);
+
+}
+
+
+/* ==========================
+   قائمة الإجراءات
+   ========================== */
+
+.payroll-table .dropdown-menu {
+
+    min-width: 170px;
+
+    padding: 6px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.18);
+
+}
+
+
+.payroll-table .dropdown-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 9px 12px;
+
+    border-radius: 8px;
+
+    text-align: right;
+
+    font-weight: 600;
+
+    transition: .2s;
+
+}
+
+
+.payroll-table .dropdown-item:hover {
+
+    background: #f1f1f1;
+
+}
+
+
+.payroll-table .dropdown-item i {
+
+    width: 18px;
+
+    text-align: center;
+
+}
+
+body {
+    background: #eeeeee !important;
+}
+
+.payroll-page {
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8,
+            #d9d9d9
+        );
+
+    min-height: 90vh;
+
+    padding: 25px;
+
+    direction: rtl;
+}
+
+
+/* ==========================
+   الرأس
+   ========================== */
 
 .payroll-header {
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    display: flex;
 
-    background:linear-gradient(
-        145deg,
-        #ffffff,
-        #dcdcdc
-    );
+    justify-content: space-between;
 
-    padding:25px;
+    align-items: center;
 
-    border-radius:20px;
+    background: #ffffff;
+
+    padding: 25px;
+
+    border-radius: 22px;
 
     box-shadow:
-    8px 8px 15px #bcbcbc,
-    -8px -8px 15px #ffffff;
+        0 15px 40px rgba(0, 0, 0, .15);
 
-    margin-bottom:30px;
-
+    margin-bottom: 25px;
 }
 
 
 .payroll-header h3 {
 
-    margin:0;
-    font-weight:800;
-    color:#444;
+    margin: 0;
 
+    font-size: 26px;
+
+    font-weight: 800;
+
+    color: #444;
 }
 
 
+.payroll-header p {
 
-/* زر الاضافة */
+    margin: 6px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* ==========================
+   زر الإضافة
+   ========================== */
 
 .add-payroll-btn {
 
-    background:#6c757d;
-    color:white;
+    background:
+        linear-gradient(
+            145deg,
+            #444,
+            #666
+        );
 
-    padding:12px 22px;
+    color: #fff;
 
-    border-radius:15px;
+    padding: 11px 22px;
 
-    text-decoration:none;
+    border-radius: 12px;
 
-    font-weight:bold;
+    text-decoration: none;
+
+    font-weight: 700;
 
     box-shadow:
-    5px 5px 10px #aaa,
-    -3px -3px 8px white;
+        3px 3px 8px rgba(0,0,0,.18);
 
-    transition:.3s;
+    transition: .25s;
 
+    white-space: nowrap;
 }
 
 
 .add-payroll-btn:hover {
 
-    transform:translateY(-3px);
-    color:white;
+    color: #fff;
 
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #555
+        );
 }
 
 
-
-
-/* الجدول */
+/* ==========================
+   الكرت
+   ========================== */
 
 .payroll-card {
 
-    background:linear-gradient(
-        145deg,
-        #ffffff,
-        #e2e2e2
-    );
+    background: #fff;
 
-    border-radius:25px;
+    border-radius: 22px;
 
-    padding:20px;
+    padding: 20px;
 
     box-shadow:
+        0 15px 40px rgba(0,0,0,.15);
 
-    10px 10px 20px #bcbcbc,
-    -10px -10px 20px #ffffff;
+    /*
+       السماح لقائمة الإجراءات
+       بالظهور خارج الجدول والكرت
+    */
+    overflow: visible;
+}
 
+/* ==========================
+   الجدول
+   ========================== */
+
+.payroll-table-box {
+
+    overflow-x: auto;
+
+    overflow-y: visible;
+
+    border-radius: 18px;
+}
+
+.payroll-table {
+
+    width: 100%;
+
+    min-width: 1200px;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    background: #fff;
 }
 
 
+.payroll-table thead {
 
-.table {
+    background:
+        linear-gradient(
+            90deg,
+            #444 0%,
+            #666 50%,
+            #888 100%
+        );
 
-    margin:0;
-
+    color: #fff;
 }
 
 
-.table thead th {
+.payroll-table th {
 
-    background:#6c757d;
+    padding: 16px 12px;
 
-    color:white;
+    text-align: center;
 
-    border:none;
+    color: #fff;
 
-    white-space:nowrap;
+    font-size: 14px;
 
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    border: none;
 }
 
 
+.payroll-table th:first-child {
 
-.table tbody tr {
-
-    transition:.3s;
-
+    border-top-right-radius: 18px;
 }
 
 
-.table tbody tr:hover {
+.payroll-table th:last-child {
 
-    background:#eeeeee;
-
-    transform:scale(1.01);
-
+    border-top-left-radius: 18px;
 }
 
 
+.payroll-table td {
 
+    padding: 15px 12px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #eeeeee;
+
+    color: #444;
+
+    white-space: nowrap;
+}
+
+
+.payroll-table tbody tr {
+
+    transition: .2s;
+}
+
+
+.payroll-table tbody tr:hover td {
+
+    background: #f5f5f5;
+}
+
+
+/* ==========================
+   الشهر
+   ========================== */
+
+.month-badge {
+
+    display: inline-block;
+
+    padding: 7px 14px;
+
+    border-radius: 10px;
+
+    background: #eeeeee;
+
+    color: #444;
+
+    font-weight: 800;
+}
+
+
+/* ==========================
+   عدد الموظفين
+   ========================== */
+
+.employee-count {
+
+    font-weight: 800;
+
+    color: #444;
+}
+
+
+/* ==========================
+   الأموال
+   ========================== */
 
 .money {
 
-    font-weight:bold;
-    color:#444;
+    font-weight: 700;
 
+    color: #444;
 }
 
 
+.net-total {
 
-.action-btn {
+    color: #198754;
 
-    border-radius:10px;
+    font-weight: 900;
 
+    font-size: 15px;
 }
 
 
+/* ==========================
+   الحالة
+   ========================== */
+
+.status-badge {
+
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 9px;
+
+    background: #f1f1f1;
+
+    color: #555;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================
+   زر العرض
+   ========================== */
+
+.view-payroll-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #555,
+            #777
+        );
+
+    color: #fff;
+
+    padding: 8px 14px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,.15);
+
+    transition: .2s;
+}
+
+
+.view-payroll-btn:hover {
+
+    color: #fff;
+
+    transform: translateY(-1px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #555
+        );
+}
+
+
+/* ==========================
+   لا توجد مسيرات
+   ========================== */
+
+.payroll-empty {
+
+    padding: 50px !important;
+
+    color: #999 !important;
+
+    font-weight: 700;
+
+    background: #fafafa !important;
+}
+
+
+/* ==========================
+   Responsive
+   ========================== */
+
+@media (max-width: 768px) {
+
+    .payroll-page {
+
+        padding: 15px;
+    }
+
+    .payroll-header {
+
+        display: block;
+
+        text-align: right;
+
+        padding: 20px;
+    }
+
+    .add-payroll-btn {
+
+        display: block;
+
+        text-align: center;
+
+        margin-top: 15px;
+    }
+
+}
 
 </style>
-
 
 
 <div class="container-fluid payroll-page">
 
 
+    <!-- ==========================
+         رأس الصفحة
+         ========================== -->
 
-<div class="payroll-header">
+    <div class="payroll-header">
 
+        <div>
 
-<h3>
-💰 {% trans "إضافة مسير رواتب" %}
-</h3>
+            <h3>
 
+                <i class="fa-solid fa-money-check-dollar"></i>
 
-<a href="{% url 'hr:add_payroll' %}" 
-class="add-payroll-btn">
+                {% trans "إدارة الرواتب" %}
 
-➕ {% trans "إضافة مرتبات" %}
+            </h3>
 
-</a>
+            <p>
 
+                {% trans "إدارة ومراجعة مسيرات رواتب الموظفين" %}
 
-</div>
+            </p>
 
-
-
-
-
-<div class="payroll-card">
-
-
-<div class="table-responsive">
+        </div>
 
 
-<table class="table table-bordered text-center align-middle">
+        <a
+            href="{% url 'hr:add_payroll' %}"
+            class="add-payroll-btn"
+        >
+
+            <i class="fa-solid fa-plus"></i>
+
+            {% trans "إضافة مسير رواتب" %}
+
+        </a>
+
+    </div>
 
 
-<thead>
+    <!-- ==========================
+         الجدول
+         ========================== -->
+
+    <div class="payroll-card">
+
+        <div class="payroll-table-box">
+
+            <table class="payroll-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            {% trans "الشهر" %}
+                        </th>
+
+                        <th>
+                            {% trans "تاريخ الإنشاء" %}
+                        </th>
+
+                        <th>
+                            {% trans "عدد الموظفين" %}
+                        </th>
+
+                        <th>
+                            {% trans "إجمالي الأساسي" %}
+                        </th>
+
+                        <th>
+                            {% trans "إجمالي البدلات" %}
+                        </th>
+
+                        <th>
+                            {% trans "إجمالي الخصومات" %}
+                        </th>
+
+                        <th>
+                            {% trans "إجمالي صافي الرواتب" %}
+                        </th>
+
+                        <th>
+                            {% trans "الحالة" %}
+                        </th>
+
+                        <th>
+                            {% trans "الإجراءات" %}
+                        </th>
+
+                    </tr>
+
+                </thead>
 
 
-<tr>
-
-<th>#</th>
-
-<th>
-{% trans "اسم الموظف" %}
-</th>
+                <tbody>
 
 
-<th>
-{% trans "الرقم الوظيفي" %}
-</th>
+                    {% for payroll_run in payroll_runs %}
+
+                    <tr>
 
 
-<th>
-{% trans "الراتب الأساسي" %}
-</th>
+                        <!-- الرقم -->
+
+                        <td>
+
+                            {{ forloop.counter }}
+
+                        </td>
 
 
-<th>
-{% trans "البدلات" %}
-</th>
+                        <!-- الشهر -->
+
+                        <td>
+
+                            <span class="month-badge">
+
+                                {{ payroll_run.month }}/{{ payroll_run.year }}
+
+                            </span>
+
+                        </td>
 
 
-<th>
-{% trans "بدل العمل الإضافي" %}
-</th>
+                        <!-- تاريخ الإنشاء -->
+
+                        <td>
+
+                            {{ payroll_run.created_at|date:"Y-m-d" }}
+
+                        </td>
 
 
-<th>
-{% trans "خصم الغياب" %}
-</th>
+                        <!-- عدد الموظفين -->
+
+                        <td>
+
+                            <span class="employee-count">
+
+                                {{ payroll_run.employee_count }}
+
+                            </span>
+
+                        </td>
 
 
-<th>
-{% trans "خصم السلف" %}
-</th>
+                        <!-- الأساسي -->
+
+                        <td class="money">
+
+                            {{ payroll_run.total_base_salary }}
+
+                        </td>
 
 
-<th>
-{% trans "خصومات أخرى" %}
-</th>
+                        <!-- البدلات -->
+
+                        <td class="money">
+
+                            {{ payroll_run.total_allowances }}
+
+                        </td>
 
 
-<th>
-{% trans "صافي الراتب" %}
-</th>
+                        <!-- الخصومات -->
+
+                        <td class="money text-danger">
+
+                            {{ payroll_run.total_deductions }}
+
+                        </td>
 
 
-<th>
-{% trans "الملاحظات" %}
-</th>
+                        <!-- صافي الرواتب -->
+
+                        <td class="net-total">
+
+                            {{ payroll_run.total_net_salary }}
+
+                        </td>
 
 
-<th>
-{% trans "الإجراءات" %}
-</th>
+                        <!-- الحالة -->
+
+                        <td>
+
+                            <span class="status-badge">
+
+                                {% if payroll_run.status == "draft" %}
+
+                                    {% trans "مسودة" %}
+
+                                {% elif payroll_run.status == "approved" %}
+
+                                    {% trans "معتمد" %}
+
+                                {% elif payroll_run.status == "paid" %}
+
+                                    {% trans "مدفوع" %}
+
+                                {% else %}
+
+                                    {{ payroll_run.status }}
+
+                                {% endif %}
+
+                            </span>
+
+                        </td>
 
 
-</tr>
-
-
-</thead>
-
-
-
-<tbody>
-
-
-
-{% for payroll in payrolls %}
-
-
-
-<tr>
-
+                        <!-- الإجراءات -->
 
 <td>
-{{ forloop.counter }}
-</td>
 
+    <div class="dropdown">
 
+        <button
+            class="payroll-action-btn dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+        >
 
-<td>
+            <i class="fa-solid fa-gear"></i>
 
-<strong>
+            {% trans "الإجراءات" %}
 
-{{ payroll.employee.get_full_name }}
+        </button>
 
-</strong>
 
-</td>
+        <ul class="dropdown-menu dropdown-menu-end">
 
 
+            <!-- ==========================
+                 عرض
+                 ========================== -->
 
-<td>
+            <li>
 
-{{ payroll.employee.employee_number }}
+                <a
+                    class="dropdown-item"
+                    href="{% url 'hr:payroll_detail' payroll_run.id %}"
+                >
 
-</td>
+                    <i class="fa-solid fa-eye"></i>
 
+                    {% trans "عرض" %}
 
+                </a>
 
-<td class="money">
+            </li>
 
-{{ payroll.basic_salary }}
 
-</td>
-
-
-
-<td class="money">
-
-{{ payroll.allowances }}
-
-</td>
-
-
-
-<td class="money">
-
-{{ payroll.overtime_amount }}
-
-</td>
-
-
-
-<td class="money text-danger">
-
-{{ payroll.absence_deduction }}
-
-</td>
-
-
-
-<td class="money text-danger">
-
-{{ payroll.advance_deduction }}
-
-</td>
-
-
-
-<td class="money text-danger">
-
-{{ payroll.other_deductions }}
-
-</td>
-
-
-
-<td class="money text-success">
-
-{{ payroll.net_salary }}
-
-</td>
-
-
-
-<td>
-
-{{ payroll.notes|default:"-" }}
-
-</td>
-
-
-
-
-<td>
-
-
-<div class="dropdown">
-
-
-<button class="btn btn-secondary btn-sm dropdown-toggle"
-data-bs-toggle="dropdown">
-
-⚙️
-
-</button>
-
-
-
-<ul class="dropdown-menu">
-
+<!-- ==========================
+     تعديل
+     ========================== -->
 
 <li>
 
-<a class="dropdown-item"
-href="#">
+    <a
+        class="dropdown-item"
+        href="{% url 'hr:payroll_edit' payroll_run.id %}"
+    >
 
-✏️ {% trans "تعديل" %}
+        <i class="fa-solid fa-pen"></i>
 
-</a>
+        {% trans "تعديل" %}
+
+    </a>
 
 </li>
 
+            <!-- ==========================
+                 اعتماد
+                 ========================== -->
 
+            {% if payroll_run.status == "draft" %}
+
+            <li>
+
+                <a
+                    class="dropdown-item"
+                    href="{% url 'hr:payroll_approve' payroll_run.id %}"
+                    onclick="return confirm('هل أنت متأكد من اعتماد مسير الرواتب؟ بعد الاعتماد لن يكون مسيرًا مسودة.');"
+                >
+
+                    <i class="fa-solid fa-check"></i>
+
+                    {% trans "اعتماد" %}
+
+                </a>
+
+            </li>
+
+            {% endif %}
+
+
+            <!-- ==========================
+                 حذف
+                 ========================== -->
+
+            {% if payroll_run.status == "draft" %}
+
+            <li>
+
+                <hr class="dropdown-divider">
+
+            </li>
 
 <li>
 
-<a class="dropdown-item text-danger"
-href="#"
-onclick="return confirm('هل أنت متأكد من حذف مسير الرواتب؟');">
+    <form
+        method="POST"
+        action="{% url 'hr:payroll_delete' payroll_run.id %}"
+        onsubmit="return confirm('⚠️ هل أنت متأكد من حذف مسير الرواتب بالكامل؟ لا يمكن التراجع عن هذه العملية.');"
+        style="margin: 0;"
+    >
 
-🗑 {% trans "حذف" %}
+        {% csrf_token %}
 
-</a>
+        <button
+            type="submit"
+            class="dropdown-item text-danger"
+            style="width: 100%; border: none; background: transparent; cursor: pointer;"
+        >
+
+            <i class="fa-solid fa-trash"></i>
+
+            {% trans "حذف" %}
+
+        </button>
+
+    </form>
 
 </li>
+            {% endif %}
 
 
-</ul>
+        </ul>
 
-
-</div>
-
-
+    </div>
 
 </td>
 
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="10"
+                            class="payroll-empty"
+                        >
+
+                            <i class="fa-solid fa-money-bill-wave fa-2x"></i>
+
+                            <br><br>
+
+                            {% trans "لا توجد مسيرات رواتب" %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
 
 
-</tr>
+                </tbody>
 
+            </table>
 
+        </div>
 
-{% empty %}
-
-
-
-<tr>
-
-<td colspan="12"
-class="text-center py-4">
-
-
-{% trans "لا توجد سجلات رواتب" %}
-
-
-</td>
-
-
-</tr>
-
-
-
-{% endfor %}
-
-
-
-</tbody>
-
-
-
-</table>
-
+    </div>
 
 </div>
-
-
-</div>
-
-
-</div>
-
-
 
 {% endblock %}

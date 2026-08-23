@@ -3,116 +3,303 @@
 
 {% block content %}
 
-<style>
-.btn-options {
-    width: 90px;
-    height: 34px;
-    padding: 0;
-    line-height: 34px;
-    border-radius: 6px;
-    font-size: 14px;
-}
-</style>
+<div class="container-fluid invoices-page mt-4">
 
-<div class="container mt-4">
+    <div class="invoice-card">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
 
-        <h3 class="fw-bold">
-            {% trans "Journal Entries Management" %}
-        </h3>
+        <div class="page-header">
 
-        <a href="{% url 'accounting:journal_add' %}" class="btn btn-secondary">
-            + {% trans "Add Entry" %}
-        </a>
+            <div>
 
-    </div>
+                <h3>
 
-    {% if entries %}
+                    <i class="fa-solid fa-book"></i>
 
-    <div class="card">
-        <div class="card-body p-0">
+                    {% trans "Journal Entries Management" %}
 
-            <table class="table table-bordered table-hover mb-0 text-center align-middle">
+                </h3>
 
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>{% trans "Entry No" %}</th>
-                        <th>{% trans "Date" %}</th>
-                        <th>{% trans "Description" %}</th>
-                        <th>{% trans "Debit" %}</th>
-                        <th>{% trans "Credit" %}</th>
-                        <th>{% trans "Status" %}</th>
-                        <th>{% trans "Options" %}</th>
+                <p>
+
+                    {% trans "Journal Entries Management" %}
+
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'accounting:journal_add' %}"
+               class="add-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add Entry" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- الجدول -->
+        <!-- ============================= -->
+
+        {% if entries %}
+
+        <div class="table-box">
+
+            <table class="invoice-table">
+
+                <thead>
+
+                    <!-- ============================= -->
+                    <!-- عنوان الأعمدة -->
+                    <!-- ============================= -->
+
+                    <tr class="header-row">
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            {% trans "Entry No" %}
+                        </th>
+
+                        <th>
+                            {% trans "Date" %}
+                        </th>
+
+                        <th>
+                            {% trans "Description" %}
+                        </th>
+
+                        <th>
+                            {% trans "Debit" %}
+                        </th>
+
+                        <th>
+                            {% trans "Credit" %}
+                        </th>
+
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+
+                        <th>
+                            {% trans "Options" %}
+                        </th>
+
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
                 {% for e in entries %}
+
                     <tr>
 
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ e.entry_no }}</td>
-                        <td>{{ e.date }}</td>
-
-                        <td class="text-end">
-                            {{ e.description }}
-                        </td>
-
-                        <td>{{ e.total_debit|floatformat:2 }}</td>
-
-                        <td>{{ e.total_credit|floatformat:2 }}</td>
+                        <!-- الرقم -->
 
                         <td>
-                            {% if e.posted %}
-                                <span class="badge bg-success">{% trans "Posted" %}</span>
-                            {% else %}
-                                <span class="badge bg-secondary">{% trans "Draft" %}</span>
-                            {% endif %}
+
+                            <span class="order-badge">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
                         </td>
 
-                        <td class="text-nowrap text-center">
 
-                            <div class="dropdown">
+                        <!-- رقم القيد -->
 
-                                <button class="btn btn-secondary dropdown-toggle btn-options"
-                                        type="button"
-                                        data-bs-toggle="dropdown">
+                        <td class="invoice-number">
+
+                            <i class="fa-solid fa-file-lines"></i>
+
+                            {{ e.entry_no }}
+
+                        </td>
+
+
+                        <!-- التاريخ -->
+
+                        <td>
+
+                            <span class="date-badge">
+
+                                {{ e.date }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- الوصف -->
+
+                        <td class="description-cell">
+
+                            {{ e.description }}
+
+                        </td>
+
+
+                        <!-- المدين -->
+
+                        <td class="total-cell">
+
+                            {{ e.total_debit|floatformat:2 }}
+
+                        </td>
+
+
+                        <!-- الدائن -->
+
+                        <td class="total-cell">
+
+                            {{ e.total_credit|floatformat:2 }}
+
+                        </td>
+
+
+                        <!-- الحالة -->
+
+                        <td>
+
+                            {% if e.posted %}
+
+                                <span class="status-badge status-success">
+
+                                    {% trans "Posted" %}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge">
+
+                                    {% trans "Draft" %}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- الخيارات -->
+
+                        <td>
+
+                            <div class="options-dropdown">
+
+                                <button
+                                    type="button"
+                                    class="action-btn options-button"
+                                >
+
+                                    <i class="fa-solid fa-gear"></i>
+
                                     {% trans "Options" %}
+
                                 </button>
 
-                                <ul class="dropdown-menu text-end">
+
+                                <!-- ===================================== -->
+                                <!-- القائمة -->
+                                <!-- ===================================== -->
+
+                                <ul class="dropdown-menu custom-menu text-end">
+
+
+                                    <!-- عرض -->
 
                                     <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'accounting:journal_view' e.id %}">
-                                            👁 {% trans "View" %}
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'accounting:journal_view' e.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
                                         </a>
+
                                     </li>
 
-                                    {% if not e.posted %}
-                                        <li><hr class="dropdown-divider"></li>
 
-                                        <li>
-                                            <a class="dropdown-item text-success"
-                                               href="{% url 'accounting:journal_post' e.id %}"
-                                               onclick="return confirm('{% trans "Are you sure you want to post this entry?" %}')">
-                                                🚀 {% trans "Post" %}
-                                            </a>
-                                        </li>
+                                    {% if not e.posted %}
+
+
+                                    <!-- فاصل -->
+
+                                    <li>
+
+                                        <hr class="dropdown-divider">
+
+                                    </li>
+
+
+                                    <!-- ترحيل -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item post-btn"
+                                            href="{% url 'accounting:journal_post' e.id %}"
+                                            onclick="return confirm('{% trans "Are you sure you want to post this entry?" %}')"
+                                        >
+
+                                            <i class="fa-solid fa-rocket"></i>
+
+                                            {% trans "Post" %}
+
+                                        </a>
+
+                                    </li>
+
+
                                     {% endif %}
+
 
                                     {% if e.source_type == "invoice" %}
-                                        <li><hr class="dropdown-divider"></li>
 
-                                        <li>
-                                            <span class="dropdown-item text-muted">
-                                                🔒 {% trans "Auto Entry (Invoice)" %}
-                                            </span>
-                                        </li>
+
+                                    <!-- فاصل -->
+
+                                    <li>
+
+                                        <hr class="dropdown-divider">
+
+                                    </li>
+
+
+                                    <!-- قيد آلي -->
+
+                                    <li>
+
+                                        <span class="dropdown-item disabled-item">
+
+                                            <i class="fa-solid fa-lock"></i>
+
+                                            {% trans "Auto Entry (Invoice)" %}
+
+                                        </span>
+
+                                    </li>
+
+
                                     {% endif %}
+
 
                                 </ul>
 
@@ -121,6 +308,8 @@
                         </td>
 
                     </tr>
+
+
                 {% endfor %}
 
                 </tbody>
@@ -128,16 +317,1178 @@
             </table>
 
         </div>
-    </div>
 
-    {% else %}
 
-        <div class="alert alert-info text-center p-4">
-            {% trans "No journal entries yet" %}
+        {% else %}
+
+
+        <!-- ============================= -->
+        <!-- لا توجد قيود -->
+        <!-- ============================= -->
+
+        <div class="empty">
+
+            <i class="fa-solid fa-file-circle-xmark"></i>
+
+            <div>
+
+                {% trans "No journal entries yet" %}
+
+            </div>
+
         </div>
 
-    {% endif %}
+
+        {% endif %}
+
+    </div>
 
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.invoices-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.invoice-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر إضافة القيد
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.invoice-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.invoice-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.invoice-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.invoice-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم القيد
+========================================================= */
+
+.invoice-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.invoice-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   رقم التسلسل
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الوصف
+========================================================= */
+
+.description-cell{
+
+    font-weight:600;
+
+    color:#444 !important;
+
+    min-width:220px;
+
+}
+
+
+/* =========================================================
+   الإجمالي
+========================================================= */
+
+.total-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+/* =========================================================
+   الحالة
+========================================================= */
+
+.status-badge{
+
+    display:inline-block;
+
+    min-width:85px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.status-success{
+
+    background:
+    linear-gradient(
+        135deg,
+        #198754,
+        #146c43
+    );
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.options-dropdown{
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+========================================================= */
+
+.custom-menu{
+
+    display:none;
+
+    position:fixed !important;
+
+    min-width:230px;
+
+    padding:8px;
+
+    margin:0 !important;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.22),
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index:999999999 !important;
+
+}
+
+
+.custom-menu.menu-open{
+
+    display:block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    margin:2px 0;
+
+    border-radius:9px;
+
+    color:#444;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#333;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+/* =========================================================
+   أيقونات القائمة
+========================================================= */
+
+.custom-menu .dropdown-item i{
+
+    width:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i{
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   القيد الآلي
+========================================================= */
+
+.custom-menu .disabled-item{
+
+    color:#777;
+
+    cursor:default;
+
+}
+
+
+.custom-menu .disabled-item:hover{
+
+    color:#777;
+
+    transform:none;
+
+}
+
+
+/* =========================================================
+   زر الترحيل
+========================================================= */
+
+.custom-menu .post-btn{
+
+    color:#198754;
+
+}
+
+
+.custom-menu .post-btn i{
+
+    color:#198754;
+
+}
+
+
+/* =========================================================
+   الفاصل
+========================================================= */
+
+.custom-menu .dropdown-divider{
+
+    border-top:1px solid #ccc;
+
+    margin:6px 4px;
+
+}
+
+
+/* =========================================================
+   لا توجد قيود
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+    text-align:center;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .invoices-page{
+
+        padding:15px;
+
+    }
+
+
+    .invoice-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .invoice-table{
+
+        min-width:1000px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================================
+     JavaScript
+
+     قائمة الخيارات بنفس أسلوب صفحة الفواتير
+========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(".options-button");
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            const dropdown =
+                this.closest(".options-dropdown");
+
+
+            if (!dropdown) {
+
+                return;
+
+            }
+
+
+            const menu =
+                dropdown.querySelector(".custom-menu");
+
+
+            if (!menu) {
+
+                return;
+
+            }
+
+
+            /* =============================================
+               إذا كانت نفس القائمة مفتوحة
+            ============================================= */
+
+            if (
+                openedMenu === menu &&
+                menu.classList.contains("menu-open")
+            ) {
+
+                closeOptionsMenu();
+
+                return;
+
+            }
+
+
+            /* =============================================
+               إغلاق أي قائمة أخرى
+            ============================================= */
+
+            closeOptionsMenu();
+
+
+            /* =============================================
+               نقل القائمة إلى body
+            ============================================= */
+
+            document.body.appendChild(menu);
+
+
+            menu.classList.add("menu-open");
+
+
+            openedMenu = menu;
+
+            openedButton = this;
+
+
+            /* =============================================
+               تحديد موقع الزر
+            ============================================= */
+
+            const rect =
+                this.getBoundingClientRect();
+
+
+            const menuHeight =
+                menu.offsetHeight;
+
+
+            const menuWidth =
+                menu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            /* =============================================
+               القائمة فوق الزر
+            ============================================= */
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            /* =============================================
+               توسيط القائمة أفقيًا
+            ============================================= */
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            /* =============================================
+               منع الخروج من يمين الشاشة
+            ============================================= */
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            /* =============================================
+               منع الخروج من يسار الشاشة
+            ============================================= */
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            /* =============================================
+               منع الخروج من أعلى الشاشة
+            ============================================= */
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            menu.style.top =
+                top + "px";
+
+
+            menu.style.left =
+                left + "px";
+
+
+            menu.style.right =
+                "auto";
+
+
+            menu.style.bottom =
+                "auto";
+
+
+            menu.style.transform =
+                "none";
+
+
+            /* =============================================
+               منع إغلاق القائمة عند الضغط داخلها
+            ============================================= */
+
+            menu.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                }
+            );
+
+        });
+
+    });
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+
+        if (!openedMenu) {
+
+            return;
+
+        }
+
+
+        openedMenu.classList.remove("menu-open");
+
+
+        /* =============================================
+           إرجاع القائمة إلى مكانها الأصلي
+        ============================================= */
+
+        if (openedButton) {
+
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+    /* =====================================================
+       عند تحريك الصفحة
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                openedButton.getBoundingClientRect();
+
+
+            const menuHeight =
+                openedMenu.offsetHeight;
+
+
+            const menuWidth =
+                openedMenu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            openedMenu.style.top =
+                top + "px";
+
+
+            openedMenu.style.left =
+                left + "px";
+
+        },
+        true
+    );
+
+
+    /* =====================================================
+       عند تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+});
+
+</script>
+
 
 {% endblock %}

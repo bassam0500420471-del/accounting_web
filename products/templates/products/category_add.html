@@ -2,124 +2,1168 @@
 {% load i18n %}
 
 {% block title %}
-{% if category %}
-    {% trans "Edit Category" %}
-{% else %}
-    {% trans "Add Category" %}
-{% endif %}
+    {% if category %}
+        {% trans "Edit Category" %}
+    {% else %}
+        {% trans "Add Category" %}
+    {% endif %}
 {% endblock %}
+
 
 {% block content %}
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+<div class="category-page">
 
-            <div class="card shadow-sm">
+    <div class="category-card">
 
-                <div class="card-header bg-primary text-white text-center">
-                    <h5 class="mb-0">
-                        {% if category %}
-                            {% trans "Edit Category" %}
-                        {% else %}
-                            {% trans "Add Category" %}
-                        {% endif %}
-                    </h5>
+        <!-- ========================================= -->
+        <!-- رأس الصفحة -->
+        <!-- ========================================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    {% if category %}
+                        {% trans "Edit Category" %}
+                    {% else %}
+                        {% trans "Add Category" %}
+                    {% endif %}
+
+                </h3>
+
+                <p>
+
+                    {% if category %}
+                        {% trans "Update category information" %}
+                    {% else %}
+                        {% trans "Create a new product category" %}
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'products:category_list' %}"
+               class="back-btn">
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+                {% trans "Back to Categories" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- النموذج -->
+        <!-- ========================================= -->
+
+        <div class="form-box">
+
+            <form method="post"
+                  enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+
+                <!-- ================================= -->
+                <!-- اسم التصنيف -->
+                <!-- ================================= -->
+
+                <div class="form-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-tag"></i>
+
+                        {% trans "Category Name" %}
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-input"
+                        value="{{ category.name|default:'' }}"
+                        placeholder="{% trans 'Enter category name' %}"
+                        required>
+
                 </div>
 
-                <div class="card-body">
 
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
+                <!-- ================================= -->
+                <!-- الترتيب -->
+                <!-- ================================= -->
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                {% trans "Category Name" %}
-                            </label>
+                <div class="form-group">
 
-                            <input
-                                type="text"
-                                name="name"
-                                class="form-control"
-                                value="{{ category.name|default:'' }}"
-                                required>
+                    <label>
+
+                        <i class="fa-solid fa-sort"></i>
+
+                        {% trans "Order" %}
+
+                    </label>
+
+                    <input
+                        type="number"
+                        name="sort_order"
+                        class="form-input"
+                        value="{{ category.sort_order|default:0 }}"
+                        placeholder="{% trans 'Enter order number' %}">
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- الصورة -->
+                <!-- ================================= -->
+
+                <div class="form-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-image"></i>
+
+                        {% trans "Image" %}
+
+                    </label>
+
+
+                    <div class="file-box">
+
+                        <input
+                            type="file"
+                            name="image"
+                            id="category-image"
+                            class="file-input"
+                            accept="image/*">
+
+                        <label for="category-image"
+                               class="file-label">
+
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                            <span>
+                                {% trans "Choose Image" %}
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- الصورة الحالية -->
+
+                    {% if category and category.image %}
+
+                    <div class="current-image-box">
+
+                        <div class="image-title">
+
+                            <i class="fa-solid fa-image"></i>
+
+                            {% trans "Current Image" %}
+
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                {% trans "Order" %}
-                            </label>
+                        <img
+                            src="{{ category.image.url }}"
+                            class="category-image"
+                            alt="{{ category.name }}">
 
-                            <input
-                                type="number"
-                                name="sort_order"
-                                class="form-control"
-                                value="{{ category.sort_order|default:0 }}">
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- معاينة الصورة الجديدة -->
+
+                    <div id="image-preview-box"
+                         class="current-image-box"
+                         style="display:none;">
+
+                        <div class="image-title">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            {% trans "Image Preview" %}
+
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                {% trans "Image" %}
-                            </label>
+                        <img
+                            id="image-preview"
+                            class="category-image"
+                            alt="Preview">
 
-                            <input
-                                type="file"
-                                name="image"
-                                class="form-control"
-                                accept="image/*">
+                    </div>
 
-                            {% if category and category.image %}
-                                <div class="mt-3">
-                                    <img src="{{ category.image.url }}"
-                                         class="img-thumbnail"
-                                         style="max-width:180px;">
-                                </div>
-                            {% endif %}
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- الحالة -->
+                <!-- ================================= -->
+
+                {% if category %}
+
+                <div class="form-group">
+
+                    <div class="status-box">
+
+                        <div>
+
+                            <div class="status-title">
+
+                                <i class="fa-solid fa-power-off"></i>
+
+                                {% trans "Category Status" %}
+
+                            </div>
+
+                            <div class="status-description">
+
+                                {% trans "Enable or disable this category" %}
+
+                            </div>
+
                         </div>
 
-                        {% if category %}
-                        <div class="form-check form-switch mb-3">
+
+                        <label class="switch">
+
                             <input
-                                class="form-check-input"
                                 type="checkbox"
                                 id="active"
                                 name="active"
                                 {% if category.active %}checked{% endif %}>
 
-                            <label class="form-check-label" for="active">
-                                {% trans "Active" %}
-                            </label>
-                        </div>
-                        {% endif %}
+                            <span class="slider"></span>
 
-                        <div class="d-flex justify-content-between">
+                        </label>
 
-                            <a href="{% url 'products:category_list' %}"
-                               class="btn btn-secondary">
-                                {% trans "Cancel" %}
-                            </a>
-
-                            <button type="submit"
-                                    class="btn btn-success">
-
-                                {% if category %}
-                                    {% trans "Update" %}
-                                {% else %}
-                                    {% trans "Save" %}
-                                {% endif %}
-
-                            </button>
-
-                        </div>
-
-                    </form>
+                    </div>
 
                 </div>
 
-            </div>
+                {% endif %}
+
+
+                <!-- ================================= -->
+                <!-- الأزرار -->
+                <!-- ================================= -->
+
+                <div class="form-actions">
+
+                    <a
+                        href="{% url 'products:category_list' %}"
+                        class="cancel-btn">
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        {% trans "Cancel" %}
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="save-btn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        {% if category %}
+
+                            {% trans "Update" %}
+
+                        {% else %}
+
+                            {% trans "Save" %}
+
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+
+            </form>
 
         </div>
+
     </div>
+
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.category-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.category-card {
+
+    max-width:900px;
+
+    margin:0 auto;
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+    padding-bottom:20px;
+
+    border-bottom:1px solid #e5e5e5;
+
+}
+
+
+.page-header h3 {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i {
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+.page-header p {
+
+    color:#777;
+
+    margin:0;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   زر الرجوع
+========================================================= */
+
+.back-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:11px 20px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.back-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق النموذج
+========================================================= */
+
+.form-box {
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+    border:1px solid #e0e0e0;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.form-group {
+
+    margin-bottom:22px;
+
+}
+
+
+.form-group > label {
+
+    display:block;
+
+    margin-bottom:9px;
+
+    color:#444;
+
+    font-weight:700;
+
+    font-size:14px;
+
+}
+
+
+.form-group > label i {
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+.form-input {
+
+    width:100%;
+
+    padding:13px 15px;
+
+    border:1px solid #aaa;
+
+    border-radius:11px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e8e8e8
+    );
+
+    color:#444;
+
+    font-family:Tahoma;
+
+    font-size:14px;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+}
+
+
+.form-input:focus {
+
+    outline:none;
+
+    border-color:#666;
+
+    background:#fff;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.form-input::placeholder {
+
+    color:#999;
+
+}
+
+
+/* =========================================================
+   رفع الصورة
+========================================================= */
+
+.file-box {
+
+    position:relative;
+
+}
+
+
+.file-input {
+
+    display:none;
+
+}
+
+
+.file-label {
+
+    display:flex !important;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    width:100%;
+
+    min-height:70px;
+
+    border:2px dashed #aaa;
+
+    border-radius:13px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    color:#555;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    transition:.3s;
+
+}
+
+
+.file-label:hover {
+
+    border-color:#666;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #dcdcdc
+    );
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,.10);
+
+}
+
+
+.file-label i {
+
+    font-size:22px;
+
+    color:#666;
+
+}
+
+
+/* =========================================================
+   الصورة الحالية
+========================================================= */
+
+.current-image-box {
+
+    margin-top:18px;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d8d8d8
+    );
+
+    border:1px solid #ccc;
+
+    text-align:center;
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.image-title {
+
+    color:#555;
+
+    font-weight:700;
+
+    margin-bottom:12px;
+
+}
+
+
+.image-title i {
+
+    margin-left:5px;
+
+    color:#666;
+
+}
+
+
+.category-image {
+
+    width:180px;
+
+    height:180px;
+
+    object-fit:cover;
+
+    border-radius:14px;
+
+    border:1px solid #bbb;
+
+    background:white;
+
+    padding:4px;
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   حالة التصنيف
+========================================================= */
+
+.status-box {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:16px 18px;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d9d9d9
+    );
+
+    border:1px solid #ccc;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.08),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.status-title {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:4px;
+
+}
+
+
+.status-title i {
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+.status-description {
+
+    color:#777;
+
+    font-size:12px;
+
+}
+
+
+/* =========================================================
+   Switch
+========================================================= */
+
+.switch {
+
+    position:relative;
+
+    display:inline-block;
+
+    width:54px;
+
+    height:28px;
+
+    margin:0;
+
+}
+
+
+.switch input {
+
+    opacity:0;
+
+    width:0;
+
+    height:0;
+
+}
+
+
+.slider {
+
+    position:absolute;
+
+    cursor:pointer;
+
+    inset:0;
+
+    background:#999;
+
+    border-radius:30px;
+
+    transition:.3s;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.20);
+
+}
+
+
+.slider:before {
+
+    content:"";
+
+    position:absolute;
+
+    width:22px;
+
+    height:22px;
+
+    left:3px;
+
+    top:3px;
+
+    background:white;
+
+    border-radius:50%;
+
+    transition:.3s;
+
+    box-shadow:
+    0 2px 5px rgba(0,0,0,.25);
+
+}
+
+
+.switch input:checked + .slider {
+
+    background:#555;
+
+}
+
+
+.switch input:checked + .slider:before {
+
+    transform:translateX(26px);
+
+}
+
+
+/* =========================================================
+   أزرار النموذج
+========================================================= */
+
+.form-actions {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-top:30px;
+
+    padding-top:20px;
+
+    border-top:1px solid #ddd;
+
+}
+
+
+/* =========================================================
+   زر الإلغاء
+========================================================= */
+
+.cancel-btn {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    min-width:130px;
+
+    padding:12px 22px;
+
+    border-radius:12px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d0d0d0
+    );
+
+    border:1px solid #bbb;
+
+    color:#555;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.3s;
+
+}
+
+
+.cancel-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #dddddd,
+        #c2c2c2
+    );
+
+    color:#333;
+
+    transform:translateY(-2px);
+
+}
+
+
+/* =========================================================
+   زر الحفظ
+========================================================= */
+
+.save-btn {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    min-width:150px;
+
+    padding:12px 24px;
+
+    border:0;
+
+    border-radius:12px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.save-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .category-page {
+
+        padding:15px;
+
+    }
+
+
+    .category-card {
+
+        padding:18px;
+
+        border-radius:18px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .back-btn {
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .form-box {
+
+        padding:18px;
+
+    }
+
+
+    .form-actions {
+
+        flex-direction:column-reverse;
+
+        align-items:stretch;
+
+    }
+
+
+    .cancel-btn,
+    .save-btn {
+
+        width:100%;
+
+    }
+
+}
+
+</style>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const imageInput =
+        document.getElementById("category-image");
+
+    const previewBox =
+        document.getElementById("image-preview-box");
+
+    const preview =
+        document.getElementById("image-preview");
+
+
+    if (!imageInput) {
+        return;
+    }
+
+
+    imageInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+
+        if (!file) {
+
+            previewBox.style.display = "none";
+
+            preview.removeAttribute("src");
+
+            return;
+
+        }
+
+
+        if (!file.type.startsWith("image/")) {
+
+            previewBox.style.display = "none";
+
+            preview.removeAttribute("src");
+
+            return;
+
+        }
+
+
+        const reader = new FileReader();
+
+
+        reader.onload = function (event) {
+
+            preview.src = event.target.result;
+
+            previewBox.style.display = "block";
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    });
+
+});
+
+</script>
+
 
 {% endblock %}

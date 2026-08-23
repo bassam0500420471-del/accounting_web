@@ -1,106 +1,366 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Category Management" %}{% endblock %}
+{% block title %}
+    {% trans "Category Management" %}
+{% endblock %}
+
 
 {% block content %}
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0">{% trans "Category Management" %}</h4>
-        <a href="{% url 'products:category_add' %}" class="btn btn-primary">
-            ➕ {% trans "Add Category" %}
-        </a>
-    </div>
+<div class="container-fluid categories-page mt-4">
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <table class="table table-bordered table-striped align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th width="60">#</th>
-                        <th>{% trans "Name" %}</th>
-                        <th width="90">{% trans "Order" %}</th>
-                        <th width="120">{% trans "Status" %}</th>
-                        <th>{% trans "Products" %}</th>
-                        <th width="80" class="text-center">{% trans "Actions" %}</th>
+    <div class="category-card">
+
+        <!-- ========================================= -->
+        <!-- رأس الصفحة -->
+        <!-- ========================================= -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    {% trans "Category Management" %}
+
+                </h3>
+
+                <p>
+
+                    {% trans "Manage product categories and their products" %}
+
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'products:category_add' %}"
+               class="add-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add Category" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- الجدول -->
+        <!-- ========================================= -->
+
+        <div class="table-box">
+
+            <table class="category-table">
+
+                <thead>
+
+                    <!-- ================================= -->
+                    <!-- صف البحث -->
+                    <!-- ================================= -->
+
+                    <tr class="filter-row">
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search ID' %}">
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Name' %}">
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Order' %}">
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Status' %}">
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Products' %}">
+
+                        </th>
+
+
+                        <th></th>
+
                     </tr>
+
+
+                    <!-- ================================= -->
+                    <!-- عناوين الأعمدة -->
+                    <!-- ================================= -->
+
+                    <tr class="header-row">
+
+                        <th>#</th>
+
+                        <th>
+                            {% trans "Name" %}
+                        </th>
+
+                        <th>
+                            {% trans "Order" %}
+                        </th>
+
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+
+                        <th>
+                            {% trans "Products" %}
+                        </th>
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
+                    </tr>
+
                 </thead>
 
+
                 <tbody>
-                    {% for cat in categories %}
+
+                {% for cat in categories %}
+
                     <tr>
 
-                        <td>{{ forloop.counter }}</td>
-
-                        <td>{{ cat.name }}</td>
-
-                        <td>{{ cat.sort_order }}</td>
+                        <!-- ================================= -->
+                        <!-- الرقم -->
+                        <!-- ================================= -->
 
                         <td>
+
+                            <span class="order-badge">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ================================= -->
+                        <!-- اسم التصنيف -->
+                        <!-- ================================= -->
+
+                        <td class="category-name">
+
+                            <i class="fa-solid fa-folder"></i>
+
+                            <span
+                                class="category-name-text"
+                                title="{{ cat.name }}">
+
+                                {{ cat.name }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ================================= -->
+                        <!-- الترتيب -->
+                        <!-- ================================= -->
+
+                        <td>
+
+                            <span class="sort-badge">
+
+                                {{ cat.sort_order }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ================================= -->
+                        <!-- الحالة -->
+                        <!-- ================================= -->
+
+                        <td>
+
                             {% if cat.active %}
-                                <span class="badge bg-success">
+
+                                <span class="status-badge active">
+
+                                    <i class="fa-solid fa-check"></i>
+
                                     {% trans "Active" %}
+
                                 </span>
+
                             {% else %}
-                                <span class="badge bg-secondary">
+
+                                <span class="status-badge inactive">
+
+                                    <i class="fa-solid fa-xmark"></i>
+
                                     {% trans "Inactive" %}
+
                                 </span>
+
                             {% endif %}
+
                         </td>
+
+
+                        <!-- ================================= -->
+                        <!-- المنتجات -->
+                        <!-- ================================= -->
+
+                        <td class="products-cell">
+
+                            {% if cat.products.exists %}
+
+                                <div class="products-list">
+
+                                    {% for product in cat.products.all %}
+
+                                        <span class="product-badge">
+
+                                            <i class="fa-solid fa-box"></i>
+
+                                            {{ product.name }}
+
+                                        </span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="no-products">
+
+                                    <i class="fa-solid fa-box-open"></i>
+
+                                    {% trans "No products" %}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ================================= -->
+                        <!-- الخيارات -->
+                        <!-- ================================= -->
 
                         <td>
-                            {% if cat.products.exists %}
-                                <ul class="mb-0 ps-3">
-                                    {% for product in cat.products.all %}
-                                        <li>{{ product.name }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <span class="text-muted">
-                                    {% trans "No products" %}
-                                </span>
-                            {% endif %}
-                        </td>
 
-                        <td class="text-center">
-
-                            <div class="dropdown">
+                            <div class="options-dropdown">
 
                                 <button
-                                    class="btn btn-sm btn-outline-secondary"
                                     type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    ⋮
+                                    class="action-btn options-button">
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Options" %}
+
                                 </button>
 
-                                <ul class="dropdown-menu dropdown-menu-end shadow">
+
+                                <!-- ================================= -->
+                                <!-- القائمة -->
+                                <!-- ================================= -->
+
+                                <ul class="dropdown-menu custom-menu text-end">
+
+                                    <!-- عرض -->
 
                                     <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'products:category_detail' cat.id %}">
-                                            👁️ {% trans "View" %}
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'products:category_detail' cat.id %}">
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
                                         </a>
+
                                     </li>
 
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'products:category_edit' cat.id %}">
-                                            ✏️ {% trans "Edit" %}
-                                        </a>
-                                    </li>
+
+                                    <!-- تعديل -->
 
                                     <li>
-                                        <hr class="dropdown-divider">
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'products:category_edit' cat.id %}">
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                            {% trans "Edit" %}
+
+                                        </a>
+
                                     </li>
 
+
+                                    <!-- فاصل -->
+
                                     <li>
-                                        <a class="dropdown-item text-danger"
-                                           href="{% url 'products:category_delete' cat.id %}"
-                                           onclick="return confirm('{% trans "Are you sure you want to delete this category?" %}')">
-                                            🗑️ {% trans "Delete" %}
+
+                                        <hr class="menu-divider">
+
+                                    </li>
+
+
+                                    <!-- حذف -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item delete-item"
+                                            href="{% url 'products:category_delete' cat.id %}"
+                                            onclick="return confirm('{% trans "Are you sure you want to delete this category?" %}');">
+
+                                            <i class="fa-solid fa-trash"></i>
+
+                                            {% trans "Delete" %}
+
                                         </a>
+
                                     </li>
 
                                 </ul>
@@ -111,19 +371,1423 @@
 
                     </tr>
 
-                    {% empty %}
+
+                {% empty %}
 
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            {% trans "No categories found" %}
+
+                        <td
+                            colspan="6"
+                            class="empty">
+
+                            <i class="fa-solid fa-folder-open"></i>
+
+                            <div>
+
+                                {% trans "No categories found" %}
+
+                            </div>
+
                         </td>
+
                     </tr>
 
-                    {% endfor %}
+                {% endfor %}
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
+
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.categories-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.category-card {
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3 {
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i {
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p {
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر إضافة التصنيف
+========================================================= */
+
+.add-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box {
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.category-table {
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+.filter-row th {
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+/* =========================================================
+   حقول البحث
+========================================================= */
+
+.filter-input {
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+.filter-input:focus {
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder {
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row {
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th {
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.category-table td {
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.category-table tbody tr {
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.category-table tbody tr:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم
+========================================================= */
+
+.order-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   اسم التصنيف
+========================================================= */
+
+.category-name {
+
+    font-weight:700;
+
+    color:#444 !important;
+
+    min-width:200px;
+
+}
+
+
+.category-name i {
+
+    color:#777;
+
+    margin-left:7px;
+
+}
+
+
+.category-name-text {
+
+    display:inline-block;
+
+    max-width:250px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    vertical-align:middle;
+
+}
+
+
+/* =========================================================
+   الترتيب
+========================================================= */
+
+.sort-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:45px;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الحالة
+========================================================= */
+
+.status-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    min-width:100px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.15),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+.status-badge.active {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+}
+
+
+.status-badge.inactive {
+
+    background:
+    linear-gradient(
+        135deg,
+        #bdbdbd,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+/* =========================================================
+   المنتجات
+========================================================= */
+
+.products-cell {
+
+    min-width:280px;
+
+}
+
+
+.products-list {
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    gap:6px;
+
+}
+
+
+.product-badge {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    padding:6px 10px;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d7d7d7
+    );
+
+    color:#555;
+
+    font-size:11px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 2px 5px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.product-badge i {
+
+    color:#777;
+
+}
+
+
+.no-products {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    color:#999;
+
+    font-size:12px;
+
+}
+
+
+.no-products i {
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   حاوية الخيارات
+========================================================= */
+
+.options-dropdown {
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   القائمة المخصصة
+========================================================= */
+
+.custom-menu {
+
+    display:none;
+
+    position:fixed !important;
+
+    min-width:210px;
+
+    padding:8px;
+
+    margin:0 !important;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.22),
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index:999999999 !important;
+
+}
+
+
+.custom-menu.menu-open {
+
+    display:block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    margin:2px 0;
+
+    border-radius:9px;
+
+    color:#444;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#333;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+.custom-menu .dropdown-item i {
+
+    width:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i {
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   حذف
+========================================================= */
+
+.custom-menu .delete-item {
+
+    color:#555 !important;
+
+}
+
+
+.custom-menu .delete-item i {
+
+    color:#777 !important;
+
+}
+
+
+.custom-menu .delete-item:hover {
+
+    color:#333 !important;
+
+}
+
+
+.menu-divider {
+
+    border:0;
+
+    border-top:1px solid #ccc;
+
+    margin:6px 4px;
+
+}
+
+
+/* =========================================================
+   لا توجد تصنيفات
+========================================================= */
+
+.empty {
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i {
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .categories-page {
+
+        padding:15px;
+
+    }
+
+
+    .category-card {
+
+        padding:18px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn {
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .category-table {
+
+        min-width:1100px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =========================================================
+     JavaScript
+     البحث + قائمة الخيارات
+========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       البحث داخل الأعمدة
+    ===================================================== */
+
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
+
+
+    const rows =
+        document.querySelectorAll(
+            ".category-table tbody tr"
+        );
+
+
+    filterInputs.forEach((input, colIndex) => {
+
+        input.addEventListener("keyup", function () {
+
+            const value =
+                this.value.toLowerCase().trim();
+
+
+            rows.forEach(row => {
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                const cell =
+                    cells[colIndex];
+
+
+                if (!cell) {
+
+                    return;
+
+                }
+
+
+                const text =
+                    cell.textContent
+                        .toLowerCase()
+                        .trim();
+
+
+                row.style.display =
+                    text.includes(value)
+                        ? ""
+                        : "none";
+
+            });
+
+        });
+
+    });
+
+
+
+    /* =====================================================
+       قائمة الخيارات
+       
+       نفس فكرة صفحة الفواتير:
+       نقل القائمة إلى body
+       حتى لا تتأثر بـ overflow
+    ===================================================== */
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".options-button"
+        );
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const dropdown =
+                    this.closest(
+                        ".options-dropdown"
+                    );
+
+
+                if (!dropdown) {
+
+                    return;
+
+                }
+
+
+                const menu =
+                    dropdown.querySelector(
+                        ".custom-menu"
+                    );
+
+
+                if (!menu) {
+
+                    return;
+
+                }
+
+
+                /* =====================================
+                   إذا كانت نفس القائمة مفتوحة
+                ===================================== */
+
+                if (
+                    openedMenu === menu &&
+                    menu.classList.contains(
+                        "menu-open"
+                    )
+                ) {
+
+                    closeOptionsMenu();
+
+                    return;
+
+                }
+
+
+                /* =====================================
+                   إغلاق القائمة السابقة
+                ===================================== */
+
+                closeOptionsMenu();
+
+
+                /* =====================================
+                   نقل القائمة إلى body
+                ===================================== */
+
+                document.body.appendChild(menu);
+
+
+                menu.classList.add(
+                    "menu-open"
+                );
+
+
+                openedMenu = menu;
+
+                openedButton = this;
+
+
+                /* =====================================
+                   حساب موقع الزر
+                ===================================== */
+
+                const rect =
+                    this.getBoundingClientRect();
+
+
+                const menuHeight =
+                    menu.offsetHeight;
+
+
+                const menuWidth =
+                    menu.offsetWidth;
+
+
+                const gap = 8;
+
+
+                /* =====================================
+                   القائمة فوق الزر
+                ===================================== */
+
+                let top =
+                    rect.top -
+                    menuHeight -
+                    gap;
+
+
+                /* =====================================
+                   توسيط أفقي
+                ===================================== */
+
+                let left =
+                    rect.left +
+                    (
+                        rect.width -
+                        menuWidth
+                    ) / 2;
+
+
+                /* =====================================
+                   منع الخروج من اليمين
+                ===================================== */
+
+                if (
+                    left + menuWidth >
+                    window.innerWidth - 8
+                ) {
+
+                    left =
+                        window.innerWidth -
+                        menuWidth -
+                        8;
+
+                }
+
+
+                /* =====================================
+                   منع الخروج من اليسار
+                ===================================== */
+
+                if (left < 8) {
+
+                    left = 8;
+
+                }
+
+
+                /* =====================================
+                   منع الخروج من الأعلى
+                ===================================== */
+
+                if (top < 8) {
+
+                    top = 8;
+
+                }
+
+
+                /* =====================================
+                   تطبيق الموقع
+                ===================================== */
+
+                menu.style.top =
+                    top + "px";
+
+
+                menu.style.left =
+                    left + "px";
+
+
+                menu.style.right =
+                    "auto";
+
+
+                menu.style.bottom =
+                    "auto";
+
+
+                menu.style.transform =
+                    "none";
+
+
+                /* =====================================
+                   منع إغلاق القائمة عند الضغط داخلها
+                ===================================== */
+
+                menu.addEventListener(
+                    "click",
+                    function (e) {
+
+                        e.stopPropagation();
+
+                    }
+                );
+
+            }
+        );
+
+    });
+
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+        if (!openedMenu) {
+
+            return;
+
+        }
+
+
+        openedMenu.classList.remove(
+            "menu-open"
+        );
+
+
+        /* =============================================
+           إرجاع القائمة لمكانها الأصلي
+        ============================================= */
+
+        if (openedButton) {
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       عند التمرير
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                openedButton.getBoundingClientRect();
+
+
+            const menuHeight =
+                openedMenu.offsetHeight;
+
+
+            const menuWidth =
+                openedMenu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            openedMenu.style.top =
+                top + "px";
+
+
+            openedMenu.style.left =
+                left + "px";
+
+        },
+        true
+    );
+
+
+
+    /* =====================================================
+       عند تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+});
+
+</script>
+
 
 {% endblock %}

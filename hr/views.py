@@ -8,14 +8,18 @@ from django.contrib import messages
 from django.conf import settings
 from django.db import transaction
 from django.utils.formats import date_format
+from accounts.models import Branch as AccountBranch
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required 
 from django.http import HttpResponse
+from accounts.models import Branch as AccountBranch
 from .models import Attendance
+from django.shortcuts import get_object_or_404, redirect
+from django.utils.translation import gettext_lazy as _
 # ✅ استيراد الـ Decorator المخصص لجدولك بدلاً من الافتراضي
 from .decorators import hr_permission_required
 from math import radians, sin, cos, sqrt, atan2
-
+from django.shortcuts import get_object_or_404
 import json
 from datetime import date, datetime, time
 import calendar
@@ -37,7 +41,9 @@ from .models import (
     EvaluationScore,
     EvaluationType,
     Payroll,
+    PayrollRun,
     HRPermission,
+EvaluationScoreAttachment,
 )
 from .forms import (
     EmployeeForm,
@@ -47,6 +53,7 @@ from .forms import (
     HRPermissionForm,
 )
 from .utils import generate_employee_number
+from .forms import BranchForm
 # ==================================================
 # ✅ Company helpers (عشان الملتّي كومباني)
 # ==================================================
@@ -243,84 +250,23 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
 
     profile = user.profile
     profile.company = employee.company
-    profile.branch = employee.branch
-    profile.role = "staff"
-    profile.save()
 
-    employee.user = user
-    employee.use_user_account = True
-    employee.save(
-        update_fields=[
-            "user",
-            "use_user_account",
-        ]
-    )
+    if employee.branch:
+        account_branch = AccountBranch.objects.filter(
+            company=employee.company,
+            name=employee.branch.name
+        ).first()
 
-    return user, created_user, False
-
-    # ==========================
-    # لو لا يوجد user مرتبط، نبحث باسم المستخدم
-    # ==========================
-    existing_by_username = User.objects.filter(username__iexact=username).first()
-    if existing_by_username:
-        linked_emp = getattr(existing_by_username, "employee", None)
-        if linked_emp and linked_emp.id != employee.id:
-            raise ValueError("❌ اسم المستخدم هذا مربوط بموظف آخر.")
-
-        existing_by_username.email = email
-        existing_by_username.first_name = employee.first_name_en or employee.first_name_ar or ""
-        existing_by_username.last_name = employee.last_name_en or employee.last_name_ar or ""
-        existing_by_username.is_active = True
-
-        if password:
-            existing_by_username.set_password(password)
-
-        existing_by_username.save()
-
-
-        employee.user = existing_by_username
-        employee.use_user_account = True
-        employee.save(update_fields=["user", "use_user_account"])
-
-        return existing_by_username, False, False
-
+        profile.branch = account_branch
     else:
-        # ==========================
-        # إنشاء مستخدم جديد
-        # ==========================
-        if User.objects.filter(username__iexact=username).exists():
-            raise ValueError(
-                "❌ اسم المستخدم مستخدم بالفعل."
-            )
+        profile.branch = None
 
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=employee.first_name_en or employee.first_name_ar or "",
-            last_name=employee.last_name_en or employee.last_name_ar or ""
-        )
-
-        # ==========================
-        # ربط المستخدم بالشركة والفرع
-        # ==========================
-    print("========== PROFILE LINK ==========")
-    print("EMPLOYEE COMPANY:", employee.company)
-    print("USER:", user.username)
-
-    profile = user.profile
-    profile.company = employee.company
-    profile.branch = employee.branch
     profile.role = "staff"
     profile.save()
 
-    print("PROFILE COMPANY AFTER SAVE:", profile.company)
-    print("PROFILE BRANCH AFTER SAVE:", profile.branch)
-
-    print("PROFILE COMPANY AFTER SAVE:", user.profile.company)
-
     employee.user = user
     employee.use_user_account = True
+
     employee.save(
         update_fields=[
             "user",
@@ -329,7 +275,7 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
     )
 
     return user, created_user, False
-	
+
 # ==========================
 # ==========================
 # عرض قائمة الموظفين
@@ -440,71 +386,172 @@ def add_employee(request):
 @hr_permission_required("employees_edit")
 def edit_employee(request, emp_id):
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    employee = get_object_or_404(Employee, company=company, id=emp_id)
+    employee = get_object_or_404(
+        Employee,
+        company=company,
+        id=emp_id
+    )
 
     if request.method == "POST":
-        form = EmployeeForm(request.POST, request.FILES, instance=employee)
-        _limit_employee_form_choices(form, company, instance=employee)
+
+        form = EmployeeForm(
+            request.POST,
+            request.FILES,
+            instance=employee
+        )
+
+        _limit_employee_form_choices(form, company)
 
         if form.is_valid():
+
             try:
                 with transaction.atomic():
+
                     emp = form.save(commit=False)
 
                     if hasattr(emp, "company_id"):
                         emp.company = company
 
-                    emp.use_user_account = form.cleaned_data["use_user_account"]
+                    emp.use_user_account = form.cleaned_data.get(
+                        "use_user_account",
+                        False
+                    )
+
                     emp.save()
+
                     form.save_m2m()
 
-                    use_user_account = form.cleaned_data.get("use_user_account", False)
-                    username = form.cleaned_data.get("username", "")
-                    password = form.cleaned_data.get("password1", "")
+                    use_user_account = form.cleaned_data.get(
+                        "use_user_account",
+                        False
+                    )
 
-                    user, created_user, disabled_user = _create_or_update_employee_user(
-                        emp,
-                        use_user_account,
-                        username=username,
-                        password=password
+                    username = form.cleaned_data.get(
+                        "username",
+                        ""
+                    )
+
+                    password = form.cleaned_data.get(
+                        "password1",
+                        ""
+                    )
+
+                    user, created_user, disabled_user = (
+                        _create_or_update_employee_user(
+                            emp,
+                            use_user_account,
+                            username=username,
+                            password=password
+                        )
                     )
 
                     if disabled_user:
-                        messages.success(request, "✅ تم تحديث الموظف وتعطيل حساب الدخول الخاص به.")
+
+                        messages.success(
+                            request,
+                            "✅ تم تعديل الموظف وتعطيل حساب الدخول الخاص به."
+                        )
+
                     elif use_user_account and created_user:
-                        messages.success(request, "✅ تم تحديث الموظف وإنشاء حساب دخول له بنجاح.")
+
+                        messages.success(
+                            request,
+                            "✅ تم تعديل الموظف وإنشاء حساب دخول له بنجاح."
+                        )
+
                     elif use_user_account:
-                        if password:
-                            messages.success(request, "✅ تم تحديث الموظف وبيانات الدخول وكلمة المرور بنجاح.")
-                        else:
-                            messages.success(request, "✅ تم تحديث الموظف وبيانات حساب الدخول بنجاح.")
+
+                        messages.success(
+                            request,
+                            "✅ تم تعديل الموظف وربطه بحساب الدخول بنجاح."
+                        )
+
                     else:
-                        messages.success(request, "✅ تم تحديث الموظف بنجاح.")
+
+                        messages.success(
+                            request,
+                            "✅ تم تعديل الموظف بنجاح."
+                        )
 
                     return redirect("hr:employee_list")
 
             except Exception as e:
-                messages.error(request, str(e))
+
+                messages.error(
+                    request,
+                    str(e)
+                )
 
     else:
-        form = EmployeeForm(instance=employee)
-        _limit_employee_form_choices(form, company, instance=employee)
 
+        form = EmployeeForm(
+            instance=employee
+        )
+
+        _limit_employee_form_choices(
+            form,
+            company
+        )
+
+        # =========================================================
+        # إظهار اسم المستخدم المرتبط بالموظف عند التعديل
+        # =========================================================
+
+        if getattr(employee, "user", None):
+
+            if "username" in form.fields:
+
+                form.fields["username"].initial = (
+                    employee.user.username
+                )
     context = {
         "form": form,
-        "edit_mode": True,
         "employee": employee,
-        "salary_fields": ["base_salary", "housing_allowance", "transport_allowance", "clothing_allowance", "other_allowances"],
-        "work_fields": ["department", "branch", "job_title", "employee_type", "supervisor", "hire_date", "probation_days", "active"],
-        "leave_fields": ["annual_leave_entitlement", "current_annual_leave", "compensatory_leave"],
-        "docs_fields": ["photo", "national_id_file", "passport_file", "contract_file", "other_files"]
+        "edit_mode": True,
+
+        "salary_fields": [
+            "base_salary",
+            "housing_allowance",
+            "transport_allowance",
+            "clothing_allowance",
+            "other_allowances",
+        ],
+
+        "work_fields": [
+            "department",
+            "branch",
+            "job_title",
+            "employee_type",
+            "supervisor",
+            "hire_date",
+            "probation_days",
+            "active",
+        ],
+
+        "leave_fields": [
+            "annual_leave_entitlement",
+            "current_annual_leave",
+            "compensatory_leave",
+        ],
+
+        "docs_fields": [
+            "photo",
+            "national_id_file",
+            "passport_file",
+            "contract_file",
+            "other_files",
+        ],
     }
 
-    return render(request, "hr/add_employee.html", context)
-
+    return render(
+        request,
+        "hr/add_employee.html",
+        context
+    )
 # ==========================
 # حذف موظف
 # ==========================
@@ -869,6 +916,100 @@ def add_department(request):
     return render(request, "hr/add_department.html", {"form": form, "next": next_url})
 
 
+
+def add_branch(request):
+    company = _company_required(request)
+
+    if not company:
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "غير مصرح لك."
+                },
+                status=403
+            )
+
+        return redirect("accounts:login")
+
+    next_url = request.GET.get("next") or request.POST.get("next")
+
+    if request.method == "POST":
+
+        form = BranchForm(request.POST)
+
+        if form.is_valid():
+
+            try:
+                branch = form.save(commit=False)
+
+                if hasattr(branch, "company_id"):
+                    branch.company = company
+
+                branch.save()
+
+                # =========================================
+                # إذا كان الطلب AJAX
+                # =========================================
+
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(
+                        {
+                            "success": True,
+                            "id": branch.id,
+                            "name": str(branch),
+                            "message": "تمت إضافة الفرع بنجاح."
+                        }
+                    )
+
+                # =========================================
+                # إذا كان الطلب عادي
+                # =========================================
+
+                if next_url:
+                    return redirect(next_url)
+
+                return redirect("hr:employee_list")
+
+            except Exception as e:
+
+                # إظهار الخطأ الحقيقي للـ AJAX
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "error": str(e)
+                        },
+                        status=500
+                    )
+
+                raise
+
+        # =========================================
+        # أخطاء الفورم
+        # =========================================
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse(
+                {
+                    "success": False,
+                    "errors": form.errors.get_json_data()
+                },
+                status=400
+            )
+
+    else:
+        form = BranchForm()
+
+    return render(
+        request,
+        "hr/add_branch.html",
+        {
+            "form": form,
+            "next": next_url,
+        }
+    )
+
 @login_required
 @hr_permission_required("departments_edit")
 def edit_department(request, dept_id):
@@ -902,7 +1043,24 @@ def delete_department(request, dept_id):
     department = get_object_or_404(Department, company=company, id=dept_id)
     department.delete()
     return redirect("hr:departments")
+def _clean_coordinate(value):
+    if value is None:
+        return None
 
+    value = str(value).strip()
+
+    if not value:
+        return None
+
+    try:
+        value = Decimal(value)
+
+        return value.quantize(
+            Decimal("0.0000001")
+        )
+
+    except (InvalidOperation, ValueError, TypeError):
+        return None
 # ==========================
 # مواقع العمل
 # ==========================
@@ -927,7 +1085,6 @@ def work_locations_list(request):
         }
     )
 
-
 @login_required
 @hr_permission_required("attendance_edit")
 def add_work_location(request):
@@ -936,7 +1093,18 @@ def add_work_location(request):
     if not company:
         return redirect("accounts:login")
 
+    # جميع موظفي الشركة
+    employees = (
+        Employee.objects
+        .filter(
+            company=company,
+            active=True
+        )
+        .order_by("employee_number")
+    )
+
     if request.method == "POST":
+
         name = (request.POST.get("name") or "").strip()
         country = (request.POST.get("country") or "").strip()
         city = (request.POST.get("city") or "").strip()
@@ -946,10 +1114,23 @@ def add_work_location(request):
         unit_no = (request.POST.get("unit_no") or "").strip()
         postal_code = (request.POST.get("postal_code") or "").strip()
         google_map_url = (request.POST.get("google_map_url") or "").strip()
+
         latitude = request.POST.get("latitude") or None
         longitude = request.POST.get("longitude") or None
+
         allowed_radius = request.POST.get("allowed_radius") or 100
+
         active = request.POST.get("active") == "on"
+
+        # =====================================================
+        # الموظفون المحددون
+        # =====================================================
+
+        employee_ids = request.POST.getlist("employee_ids")
+
+        # =====================================================
+        # التحقق من الاسم
+        # =====================================================
 
         if not name:
             messages.error(
@@ -959,10 +1140,18 @@ def add_work_location(request):
 
             return render(
                 request,
-                "hr/work_locations.html"
+                "hr/work_locations.html",
+                {
+                    "employees": employees,
+                    "selected_employee_ids": employee_ids,
+                    "edit_mode": False,
+                }
             )
 
-        # منع تكرار اسم الموقع داخل نفس الشركة
+        # =====================================================
+        # منع تكرار اسم الموقع داخل الشركة
+        # =====================================================
+
         duplicate = WorkLocation.objects.filter(
             company=company,
             name=name
@@ -976,50 +1165,110 @@ def add_work_location(request):
 
             return render(
                 request,
-                "hr/work_locations.html"
+                "hr/work_locations.html",
+                {
+                    "employees": employees,
+                    "selected_employee_ids": employee_ids,
+                    "edit_mode": False,
+                }
             )
+
+        # =====================================================
+        # نصف قطر الموقع
+        # =====================================================
 
         try:
             allowed_radius = int(allowed_radius)
         except (TypeError, ValueError):
             allowed_radius = 100
 
-        WorkLocation.objects.create(
-            company=company,
-            name=name,
-            country=country,
-            city=city,
-            district=district,
-            street=street,
-            building_no=building_no,
-            unit_no=unit_no,
-            postal_code=postal_code,
-            google_map_url=google_map_url,
-            latitude=latitude,
-            longitude=longitude,
-            allowed_radius=allowed_radius,
-            active=active,
-        )
+        if allowed_radius < 1:
+            allowed_radius = 100
+
+        # =====================================================
+        # إنشاء الموقع
+        # =====================================================
+
+        with transaction.atomic():
+
+            location = WorkLocation.objects.create(
+                company=company,
+                name=name,
+                country=country,
+                city=city,
+                district=district,
+                street=street,
+                building_no=building_no,
+                unit_no=unit_no,
+                postal_code=postal_code,
+                google_map_url=google_map_url,
+                latitude=latitude,
+                longitude=longitude,
+                allowed_radius=allowed_radius,
+                active=active,
+            )
+
+            # =================================================
+            # التحقق من الموظفين التابعين للشركة فقط
+            # =================================================
+
+            valid_employee_ids = set(
+                Employee.objects.filter(
+                    company=company,
+                    active=True,
+                    id__in=employee_ids
+                ).values_list(
+                    "id",
+                    flat=True
+                )
+            )
+
+            # =================================================
+            # ربط الموظفين بالموقع
+            # =================================================
+
+            if valid_employee_ids:
+
+                Employee.objects.filter(
+                    company=company,
+                    id__in=valid_employee_ids
+                ).update(
+                    work_location=location
+                )
 
         messages.success(
             request,
-            "✅ تم إضافة موقع العمل بنجاح."
+            "✅ تم إضافة موقع العمل وربط الموظفين المحددين به بنجاح."
         )
 
         return redirect("hr:work_locations")
 
+    # =========================================================
+    # GET
+    # =========================================================
+
     return render(
         request,
-        "hr/work_locations.html"
+        "hr/work_locations.html",
+        {
+            "employees": employees,
+            "selected_employee_ids": [],
+            "edit_mode": False,
+        }
     )
 
 @login_required
 @hr_permission_required("attendance_edit")
 def edit_work_location(request, location_id):
+
     company = _company_required(request)
 
     if not company:
         return redirect("accounts:login")
+
+    # =========================================================
+    # الموقع
+    # =========================================================
 
     location = get_object_or_404(
         WorkLocation,
@@ -1027,7 +1276,40 @@ def edit_work_location(request, location_id):
         id=location_id
     )
 
+    # =========================================================
+    # موظفو الشركة
+    # =========================================================
+
+    employees = (
+        Employee.objects
+        .filter(
+            company=company,
+            active=True
+        )
+        .order_by("employee_number")
+    )
+
+    # =========================================================
+    # الموظفون المرتبطون حاليًا بهذا الموقع
+    # =========================================================
+
+    selected_employee_ids = list(
+        employees
+        .filter(
+            work_location=location
+        )
+        .values_list(
+            "id",
+            flat=True
+        )
+    )
+
+    # =========================================================
+    # POST
+    # =========================================================
+
     if request.method == "POST":
+
         name = (request.POST.get("name") or "").strip()
         country = (request.POST.get("country") or "").strip()
         city = (request.POST.get("city") or "").strip()
@@ -1037,12 +1319,26 @@ def edit_work_location(request, location_id):
         unit_no = (request.POST.get("unit_no") or "").strip()
         postal_code = (request.POST.get("postal_code") or "").strip()
         google_map_url = (request.POST.get("google_map_url") or "").strip()
+
         latitude = request.POST.get("latitude") or None
         longitude = request.POST.get("longitude") or None
+
         allowed_radius = request.POST.get("allowed_radius") or 100
+
         active = request.POST.get("active") == "on"
 
+        # =====================================================
+        # الموظفون المحددون
+        # =====================================================
+
+        employee_ids = request.POST.getlist("employee_ids")
+
+        # =====================================================
+        # التحقق من الاسم
+        # =====================================================
+
         if not name:
+
             messages.error(
                 request,
                 "❌ اسم موقع العمل مطلوب."
@@ -1053,11 +1349,16 @@ def edit_work_location(request, location_id):
                 "hr/work_locations.html",
                 {
                     "location": location,
+                    "employees": employees,
+                    "selected_employee_ids": employee_ids,
                     "edit_mode": True,
                 }
             )
 
-        # التحقق من عدم تكرار اسم الموقع داخل نفس الشركة
+        # =====================================================
+        # منع تكرار الاسم
+        # =====================================================
+
         duplicate = WorkLocation.objects.filter(
             company=company,
             name=name
@@ -1066,6 +1367,7 @@ def edit_work_location(request, location_id):
         ).exists()
 
         if duplicate:
+
             messages.error(
                 request,
                 "❌ يوجد موقع عمل آخر بنفس الاسم داخل الشركة."
@@ -1076,47 +1378,112 @@ def edit_work_location(request, location_id):
                 "hr/work_locations.html",
                 {
                     "location": location,
+                    "employees": employees,
+                    "selected_employee_ids": employee_ids,
                     "edit_mode": True,
                 }
             )
+
+        # =====================================================
+        # نصف القطر
+        # =====================================================
 
         try:
             allowed_radius = int(allowed_radius)
         except (TypeError, ValueError):
             allowed_radius = 100
 
-        location.name = name
-        location.country = country
-        location.city = city
-        location.district = district
-        location.street = street
-        location.building_no = building_no
-        location.unit_no = unit_no
-        location.postal_code = postal_code
-        location.google_map_url = google_map_url
-        location.latitude = latitude
-        location.longitude = longitude
-        location.allowed_radius = allowed_radius
-        location.active = active
+        if allowed_radius < 1:
+            allowed_radius = 100
 
-        location.save()
+        # =====================================================
+        # الحفظ
+        # =====================================================
+
+        with transaction.atomic():
+
+            location.name = name
+            location.country = country
+            location.city = city
+            location.district = district
+            location.street = street
+            location.building_no = building_no
+            location.unit_no = unit_no
+            location.postal_code = postal_code
+            location.google_map_url = google_map_url
+            location.latitude = latitude
+            location.longitude = longitude
+            location.allowed_radius = allowed_radius
+            location.active = active
+
+            location.save()
+
+            # =================================================
+            # جميع موظفي الشركة
+            # =================================================
+
+            company_employees = Employee.objects.filter(
+                company=company,
+                active=True
+            )
+
+            # =================================================
+            # فصل الموظفين الذين كانوا على هذا الموقع
+            # ثم سيتم إعادة ربط المحددين
+            # =================================================
+
+            company_employees.filter(
+                work_location=location
+            ).update(
+                work_location=None
+            )
+
+            # =================================================
+            # الموظفون المحددون فقط
+            # =================================================
+
+            valid_employee_ids = set(
+                company_employees.filter(
+                    id__in=employee_ids
+                ).values_list(
+                    "id",
+                    flat=True
+                )
+            )
+
+            # =================================================
+            # ربط الموظفين بالموقع
+            # =================================================
+
+            if valid_employee_ids:
+
+                company_employees.filter(
+                    id__in=valid_employee_ids
+                ).update(
+                    work_location=location
+                )
 
         messages.success(
             request,
-            "✅ تم تحديث موقع العمل بنجاح."
+            "✅ تم تحديث موقع العمل والموظفين التابعين له بنجاح."
         )
 
         return redirect("hr:work_locations")
+
+    # =========================================================
+    # GET
+    # =========================================================
 
     return render(
         request,
         "hr/work_locations.html",
         {
             "location": location,
+            "employees": employees,
+            "selected_employee_ids": selected_employee_ids,
             "edit_mode": True,
         }
     )
-
 
 @login_required
 @hr_permission_required("attendance_edit")
@@ -1523,6 +1890,7 @@ def attendance_check_page(request):
 
     today = timezone.localdate()
     now = timezone.now()
+
     # ==========================================================
     # الموظف الحالي
     # ==========================================================
@@ -1696,377 +2064,374 @@ def attendance_check_page(request):
             "check_in",
             "check_out",
         ):
-
             messages.error(
                 request,
-                "عملية الحضور غير معروفة.",
+                "❌ عملية الحضور أو الانصراف غير صحيحة.",
             )
 
             return redirect(
                 "hr:attendance_check_page"
             )
-    # ======================================================
-    # التحقق من وجود موقع عمل للموظف
-    # ======================================================
 
-    if not work_location:
+        # ======================================================
+        # التحقق من وجود موقع العمل
+        # ======================================================
 
-        messages.error(
-            request,
-            "لا يوجد موقع عمل مسجل لهذا الموظف. لا يمكن تسجيل الحضور أو الانصراف.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # التحقق من أن موقع العمل فعال
-    # ======================================================
-
-    if not work_location.active:
-
-        messages.error(
-            request,
-            "موقع العمل المرتبط بك غير فعال حاليًا. لا يمكن تسجيل الحضور أو الانصراف.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # التحقق من إحداثيات موقع العمل
-    # ======================================================
-
-    if (
-        work_location.latitude is None
-        or work_location.longitude is None
-    ):
-
-        messages.error(
-            request,
-            "إحداثيات موقع العمل غير مكتملة. يرجى مراجعة إدارة الموارد البشرية.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # التحقق من GPS
-    # ======================================================
-
-    if not latitude_raw or not longitude_raw:
-
-        messages.error(
-            request,
-            "📍 يجب السماح بتحديد الموقع قبل تسجيل الحضور أو الانصراف.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # تحويل GPS
-    # ======================================================
-
-    try:
-
-        latitude = float(latitude_raw)
-        longitude = float(longitude_raw)
-
-        accuracy = (
-            float(accuracy_raw)
-            if accuracy_raw
-            else None
-        )
-
-    except (
-        TypeError,
-        ValueError,
-    ):
-
-        messages.error(
-            request,
-            "بيانات الموقع غير صحيحة.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # التحقق من الإحداثيات
-    # ======================================================
-
-    if not -90 <= latitude <= 90:
-
-        messages.error(
-            request,
-            "خط العرض غير صحيح.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    if not -180 <= longitude <= 180:
-
-        messages.error(
-            request,
-            "خط الطول غير صحيح.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # حساب المسافة عن موقع العمل
-    # ======================================================
-
-    distance_from_workplace = calculate_distance_meters(
-        latitude,
-        longitude,
-        float(work_location.latitude),
-        float(work_location.longitude),
-    )
-
-    # ======================================================
-    # نصف قطر السماح
-    # ======================================================
-
-    allowed_radius = float(
-        work_location.allowed_radius or 0
-    )
-
-    # ======================================================
-    # رفض التبصيم خارج الموقع
-    # ======================================================
-
-    if distance_from_workplace > allowed_radius:
-
-        messages.error(
-            request,
-            (
-                "لا يمكنك تسجيل الحضور أو الانصراف من هذا الموقع. "
-                f"أنت خارج نطاق موقع العمل بحوالي "
-                f"{round(distance_from_workplace)} متر. "
-                f"النطاق المسموح {round(allowed_radius)} متر."
-            ),
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # CHECK IN
-    # ======================================================
-
-    if action == "check_in":
-
-        # ----------------------------------------------
-        # إعادة قراءة آخر عملية من قاعدة البيانات
-        # ----------------------------------------------
-
-        last_log = (
-            AttendanceLog.objects
-            .filter(
-                company=company,
-                employee=employee,
-                attendance=attendance,
-            )
-            .order_by(
-                "-timestamp",
-                "-id",
-            )
-            .first()
-        )
-
-        # ----------------------------------------------
-        # إذا آخر عملية حضور
-        # يوجد حضور مفتوح
-        # ----------------------------------------------
-
-        if last_log and last_log.action == "check_in":
-
-            messages.warning(
+        if not work_location:
+            messages.error(
                 request,
-                "يوجد حضور مفتوح بالفعل. يجب تسجيل الانصراف أولاً.",
+                "❌ لا يوجد موقع عمل مرتبط بك. يرجى مراجعة إدارة الموارد البشرية.",
             )
 
             return redirect(
                 "hr:attendance_check_page"
             )
 
-        # ----------------------------------------------
-        # إنشاء عملية الحضور
-        # ----------------------------------------------
+        # ======================================================
+        # التحقق من أن موقع العمل فعال
+        # ======================================================
 
-        AttendanceLog.objects.create(
-            company=company,
-            attendance=attendance,
-            employee=employee,
-            action="check_in",
-            timestamp=now,
-            latitude=latitude,
-            longitude=longitude,
-            distance_from_workplace=round(
-                distance_from_workplace
-            ),
-            location_verified=True,
-            work_location=work_location,
-            location_note=(
-                f"تم التحقق من الموقع - "
-                f"المسافة {round(distance_from_workplace)} متر"
-            ),
-            device_info=request.META.get(
-                "HTTP_USER_AGENT",
-                ""
-            )[:500],
-            ip_address=(
-                request.META.get("REMOTE_ADDR")
-            ),
-        )
-
-        # ----------------------------------------------
-        # تحديث Attendance
-        # ----------------------------------------------
-
-        attendance.shift = shift
-        attendance.work_location = work_location
-        attendance.status = "present"
-
-        attendance.save(
-            update_fields=[
-                "shift",
-                "work_location",
-                "status",
-                "updated_at",
-            ]
-        )
-
-        messages.success(
-            request,
-            "✅ تم تسجيل الحضور بنجاح. يمكنك الآن تسجيل الانصراف.",
-        )
-
-        return redirect(
-            "hr:attendance_check_page"
-        )
-
-    # ======================================================
-    # CHECK OUT
-    # ======================================================
-
-    if action == "check_out":
-
-        # ----------------------------------------------
-        # آخر عملية
-        # ----------------------------------------------
-
-        last_log = (
-            AttendanceLog.objects
-            .filter(
-                company=company,
-                employee=employee,
-                attendance=attendance,
-            )
-            .order_by(
-                "-timestamp",
-                "-id",
-            )
-            .first()
-        )
-
-        # ----------------------------------------------
-        # لا يوجد حضور مفتوح
-        # ----------------------------------------------
-
-        if not last_log or last_log.action != "check_in":
-
-            messages.warning(
+        if not work_location.active:
+            messages.error(
                 request,
-                "لا يوجد حضور مفتوح لتسجيل الانصراف.",
+                "موقع العمل المرتبط بك غير فعال حاليًا. لا يمكن تسجيل الحضور أو الانصراف.",
             )
 
             return redirect(
                 "hr:attendance_check_page"
             )
 
-        # ----------------------------------------------
-        # إنشاء عملية الانصراف
-        # ----------------------------------------------
+        # ======================================================
+        # التحقق من إحداثيات موقع العمل
+        # ======================================================
 
-        checkout_log = AttendanceLog.objects.create(
-            company=company,
-            attendance=attendance,
-            employee=employee,
-            action="check_out",
-            timestamp=now,
-            latitude=latitude,
-            longitude=longitude,
-            distance_from_workplace=round(
-                distance_from_workplace
-            ),
-            location_verified=True,
-            work_location=work_location,
-            location_note=(
-                f"تم التحقق من الموقع - "
-                f"المسافة {round(distance_from_workplace)} متر"
-            ),
-            device_info=request.META.get(
-                "HTTP_USER_AGENT",
-                ""
-            )[:500],
-            ip_address=(
-                request.META.get("REMOTE_ADDR")
-            ),
+        if (
+            work_location.latitude is None
+            or work_location.longitude is None
+        ):
+            messages.error(
+                request,
+                "إحداثيات موقع العمل غير مكتملة. يرجى مراجعة إدارة الموارد البشرية.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
+        # ======================================================
+        # التحقق من GPS
+        # ======================================================
+
+        if not latitude_raw or not longitude_raw:
+            messages.error(
+                request,
+                "📍 يجب السماح بتحديد الموقع قبل تسجيل الحضور أو الانصراف.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
+        # ======================================================
+        # تحويل GPS
+        # ======================================================
+
+        try:
+            latitude = float(latitude_raw)
+            longitude = float(longitude_raw)
+
+            accuracy = (
+                float(accuracy_raw)
+                if accuracy_raw
+                else None
+            )
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+            messages.error(
+                request,
+                "بيانات الموقع غير صحيحة.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
+        # ======================================================
+        # التحقق من الإحداثيات
+        # ======================================================
+
+        if not -90 <= latitude <= 90:
+            messages.error(
+                request,
+                "خط العرض غير صحيح.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
+        if not -180 <= longitude <= 180:
+            messages.error(
+                request,
+                "خط الطول غير صحيح.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
+        # ======================================================
+        # حساب المسافة عن موقع العمل
+        # ======================================================
+
+        distance_from_workplace = calculate_distance_meters(
+            latitude,
+            longitude,
+            float(work_location.latitude),
+            float(work_location.longitude),
         )
 
-        # ----------------------------------------------
-        # حساب مدة الفترة الحالية
-        # ----------------------------------------------
+        # ======================================================
+        # نصف قطر السماح
+        # ======================================================
 
-        worked_seconds = (
-            checkout_log.timestamp - last_log.timestamp
-        ).total_seconds()
-
-        worked_minutes = max(
-            0,
-            int(worked_seconds // 60)
+        allowed_radius = float(
+            work_location.allowed_radius or 0
         )
 
-        # ----------------------------------------------
-        # إضافة مدة الفترة إلى إجمالي اليوم
-        # ----------------------------------------------
+        # ======================================================
+        # رفض التبصيم خارج الموقع
+        # ======================================================
 
-        attendance.worked_minutes = (
-            attendance.worked_minutes
-            + worked_minutes
-        )
+        if distance_from_workplace > allowed_radius:
+            messages.error(
+                request,
+                (
+                    "لا يمكنك تسجيل الحضور أو الانصراف من هذا الموقع. "
+                    f"أنت خارج نطاق موقع العمل بحوالي "
+                    f"{round(distance_from_workplace)} متر. "
+                    f"النطاق المسموح {round(allowed_radius)} متر."
+                ),
+            )
 
-        attendance.status = "completed"
+            return redirect(
+                "hr:attendance_check_page"
+            )
 
-        attendance.save(
-            update_fields=[
-                "worked_minutes",
-                "status",
-                "updated_at",
-            ]
-        )
+        # ======================================================
+        # CHECK IN
+        # ======================================================
 
-        messages.success(
-            request,
-            "✅ تم تسجيل الانصراف بنجاح.",
-        )
+        if action == "check_in":
 
-        return redirect(
-            "hr:attendance_check_page"
-        )
+            # ----------------------------------------------
+            # إعادة قراءة آخر عملية من قاعدة البيانات
+            # ----------------------------------------------
+
+            last_log = (
+                AttendanceLog.objects
+                .filter(
+                    company=company,
+                    employee=employee,
+                    attendance=attendance,
+                )
+                .order_by(
+                    "-timestamp",
+                    "-id",
+                )
+                .first()
+            )
+
+            # ----------------------------------------------
+            # إذا آخر عملية حضور
+            # يوجد حضور مفتوح
+            # ----------------------------------------------
+
+            if (
+                last_log
+                and last_log.action == "check_in"
+            ):
+                messages.warning(
+                    request,
+                    "يوجد حضور مفتوح بالفعل. يجب تسجيل الانصراف أولاً.",
+                )
+
+                return redirect(
+                    "hr:attendance_check_page"
+                )
+
+            # ----------------------------------------------
+            # إنشاء عملية الحضور
+            # ----------------------------------------------
+
+            AttendanceLog.objects.create(
+                company=company,
+                attendance=attendance,
+                employee=employee,
+                action="check_in",
+                timestamp=now,
+                latitude=latitude,
+                longitude=longitude,
+                distance_from_workplace=round(
+                    distance_from_workplace
+                ),
+                location_verified=True,
+                work_location=work_location,
+                location_note=(
+                    f"تم التحقق من الموقع - "
+                    f"المسافة {round(distance_from_workplace)} متر"
+                ),
+                device_info=request.META.get(
+                    "HTTP_USER_AGENT",
+                    ""
+                )[:500],
+                ip_address=request.META.get(
+                    "REMOTE_ADDR"
+                ),
+            )
+
+            # ----------------------------------------------
+            # تحديث Attendance
+            # ----------------------------------------------
+
+            attendance.shift = shift
+            attendance.work_location = work_location
+            attendance.status = "present"
+
+            attendance.save(
+                update_fields=[
+                    "shift",
+                    "work_location",
+                    "status",
+                    "updated_at",
+                ]
+            )
+
+            messages.success(
+                request,
+                "✅ تم تسجيل الحضور بنجاح. يمكنك الآن تسجيل الانصراف.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
+        # ======================================================
+        # CHECK OUT
+        # ======================================================
+
+        if action == "check_out":
+
+            # ----------------------------------------------
+            # آخر عملية
+            # ----------------------------------------------
+
+            last_log = (
+                AttendanceLog.objects
+                .filter(
+                    company=company,
+                    employee=employee,
+                    attendance=attendance,
+                )
+                .order_by(
+                    "-timestamp",
+                    "-id",
+                )
+                .first()
+            )
+
+            # ----------------------------------------------
+            # لا يوجد حضور مفتوح
+            # ----------------------------------------------
+
+            if (
+                not last_log
+                or last_log.action != "check_in"
+            ):
+                messages.warning(
+                    request,
+                    "لا يوجد حضور مفتوح لتسجيل الانصراف.",
+                )
+
+                return redirect(
+                    "hr:attendance_check_page"
+                )
+
+            # ----------------------------------------------
+            # إنشاء عملية الانصراف
+            # ----------------------------------------------
+
+            checkout_log = AttendanceLog.objects.create(
+                company=company,
+                attendance=attendance,
+                employee=employee,
+                action="check_out",
+                timestamp=now,
+                latitude=latitude,
+                longitude=longitude,
+                distance_from_workplace=round(
+                    distance_from_workplace
+                ),
+                location_verified=True,
+                work_location=work_location,
+                location_note=(
+                    f"تم التحقق من الموقع - "
+                    f"المسافة {round(distance_from_workplace)} متر"
+                ),
+                device_info=request.META.get(
+                    "HTTP_USER_AGENT",
+                    ""
+                )[:500],
+                ip_address=request.META.get(
+                    "REMOTE_ADDR"
+                ),
+            )
+
+            # ----------------------------------------------
+            # حساب مدة الفترة الحالية
+            # ----------------------------------------------
+
+            worked_seconds = (
+                checkout_log.timestamp
+                - last_log.timestamp
+            ).total_seconds()
+
+            worked_minutes = max(
+                0,
+                int(worked_seconds // 60)
+            )
+
+            # ----------------------------------------------
+            # إضافة مدة الفترة إلى إجمالي اليوم
+            # ----------------------------------------------
+
+            attendance.worked_minutes = (
+                attendance.worked_minutes
+                + worked_minutes
+            )
+
+            attendance.status = "completed"
+
+            attendance.save(
+                update_fields=[
+                    "worked_minutes",
+                    "status",
+                    "updated_at",
+                ]
+            )
+
+            messages.success(
+                request,
+                "✅ تم تسجيل الانصراف بنجاح.",
+            )
+
+            return redirect(
+                "hr:attendance_check_page"
+            )
+
     # ==========================================================
     # تجهيز بيانات القالب
     # ==========================================================
@@ -2118,8 +2483,6 @@ def attendance_check_page(request):
             "now": now,
         },
     )
-
-
 # ==========================================================
 # تقرير الحضور والانصراف
 # ==========================================================
@@ -2592,116 +2955,506 @@ def evaluation_edit(request, eval_id):
 
 
 @login_required
-@hr_permission_required("view_evaluation")
-def evaluation_detail(request, eval_id):
-    company = _company_required(request)
-    if not company:
-        return redirect("accounts:login")
-
-    evaluation = get_object_or_404(Evaluation, company=company, id=eval_id)
-
-    criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
-    targets = (
-        EvaluationTarget.objects
-        .filter(company=company, evaluation=evaluation)
-        .select_related("employee", "department")
-    )
-    scores = (
-        EvaluationScore.objects
-        .filter(company=company, target__evaluation=evaluation)
-        .select_related("target", "criteria", "evaluator")
-    )
-
-    return render(request, "hr/evaluation_detail.html", {
-        "evaluation": evaluation,
-        "criteria": criteria,
-        "targets": targets,
-        "scores": scores,
-    })
-
-
-@login_required
 @hr_permission_required("change_evaluation")
 def evaluation_fill_peer(request, eval_id, target_id):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    evaluator_emp = _get_logged_employee(request, company)
+    evaluator_emp = _get_logged_employee(
+        request,
+        company
+    )
+
     if not evaluator_emp:
-        messages.error(request, "المستخدم غير مرتبط بموظف داخل نفس الشركة.")
-        return redirect("hr:evaluations")
+        messages.error(
+            request,
+            "المستخدم غير مرتبط بموظف داخل نفس الشركة."
+        )
 
-    evaluation = get_object_or_404(Evaluation, company=company, id=eval_id)
-    target = get_object_or_404(EvaluationTarget, company=company, id=target_id, evaluation=evaluation)
+        return redirect(
+            "hr:evaluations"
+        )
 
-    if target.employee and evaluator_emp.department_id and target.employee.department_id:
-        if evaluator_emp.department_id != target.employee.department_id:
-            messages.error(request, "غير مسموح تقييم موظف خارج قسمك.")
-            return redirect("hr:evaluation_detail", eval_id=evaluation.id)
+    evaluation = get_object_or_404(
+        Evaluation,
+        company=company,
+        id=eval_id
+    )
 
-    criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
+    target = get_object_or_404(
+        EvaluationTarget,
+        company=company,
+        id=target_id,
+        evaluation=evaluation
+    )
 
-    if request.method == "POST":
-        for c in criteria:
-            key = f"score_{c.id}"
-            v_raw = (request.POST.get(key) or "").strip()
-            try:
-                v = float(v_raw) if v_raw != "" else 0
-            except ValueError:
-                v = 0
+    # =====================================================
+    # التأكد من نفس القسم
+    # =====================================================
 
-            EvaluationScore.objects.update_or_create(
-                company=company,
-                target=target,
-                criteria=c,
-                evaluator=evaluator_emp,
-                role="peer",
-                defaults={"value": v}
+    if (
+        target.employee
+        and evaluator_emp.department_id
+        and target.employee.department_id
+    ):
+
+        if (
+            evaluator_emp.department_id
+            != target.employee.department_id
+        ):
+
+            messages.error(
+                request,
+                "غير مسموح تقييم موظف خارج قسمك."
             )
 
-        messages.success(request, "✅ تم حفظ تقييم الزميل بنجاح.")
-        return redirect("hr:evaluation_records_list")
+            return redirect(
+                "hr:evaluation_detail",
+                eval_id=evaluation.id
+            )
+
+    # =====================================================
+    # معايير التقييم
+    # =====================================================
+
+    criteria = EvaluationCriteria.objects.filter(
+        company=company,
+        evaluation=evaluation
+    ).order_by("id")
+
+    # =====================================================
+    # الدرجات المحفوظة مسبقاً
+    # =====================================================
+
+    saved_scores = EvaluationScore.objects.filter(
+        company=company,
+        target=target,
+        evaluator=evaluator_emp,
+        role="peer"
+    )
 
     existing_scores = {
-        s.criteria_id: s.value
-        for s in EvaluationScore.objects.filter(
-            company=company,
-            target=target,
-            evaluator=evaluator_emp,
-            role="peer"
-        )
+        score.criteria_id: score.value
+        for score in saved_scores
     }
 
-    return render(request, "hr/evaluation_fill.html", {
-        "evaluation": evaluation,
-        "target": target,
-        "criteria": criteria,
-        "existing_scores": existing_scores,
-        "role_label": "تقييم زميل"
-    })
+    # =====================================================
+    # الملاحظات المحفوظة مسبقاً
+    # =====================================================
 
+    existing_notes = {
+        score.criteria_id: score.notes
+        for score in saved_scores
+    }
 
+    # =====================================================
+    # المرفقات المحفوظة مسبقاً
+    # =====================================================
+
+    existing_attachments = {}
+
+    for score in saved_scores:
+
+        existing_attachments[score.criteria_id] = (
+            EvaluationScoreAttachment.objects.filter(
+                company=company,
+                score=score
+            )
+        )
+
+    # =====================================================
+    # الحفظ
+    # =====================================================
+
+    if request.method == "POST":
+
+        for c in criteria:
+
+            # =================================================
+            # الدرجة
+            # =================================================
+
+            score_key = f"score_{c.id}"
+
+            v_raw = (
+                request.POST.get(score_key)
+                or ""
+            ).strip()
+
+            try:
+
+                v = (
+                    float(v_raw)
+                    if v_raw != ""
+                    else 0
+                )
+
+            except (ValueError, TypeError):
+
+                v = 0
+
+            # =================================================
+            # التأكد أن الدرجة بين 0 و100
+            # =================================================
+
+            if v < 0:
+                v = 0
+
+            if v > 100:
+                v = 100
+
+            # =================================================
+            # الملاحظات
+            # =================================================
+
+            notes = (
+                request.POST.get(
+                    f"notes_{c.id}",
+                    ""
+                )
+                or ""
+            ).strip()
+
+            # =================================================
+            # حفظ الدرجة + الملاحظات
+            # =================================================
+
+            score, created = (
+                EvaluationScore.objects.update_or_create(
+                    company=company,
+                    target=target,
+                    criteria=c,
+                    evaluator=evaluator_emp,
+                    role="peer",
+                    defaults={
+                        "value": v,
+                        "notes": notes,
+                    }
+                )
+            )
+
+            # =================================================
+            # المرفقات الجديدة
+            # =================================================
+
+            attachments = request.FILES.getlist(
+                f"attachment_{c.id}"
+            )
+
+            # =================================================
+            # حفظ المرفقات الجديدة فقط
+            # =================================================
+
+            for attachment in attachments:
+
+                if not attachment:
+                    continue
+
+                already_exists = (
+                    EvaluationScoreAttachment.objects.filter(
+                        company=company,
+                        score=score,
+                        file__icontains=attachment.name
+                    ).exists()
+                )
+
+                if already_exists:
+                    continue
+
+                EvaluationScoreAttachment.objects.create(
+                    company=company,
+                    score=score,
+                    file=attachment
+                )
+
+        messages.success(
+            request,
+            "✅ تم حفظ تقييم الزميل بنجاح."
+        )
+
+        return redirect(
+            "hr:evaluation_records_list"
+        )
+
+    # =====================================================
+    # عرض الصفحة
+    # =====================================================
+
+    return render(
+        request,
+        "hr/evaluation_fill.html",
+        {
+            "evaluation": evaluation,
+            "target": target,
+            "criteria": criteria,
+            "existing_scores": existing_scores,
+            "existing_notes": existing_notes,
+            "existing_attachments": existing_attachments,
+            "role_label": "تقييم زميل",
+        }
+    )
+# =========================================================
+# تفاصيل بنود التقييم في التقارير
+# =========================================================
+
+@login_required
+@hr_permission_required("view_evaluation")
+def hr_report_detail_items(request, employee_id, evaluation_id):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    # =====================================================
+    # الموظف
+    # =====================================================
+
+    employee = get_object_or_404(
+        Employee,
+        company=company,
+        id=employee_id
+    )
+
+    # =====================================================
+    # التقييم
+    # =====================================================
+
+    evaluation = get_object_or_404(
+        Evaluation,
+        company=company,
+        id=evaluation_id
+    )
+
+    # =====================================================
+    # الهدف الخاص بالموظف والتقييم
+    # =====================================================
+
+    target = get_object_or_404(
+        EvaluationTarget,
+        company=company,
+        evaluation=evaluation,
+        employee=employee
+    )
+
+    # =====================================================
+    # معايير التقييم
+    # =====================================================
+
+    criteria = list(
+        EvaluationCriteria.objects
+        .filter(
+            evaluation=evaluation
+        )
+        .order_by("id")
+    )
+    # =====================================================
+    # جميع الدرجات الخاصة بهذا الموظف والتقييم
+    # =====================================================
+
+    scores = (
+        EvaluationScore.objects
+        .filter(
+            target=target
+        )
+        .select_related(
+            "criteria",
+            "evaluator"
+        )
+        .prefetch_related(
+            "attachments"
+        )
+        .order_by(
+            "criteria_id",
+            "role",
+            "-id"
+        )
+    )
+
+    # =====================================================
+    # تجهيز الدرجات حسب المعيار
+    # =====================================================
+
+    peer_scores = {}
+
+    manager_scores = {}
+
+    for score in scores:
+
+        if score.role == "peer":
+
+            peer_scores[score.criteria_id] = score
+
+        elif score.role == "manager":
+
+            manager_scores[score.criteria_id] = score
+
+    # =====================================================
+    # تجهيز تفاصيل التقرير
+    # =====================================================
+
+    detail_items = []
+
+    for criterion in criteria:
+
+        peer_score = peer_scores.get(
+            criterion.id
+        )
+
+        manager_score = manager_scores.get(
+            criterion.id
+        )
+
+        # =============================================
+        # مرفقات الزميل
+        # =============================================
+
+        peer_attachments = []
+
+        if peer_score:
+
+            peer_attachments = list(
+                EvaluationScoreAttachment.objects
+                .filter(
+                    company=company,
+                    score=peer_score
+                )
+                .order_by("id")
+            )
+
+        # =============================================
+        # مرفقات المدير
+        # =============================================
+
+        manager_attachments = []
+
+        if manager_score:
+
+            manager_attachments = list(
+                EvaluationScoreAttachment.objects
+                .filter(
+                    company=company,
+                    score=manager_score
+                )
+                .order_by("id")
+            )
+
+        # =============================================
+        # بيانات الزميل
+        # =============================================
+
+        peer_data = None
+
+        if peer_score:
+
+            peer_data = {
+                "score": peer_score.value,
+                "notes": peer_score.notes,
+                "evaluator": peer_score.evaluator,
+                "attachments": peer_attachments,
+            }
+
+        # =============================================
+        # بيانات المدير
+        # =============================================
+
+        manager_data = None
+
+        if manager_score:
+
+            manager_data = {
+                "score": manager_score.value,
+                "notes": manager_score.notes,
+                "evaluator": manager_score.evaluator,
+                "attachments": manager_attachments,
+            }
+
+        # =============================================
+        # إضافة المعيار
+        # =============================================
+
+        detail_items.append({
+            "criteria": criterion,
+            "peer": peer_data,
+            "manager": manager_data,
+        })
+
+    # =====================================================
+    # عرض الصفحة
+    # =====================================================
+
+    return render(
+        request,
+        "hr/hr_report_detail_items.html",
+        {
+            "employee": employee,
+            "evaluation": evaluation,
+            "target": target,
+            "criteria": criteria,
+            "detail_items": detail_items,
+        }
+    )
 @login_required
 @hr_permission_required("change_evaluation")
 def evaluation_fill_manager(request, eval_id, target_id):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    evaluator_emp = _get_logged_employee(request, company)
-    if not evaluator_emp:
-        messages.error(request, "المستخدم غير مرتبط بموظف داخل نفس الشركة.")
-        return redirect("hr:evaluations")
+    evaluator_emp = _get_logged_employee(
+        request,
+        company
+    )
 
-    evaluation = get_object_or_404(Evaluation, company=company, id=eval_id)
-    target = get_object_or_404(EvaluationTarget, company=company, id=target_id, evaluation=evaluation)
+    if not evaluator_emp:
+
+        messages.error(
+            request,
+            "المستخدم غير مرتبط بموظف داخل نفس الشركة."
+        )
+
+        return redirect(
+            "hr:evaluations"
+        )
+
+    evaluation = get_object_or_404(
+        Evaluation,
+        company=company,
+        id=eval_id
+    )
+
+    target = get_object_or_404(
+        EvaluationTarget,
+        company=company,
+        id=target_id,
+        evaluation=evaluation
+    )
+
+    # =====================================================
+    # التأكد من وجود موظف
+    # =====================================================
 
     if not target.employee:
-        messages.error(request, "لا يوجد موظف محدد لهذا الهدف.")
-        return redirect(
-            f"{reverse('hr:evaluation_record_start')}?evaluation={evaluation.id}&role=manager"
+
+        messages.error(
+            request,
+            "لا يوجد موظف محدد لهذا الهدف."
         )
+
+        return redirect(
+            f"{reverse('hr:evaluation_record_start')}?"
+            f"evaluation={evaluation.id}"
+            f"&role=manager"
+        )
+
+    # =====================================================
+    # التأكد أن المستخدم مدير للقسم
+    # =====================================================
 
     is_department_manager = Employee.objects.filter(
         company=company,
@@ -2711,59 +3464,214 @@ def evaluation_fill_manager(request, eval_id, target_id):
     ).exists()
 
     if not is_department_manager:
-        messages.error(request, "لا يوجد لديك صلاحية مدير.")
-        return redirect(
-            f"{reverse('hr:evaluation_record_start')}?evaluation={evaluation.id}&role=manager&employee={target.employee_id}"
+
+        messages.error(
+            request,
+            "لا يوجد لديك صلاحية مدير."
         )
 
-    if evaluator_emp.department_id and target.employee.department_id:
-        if evaluator_emp.department_id != target.employee.department_id:
-            messages.error(request, "غير مسموح تقييم موظف خارج قسمك كمدير.")
+        return redirect(
+            f"{reverse('hr:evaluation_record_start')}?"
+            f"evaluation={evaluation.id}"
+            f"&role=manager"
+            f"&employee={target.employee_id}"
+        )
+
+    # =====================================================
+    # التأكد أن الموظف من نفس القسم
+    # =====================================================
+
+    if (
+        evaluator_emp.department_id
+        and target.employee.department_id
+    ):
+
+        if (
+            evaluator_emp.department_id
+            != target.employee.department_id
+        ):
+
+            messages.error(
+                request,
+                "غير مسموح تقييم موظف خارج قسمك كمدير."
+            )
+
             return redirect(
-                f"{reverse('hr:evaluation_record_start')}?evaluation={evaluation.id}&role=manager&employee={target.employee_id}"
+                f"{reverse('hr:evaluation_record_start')}?"
+                f"evaluation={evaluation.id}"
+                f"&role=manager"
+                f"&employee={target.employee_id}"
             )
 
-    criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).order_by("id")
+    # =====================================================
+    # معايير التقييم
+    # =====================================================
 
-    if request.method == "POST":
-        for c in criteria:
-            key = f"score_{c.id}"
-            v_raw = (request.POST.get(key) or "").strip()
-            try:
-                v = float(v_raw) if v_raw != "" else 0
-            except ValueError:
-                v = 0
+    criteria = EvaluationCriteria.objects.filter(
+        company=company,
+        evaluation=evaluation
+    ).order_by("id")
 
-            EvaluationScore.objects.update_or_create(
-                company=company,
-                target=target,
-                criteria=c,
-                evaluator=evaluator_emp,
-                role="manager",
-                defaults={"value": v}
-            )
+    # =====================================================
+    # الدرجات المحفوظة مسبقاً
+    # =====================================================
 
-        messages.success(request, "✅ تم حفظ تقييم المدير بنجاح.")
-        return redirect("hr:evaluation_records_list")
+    saved_scores = EvaluationScore.objects.filter(
+        company=company,
+        target=target,
+        evaluator=evaluator_emp,
+        role="manager"
+    )
 
     existing_scores = {
-        s.criteria_id: s.value
-        for s in EvaluationScore.objects.filter(
-            company=company,
-            target=target,
-            evaluator=evaluator_emp,
-            role="manager"
-        )
+        score.criteria_id: score.value
+        for score in saved_scores
     }
 
-    return render(request, "hr/evaluation_fill.html", {
-        "evaluation": evaluation,
-        "target": target,
-        "criteria": criteria,
-        "existing_scores": existing_scores,
-        "role_label": "تقييم مدير"
-    })
+    # =====================================================
+    # الملاحظات المحفوظة مسبقاً
+    # =====================================================
 
+    existing_notes = {
+        score.criteria_id: score.notes
+        for score in saved_scores
+    }
+
+    # =====================================================
+    # المرفقات المحفوظة مسبقاً
+    # =====================================================
+
+    existing_attachments = {}
+
+    for score in saved_scores:
+
+        existing_attachments[score.criteria_id] = (
+            EvaluationScoreAttachment.objects.filter(
+                company=company,
+                score=score
+            )
+        )
+
+    # =====================================================
+    # الحفظ
+    # =====================================================
+
+    if request.method == "POST":
+
+        for c in criteria:
+
+            # =================================================
+            # الدرجة
+            # =================================================
+
+            score_key = f"score_{c.id}"
+
+            v_raw = (
+                request.POST.get(score_key)
+                or ""
+            ).strip()
+
+            try:
+
+                v = (
+                    float(v_raw)
+                    if v_raw != ""
+                    else 0
+                )
+
+            except (ValueError, TypeError):
+
+                v = 0
+
+            # =================================================
+            # التأكد من الدرجة
+            # =================================================
+
+            if v < 0:
+                v = 0
+
+            if v > 100:
+                v = 100
+
+            # =================================================
+            # الملاحظات
+            # =================================================
+
+            notes = (
+                request.POST.get(
+                    f"notes_{c.id}",
+                    ""
+                )
+                or ""
+            ).strip()
+
+            # =================================================
+            # حفظ الدرجة والملاحظات
+            # =================================================
+
+            score, created = (
+                EvaluationScore.objects.update_or_create(
+                    company=company,
+                    target=target,
+                    criteria=c,
+                    evaluator=evaluator_emp,
+                    role="manager",
+                    defaults={
+                        "value": v,
+                        "notes": notes,
+                    }
+                )
+            )
+
+            # =================================================
+            # المرفقات
+            # =================================================
+
+            attachments = request.FILES.getlist(
+                f"attachment_{c.id}"
+            )
+
+            # =================================================
+            # حفظ جميع المرفقات
+            # =================================================
+
+            for attachment in attachments:
+
+                if not attachment:
+                    continue
+
+                EvaluationScoreAttachment.objects.create(
+                    company=company,
+                    score=score,
+                    file=attachment
+                )
+
+        messages.success(
+            request,
+            "✅ تم حفظ تقييم المدير بنجاح."
+        )
+
+        return redirect(
+            "hr:evaluation_records_list"
+        )
+
+    # =====================================================
+    # عرض الصفحة
+    # =====================================================
+
+    return render(
+        request,
+        "hr/evaluation_fill.html",
+        {
+            "evaluation": evaluation,
+            "target": target,
+            "criteria": criteria,
+            "existing_scores": existing_scores,
+            "existing_notes": existing_notes,
+            "existing_attachments": existing_attachments,
+            "role_label": "تقييم مدير",
+        }
+    )
 
 @login_required
 @hr_permission_required("add_evaluationtype")
@@ -2977,112 +3885,338 @@ def hr_reports(request):
 
 
 # ==========================
-# سجل التقييمات
+# تفاصيل التقييم
 # ==========================
+
 @login_required
 @hr_permission_required("view_evaluation")
-def evaluation_record_start(request):
+def evaluation_detail(request, eval_id):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    evaluations = Evaluation.objects.filter(company=company).order_by("-id")
+    evaluation = get_object_or_404(
+        Evaluation,
+        company=company,
+        id=eval_id
+    )
 
-    eval_id = (request.GET.get("evaluation") or request.POST.get("evaluation") or "").strip()
-    role = (request.GET.get("role") or request.POST.get("role") or "peer").strip()
-    selected_employee_id = (request.GET.get("employee") or request.POST.get("employee") or "").strip()
+    criteria = EvaluationCriteria.objects.filter(
+        company=company,
+        evaluation=evaluation
+    ).order_by("id")
+
+    targets = (
+        EvaluationTarget.objects
+        .filter(
+            company=company,
+            evaluation=evaluation
+        )
+        .select_related(
+            "employee",
+            "department"
+        )
+    )
+
+    scores = (
+        EvaluationScore.objects
+        .filter(
+            company=company,
+            target__evaluation=evaluation
+        )
+        .select_related(
+            "target",
+            "criteria",
+            "evaluator"
+        )
+        .order_by("-id")
+    )
+
+    return render(
+        request,
+        "hr/evaluation_detail.html",
+        {
+            "evaluation": evaluation,
+            "criteria": criteria,
+            "targets": targets,
+            "scores": scores,
+        }
+    )
+
+
+# ==========================
+# سجل التقييمات
+# ==========================
+
+@login_required
+@hr_permission_required("view_evaluation")
+def evaluation_record_start(request):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    evaluations = Evaluation.objects.filter(
+        company=company
+    ).order_by("-id")
+
+    eval_id = (
+        request.GET.get("evaluation")
+        or request.POST.get("evaluation")
+        or ""
+    ).strip()
+
+    role = (
+        request.GET.get("role")
+        or request.POST.get("role")
+        or "peer"
+    ).strip()
+
+    selected_employee_id = (
+        request.GET.get("employee")
+        or request.POST.get("employee")
+        or ""
+    ).strip()
 
     employees = Employee.objects.none()
+
     selected_evaluation = None
+
     criteria = EvaluationCriteria.objects.none()
 
     if eval_id.isdigit():
-        selected_evaluation = Evaluation.objects.filter(company=company, id=int(eval_id)).first()
+
+        selected_evaluation = (
+            Evaluation.objects
+            .filter(
+                company=company,
+                id=int(eval_id)
+            )
+            .first()
+        )
 
         if selected_evaluation:
+
             criteria = (
                 EvaluationCriteria.objects
-                .filter(company=company, evaluation=selected_evaluation)
+                .filter(
+                    company=company,
+                    evaluation=selected_evaluation
+                )
                 .order_by("id")
             )
 
-            employees = Employee.objects.filter(
-                company=company,
-                active=True
-            ).order_by("employee_number")
+            employees = (
+                Employee.objects
+                .filter(
+                    company=company,
+                    active=True
+                )
+                .order_by("employee_number")
+            )
 
     if request.method == "POST":
-        if not eval_id.isdigit() or not selected_employee_id.isdigit():
-            messages.error(request, "❌ اختر التقييم والموظف أولاً.")
-            return redirect(
-                f"{reverse('hr:evaluation_record_start')}?evaluation={eval_id}&role={role}&employee={selected_employee_id}"
+
+        if (
+            not eval_id.isdigit()
+            or not selected_employee_id.isdigit()
+        ):
+
+            messages.error(
+                request,
+                "❌ اختر التقييم والموظف أولاً."
             )
 
-        evaluation = Evaluation.objects.filter(company=company, id=int(eval_id)).first()
-        if not evaluation:
-            messages.error(request, "❌ التقييم غير صالح.")
-            return redirect("hr:evaluation_record_start")
-
-        employee = Employee.objects.filter(company=company, id=int(selected_employee_id), active=True).first()
-        if not employee:
-            messages.error(request, "❌ الموظف غير صالح.")
             return redirect(
-                f"{reverse('hr:evaluation_record_start')}?evaluation={eval_id}&role={role}"
+                f"{reverse('hr:evaluation_record_start')}"
+                f"?evaluation={eval_id}"
+                f"&role={role}"
+                f"&employee={selected_employee_id}"
             )
 
-        has_criteria = EvaluationCriteria.objects.filter(company=company, evaluation=evaluation).exists()
-        if not has_criteria:
-            messages.error(request, "❌ هذا التقييم لا يحتوي على معايير.")
-            return redirect(
-                f"{reverse('hr:evaluation_record_start')}?evaluation={evaluation.id}&role={role}"
+        evaluation = (
+            Evaluation.objects
+            .filter(
+                company=company,
+                id=int(eval_id)
             )
-
-        target, created = EvaluationTarget.objects.get_or_create(
-            company=company,
-            evaluation=evaluation,
-            employee=employee,
-            defaults={
-                "department": employee.department if hasattr(employee, "department") else None
-            }
+            .first()
         )
 
-        if role not in ["peer", "manager"]:
+        if not evaluation:
+
+            messages.error(
+                request,
+                "❌ التقييم غير صالح."
+            )
+
+            return redirect(
+                "hr:evaluation_record_start"
+            )
+
+        employee = (
+            Employee.objects
+            .filter(
+                company=company,
+                id=int(selected_employee_id),
+                active=True
+            )
+            .first()
+        )
+
+        if not employee:
+
+            messages.error(
+                request,
+                "❌ الموظف غير صالح."
+            )
+
+            return redirect(
+                f"{reverse('hr:evaluation_record_start')}"
+                f"?evaluation={eval_id}"
+                f"&role={role}"
+            )
+
+        has_criteria = (
+            EvaluationCriteria.objects
+            .filter(
+                company=company,
+                evaluation=evaluation
+            )
+            .exists()
+        )
+
+        if not has_criteria:
+
+            messages.error(
+                request,
+                "❌ هذا التقييم لا يحتوي على معايير."
+            )
+
+            return redirect(
+                f"{reverse('hr:evaluation_record_start')}"
+                f"?evaluation={evaluation.id}"
+                f"&role={role}"
+            )
+
+        target, created = (
+            EvaluationTarget.objects.get_or_create(
+                company=company,
+                evaluation=evaluation,
+                employee=employee,
+                defaults={
+                    "department": (
+                        employee.department
+                        if hasattr(
+                            employee,
+                            "department"
+                        )
+                        else None
+                    )
+                }
+            )
+        )
+
+        if role not in [
+            "peer",
+            "manager"
+        ]:
+
             role = "peer"
 
         if role == "peer":
-            return redirect("hr:evaluation_fill_peer", eval_id=evaluation.id, target_id=target.id)
 
-        return redirect("hr:evaluation_fill_manager", eval_id=evaluation.id, target_id=target.id)
+            return redirect(
+                "hr:evaluation_fill_peer",
+                eval_id=evaluation.id,
+                target_id=target.id
+            )
 
-    return render(request, "hr/evaluation_record_start.html", {
-        "evaluations": evaluations,
-        "selected_eval_id": int(eval_id) if eval_id.isdigit() else None,
-        "selected_evaluation": selected_evaluation,
-        "employees": employees,
-        "criteria": criteria,
-        "role": role,
-        "selected_employee_id": int(selected_employee_id) if selected_employee_id.isdigit() else None,
-    })
+        return redirect(
+            "hr:evaluation_fill_manager",
+            eval_id=evaluation.id,
+            target_id=target.id
+        )
 
+    return render(
+        request,
+        "hr/evaluation_record_start.html",
+        {
+            "evaluations": evaluations,
+            "selected_eval_id": (
+                int(eval_id)
+                if eval_id.isdigit()
+                else None
+            ),
+            "selected_evaluation": selected_evaluation,
+            "employees": employees,
+            "criteria": criteria,
+            "role": role,
+            "selected_employee_id": (
+                int(selected_employee_id)
+                if selected_employee_id.isdigit()
+                else None
+            ),
+        }
+    )
 
 @login_required
 @hr_permission_required("view_evaluation")
 def evaluation_records_list(request):
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
     records = (
         EvaluationScore.objects
-        .filter(company=company)
-        .select_related("target__evaluation", "target__employee", "criteria", "evaluator")
-        .order_by("-id")
+        .filter(
+            company=company
+        )
+        .select_related(
+            "target__evaluation",
+            "target__employee",
+            "criteria",
+            "evaluator"
+        )
+        .prefetch_related(
+            "attachments"
+        )
+        .order_by(
+            "-id"
+        )
     )
+    return render(
+        request,
+        "hr/evaluation_records_list.html",
+        {
+            "records": records
+        }
+    )
+    # =====================================================
+    # جلب المرفقات لكل درجة
+    # =====================================================
 
-    return render(request, "hr/evaluation_records_list.html", {
-        "records": records
-    })
+    for record in records:
 
+        record.saved_attachments = (
+            EvaluationScoreAttachment.objects.filter(
+                company=company,
+                score=record
+            )
+        )
+
+    return render(
+        request,
+        "hr/evaluation_records_list.html",
+        {
+            "records": records
+        }
+    )
 
 @login_required
 @hr_permission_required("view_evaluation")
@@ -3452,69 +4586,1008 @@ Permissions:
 """
 
     return HttpResponse(text)
+
 # ==========================
-# الرواتب
+# قائمة مسيرات الرواتب
 # ==========================
 
 @login_required
 @hr_permission_required("payroll_view")
 def payroll_list(request):
+
     company = _company_required(request)
 
     if not company:
         return redirect("accounts:login")
 
-    payrolls = (
-        Payroll.objects
+    payroll_runs = (
+        PayrollRun.objects
         .filter(company=company)
-        .select_related("employee")
-        .order_by("-date", "-id")
+        .prefetch_related(
+            "payrolls__employee"
+        )
+        .order_by(
+            "-year",
+            "-month",
+            "-id"
+        )
     )
 
     return render(
         request,
         "hr/payroll_list.html",
         {
-            "payrolls": payrolls,
+            "payroll_runs": payroll_runs,
         }
     )
 @login_required
-@hr_permission_required("payroll_add")
-def add_payroll(request):
+@hr_permission_required("payroll_approve")
+def payroll_approve(request, payroll_run_id):
+
     company = _company_required(request)
 
     if not company:
         return redirect("accounts:login")
 
-    from django.forms import modelform_factory
-
-    PayrollForm = modelform_factory(
-        Payroll,
-        exclude=("company",)
+    payroll_run = get_object_or_404(
+        PayrollRun,
+        pk=payroll_run_id,
+        company=company
     )
 
-    if request.method == "POST":
-        form = PayrollForm(request.POST)
+    # =========================================================
+    # لا يمكن اعتماد مسير مدفوع
+    # =========================================================
 
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.company = company
-            obj.save()
+    if payroll_run.status == "paid":
 
-            messages.success(
-                request,
-                "✅ تم حفظ مسير الرواتب بنجاح."
-            )
+        messages.error(
+            request,
+            _("لا يمكن اعتماد مسير رواتب مدفوع.")
+        )
 
-            return redirect("hr:payrolls")
+        return redirect("hr:payrolls")
 
-    else:
-        form = PayrollForm()
+    # =========================================================
+    # لا يمكن إعادة اعتماد مسير معتمد
+    # =========================================================
+
+    if payroll_run.status == "approved":
+
+        messages.warning(
+            request,
+            _("مسير الرواتب معتمد بالفعل.")
+        )
+
+        return redirect("hr:payrolls")
+
+    # =========================================================
+    # اعتماد المسير مباشرة
+    # =========================================================
+
+    payroll_run.status = "approved"
+
+    payroll_run.save(
+        update_fields=["status"]
+    )
+
+    messages.success(
+        request,
+        _("تم اعتماد مسير الرواتب بنجاح.")
+    )
+
+    return redirect("hr:payrolls")
+@login_required
+@hr_permission_required("payroll_delete")
+def payroll_delete(request, payroll_run_id):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    payroll_run = get_object_or_404(
+        PayrollRun,
+        pk=payroll_run_id,
+        company=company
+    )
+
+    # =========================================================
+    # الحذف يجب أن يكون POST فقط
+    # =========================================================
+
+    if request.method != "POST":
+
+        messages.error(
+            request,
+            _("عملية حذف غير صالحة.")
+        )
+
+        return redirect("hr:payrolls")
+
+    # =========================================================
+    # منع حذف المسير المعتمد أو المدفوع
+    # =========================================================
+
+    if payroll_run.status in ["approved", "paid"]:
+
+        messages.error(
+            request,
+            _("لا يمكن حذف مسير رواتب معتمد أو مدفوع.")
+        )
+
+        return redirect("hr:payrolls")
+
+    # =========================================================
+    # حذف المسير
+    # =========================================================
+
+    payroll_run.delete()
+
+    messages.success(
+        request,
+        _("تم حذف مسير الرواتب بنجاح.")
+    )
+
+    return redirect("hr:payrolls")
+@login_required
+@hr_permission_required("payroll_view")
+def payroll_detail(request, payroll_run_id):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    # =========================================================
+    # جلب مسير الرواتب
+    # =========================================================
+    payroll_run = get_object_or_404(
+        PayrollRun.objects.prefetch_related(
+            "payrolls__employee"
+        ),
+        id=payroll_run_id,
+        company=company,
+    )
+
+    # =========================================================
+    # رواتب الموظفين داخل المسير
+    # =========================================================
+    payrolls = payroll_run.payrolls.all().order_by(
+        "employee__employee_number"
+    )
+
+    # =========================================================
+    # حساب الإجماليات
+    # =========================================================
+    total_base_salary = 0
+    total_allowances = 0
+    total_overtime = 0
+
+    total_absence_deduction = 0
+    total_advance_deduction = 0
+    total_other_deductions = 0
+
+    total_net_salary = 0
+
+    for payroll in payrolls:
+
+        base_salary = payroll.base_salary or 0
+        allowances = payroll.allowances or 0
+        overtime = payroll.overtime or 0
+
+        absence_deduction = (
+            payroll.absence_deduction or 0
+        )
+
+        advance_deduction = (
+            payroll.advance_deduction or 0
+        )
+
+        other_deductions = (
+            payroll.other_deductions or 0
+        )
+
+        net_salary = (
+            base_salary
+            + allowances
+            + overtime
+            - absence_deduction
+            - advance_deduction
+            - other_deductions
+        )
+
+        total_base_salary += base_salary
+        total_allowances += allowances
+        total_overtime += overtime
+
+        total_absence_deduction += absence_deduction
+        total_advance_deduction += advance_deduction
+        total_other_deductions += other_deductions
+
+        total_net_salary += net_salary
+
+        payroll.calculated_net_salary = net_salary
+
+    total_deductions = (
+        total_absence_deduction
+        + total_advance_deduction
+        + total_other_deductions
+    )
+
+    # =========================================================
+    # روابط الإجراءات
+    # =========================================================
+
+    edit_url = reverse(
+        "hr:payroll_edit",
+        kwargs={
+            "payroll_run_id": payroll_run.id
+        }
+    )
+
+    approve_url = reverse(
+        "hr:payroll_approve",
+        kwargs={
+            "payroll_run_id": payroll_run.id
+        }
+    )
+
+    delete_url = reverse(
+        "hr:payroll_delete",
+        kwargs={
+            "payroll_run_id": payroll_run.id
+        }
+    )
+
+    back_url = reverse("hr:payrolls")
+
+    # =========================================================
+    # عرض الصفحة
+    # =========================================================
 
     return render(
         request,
-        "hr/add_payroll.html",
+        "hr/payroll_detail.html",
         {
-            "form": form,
+            "payroll_run": payroll_run,
+            "payrolls": payrolls,
+
+            "employee_count": payrolls.count(),
+
+            "total_base_salary": total_base_salary,
+            "total_allowances": total_allowances,
+            "total_overtime": total_overtime,
+
+            "total_absence_deduction": total_absence_deduction,
+            "total_advance_deduction": total_advance_deduction,
+            "total_other_deductions": total_other_deductions,
+
+            "total_deductions": total_deductions,
+            "total_net_salary": total_net_salary,
+
+            # روابط الأزرار
+            "back_url": back_url,
+            "edit_url": edit_url,
+            "approve_url": approve_url,
+            "delete_url": delete_url,
+        }
+    )
+@login_required
+@hr_permission_required("payroll_view")
+def payroll_run_detail(request, pk):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    payroll_run = get_object_or_404(
+        PayrollRun.objects.prefetch_related(
+            "payrolls__employee"
+        ),
+        pk=pk,
+        company=company
+    )
+
+    payrolls = payroll_run.payrolls.all().order_by(
+        "employee__employee_number"
+    )
+
+    return render(
+        request,
+        "hr/payroll_run_detail.html",
+        {
+            "payroll_run": payroll_run,
+            "payrolls": payrolls,
+        }
+    )
+
+@login_required
+@hr_permission_required("payroll_add")
+def add_payroll(request):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    from decimal import Decimal, InvalidOperation
+    from django.db import transaction
+    from datetime import datetime
+
+    # =========================================================
+    # جميع موظفي الشركة
+    # =========================================================
+
+    employees = Employee.objects.filter(
+        company=company
+    ).order_by(
+        "employee_number"
+    )
+
+    # =========================================================
+    # تحويل القيمة إلى Decimal
+    # =========================================================
+
+    def get_decimal(value):
+
+        try:
+
+            if value in (None, ""):
+                return Decimal("0")
+
+            return Decimal(str(value))
+
+        except (
+            InvalidOperation,
+            TypeError,
+            ValueError
+        ):
+
+            return Decimal("0")
+
+    # =========================================================
+    # POST
+    # =========================================================
+
+    if request.method == "POST":
+
+        payroll_date = request.POST.get("date")
+
+        if not payroll_date:
+
+            payroll_date = timezone.localdate()
+
+        else:
+
+            try:
+
+                payroll_date = datetime.strptime(
+                    payroll_date,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+
+                messages.error(
+                    request,
+                    "صيغة التاريخ غير صحيحة."
+                )
+
+                return redirect(
+                    "hr:payroll_add"
+                )
+
+        payroll_month = payroll_date.month
+        payroll_year = payroll_date.year
+
+        created_count = 0
+        updated_count = 0
+
+        # =====================================================
+        # حفظ العملية بالكامل
+        # =====================================================
+
+        with transaction.atomic():
+
+            # -------------------------------------------------
+            # البحث عن مسير الشهر أو إنشاؤه
+            # -------------------------------------------------
+
+            payroll_run, created_run = (
+                PayrollRun.objects.get_or_create(
+                    company=company,
+                    month=payroll_month,
+                    year=payroll_year,
+                    defaults={
+                        "created_by": request.user,
+                        "status": "draft",
+                    },
+                )
+            )
+
+            # -------------------------------------------------
+            # منع التعديل على مسير معتمد أو مدفوع
+            # -------------------------------------------------
+
+            if payroll_run.status in [
+                "approved",
+                "paid",
+            ]:
+
+                messages.error(
+                    request,
+                    "لا يمكن تعديل مسير رواتب معتمد أو مدفوع."
+                )
+
+                return redirect(
+                    "hr:payroll_detail",
+                    payroll_run_id=payroll_run.id
+                )
+
+            # -------------------------------------------------
+            # حفظ رواتب الموظفين
+            # -------------------------------------------------
+
+            for employee in employees:
+
+                employee_id = employee.id
+
+                # -------------------------------------------------
+                # الأساسي
+                # -------------------------------------------------
+
+                base_salary = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_base_salary"
+                    )
+                )
+
+                # -------------------------------------------------
+                # البدلات
+                # -------------------------------------------------
+
+                allowances = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_allowances"
+                    )
+                )
+
+                # -------------------------------------------------
+                # العمل الإضافي
+                # -------------------------------------------------
+
+                overtime = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_overtime"
+                    )
+                )
+
+                # -------------------------------------------------
+                # خصم الغياب
+                # -------------------------------------------------
+
+                absence_deduction = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_absence_deduction"
+                    )
+                )
+
+                # -------------------------------------------------
+                # خصم السلف
+                # -------------------------------------------------
+
+                advance_deduction = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_advance_deduction"
+                    )
+                )
+
+                # -------------------------------------------------
+                # خصومات أخرى
+                # -------------------------------------------------
+
+                other_deductions = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_other_deductions"
+                    )
+                )
+
+                # -------------------------------------------------
+                # الملاحظات
+                # -------------------------------------------------
+
+                notes = request.POST.get(
+                    f"emp_{employee_id}_notes",
+                    ""
+                ).strip()
+
+                # =================================================
+                # هل الموظف لديه بيانات فعلية؟
+                # =================================================
+
+                has_data = any([
+                    base_salary != Decimal("0"),
+                    allowances != Decimal("0"),
+                    overtime != Decimal("0"),
+                    absence_deduction != Decimal("0"),
+                    advance_deduction != Decimal("0"),
+                    other_deductions != Decimal("0"),
+                    notes,
+                ])
+
+                # =================================================
+                # إذا لم يدخل المستخدم أي بيانات
+                # نتجاهل الموظف
+                # =================================================
+
+                if not has_data:
+                    continue
+
+                # =================================================
+                # البحث عن الموظف داخل نفس المسير
+                # =================================================
+
+                payroll = Payroll.objects.filter(
+                    company=company,
+                    payroll_run=payroll_run,
+                    employee=employee
+                ).first()
+
+                # =================================================
+                # تحديث السجل الموجود
+                # =================================================
+
+                if payroll:
+
+                    payroll.date = payroll_date
+                    payroll.base_salary = base_salary
+                    payroll.allowances = allowances
+                    payroll.overtime = overtime
+
+                    payroll.absence_deduction = (
+                        absence_deduction
+                    )
+
+                    payroll.advance_deduction = (
+                        advance_deduction
+                    )
+
+                    payroll.other_deductions = (
+                        other_deductions
+                    )
+
+                    payroll.notes = notes
+
+                    payroll.save()
+
+                    updated_count += 1
+
+                # =================================================
+                # إنشاء سجل جديد
+                # =================================================
+
+                else:
+
+                    Payroll.objects.create(
+
+                        company=company,
+
+                        payroll_run=payroll_run,
+
+                        employee=employee,
+
+                        date=payroll_date,
+
+                        base_salary=base_salary,
+
+                        allowances=allowances,
+
+                        overtime=overtime,
+
+                        absence_deduction=(
+                            absence_deduction
+                        ),
+
+                        advance_deduction=(
+                            advance_deduction
+                        ),
+
+                        other_deductions=(
+                            other_deductions
+                        ),
+
+                        notes=notes,
+                    )
+
+                    created_count += 1
+
+        # =====================================================
+        # رسالة النتيجة
+        # =====================================================
+
+        if created_count > 0 and updated_count > 0:
+
+            messages.success(
+                request,
+                f"✅ تمت إضافة {created_count} موظف "
+                f"وتحديث {updated_count} موظف "
+                f"في مسير الرواتب."
+            )
+
+        elif created_count > 0:
+
+            messages.success(
+                request,
+                f"✅ تم إضافة رواتب "
+                f"{created_count} موظف "
+                f"إلى مسير الرواتب."
+            )
+
+        elif updated_count > 0:
+
+            messages.success(
+                request,
+                f"✅ تم تحديث رواتب "
+                f"{updated_count} موظف "
+                f"في مسير الرواتب."
+            )
+
+        else:
+
+            messages.warning(
+                request,
+                "⚠️ لم يتم إدخال أي بيانات راتب."
+            )
+
+        return redirect(
+            "hr:payrolls"
+        )
+
+    # =========================================================
+    # GET
+    # صفحة إضافة مسير جديد
+    # =========================================================
+
+    payroll_date = timezone.localdate()
+
+    # لا ننشئ PayrollRun هنا
+    # يتم إنشاؤه فقط عند الضغط على حفظ في POST
+
+    payroll_run = None
+
+    payrolls_by_employee = {}
+
+    # =========================================================
+    # ربط كل موظف بسجل راتبه
+    # =========================================================
+
+    employee_payrolls = []
+
+    for employee in employees:
+
+        employee_payrolls.append({
+
+            "employee": employee,
+
+            "payroll": payrolls_by_employee.get(
+                employee.id
+            ),
+
+        })
+
+    # =========================================================
+    # عرض صفحة الإضافة / التعديل
+    # =========================================================
+
+    return render(
+        request,
+        "hr/payroll_edit.html",
+        {
+            "payroll_run": payroll_run,
+            "employees": employees,
+            "payrolls": payrolls_by_employee,
+            "employee_payrolls": employee_payrolls,
+        }
+    )
+@login_required
+@hr_permission_required("payroll_edit")
+def payroll_edit(request, payroll_run_id):
+
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    from decimal import Decimal, InvalidOperation
+    from django.db import transaction
+    from datetime import datetime
+
+    # =========================================================
+    # جلب مسير الرواتب
+    # =========================================================
+
+    payroll_run = get_object_or_404(
+        PayrollRun,
+        id=payroll_run_id,
+        company=company
+    )
+
+    # =========================================================
+    # منع تعديل المسير المعتمد أو المدفوع
+    # =========================================================
+
+    if payroll_run.status in ["approved", "paid"]:
+
+        messages.error(
+            request,
+            "لا يمكن تعديل مسير رواتب معتمد أو مدفوع."
+        )
+
+        return redirect(
+            "hr:payroll_detail",
+            payroll_run_id=payroll_run.id
+        )
+
+    # =========================================================
+    # جميع موظفي الشركة
+    # =========================================================
+
+    employees = Employee.objects.filter(
+        company=company
+    ).order_by(
+        "employee_number"
+    )
+
+    # =========================================================
+    # تحويل القيمة إلى Decimal
+    # =========================================================
+
+    def get_decimal(value):
+
+        try:
+
+            if value in (None, ""):
+                return Decimal("0")
+
+            return Decimal(str(value))
+
+        except (
+            InvalidOperation,
+            TypeError,
+            ValueError
+        ):
+
+            return Decimal("0")
+
+    # =========================================================
+    # POST
+    # =========================================================
+
+    if request.method == "POST":
+
+        payroll_date = request.POST.get("date")
+
+        if not payroll_date:
+
+            payroll_date = timezone.localdate()
+
+        else:
+
+            try:
+
+                payroll_date = datetime.strptime(
+                    payroll_date,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+
+                messages.error(
+                    request,
+                    "صيغة التاريخ غير صحيحة."
+                )
+
+                return redirect(
+                    "hr:payroll_edit",
+                    payroll_run_id=payroll_run.id
+                )
+
+        # =====================================================
+        # حفظ التعديلات
+        # =====================================================
+
+        with transaction.atomic():
+
+            for employee in employees:
+
+                employee_id = employee.id
+
+                base_salary = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_base_salary"
+                    )
+                )
+
+                allowances = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_allowances"
+                    )
+                )
+
+                overtime = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_overtime"
+                    )
+                )
+
+                absence_deduction = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_absence_deduction"
+                    )
+                )
+
+                advance_deduction = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_advance_deduction"
+                    )
+                )
+
+                other_deductions = get_decimal(
+                    request.POST.get(
+                        f"emp_{employee_id}_other_deductions"
+                    )
+                )
+
+                notes = request.POST.get(
+                    f"emp_{employee_id}_notes",
+                    ""
+                ).strip()
+
+                # =================================================
+                # البحث عن سجل الموظف
+                # =================================================
+
+                payroll = Payroll.objects.filter(
+                    company=company,
+                    payroll_run=payroll_run,
+                    employee=employee
+                ).first()
+
+                # =================================================
+                # هل توجد بيانات؟
+                # =================================================
+
+                has_data = any([
+                    base_salary != Decimal("0"),
+                    allowances != Decimal("0"),
+                    overtime != Decimal("0"),
+                    absence_deduction != Decimal("0"),
+                    advance_deduction != Decimal("0"),
+                    other_deductions != Decimal("0"),
+                    notes,
+                ])
+
+                # =================================================
+                # إذا لا توجد بيانات نحذف السجل
+                # =================================================
+
+                if not has_data:
+
+                    if payroll:
+                        payroll.delete()
+
+                    continue
+
+                # =================================================
+                # تحديث
+                # =================================================
+
+                if payroll:
+
+                    payroll.date = payroll_date
+
+                    payroll.base_salary = base_salary
+
+                    payroll.allowances = allowances
+
+                    payroll.overtime = overtime
+
+                    payroll.absence_deduction = (
+                        absence_deduction
+                    )
+
+                    payroll.advance_deduction = (
+                        advance_deduction
+                    )
+
+                    payroll.other_deductions = (
+                        other_deductions
+                    )
+
+                    payroll.notes = notes
+
+                    payroll.save()
+
+                # =================================================
+                # إنشاء
+                # =================================================
+
+                else:
+
+                    Payroll.objects.create(
+                        company=company,
+                        payroll_run=payroll_run,
+                        employee=employee,
+                        date=payroll_date,
+                        base_salary=base_salary,
+                        allowances=allowances,
+                        overtime=overtime,
+                        absence_deduction=absence_deduction,
+                        advance_deduction=advance_deduction,
+                        other_deductions=other_deductions,
+                        notes=notes,
+                    )
+
+        messages.success(
+            request,
+            "✅ تم تعديل مسير الرواتب بنجاح."
+        )
+
+        return redirect(
+        "hr:payrolls"
+       )
+
+    # =========================================================
+    # GET
+    # =========================================================
+    # جلب رواتب هذا المسير فقط
+    # =========================================================
+
+    payrolls = Payroll.objects.filter(
+        company=company,
+        payroll_run=payroll_run
+    ).select_related(
+        "employee"
+    )
+
+    # =========================================================
+    # Dictionary
+    # المفتاح = employee.id
+    # =========================================================
+
+    payrolls_by_employee = {
+        payroll.employee_id: payroll
+        for payroll in payrolls
+    }
+
+    # =========================================================
+    # ربط الموظفين بالرواتب
+    # =========================================================
+
+    employee_payrolls = []
+
+    for employee in employees:
+
+        employee_payrolls.append({
+            "employee": employee,
+            "payroll": payrolls_by_employee.get(
+                employee.id
+            ),
+        })
+
+    # =========================================================
+    # عرض الصفحة
+    # =========================================================
+
+    return render(
+        request,
+        "hr/payroll_edit.html",
+        {
+            "payroll_run": payroll_run,
+            "employees": employees,
+            "payrolls": payrolls_by_employee,
+            "employee_payrolls": employee_payrolls,
         }
     )

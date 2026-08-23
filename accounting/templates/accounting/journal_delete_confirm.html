@@ -3,36 +3,434 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<style>
 
-    <div class="card border-danger">
-        <div class="card-body text-center">
+/* =========================================================
+   الخلفية العامة
+========================================================= */
 
-            <h4 class="text-danger mb-3">
+body {
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.delete-page {
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.delete-card {
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+    max-width:750px;
+
+    margin:40px auto;
+
+}
+
+
+/* =========================================================
+   رأس التأكيد
+========================================================= */
+
+.delete-header {
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.delete-icon {
+
+    width:70px;
+
+    height:70px;
+
+    margin:0 auto 18px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d0d0d0
+    );
+
+    color:#555;
+
+    font-size:30px;
+
+    box-shadow:
+    0 6px 12px rgba(0,0,0,.15),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.delete-header h4 {
+
+    margin:0;
+
+    font-weight:800;
+
+    color:#444;
+
+    font-size:24px;
+
+}
+
+
+/* =========================================================
+   نص التأكيد
+========================================================= */
+
+.delete-message {
+
+    text-align:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #e1e1e1
+    );
+
+    border:1px solid #d0d0d0;
+
+    border-radius:14px;
+
+    padding:20px;
+
+    margin-bottom:25px;
+
+    color:#555;
+
+    box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.8),
+    0 4px 8px rgba(0,0,0,.08);
+
+}
+
+
+.delete-message p {
+
+    margin:0;
+
+    font-size:16px;
+
+}
+
+
+.entry-number {
+
+    display:inline-block;
+
+    min-width:55px;
+
+    padding:6px 12px;
+
+    margin:0 5px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    color:#444;
+
+    font-weight:800;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الأزرار
+========================================================= */
+
+.delete-actions {
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+
+.delete-actions button,
+.delete-actions a {
+
+    min-width:140px;
+
+    padding:11px 22px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    transition:.3s;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   زر الحذف
+========================================================= */
+
+.delete-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+}
+
+
+.delete-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   زر الإلغاء
+========================================================= */
+
+.cancel-btn {
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+}
+
+
+.cancel-btn:hover {
+
+    background:
+    linear-gradient(
+        135deg,
+        #dddddd,
+        #bbbbbb
+    );
+
+    color:#333;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.20);
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .delete-page {
+
+        padding:15px;
+
+    }
+
+
+    .delete-card {
+
+        padding:20px;
+
+        margin:25px auto;
+
+    }
+
+
+    .delete-actions {
+
+        flex-direction:column;
+
+        width:100%;
+
+    }
+
+
+    .delete-actions button,
+    .delete-actions a {
+
+        width:100%;
+
+    }
+
+}
+
+</style>
+
+
+<div class="delete-page">
+
+    <div class="delete-card">
+
+
+        <!-- =================================================
+             أيقونة التأكيد
+        ================================================== -->
+
+        <div class="delete-header">
+
+            <div class="delete-icon">
+
+                <i class="fa-solid fa-trash-can"></i>
+
+            </div>
+
+
+            <h4>
+
                 {% trans "Confirm Delete Entry" %}
+
             </h4>
 
+        </div>
+
+
+
+        <!-- =================================================
+             رسالة التأكيد
+        ================================================== -->
+
+        <div class="delete-message">
+
             <p>
+
                 {% trans "Are you sure you want to delete entry number" %}
-                <strong>{{ entry.entry_no }}</strong>
+
+                <strong class="entry-number">
+
+                    {{ entry.entry_no }}
+
+                </strong>
+
             </p>
 
-            <form method="post">
-                {% csrf_token %}
+        </div>
+
+
+
+        <!-- =================================================
+             الأزرار
+        ================================================== -->
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <div class="delete-actions">
+
 
                 <button type="submit"
-                        class="btn btn-danger px-4">
+                        class="delete-btn">
+
                     {% trans "Yes, Delete" %}
+
                 </button>
 
+
                 <a href="{% url 'accounting:journals_list' %}"
-                   class="btn btn-secondary px-4">
+                   class="cancel-btn">
+
                     {% trans "Cancel" %}
+
                 </a>
 
-            </form>
 
-        </div>
+            </div>
+
+
+        </form>
+
+
     </div>
 
 </div>

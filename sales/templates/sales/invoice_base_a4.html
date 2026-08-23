@@ -2,100 +2,627 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}"
-      dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
+
+<html
+    lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}"
+    dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}"
+>
+
 <head>
+
     <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %}</title>
 
-<style>
-    /* 1. تعريف خط يدعم العربية لتجنب المربعات السوداء */
-/* تعريف خط Amiri */
-@font-face {
-    font-family: 'Amiri';
-    src: url("{% static 'fonts/Amiri-Regular.ttf' %}") format('truetype');
-}
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-body {
-    background-color: #ffffff !important;
-    margin: 0;
-    padding: 0;
-    font-family: 'Amiri', sans-serif !important;
-}
-    /* 2. حاوية الفاتورة */
+    <title>
+        {% block title %}{% endblock %}
+    </title>
+
+
+    <style>
+
+    /* =========================================================
+       الخط العربي
+    ========================================================= */
+
+    @font-face {
+
+        font-family:'Amiri';
+
+        src:url(
+            "{% static 'fonts/Amiri-Regular.ttf' %}"
+        ) format('truetype');
+
+    }
+
+
+    /* =========================================================
+       الصفحة العامة
+    ========================================================= */
+
+    * {
+
+        box-sizing:border-box;
+
+    }
+
+
+    html,
+    body {
+
+        margin:0;
+
+        padding:0;
+
+        width:100%;
+
+        min-height:100%;
+
+    }
+
+
+    body {
+
+        background:
+        linear-gradient(
+            135deg,
+            #f8f8f8,
+            #d5d5d5
+        ) !important;
+
+        font-family:'Amiri', sans-serif !important;
+
+        color:#444;
+
+    }
+
+
+    /* =========================================================
+       حاوية الفاتورة
+    ========================================================= */
+
+    .invoice-page {
+
+        width:100%;
+
+        min-height:100vh;
+
+        padding:25px;
+
+    }
+
+
+    /* =========================================================
+       ورقة الفاتورة
+    ========================================================= */
+
     .invoice-paper {
-        width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        box-sizing: border-box;
+
+        width:100%;
+
+        max-width:900px;
+
+        margin:0 auto;
+
+        padding:30px;
+
+        background:#ffffff;
+
+        border-radius:22px;
+
+        box-shadow:
+        0 15px 40px rgba(0,0,0,.15);
+
+        box-sizing:border-box;
+
     }
 
-    /* 3. تنسيقات الجدول الأساسية */
+
+    /* =========================================================
+       الجداول
+    ========================================================= */
+
     table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        font-size: 14px;
+
+        width:100%;
+
+        border-collapse:collapse;
+
+        margin-top:15px;
+
+        font-size:14px;
+
+        background:#ffffff;
+
     }
+
+
+    /* =========================================================
+       رأس جدول الأصناف
+    ========================================================= */
 
     .items-table th {
-        background-color: #1e293b !important;
-        color: #ffffff !important;
-        padding: 10px;
-        border: 1px solid #000 !important;
-        text-align: center;
-        font-weight: bold;
+
+        background:
+        linear-gradient(
+            90deg,
+            #444,
+            #888
+        ) !important;
+
+        color:#ffffff !important;
+
+        padding:12px;
+
+        border:1px solid #555 !important;
+
+        text-align:center;
+
+        font-weight:700;
+
+        text-shadow:
+        0 1px 2px rgba(0,0,0,.3);
+
     }
 
-    .items-table td, .totals-table td {
-        padding: 10px;
-        border: 1px solid #000 !important;
-        text-align: center;
+
+    /* =========================================================
+       خلايا جدول الأصناف
+    ========================================================= */
+
+    .items-table td {
+
+        padding:11px;
+
+        border:1px solid #d0d0d0 !important;
+
+        text-align:center;
+
+        vertical-align:middle;
+
+        color:#555;
+
     }
 
-    /* 4. تنسيقات النصوص والعناصر */
-    .header-top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 25px; }
-    .amount-text-box { 
-        width: 100%; 
-        border: 1px solid #000 !important; 
-        padding: 12px; 
-        text-align: center; 
-        font-weight: bold; 
-        margin-top: 15px; 
-    }
-    
-.top-action-bar,
-.no-print {
-    display: none !important;
-}
 
-@media print {
-    #paymentModal {
-        display: none !important;
+    /* =========================================================
+       صفوف جدول الأصناف
+    ========================================================= */
+
+    .items-table tbody tr {
+
+        background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f5f5f5
+        );
+
+        transition:.2s;
+
     }
-}
-</style>
+
+
+    .items-table tbody tr:hover {
+
+        background:
+        linear-gradient(
+            135deg,
+            #f5f5f5,
+            #dddddd
+        );
+
+    }
+
+
+    /* =========================================================
+       جدول الإجماليات
+    ========================================================= */
+
+    .totals-table {
+
+        width:55%;
+
+        margin-right:auto;
+
+        margin-left:0;
+
+        margin-top:20px;
+
+    }
+
+
+    .totals-table td {
+
+        padding:11px;
+
+        border:1px solid #d0d0d0 !important;
+
+        text-align:center;
+
+        color:#555;
+
+        background:#ffffff;
+
+    }
+
+
+    .totals-table tr:last-child td {
+
+        background:
+        linear-gradient(
+            135deg,
+            #eeeeee,
+            #d5d5d5
+        );
+
+        font-weight:800;
+
+        color:#333;
+
+    }
+
+
+    /* =========================================================
+       الصف العلوي
+    ========================================================= */
+
+    .header-top-row {
+
+        display:flex;
+
+        justify-content:space-between;
+
+        align-items:center;
+
+        width:100%;
+
+        margin-bottom:25px;
+
+        padding-bottom:18px;
+
+        border-bottom:1px solid #dddddd;
+
+    }
+
+
+    /* =========================================================
+       صندوق المبلغ كتابة
+    ========================================================= */
+
+    .amount-text-box {
+
+        width:100%;
+
+        border:1px solid #c5c5c5 !important;
+
+        padding:13px;
+
+        text-align:center;
+
+        font-weight:bold;
+
+        margin-top:18px;
+
+        border-radius:12px;
+
+        background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+        color:#444;
+
+        box-shadow:
+        0 4px 8px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+    }
+
+
+    /* =========================================================
+       العناوين
+    ========================================================= */
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+
+        color:#444;
+
+    }
+
+
+    /* =========================================================
+       عناصر التحكم
+    ========================================================= */
+
+    input,
+    select,
+    textarea {
+
+        border-radius:9px;
+
+        border:1px solid #aaa;
+
+    }
+
+
+    /* =========================================================
+       الأزرار
+    ========================================================= */
+
+    button,
+    .btn {
+
+        border-radius:10px;
+
+    }
+
+
+    /* =========================================================
+       شريط الإجراءات
+    ========================================================= */
+
+    .top-action-bar,
+    .no-print {
+
+        display:none !important;
+
+    }
+
+
+    /* =========================================================
+       الرسائل
+    ========================================================= */
+
+    .container {
+
+        max-width:100%;
+
+    }
+
+
+    .alert {
+
+        border-radius:12px;
+
+        border:1px solid #ccc;
+
+        box-shadow:
+        0 4px 8px rgba(0,0,0,.08);
+
+    }
+
+
+    /* =========================================================
+       الطباعة
+    ========================================================= */
+
+    @media print {
+
+        @page {
+
+            size:A4;
+
+            margin:10mm;
+
+        }
+
+
+        html,
+        body {
+
+            background:#ffffff !important;
+
+        }
+
+
+        body {
+
+            color:#000;
+
+        }
+
+
+        .invoice-page {
+
+            padding:0;
+
+            min-height:auto;
+
+        }
+
+
+        .invoice-paper {
+
+            max-width:none;
+
+            width:100%;
+
+            margin:0;
+
+            padding:10px;
+
+            border-radius:0;
+
+            box-shadow:none;
+
+            background:#ffffff;
+
+        }
+
+
+        .top-action-bar,
+        .no-print {
+
+            display:none !important;
+
+        }
+
+
+        #paymentModal {
+
+            display:none !important;
+
+        }
+
+
+        table {
+
+            page-break-inside:auto;
+
+        }
+
+
+        tr {
+
+            page-break-inside:avoid;
+
+            page-break-after:auto;
+
+        }
+
+
+        .items-table th {
+
+            background:#1e293b !important;
+
+            color:#ffffff !important;
+
+            -webkit-print-color-adjust:exact;
+
+            print-color-adjust:exact;
+
+        }
+
+
+        .amount-text-box {
+
+            box-shadow:none;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       الشاشات الصغيرة
+    ========================================================= */
+
+    @media(max-width:768px) {
+
+        .invoice-page {
+
+            padding:15px;
+
+        }
+
+
+        .invoice-paper {
+
+            padding:18px;
+
+            border-radius:18px;
+
+        }
+
+
+        .header-top-row {
+
+            flex-direction:column;
+
+            gap:15px;
+
+            text-align:center;
+
+        }
+
+
+        .totals-table {
+
+            width:100%;
+
+        }
+
+
+        table {
+
+            font-size:12px;
+
+        }
+
+
+        .items-table {
+
+            min-width:700px;
+
+        }
+
+    }
+
+    </style>
+
 </head>
+
+
 <body>
 
-<div class="invoice-paper">
-    {% block content %}
-{% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                        aria-label="Close"></button>
-            </div>
-        {% endfor %}
+
+<div class="invoice-page">
+
+
+    <div class="invoice-paper">
+
+
+        {% block content %}
+
+
+            {% if messages %}
+
+                <div class="container mt-3">
+
+                    {% for message in messages %}
+
+                        <div
+                            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                            role="alert"
+                        >
+
+                            {{ message }}
+
+
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close"
+                            ></button>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+        {% endblock %}
+
+
     </div>
-{% endif %}
-    {% endblock %}
+
 </div>
 
+
 </body>
+
 </html>

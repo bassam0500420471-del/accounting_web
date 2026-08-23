@@ -1,170 +1,1006 @@
 {% extends "sales/invoice_base_a4.html" %}
 {% load i18n %}
+
 {% block content %}
 
 <style>
-    /* إضافة الخط لضمان ظهور اللغة العربية */
-    body { font-family: 'arial', sans-serif !important; }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
+/* =========================================================
+   الخط
+========================================================= */
+
+body {
+
+    font-family:'Amiri', Arial, sans-serif !important;
+
+}
+
+
+/* =========================================================
+   عنوان الفاتورة
+========================================================= */
+
+.invoice-title {
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+    padding-bottom:15px;
+
+    border-bottom:1px solid #ddd;
+
+    color:#444;
+
+    font-weight:800;
+
+}
+
+
+.invoice-title small {
+
+    display:block;
+
+    margin-top:5px;
+
+    color:#777;
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   معلومات الفاتورة
+========================================================= */
+
+.invoice-info {
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    border:1px solid #d0d0d0;
+
+    border-radius:14px;
+
+    padding:18px 20px;
+
+    margin-bottom:22px;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.07),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+.invoice-info p {
+
+    margin:8px 0;
+
+    color:#555;
+
+    font-size:14px;
+
+}
+
+
+.label {
+
+    font-weight:800;
+
+    display:inline-block;
+
+    min-width:145px;
+
+    color:#444;
+
+}
+
+
+.info-value {
+
+    font-weight:600;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   جدول الأصناف
+========================================================= */
+
+.invoice-items-table {
+
+    width:100%;
+
+    border-collapse:separate;
+
+    border-spacing:0;
+
+    overflow:hidden;
+
+    border-radius:14px;
+
+    font-size:13px;
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.08);
+
+}
+
+
+.invoice-items-table th {
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    ) !important;
+
+    color:#fff !important;
+
+    padding:12px 8px;
+
+    border:1px solid #555 !important;
+
+    text-align:center;
+
+    font-weight:700;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+.invoice-items-table td {
+
+    padding:10px 8px;
+
+    border:1px solid #ddd !important;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+    background:#fff;
+
+}
+
+
+.invoice-items-table tbody tr:nth-child(even) td {
+
+    background:#f7f7f7;
+
+}
+
+
+.invoice-items-table tbody tr:hover td {
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفوف الفارغة
+========================================================= */
+
+.empty-row td {
+
+    height:18px;
+
+    background:#fff !important;
+
+}
+
+
+/* =========================================================
+   صندوق الإجماليات و QR
+========================================================= */
+
+.summary-wrapper {
+
+    width:100%;
+
+    margin-top:25px;
+
+}
+
+
+.summary-table {
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+.summary-table td {
+
+    border:none !important;
+
+    vertical-align:top;
+
+}
+
+
+.qr-cell {
+
+    width:35%;
+
+    text-align:center;
+
+    vertical-align:middle !important;
+
+}
+
+
+.qr-box {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:12px;
+
+    background:#fff;
+
+    border:1px solid #ccc;
+
+    border-radius:14px;
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,.10);
+
+}
+
+
+.qr-box img {
+
+    width:120px;
+
+    height:120px;
+
+    display:block;
+
+}
+
+
+/* =========================================================
+   الإجماليات
+========================================================= */
+
+.totals-cell {
+
+    width:65%;
+
+}
+
+
+.total-row {
+
+    display:flex;
+
+    justify-content:flex-start;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:10px;
+
+}
+
+
+.total-label {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:175px;
+
+    padding:8px 12px;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+    border:1px solid #c8c8c8;
+
+    color:#444;
+
+    font-weight:700;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.08),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.total-value {
+
+    min-width:170px;
+
+    padding:8px 12px;
+
+    border-radius:9px;
+
+    background:#fff;
+
+    border:1px solid #aaa;
+
+    color:#444;
+
+    font-weight:600;
+
+    text-align:center;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.06);
+
+}
+
+
+.total-final .total-label {
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:#fff;
+
+}
+
+
+.total-final .total-value {
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    font-size:17px;
+
+    font-weight:800;
+
+    border-color:#888;
+
+}
+
+
+/* =========================================================
+   المبلغ المتبقي
+========================================================= */
+
+.remaining-row .total-label {
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+}
+
+
+.remaining-row .total-value {
+
+    font-weight:800;
+
+}
+
+
+/* =========================================================
+   التوقيع / الرسالة
+========================================================= */
+
+.invoice-footer {
+
+    text-align:center;
+
+    margin-top:25px;
+
+    padding-top:15px;
+
+    border-top:1px solid #ddd;
+
+    color:#555;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+
+.invoice-footer span {
+
+    color:#888;
+
+    font-size:12px;
+
+}
+
+
+/* =========================================================
+   إخفاء العناصر غير المطلوبة في الطباعة
+========================================================= */
+
+.top-action-bar,
+.no-print {
+
+    display:none !important;
+
+}
+
+
+/* =========================================================
+   الطباعة
+========================================================= */
+
+@media print {
+
+    body {
+
+        background:#fff !important;
+
     }
-    th, td {
-        border: 1px solid #000;
-        padding: 6px;
-        text-align: center;
+
+
+    .invoice-paper {
+
+        box-shadow:none !important;
+
+        border-radius:0 !important;
+
+        padding:10px !important;
+
     }
+
+
+    .invoice-info {
+
+        box-shadow:none !important;
+
+    }
+
+
+    .invoice-items-table {
+
+        box-shadow:none !important;
+
+    }
+
+
+    .invoice-items-table th {
+
+        background:#444 !important;
+
+        color:#fff !important;
+
+        -webkit-print-color-adjust:exact;
+
+        print-color-adjust:exact;
+
+    }
+
+
+    .invoice-items-table tbody tr:nth-child(even) td {
+
+        background:#f7f7f7 !important;
+
+        -webkit-print-color-adjust:exact;
+
+        print-color-adjust:exact;
+
+    }
+
+
+    .total-final .total-label {
+
+        background:#444 !important;
+
+        color:#fff !important;
+
+        -webkit-print-color-adjust:exact;
+
+        print-color-adjust:exact;
+
+    }
+
+
+    .total-final .total-value {
+
+        background:#eeeeee !important;
+
+        -webkit-print-color-adjust:exact;
+
+        print-color-adjust:exact;
+
+    }
+
+
+    #paymentModal {
+
+        display:none !important;
+
+    }
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .invoice-info {
+
+        padding:15px;
+
+    }
+
+
     .label {
-        font-weight: bold;
-        display: inline-block;
-        min-width: 140px;
+
+        min-width:120px;
+
     }
-    .total-box {
-        border: 1px solid #000;
-        padding: 6px 10px;
-        width: 180px;
-        text-align: left;
+
+
+    .summary-table {
+
+        display:block;
+
     }
+
+
+    .summary-table tr {
+
+        display:flex;
+
+        flex-direction:column;
+
+    }
+
+
+    .qr-cell,
+    .totals-cell {
+
+        width:100%;
+
+    }
+
+
+    .qr-cell {
+
+        margin-bottom:20px;
+
+    }
+
+
+    .total-row {
+
+        justify-content:space-between;
+
+    }
+
+
+    .total-label,
+    .total-value {
+
+        min-width:0;
+
+        flex:1;
+
+    }
+
+}
+
 </style>
 
-<h2 style="text-align:center; margin-bottom:15px;">
+
+<!-- =========================================================
+     عنوان الفاتورة
+========================================================= -->
+
+<h2 class="invoice-title">
+
     {% if invoice.customer and invoice.customer.tax_number %}
+
         فاتورة ضريبية - Tax Invoice
+
     {% else %}
+
         فاتورة ضريبية مبسطة - Simplified Tax Invoice
+
     {% endif %}
+
 </h2>
 
-<!-- Invoice Info -->
-<div style="margin-bottom:20px; font-size:15px;">
-    <p><span class="label">{% trans "Invoice No:" %}</span> {{ invoice.invoice_no }}</p>
-    <p><span class="label">{% trans "Customer:" %}</span> {{ invoice.customer.name }}</p>
+
+<!-- =========================================================
+     معلومات الفاتورة
+========================================================= -->
+
+<div class="invoice-info">
+
+    <p>
+
+        <span class="label">
+
+            {% trans "Invoice No:" %}
+
+        </span>
+
+        <span class="info-value">
+
+            {{ invoice.invoice_no }}
+
+        </span>
+
+    </p>
+
+
+    <p>
+
+        <span class="label">
+
+            {% trans "Customer:" %}
+
+        </span>
+
+        <span class="info-value">
+
+            {{ invoice.customer.name }}
+
+        </span>
+
+    </p>
+
 
     {% if invoice.description %}
-    <p><span class="label">{% trans "Description:" %}</span> {{ invoice.description }}</p>
+
+    <p>
+
+        <span class="label">
+
+            {% trans "Description:" %}
+
+        </span>
+
+        <span class="info-value">
+
+            {{ invoice.description }}
+
+        </span>
+
+    </p>
+
     {% endif %}
 
-    <p><span class="label">{% trans "Invoice Date:" %}</span> {{ invoice.date_invoice }}</p>
-    <p><span class="label">{% trans "Issue Date:" %}</span> {{ invoice.date_issue }}</p>
+
+    <p>
+
+        <span class="label">
+
+            {% trans "Invoice Date:" %}
+
+        </span>
+
+        <span class="info-value">
+
+            {{ invoice.date_invoice }}
+
+        </span>
+
+    </p>
+
+
+    <p>
+
+        <span class="label">
+
+            {% trans "Issue Date:" %}
+
+        </span>
+
+        <span class="info-value">
+
+            {{ invoice.date_issue }}
+
+        </span>
+
+    </p>
+
 </div>
 
-<!-- Items Table -->
-<table>
+
+<!-- =========================================================
+     جدول الأصناف
+========================================================= -->
+
+<table class="invoice-items-table">
+
     <thead>
+
         <tr>
-            <th>{% trans "Item" %}</th>
-            <th>{% trans "Description" %}</th>
-            <th>{% trans "Quantity" %}</th>
-            <th>{% trans "Price" %}</th>
-            <th>{% trans "Discount" %}</th>
-            <th>{% trans "Tax %" %}</th>
-            <th>{% trans "Total" %}</th>
+
+            <th>
+                {% trans "Item" %}
+            </th>
+
+            <th>
+                {% trans "Description" %}
+            </th>
+
+            <th>
+                {% trans "Quantity" %}
+            </th>
+
+            <th>
+                {% trans "Price" %}
+            </th>
+
+            <th>
+                {% trans "Discount" %}
+            </th>
+
+            <th>
+                {% trans "Tax %" %}
+            </th>
+
+            <th>
+                {% trans "Total" %}
+            </th>
+
         </tr>
+
     </thead>
 
+
     <tbody>
+
         {% for item in items %}
+
         <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.description }}</td>
-            <td>{{ item.qty }}</td>
-            <td>{{ item.price }}</td>
-            <td>{{ item.discount }}</td>
-            <td>{{ item.tax }}%</td>
-            <td>{{ item.total }}</td>
+
+            <td>
+                {{ item.product.name }}
+            </td>
+
+            <td>
+                {{ item.description }}
+            </td>
+
+            <td>
+                {{ item.qty }}
+            </td>
+
+            <td>
+                {{ item.price }}
+            </td>
+
+            <td>
+                {{ item.discount }}
+            </td>
+
+            <td>
+                {{ item.tax }}%
+            </td>
+
+            <td>
+                <strong>
+                    {{ item.total }}
+                </strong>
+            </td>
+
         </tr>
+
         {% endfor %}
 
-        <!-- Empty rows -->
+
+        <!-- الصفوف الفارغة -->
+
         {% for i in "12345678" %}
-        <tr>
-            <td style="height:18px;"></td><td></td><td></td><td></td><td></td><td></td><td></td>
+
+        <tr class="empty-row">
+
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
         </tr>
+
         {% endfor %}
+
     </tbody>
-</table>
 
-<br/>
-
-<!-- Totals + QR -->
-<!-- Totals + QR + Footer -->
-<table style="margin-top:10px; width:100%; border:none;">
-    <tr>
-
-        <!-- QR -->
-        <td style="border:none; width:35%; text-align:center; vertical-align:middle;">
-{% if qr_code %}
-<img src="{{ qr_code }}"
-     style="width:120px; height:120px;">
-{% endif %}
-        </td>
-
-
-        <!-- Totals -->
-        <td style="border:none; width:65%; vertical-align:top;">
-
-            <p>
-                <span class="label">
-                    {% trans "Total Before Tax:" %}
-                </span>
-                <span class="total-box">
-                    {{ invoice.total_before_tax }}
-                </span>
-            </p>
-
-
-            <p>
-                <span class="label">
-                    {% trans "Total After Discount:" %}
-                </span>
-                <span class="total-box">
-                    {{ invoice.total_after_discount|default:invoice.total_before_tax }}
-                </span>
-            </p>
-
-
-            <p>
-                <span class="label">
-                    {% trans "Total Tax:" %}
-                </span>
-                <span class="total-box">
-                    {{ invoice.tax_value }}
-                </span>
-            </p>
-
-
-            <p>
-                <span class="label" style="font-size:17px;">
-                    {% trans "Total After Tax:" %}
-                </span>
-                <span class="total-box"
-                      style="font-weight:bold;font-size:17px;">
-                    {{ invoice.total_after_tax }}
-                </span>
-            </p>
-
-
-            <p>
-                <span class="label">
-                    {% trans "Remaining Amount:" %}
-                </span>
-                <span class="total-box">
-                    {{ remaining_amount }}
-                </span>
-            </p>
-
-        </td>
-
-    </tr>
 </table>
 
 
-<div style="text-align:center; margin-top:15px; font-size:14px;">
-    شكراً لتعاملكم معنا
-    <br>
-    Thank you for your business
+<!-- =========================================================
+     QR + الإجماليات
+========================================================= -->
+
+<div class="summary-wrapper">
+
+    <table class="summary-table">
+
+        <tr>
+
+
+            <!-- =========================
+                 QR
+            ========================== -->
+
+            <td class="qr-cell">
+
+                {% if qr_code %}
+
+                <div class="qr-box">
+
+                    <img
+                        src="{{ qr_code }}"
+                        alt="QR Code"
+                    >
+
+                </div>
+
+                {% endif %}
+
+            </td>
+
+
+            <!-- =========================
+                 الإجماليات
+            ========================== -->
+
+            <td class="totals-cell">
+
+
+                <div class="total-row">
+
+                    <span class="total-label">
+
+                        {% trans "Total Before Tax:" %}
+
+                    </span>
+
+                    <span class="total-value">
+
+                        {{ invoice.total_before_tax }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="total-row">
+
+                    <span class="total-label">
+
+                        {% trans "Total After Discount:" %}
+
+                    </span>
+
+                    <span class="total-value">
+
+                        {{ invoice.total_after_discount|default:invoice.total_before_tax }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="total-row">
+
+                    <span class="total-label">
+
+                        {% trans "Total Tax:" %}
+
+                    </span>
+
+                    <span class="total-value">
+
+                        {{ invoice.tax_value }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="total-row total-final">
+
+                    <span class="total-label">
+
+                        {% trans "Total After Tax:" %}
+
+                    </span>
+
+                    <span class="total-value">
+
+                        {{ invoice.total_after_tax }}
+
+                    </span>
+
+                </div>
+
+
+                <div class="total-row remaining-row">
+
+                    <span class="total-label">
+
+                        {% trans "Remaining Amount:" %}
+
+                    </span>
+
+                    <span class="total-value">
+
+                        {{ remaining_amount }}
+
+                    </span>
+
+                </div>
+
+
+            </td>
+
+        </tr>
+
+    </table>
+
 </div>
+
+
+<!-- =========================================================
+     Footer
+========================================================= -->
+
+<div class="invoice-footer">
+
+    شكراً لتعاملكم معنا
+
+    <br>
+
+    <span>
+        Thank you for your business
+    </span>
+
+</div>
+
 
 {% endblock %}

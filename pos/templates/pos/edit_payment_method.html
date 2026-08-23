@@ -1,0 +1,237 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}
+تعديل طريقة الدفع
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    body {
+        background: #f1f5f9;
+        font-family: Tahoma, sans-serif;
+        direction: rtl;
+    }
+
+    .payment-page {
+        max-width: 700px;
+        margin: 40px auto;
+    }
+
+    .payment-card {
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .warning-box {
+        background: #fff3cd;
+        border: 1px solid #ffe69c;
+        color: #664d03;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .invoice-info {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+
+    .invoice-info div {
+        margin-bottom: 8px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .payment-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-family: Tahoma, sans-serif;
+        font-size: 16px;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        font-family: Tahoma, sans-serif;
+        font-weight: bold;
+    }
+
+    .btn-save {
+        background: #198754;
+        color: white;
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+
+</style>
+
+
+<div class="payment-page">
+
+    <div class="payment-card">
+
+        <div class="page-title">
+            ✏️ تعديل طريقة الدفع
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- تنبيه للمستخدم -->
+        <!-- ========================================= -->
+
+        <div class="warning-box">
+
+            🔒 المسموح هنا تعديل طريقة الدفع فقط
+
+            <br>
+
+            لا يمكن تعديل بيانات الفاتورة أو الأصناف أو الأسعار أو الكميات.
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- معلومات الفاتورة -->
+        <!-- ========================================= -->
+
+        <div class="invoice-info">
+
+            <div>
+                <strong>رقم الفاتورة:</strong>
+
+                POS-{{ invoice.invoice_no }}
+            </div>
+
+            <div>
+                <strong>إجمالي الفاتورة:</strong>
+
+                {{ invoice.total }}
+            </div>
+
+            {% if invoice.customer %}
+
+            <div>
+                <strong>العميل:</strong>
+
+                {{ invoice.customer.name }}
+            </div>
+
+            {% else %}
+
+            <div>
+                <strong>العميل:</strong>
+
+                نقدي
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- تعديل طريقة الدفع -->
+        <!-- ========================================= -->
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <label class="form-label">
+                طريقة الدفع
+            </label>
+
+            <select
+                name="payment_method"
+                class="payment-select"
+                required
+            >
+
+                <option value="">
+                    -- اختر طريقة الدفع --
+                </option>
+
+                {% for method in payment_methods %}
+
+                <option
+                    value="{{ method.id }}"
+                    {% if current_payment and current_payment.method_id == method.id %}
+                        selected
+                    {% endif %}
+                >
+
+                    {{ method.name }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <!-- ========================================= -->
+            <!-- الأزرار -->
+            <!-- ========================================= -->
+
+            <div class="buttons">
+
+                <button
+                    type="submit"
+                    class="btn btn-save"
+                >
+                    💾 حفظ طريقة الدفع
+                </button>
+
+
+                <a
+                    href="{% url 'pos:pos_invoice_view' invoice.id %}"
+                    class="btn btn-cancel"
+                >
+                    ↩ إلغاء
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

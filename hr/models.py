@@ -7,12 +7,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from datetime import timedelta
 
-
 from accounts.models import Company
 
 
-
 # ================= الأقسام والفروع =================
+
 class Department(models.Model):
     company = models.ForeignKey(
         Company,
@@ -25,12 +24,32 @@ class Department(models.Model):
 
     name = models.CharField(max_length=100)
 
-    class Meta:
-        ordering = ["name"]
-        constraints = [
-            models.UniqueConstraint(fields=["company", "name"], name="hr_uniq_department_name_per_company")
-        ]
+class Meta:
+    ordering = ["-created_at"]
 
+    constraints = [
+        models.UniqueConstraint(
+            fields=[
+                "company",
+                "target",
+                "criteria",
+                "evaluator",
+                "role",
+            ],
+            name="hr_uniq_score_per_company_evaluator",
+        ),
+
+        models.UniqueConstraint(
+            fields=[
+                "company",
+                "target",
+                "criteria",
+                "role",
+            ],
+            condition=models.Q(evaluator__isnull=True),
+            name="hr_uniq_score_without_evaluator",
+        ),
+    ]
     def __str__(self):
         return self.name
 
@@ -50,7 +69,10 @@ class Branch(models.Model):
     class Meta:
         ordering = ["name"]
         constraints = [
-            models.UniqueConstraint(fields=["company", "name"], name="hr_uniq_branch_name_per_company")
+            models.UniqueConstraint(
+                fields=["company", "name"],
+                name="hr_uniq_branch_name_per_company"
+            )
         ]
 
     def __str__(self):
@@ -58,6 +80,7 @@ class Branch(models.Model):
 
 
 # ================= مواقع العمل =================
+
 class WorkLocation(models.Model):
     company = models.ForeignKey(
         Company,
@@ -144,7 +167,9 @@ class WorkLocation(models.Model):
     def __str__(self):
         return self.name
 
+
 # ================= الموظفين =================
+
 class Employee(models.Model):
     company = models.ForeignKey(
         Company,
@@ -168,7 +193,10 @@ class Employee(models.Model):
 
     gender = models.CharField(
         max_length=10,
-        choices=(("ذكر", _("Male")), ("أنثى", _("Female")))
+        choices=(
+            ("ذكر", _("Male")),
+            ("أنثى", _("Female"))
+        )
     )
 
     email = models.EmailField()
@@ -198,6 +226,7 @@ class Employee(models.Model):
         blank=True,
         on_delete=models.SET_NULL
     )
+
     work_location = models.ForeignKey(
         WorkLocation,
         null=True,
@@ -205,8 +234,50 @@ class Employee(models.Model):
         on_delete=models.SET_NULL,
         verbose_name=_("Work Location")
     )
+
     job_title = models.CharField(max_length=100, blank=True)
-    employee_type = models.CharField(max_length=50, default=_("Full-time Employee"))
+
+    employee_type = models.CharField(
+        max_length=50,
+        default=_("Full-time Employee")
+    )
+
+    # ================= الرواتب =================
+
+    base_salary = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_("Basic Salary")
+    )
+
+    housing_allowance = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_("Housing Allowance")
+    )
+
+    transport_allowance = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_("Transport Allowance")
+    )
+
+    clothing_allowance = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_("Clothing Allowance")
+    )
+
+    other_allowances = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        verbose_name=_("Other Allowances")
+    )
 
     supervisor = models.ForeignKey(
         "self",
@@ -229,6 +300,7 @@ class Employee(models.Model):
     )
 
     # ================= الإجازات السنوية =================
+
     annual_leave_entitlement = models.IntegerField(
         default=0,
         verbose_name=_("Annual Leave Entitlement")
@@ -245,6 +317,7 @@ class Employee(models.Model):
     )
 
     # ================= ملفات الموظف =================
+
     photo = models.ImageField(
         upload_to="employee_photos/",
         blank=True,
@@ -290,8 +363,14 @@ class Employee(models.Model):
     class Meta:
         ordering = ["employee_number"]
         constraints = [
-            models.UniqueConstraint(fields=["company", "employee_number"], name="hr_uniq_employee_number_per_company"),
-            models.UniqueConstraint(fields=["company", "email"], name="hr_uniq_employee_email_per_company"),
+            models.UniqueConstraint(
+                fields=["company", "employee_number"],
+                name="hr_uniq_employee_number_per_company"
+            ),
+            models.UniqueConstraint(
+                fields=["company", "email"],
+                name="hr_uniq_employee_email_per_company"
+            ),
         ]
 
     def __str__(self):
@@ -312,21 +391,27 @@ class Employee(models.Model):
     def save(self, *args, **kwargs):
         if not self.employee_number:
             last_employee = (
-                Employee.objects.filter(company=self.company)
+                Employee.objects
+                .filter(company=self.company)
                 .order_by("-id")
                 .first()
             )
+
             if last_employee and last_employee.employee_number:
                 try:
-                    self.employee_number = str(int(last_employee.employee_number) + 1)
+                    self.employee_number = str(
+                        int(last_employee.employee_number) + 1
+                    )
                 except ValueError:
                     self.employee_number = "1"
             else:
                 self.employee_number = "1"
+
         super().save(*args, **kwargs)
 
 
 # ================= الإجازات =================
+
 class Leave(models.Model):
     company = models.ForeignKey(
         Company,
@@ -350,22 +435,45 @@ class Leave(models.Model):
         ("rejected", _("Rejected")),
     )
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="leaves")
-    leave_type = models.CharField(max_length=50, choices=LEAVE_TYPES)
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="leaves"
+    )
+
+    leave_type = models.CharField(
+        max_length=50,
+        choices=LEAVE_TYPES
+    )
+
     start_date = models.DateField()
     end_date = models.DateField()
+
     reason = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=LEAVE_STATUS, default="pending")
+
+    status = models.CharField(
+        max_length=20,
+        choices=LEAVE_STATUS,
+        default="pending"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-start_date"]
 
     def __str__(self):
-        return f"{self.employee} - {self.leave_type} - {self.start_date} {_('To')} {self.end_date}"
+        return (
+            f"{self.employee} - "
+            f"{self.leave_type} - "
+            f"{self.start_date} "
+            f"{_('To')} "
+            f"{self.end_date}"
+        )
 
 
 # ================= المناوبات =================
+
 class Shift(models.Model):
     company = models.ForeignKey(
         Company,
@@ -376,18 +484,48 @@ class Shift(models.Model):
         blank=True
     )
 
-    shift_name = models.CharField(max_length=100, verbose_name=_("Shift Name"))
-    shift_order = models.PositiveIntegerField(verbose_name=_("Shift Order"))
-    start_time = models.TimeField(verbose_name=_("Start Time"))
-    end_time = models.TimeField(verbose_name=_("End Time"))
-    break_start = models.TimeField(blank=True, null=True, verbose_name=_("Break Start Time"))
-    break_end = models.TimeField(blank=True, null=True, verbose_name=_("Break End Time"))
-    notes = models.TextField(blank=True, null=True, verbose_name=_("Notes"))
+    shift_name = models.CharField(
+        max_length=100,
+        verbose_name=_("Shift Name")
+    )
+
+    shift_order = models.PositiveIntegerField(
+        verbose_name=_("Shift Order")
+    )
+
+    start_time = models.TimeField(
+        verbose_name=_("Start Time")
+    )
+
+    end_time = models.TimeField(
+        verbose_name=_("End Time")
+    )
+
+    break_start = models.TimeField(
+        blank=True,
+        null=True,
+        verbose_name=_("Break Start Time")
+    )
+
+    break_end = models.TimeField(
+        blank=True,
+        null=True,
+        verbose_name=_("Break End Time")
+    )
+
+    notes = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_("Notes")
+    )
 
     class Meta:
         ordering = ["shift_order"]
         constraints = [
-            models.UniqueConstraint(fields=["company", "shift_order"], name="hr_uniq_shift_order_per_company")
+            models.UniqueConstraint(
+                fields=["company", "shift_order"],
+                name="hr_uniq_shift_order_per_company"
+            )
         ]
 
     def __str__(self):
@@ -395,6 +533,7 @@ class Shift(models.Model):
 
 
 # ================= جدول الموظفين =================
+
 class EmployeeSchedule(models.Model):
     company = models.ForeignKey(
         Company,
@@ -405,29 +544,51 @@ class EmployeeSchedule(models.Model):
         blank=True
     )
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    shift = models.ForeignKey(Shift, null=True, blank=True, on_delete=models.SET_NULL)
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE
+    )
+
+    shift = models.ForeignKey(
+        Shift,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
     date = models.DateField()
 
     class Meta:
         ordering = ["date", "employee"]
         constraints = [
-            models.UniqueConstraint(fields=["company", "employee", "date"], name="hr_uniq_schedule_per_company")
+            models.UniqueConstraint(
+                fields=["company", "employee", "date"],
+                name="hr_uniq_schedule_per_company"
+            )
         ]
 
     def __str__(self):
         if self.shift:
-            return f"{self.employee} - {self.shift} - {self.date}"
-        return f"{self.employee} - {_('Off Day')} - {self.date}"
+            return (
+                f"{self.employee} - "
+                f"{self.shift} - "
+                f"{self.date}"
+            )
+
+        return (
+            f"{self.employee} - "
+            f"{_('Off Day')} - "
+            f"{self.date}"
+        )
 
     @property
     def shift_id_or_default(self):
         return self.shift.id if self.shift else 0
 
 
-# ================= الرواتب =================
-class Payroll(models.Model):
+# ================= مسير الرواتب =================
 
+class Payroll(models.Model):
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
@@ -436,76 +597,71 @@ class Payroll(models.Model):
         null=True,
         blank=True
     )
-
+    payroll_run = models.ForeignKey(
+        "PayrollRun",
+        on_delete=models.CASCADE,
+        related_name="payrolls",
+        null=True,
+        blank=True,
+        verbose_name=_("Payroll Run")
+    )
 
     employee = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
-        verbose_name=_("Employee")
+        related_name="payrolls"
     )
-
 
     date = models.DateField(
         default=timezone.now
     )
 
-
-    # الراتب الأساسي
     base_salary = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
     )
 
-
-    # البدلات
     allowances = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
     )
 
-
-    # العمل الإضافي
     overtime = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
     )
 
-
-    # خصم الغياب
     absence_deduction = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
     )
 
-
-    # راتب مدفوع مقدماً
     advance_deduction = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
     )
 
-
-    # خصومات أخرى
     other_deductions = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
     )
 
-
     notes = models.TextField(
         blank=True
     )
 
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     @property
     def net_salary(self):
-
         return (
             self.base_salary
             + self.allowances
@@ -515,16 +671,211 @@ class Payroll(models.Model):
             - self.other_deductions
         )
 
-
     class Meta:
         ordering = ["-date"]
-
 
     def __str__(self):
         return f"{self.employee} - {self.date}"
 
+# ================= مسير الرواتب الشهري =================
+
+class PayrollRun(models.Model):
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="hr_payroll_runs",
+        verbose_name=_("Company"),
+        null=True,
+        blank=True
+    )
+
+    month = models.PositiveIntegerField(
+        verbose_name=_("Month")
+    )
+
+    year = models.PositiveIntegerField(
+        verbose_name=_("Year")
+    )
+
+    created_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_payroll_runs",
+        verbose_name=_("Created By")
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At")
+    )
+
+    STATUS_CHOICES = (
+        ("draft", _("Draft")),
+        ("approved", _("Approved")),
+        ("paid", _("Paid")),
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="draft",
+        verbose_name=_("Status")
+    )
+
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
+
+    class Meta:
+        ordering = ["-year", "-month", "-id"]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "month", "year"],
+                name="hr_uniq_payroll_run_per_company_month"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.month}/{self.year}"
+
+    # =========================================================
+    # إجمالي عدد الموظفين
+    # =========================================================
+
+    @property
+    def employee_count(self):
+        return self.payrolls.count()
+
+    # =========================================================
+    # إجمالي الراتب الأساسي
+    # =========================================================
+
+    @property
+    def total_base_salary(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.base_salary or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
+
+    # =========================================================
+    # إجمالي البدلات
+    # =========================================================
+
+    @property
+    def total_allowances(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.allowances or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
+
+    # =========================================================
+    # إجمالي العمل الإضافي
+    # =========================================================
+
+    @property
+    def total_overtime(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.overtime or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
+
+    # =========================================================
+    # إجمالي خصم الغياب
+    # =========================================================
+
+    @property
+    def total_absence_deduction(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.absence_deduction or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
+
+    # =========================================================
+    # إجمالي خصم السلف
+    # =========================================================
+
+    @property
+    def total_advance_deduction(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.advance_deduction or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
+
+    # =========================================================
+    # إجمالي الخصومات الأخرى
+    # =========================================================
+
+    @property
+    def total_other_deductions(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.other_deductions or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
+
+    # =========================================================
+    # إجمالي جميع الخصومات
+    # =========================================================
+
+    @property
+    def total_deductions(self):
+        return (
+            self.total_absence_deduction
+            + self.total_advance_deduction
+            + self.total_other_deductions
+        )
+
+    # =========================================================
+    # إجمالي صافي الرواتب
+    # =========================================================
+
+    @property
+    def total_net_salary(self):
+        from decimal import Decimal
+
+        return sum(
+            (
+                payroll.net_salary or Decimal("0")
+                for payroll in self.payrolls.all()
+            ),
+            Decimal("0")
+        )
 
 # ================= نوع التقييم الجديد =================
+
 class EvaluationType(models.Model):
     company = models.ForeignKey(
         Company,
@@ -539,7 +890,10 @@ class EvaluationType(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["company", "name"], name="hr_uniq_evaltype_name_per_company")
+            models.UniqueConstraint(
+                fields=["company", "name"],
+                name="hr_uniq_evaltype_name_per_company"
+            )
         ]
 
     def __str__(self):
@@ -547,6 +901,7 @@ class EvaluationType(models.Model):
 
 
 # ================= التقييمات =================
+
 class Evaluation(models.Model):
     company = models.ForeignKey(
         Company,
@@ -583,8 +938,13 @@ class Evaluation(models.Model):
         default="draft"
     )
 
-    start_date = models.DateField(default=timezone.now)
-    end_date = models.DateField(default=timezone.now)
+    start_date = models.DateField(
+        default=timezone.now
+    )
+
+    end_date = models.DateField(
+        default=timezone.now
+    )
 
     employee = models.ForeignKey(
         Employee,
@@ -593,7 +953,9 @@ class Evaluation(models.Model):
         on_delete=models.SET_NULL
     )
 
-    comment = models.TextField(blank=True)
+    comment = models.TextField(
+        blank=True
+    )
 
     notes = models.TextField(
         blank=True,
@@ -604,8 +966,15 @@ class Evaluation(models.Model):
         ordering = ["-start_date"]
 
     def __str__(self):
-        return f"{self.name} - {self.department} - {self.status}"
+        return (
+            f"{self.name} - "
+            f"{self.department} - "
+            f"{self.status}"
+        )
+
+
 # ================= مرفقات التقييم =================
+
 class EvaluationAttachment(models.Model):
     company = models.ForeignKey(
         Company,
@@ -629,6 +998,8 @@ class EvaluationAttachment(models.Model):
 
     def __str__(self):
         return self.file.name
+
+
 # ================= سجل الحضور اليومي =================
 
 class Attendance(models.Model):
@@ -767,6 +1138,8 @@ class Attendance(models.Model):
         return self.logs.filter(
             action="check_out"
         ).count()
+
+
 # ================= عمليات الدخول والخروج =================
 
 class AttendanceLog(models.Model):
@@ -888,13 +1261,17 @@ class AttendanceLog(models.Model):
             f"{self.get_action_display()} - "
             f"{self.timestamp}"
         )
+
+
 # ================= تحديث جدول الموظف عند الموافقة على الإجازة =================
+
 @receiver(post_save, sender=Leave)
 def update_schedule_on_leave(sender, instance, **kwargs):
     if instance.status != "approved":
         return
 
     current_date = instance.start_date
+
     while current_date <= instance.end_date:
         EmployeeSchedule.objects.update_or_create(
             company=instance.company,
@@ -902,10 +1279,12 @@ def update_schedule_on_leave(sender, instance, **kwargs):
             date=current_date,
             defaults={"shift": None}
         )
+
         current_date += timedelta(days=1)
 
 
 # ================= معايير التقييم =================
+
 class EvaluationCriteria(models.Model):
     company = models.ForeignKey(
         Company,
@@ -916,11 +1295,26 @@ class EvaluationCriteria(models.Model):
         blank=True
     )
 
-    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE, related_name="criteria")
-    name = models.CharField(max_length=200)
-    criteria_type = models.CharField(max_length=50)
-    weight = models.FloatField(default=0)
+    evaluation = models.ForeignKey(
+        Evaluation,
+        on_delete=models.CASCADE,
+        related_name="criteria"
+    )
 
+    name = models.CharField(
+        max_length=200
+    )
+
+    criteria_type = models.CharField(
+        max_length=50
+    )
+
+    weight = models.FloatField(
+        default=0
+    )
+
+
+# ================= أهداف التقييم =================
 
 class EvaluationTarget(models.Model):
     company = models.ForeignKey(
@@ -932,7 +1326,11 @@ class EvaluationTarget(models.Model):
         blank=True
     )
 
-    evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE, related_name="targets")
+    evaluation = models.ForeignKey(
+        Evaluation,
+        on_delete=models.CASCADE,
+        related_name="targets"
+    )
 
     employee = models.ForeignKey(
         Employee,
@@ -948,6 +1346,8 @@ class EvaluationTarget(models.Model):
         on_delete=models.SET_NULL
     )
 
+
+# ================= درجات التقييم =================
 
 class EvaluationScore(models.Model):
     company = models.ForeignKey(
@@ -987,48 +1387,140 @@ class EvaluationScore(models.Model):
         default="peer"
     )
 
-    value = models.FloatField(default=0)
+    value = models.FloatField(
+        default=0
+    )
 
     notes = models.TextField(
         blank=True,
         verbose_name=_("Notes")
     )
 
-    attachment = models.FileField(
-        upload_to="evaluation_scores/",
-        blank=True,
-        null=True,
-        verbose_name=_("Attachment")
-    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     class Meta:
         ordering = ["-created_at"]
         constraints = [
             models.UniqueConstraint(
-                fields=["company", "target", "criteria", "evaluator", "role"],
+                fields=[
+                    "company",
+                    "target",
+                    "criteria",
+                    "evaluator",
+                    "role"
+                ],
                 name="hr_uniq_score_per_company"
             )
         ]
 
-class HRPermission(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="hr_permissions")
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="hr_permission")
+# ================= مرفقات درجات التقييم =================
 
-    # الموظفون (تعديل الـ default إلى True)
-    employees_view = models.BooleanField(default=True, verbose_name=_("View Employees"))
-    employees_add = models.BooleanField(default=True, verbose_name=_("Add Employee"))
-    employees_edit = models.BooleanField(default=True, verbose_name=_("Edit Employee"))
-    employees_delete = models.BooleanField(default=True, verbose_name=_("Delete Employee"))
-    employees_export = models.BooleanField(default=True, verbose_name=_("Export Employees"))
-    employees_view_all_departments = models.BooleanField(default=True, verbose_name=_("View All Departments or Own Department Only"))
+class EvaluationScoreAttachment(models.Model):
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="hr_score_attachments",
+        verbose_name=_("Company"),
+        null=True,
+        blank=True
+    )
+
+    score = models.ForeignKey(
+        EvaluationScore,
+        on_delete=models.CASCADE,
+        related_name="attachments",
+        verbose_name=_("Evaluation Score")
+    )
+
+    file = models.FileField(
+        upload_to="evaluation_scores/",
+        verbose_name=_("Attachment")
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ["uploaded_at"]
+
+        verbose_name = _("Evaluation Score Attachment")
+        verbose_name_plural = _("Evaluation Score Attachments")
+
+    def __str__(self):
+
+        return self.file.name
+# ================= صلاحيات الموارد البشرية =================
+
+class HRPermission(models.Model):
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="hr_permissions"
+    )
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="hr_permission"
+    )
+
+    # الموظفون
+    employees_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Employees")
+    )
+
+    employees_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Add Employee")
+    )
+
+    employees_edit = models.BooleanField(
+        default=True,
+        verbose_name=_("Edit Employee")
+    )
+
+    employees_delete = models.BooleanField(
+        default=True,
+        verbose_name=_("Delete Employee")
+    )
+
+    employees_export = models.BooleanField(
+        default=True,
+        verbose_name=_("Export Employees")
+    )
+
+    employees_view_all_departments = models.BooleanField(
+        default=True,
+        verbose_name=_("View All Departments or Own Department Only")
+    )
 
     # الأقسام
-    departments_view = models.BooleanField(default=True, verbose_name=_("View Departments"))
-    departments_add = models.BooleanField(default=True, verbose_name=_("Add Department"))
-    departments_edit = models.BooleanField(default=True, verbose_name=_("Edit Department"))
-    departments_delete = models.BooleanField(default=True, verbose_name=_("Delete Department"))
+    departments_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Departments")
+    )
+
+    departments_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Add Department")
+    )
+
+    departments_edit = models.BooleanField(
+        default=True,
+        verbose_name=_("Edit Department")
+    )
+
+    departments_delete = models.BooleanField(
+        default=True,
+        verbose_name=_("Delete Department")
+    )
+
     # مواقع العمل
     worklocations_view = models.BooleanField(
         default=True,
@@ -1051,49 +1543,156 @@ class HRPermission(models.Model):
     )
 
     # الحضور والانصراف
-    attendance_view = models.BooleanField(default=True, verbose_name=_("View Attendance"))
-    attendance_check = models.BooleanField(default=True, verbose_name=_("Check In/Out"))
-    attendance_edit = models.BooleanField(default=True, verbose_name=_("Edit Attendance"))
-    attendance_approve = models.BooleanField(default=True, verbose_name=_("Approve Attendance"))
-    attendance_view_all_departments = models.BooleanField(default=True, verbose_name=_("View Attendance for Own Department or All"))
+    attendance_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Attendance")
+    )
+
+    attendance_check = models.BooleanField(
+        default=True,
+        verbose_name=_("Check In/Out")
+    )
+
+    attendance_edit = models.BooleanField(
+        default=True,
+        verbose_name=_("Edit Attendance")
+    )
+
+    attendance_approve = models.BooleanField(
+        default=True,
+        verbose_name=_("Approve Attendance")
+    )
+
+    attendance_view_all_departments = models.BooleanField(
+        default=True,
+        verbose_name=_("View Attendance for Own Department or All")
+    )
 
     # الإجازات
-    leaves_view = models.BooleanField(default=True, verbose_name=_("View Leaves"))
-    leaves_add = models.BooleanField(default=True, verbose_name=_("Submit Leave"))
-    leaves_approve = models.BooleanField(default=True, verbose_name=_("Approve Leave"))
-    leaves_reject = models.BooleanField(default=True, verbose_name=_("Reject Leave"))
-    leaves_view_all_departments = models.BooleanField(default=True, verbose_name=_("View Leaves for Own Department or All"))
+    leaves_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Leaves")
+    )
+
+    leaves_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Submit Leave")
+    )
+
+    leaves_approve = models.BooleanField(
+        default=True,
+        verbose_name=_("Approve Leave")
+    )
+
+    leaves_reject = models.BooleanField(
+        default=True,
+        verbose_name=_("Reject Leave")
+    )
+
+    leaves_view_all_departments = models.BooleanField(
+        default=True,
+        verbose_name=_("View Leaves for Own Department or All")
+    )
 
     # التقييمات
-    evaluations_view = models.BooleanField(default=True, verbose_name=_("View Evaluations"))
-    evaluations_add = models.BooleanField(default=True, verbose_name=_("Create Evaluation"))
-    evaluations_edit = models.BooleanField(default=True, verbose_name=_("Edit Evaluation"))
-    evaluations_delete = models.BooleanField(default=True, verbose_name=_("Delete Evaluation"))
-    evaluations_peer = models.BooleanField(default=True, verbose_name=_("Evaluate as Peer"))
-    evaluations_manager = models.BooleanField(default=True, verbose_name=_("Evaluate as Manager"))
-    evaluations_approve = models.BooleanField(default=True, verbose_name=_("Approve Results"))
-    evaluations_reports = models.BooleanField(default=True, verbose_name=_("View Evaluation Reports"))
+    evaluations_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Evaluations")
+    )
+
+    evaluations_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Create Evaluation")
+    )
+
+    evaluations_edit = models.BooleanField(
+        default=True,
+        verbose_name=_("Edit Evaluation")
+    )
+
+    evaluations_delete = models.BooleanField(
+        default=True,
+        verbose_name=_("Delete Evaluation")
+    )
+
+    evaluations_peer = models.BooleanField(
+        default=True,
+        verbose_name=_("Evaluate as Peer")
+    )
+
+    evaluations_manager = models.BooleanField(
+        default=True,
+        verbose_name=_("Evaluate as Manager")
+    )
+
+    evaluations_approve = models.BooleanField(
+        default=True,
+        verbose_name=_("Approve Results")
+    )
+
+    evaluations_reports = models.BooleanField(
+        default=True,
+        verbose_name=_("View Evaluation Reports")
+    )
 
     # الرواتب
-    payroll_view = models.BooleanField(default=True, verbose_name=_("View Payroll"))
-    payroll_add = models.BooleanField(default=True, verbose_name=_("Create Payroll"))
-    payroll_edit = models.BooleanField(default=True, verbose_name=_("Edit Payroll"))
-    payroll_delete = models.BooleanField(default=True, verbose_name=_("Delete Payroll"))
-    payroll_approve = models.BooleanField(default=True, verbose_name=_("Approve Salary Payment"))
+    payroll_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Payroll")
+    )
+
+    payroll_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Create Payroll")
+    )
+
+    payroll_edit = models.BooleanField(
+        default=True,
+        verbose_name=_("Edit Payroll")
+    )
+
+    payroll_delete = models.BooleanField(
+        default=True,
+        verbose_name=_("Delete Payroll")
+    )
+
+    payroll_approve = models.BooleanField(
+        default=True,
+        verbose_name=_("Approve Salary Payment")
+    )
 
     # التقارير
-    reports_view = models.BooleanField(default=True, verbose_name=_("View Reports"))
-    reports_export = models.BooleanField(default=True, verbose_name=_("Export PDF / Excel"))
-    reports_view_all_departments = models.BooleanField(default=True, verbose_name=_("View Reports for Own Department or Entire Company"))
+    reports_view = models.BooleanField(
+        default=True,
+        verbose_name=_("View Reports")
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    reports_export = models.BooleanField(
+        default=True,
+        verbose_name=_("Export PDF / Excel")
+    )
+
+    reports_view_all_departments = models.BooleanField(
+        default=True,
+        verbose_name=_("View Reports for Own Department or Entire Company")
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
 
     class Meta:
         verbose_name = _("HR Permission")
         verbose_name_plural = _("HR Permissions")
         constraints = [
-            models.UniqueConstraint(fields=["company", "user"], name="uniq_hr_permission_per_company_user")
+            models.UniqueConstraint(
+                fields=["company", "user"],
+                name="uniq_hr_permission_per_company_user"
+            )
         ]
 
     def __str__(self):

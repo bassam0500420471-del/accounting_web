@@ -14,12 +14,18 @@ urlpatterns = [
     path('employees/delete/<int:emp_id>/', views.delete_employee, name='delete_employee'),
 
     # ==========================
+    # ==========================
     # إدارة الأقسام
     # ==========================
     path('departments/', views.departments_list, name='departments'),
     path('departments/add/', views.add_department, name='add_department'),
     path('departments/edit/<int:dept_id>/', views.edit_department, name='edit_department'),
     path('departments/delete/<int:dept_id>/', views.delete_department, name='delete_department'),
+
+    # ==========================
+    # إدارة الفروع
+    # ==========================
+    path('branches/add/', views.add_branch, name='add_branch'),
 
     # ==========================
     # إدارة مواقع العمل
@@ -53,10 +59,45 @@ urlpatterns = [
     path('leaves/reject/<int:leave_id>/', views.reject_leave, name='reject_leave'),
 
     # ==========================
-    # مسيرات الرواتب
-    # ==========================
-    path('payrolls/', views.payroll_list, name='payrolls'),
-    path('payrolls/add/', views.add_payroll, name='add_payroll'),
+# ==========================
+# مسيرات الرواتب
+# ==========================
+
+path(
+    'payrolls/',
+    views.payroll_list,
+    name='payrolls'
+),
+
+path(
+    'payrolls/add/',
+    views.add_payroll,
+    name='add_payroll'
+),
+
+path(
+    'payrolls/<int:payroll_run_id>/',
+    views.payroll_detail,
+    name='payroll_detail'
+),
+
+path(
+    'payrolls/<int:payroll_run_id>/edit/',
+    views.payroll_edit,
+    name='payroll_edit'
+),
+
+path(
+    'payrolls/<int:payroll_run_id>/approve/',
+    views.payroll_approve,
+    name='payroll_approve'
+),
+
+path(
+    'payrolls/<int:payroll_run_id>/delete/',
+    views.payroll_delete,
+    name='payroll_delete'
+),
 
     # ==========================
     # التقييمات

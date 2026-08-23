@@ -1,86 +1,801 @@
 {% load i18n %}
-
 {% extends "layout/base.html" %}
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid accounts-page mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="account-card">
 
-        <h3 class="fw-bold">
-            {% trans "Account Movement" %}: {{ account.code }} - {{ account.name }}
-        </h3>
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
 
-        <a href="{% url 'accounting:account_view' account.id %}"
-           class="btn btn-outline-secondary">
-            {% trans "Back to Account" %}
-        </a>
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    {% trans "Account Movement" %}:
+                    {{ account.code }} - {{ account.name }}
+
+                </h3>
+
+                <p>
+                    {% trans "Account Movement" %}
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'accounting:account_view' account.id %}"
+               class="back-btn">
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+                {% trans "Back to Account" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- الحركات -->
+        <!-- ============================= -->
+
+        {% if rows %}
+
+        <div class="table-box">
+
+            <table class="movement-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>
+                            {% trans "Date" %}
+                        </th>
+
+                        <th>
+                            {% trans "Journal No" %}
+                        </th>
+
+                        <th>
+                            {% trans "Description" %}
+                        </th>
+
+                        <th>
+                            {% trans "Debit" %}
+                        </th>
+
+                        <th>
+                            {% trans "Credit" %}
+                        </th>
+
+                        <th>
+                            {% trans "Balance" %}
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for r in rows %}
+
+                    <tr>
+
+                        <td>
+
+                            <span class="order-badge">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="date-badge">
+
+                                {{ r.date }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <a href="{% url 'accounting:journal_view' r.journal_id %}"
+                               class="journal-link">
+
+                                <i class="fa-solid fa-book"></i>
+
+                                {{ r.journal_id }}
+
+                            </a>
+
+                        </td>
+
+
+                        <td class="description-cell">
+
+                            {{ r.description }}
+
+                        </td>
+
+
+                        <td class="amount-cell">
+
+                            {{ r.debit }}
+
+                        </td>
+
+
+                        <td class="amount-cell">
+
+                            {{ r.credit }}
+
+                        </td>
+
+
+                        <td class="balance-cell">
+
+                            {{ r.balance }}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+
+                <!-- ============================= -->
+                <!-- الرصيد النهائي -->
+                <!-- ============================= -->
+
+                <tfoot>
+
+                    <tr>
+
+                        <th colspan="6">
+
+                            {% trans "Final Balance" %}
+
+                        </th>
+
+                        <th class="final-balance">
+
+                            {{ final_balance }}
+
+                        </th>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <!-- ============================= -->
+        <!-- لا توجد حركات -->
+        <!-- ============================= -->
+
+        <div class="empty">
+
+            <i class="fa-solid fa-file-circle-xmark"></i>
+
+            <div>
+
+                {% trans "No transactions for this account" %}
+
+            </div>
+
+        </div>
+
+        {% endif %}
 
     </div>
 
-    {% if rows %}
-        <div class="card">
-            <div class="card-body p-0">
-
-                <table class="table table-bordered table-hover mb-0 text-center align-middle">
-
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>{% trans "Date" %}</th>
-                            <th>{% trans "Journal No" %}</th>
-                            <th>{% trans "Description" %}</th>
-                            <th>{% trans "Debit" %}</th>
-                            <th>{% trans "Credit" %}</th>
-                            <th>{% trans "Balance" %}</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for r in rows %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ r.date }}</td>
-                            <td>
-                                <a href="{% url 'accounting:journal_view' r.journal_id %}">
-                                    {{ r.journal_id }}
-                                </a>
-                            </td>
-                            <td class="text-end">
-                                {{ r.description }}
-                            </td>
-                            <td>{{ r.debit }}</td>
-                            <td>{{ r.credit }}</td>
-                            <td class="fw-bold">
-                                {{ r.balance }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                    <tfoot class="table-light">
-                        <tr>
-                            <th colspan="6" class="text-end">
-                                {% trans "Final Balance" %}
-                            </th>
-                            <th class="fw-bold">
-                                {{ final_balance }}
-                            </th>
-                        </tr>
-                    </tfoot>
-
-                </table>
-
-            </div>
-        </div>
-
-    {% else %}
-        <div class="alert alert-info text-center p-4">
-            {% trans "No transactions for this account" %}
-        </div>
-    {% endif %}
-
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.accounts-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.account-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر الرجوع
+========================================================= */
+
+.back-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #cccccc
+    );
+
+    color:#444;
+
+    padding:11px 20px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:1px solid #c5c5c5;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.3s;
+
+}
+
+
+.back-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #dddddd,
+        #bbbbbb
+    );
+
+    color:#333;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.18);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.movement-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.movement-table thead{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.movement-table thead th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.movement-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.movement-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.movement-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم الصف
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   رابط القيد
+========================================================= */
+
+.journal-link{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    color:#444;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    padding:7px 12px;
+
+    border-radius:10px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.3s;
+
+}
+
+
+.journal-link:hover{
+
+    color:#222;
+
+    transform:translateY(-2px);
+
+    background:
+    linear-gradient(
+        145deg,
+        #dddddd,
+        #c5c5c5
+    );
+
+}
+
+
+/* =========================================================
+   الوصف
+========================================================= */
+
+.description-cell{
+
+    font-weight:600;
+
+    color:#444 !important;
+
+    text-align:right !important;
+
+}
+
+
+/* =========================================================
+   المبالغ
+========================================================= */
+
+.amount-cell{
+
+    font-weight:700;
+
+    color:#555 !important;
+
+}
+
+
+/* =========================================================
+   الرصيد
+========================================================= */
+
+.balance-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+    background:
+    linear-gradient(
+        145deg,
+        #f0f0f0,
+        #dddddd
+    );
+
+}
+
+
+/* =========================================================
+   إجمالي الجدول
+========================================================= */
+
+.movement-table tfoot{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+}
+
+
+.movement-table tfoot th{
+
+    padding:16px;
+
+    color:#444;
+
+    font-weight:800;
+
+    border-top:2px solid #bbb;
+
+}
+
+
+/* =========================================================
+   الرصيد النهائي
+========================================================= */
+
+.final-balance{
+
+    font-size:16px;
+
+    color:#333 !important;
+
+    background:
+    linear-gradient(
+        135deg,
+        #dddddd,
+        #c5c5c5
+    );
+
+    box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   لا توجد حركات
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+    text-align:center;
+
+    background:white;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .accounts-page{
+
+        padding:15px;
+
+    }
+
+
+    .account-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .back-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .movement-table{
+
+        min-width:950px;
+
+    }
+
+}
+
+</style>
 
 {% endblock %}

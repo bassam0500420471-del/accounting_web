@@ -4,141 +4,1780 @@
 
 {% block content %}
 
-<!-- jQuery -->
+<!-- =========================================================
+     Libraries
+========================================================= -->
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<!-- jsTree -->
 <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/jstree@3.3.15/dist/themes/default/style.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/jstree@3.3.15/dist/jstree.min.js"></script>
 
-<!-- Font Awesome -->
 <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 
 <style>
-    #chartTree {
-        direction: {% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %};
-        font-size: 18px;
-        line-height: 1.9;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.chart-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.chart-wrapper {
+
+    max-width: 1700px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.chart-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 28px;
+
+    padding: 24px 28px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.chart-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+}
+
+
+.chart-title-icon {
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+.chart-title h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+.chart-title p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   شبكة الحسابات
+========================================================= */
+
+.accounts-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 28px;
+
+}
+
+
+/* =========================================================
+   كرت الحساب الرئيسي
+   الكروت محفوظة كما هي
+========================================================= */
+
+.account-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 320px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 18px 38px rgba(0,0,0,.17),
+        0 5px 12px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+    transition: .3s ease;
+
+}
+
+
+.account-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 25px 48px rgba(0,0,0,.22),
+        0 8px 16px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   الحساب الخامس في المنتصف
+========================================================= */
+
+.account-card:last-child {
+
+    grid-column: 1 / -1;
+
+    width: 50%;
+
+    max-width: 850px;
+
+    justify-self: center;
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.account-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+    z-index: 10;
+
+}
+
+
+/* =========================================================
+   رأس الحساب
+========================================================= */
+
+.account-card-header {
+
+    min-height: 88px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 18px 22px;
+
+    color: #fff;
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   تدرجات الحسابات الرئيسية
+========================================================= */
+
+.account-card:nth-child(1) .account-card-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #777,
+            #3b3b3b
+        );
+
+}
+
+
+.account-card:nth-child(2) .account-card-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #898989,
+            #4d4d4d
+        );
+
+}
+
+
+.account-card:nth-child(3) .account-card-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #707070,
+            #2f2f2f
+        );
+
+}
+
+
+.account-card:nth-child(4) .account-card-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #969696,
+            #565656
+        );
+
+}
+
+
+.account-card:nth-child(5) .account-card-header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #686868,
+            #222222
+        );
+
+}
+
+
+/* =========================================================
+   بيانات الحساب الرئيسي
+========================================================= */
+
+.account-main-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.account-main-icon {
+
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    color: #fff;
+
+    font-size: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.25),
+            rgba(0,0,0,.20)
+        );
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.3),
+        0 5px 12px rgba(0,0,0,.20);
+
+}
+
+
+.account-main-name {
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+}
+
+
+.account-main-code {
+
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    opacity: .78;
+
+}
+
+
+/* =========================================================
+   زر عرض الحساب الرئيسي
+========================================================= */
+
+.main-view-btn {
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    color: #fff;
+
+    text-decoration: none;
+
+    background:
+        rgba(255,255,255,.14);
+
+    border:
+        1px solid rgba(255,255,255,.22);
+
+    transition: .2s;
+
+}
+
+
+.main-view-btn:hover {
+
+    color: #fff;
+
+    background:
+        rgba(255,255,255,.30);
+
+    transform: translateY(-2px);
+
+}
+
+
+/* =========================================================
+   جسم الكرت
+========================================================= */
+
+.account-card-body {
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   عنوان الحسابات الفرعية
+========================================================= */
+
+.children-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 12px;
+
+    padding-bottom: 10px;
+
+    color: #666;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    border-bottom:
+        1px solid #dddddd;
+
+}
+
+
+.children-title i {
+
+    color: #555;
+
+}
+
+
+/* =========================================================
+   منطقة الشجرة
+========================================================= */
+
+.account-tree {
+
+    direction:
+        {% if LANGUAGE_CODE == 'ar' %}
+            rtl
+        {% else %}
+            ltr
+        {% endif %};
+
+    min-height: 140px;
+
+    max-height: 520px;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fafafa,
+            #e5e5e5
+        );
+
+    border:
+        1px solid #d8d8d8;
+
+    box-shadow:
+        inset 0 2px 7px rgba(0,0,0,.05);
+
+}
+
+
+/* =========================================================
+   Scrollbar
+========================================================= */
+
+.account-tree::-webkit-scrollbar {
+
+    width: 7px;
+
+}
+
+
+.account-tree::-webkit-scrollbar-track {
+
+    background: #eeeeee;
+
+    border-radius: 10px;
+
+}
+
+
+.account-tree::-webkit-scrollbar-thumb {
+
+    background:
+        linear-gradient(
+            #999,
+            #555
+        );
+
+    border-radius: 10px;
+
+}
+
+
+/* =========================================================
+   إلغاء الخلفية الافتراضية لـ jsTree
+========================================================= */
+
+.account-tree .jstree-wholerow {
+
+    background: transparent !important;
+
+}
+
+
+.account-tree .jstree-wholerow-hovered {
+
+    background: transparent !important;
+
+}
+
+
+.account-tree .jstree-wholerow-clicked {
+
+    background: transparent !important;
+
+}
+
+
+/* =========================================================
+   كل عنصر في الشجرة
+   الشكل الجديد مثل الصورة
+========================================================= */
+
+.account-tree .jstree-node {
+
+    margin: 7px 0;
+
+    min-height: 42px;
+
+}
+
+
+/* =========================================================
+   صف الحساب نفسه
+========================================================= */
+
+.account-tree .jstree-anchor {
+
+    width: calc(100% - 4px);
+
+    min-height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #dddddd 100%
+        );
+
+    border:
+        1px solid #d2d2d2;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.10),
+        0 1px 2px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition:
+        .2s ease;
+
+}
+
+
+/* =========================================================
+   عند مرور الماوس
+========================================================= */
+
+.account-tree .jstree-anchor:hover {
+
+    color: #222;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e4e4e4,
+            #d7d7d7
+        );
+
+    border-color: #c4c4c4;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.14),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   الحساب المحدد
+========================================================= */
+
+.account-tree .jstree-clicked {
+
+    color: #222 !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #e8e8e8,
+            #d4d4d4
+        ) !important;
+
+    border-color: #bcbcbc !important;
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.95) !important;
+
+}
+
+
+/* =========================================================
+   صف الحساب الداخلي
+========================================================= */
+
+.tree-row {
+
+    width: 100%;
+
+    min-height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+/* =========================================================
+   اسم الحساب
+========================================================= */
+
+.account-tree .jstree-anchor .tree-row {
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   أزرار الإجراءات
+   تظهر دائمًا مثل الصورة
+========================================================= */
+
+.tree-actions {
+
+    margin-left: auto;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+
+}
+
+
+/* =========================================================
+   أزرار الإجراءات
+========================================================= */
+
+.tree-actions i {
+
+    width: 29px;
+
+    height: 29px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    color: #555;
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e4e4e4
+        );
+
+    border:
+        1px solid #cccccc;
+
+    box-shadow:
+        0 3px 6px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+/* =========================================================
+   Hover للأزرار
+========================================================= */
+
+.tree-actions i:hover {
+
+    color: #222;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d8d8d8
+        );
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.16);
+
+}
+
+
+/* =========================================================
+   زر الحذف
+========================================================= */
+
+.tree-actions .delete {
+
+    color: #777;
+
+}
+
+
+/* =========================================================
+   أيقونة المجلد
+========================================================= */
+
+.account-tree .jstree-icon {
+
+    color: #777;
+
+}
+
+
+/* =========================================================
+   أيقونات المجلد
+========================================================= */
+
+.account-tree .jstree-themeicon {
+
+    color: #777;
+
+    filter:
+        drop-shadow(
+            0 1px 1px rgba(0,0,0,.15)
+        );
+
+}
+
+
+/* =========================================================
+   أسهم التوسيع
+========================================================= */
+
+.account-tree .jstree-ocl {
+
+    margin-left: 2px;
+
+    margin-right: 2px;
+
+}
+
+
+/* =========================================================
+   إزالة الخطوط الثقيلة الافتراضية
+========================================================= */
+
+.account-tree .jstree-node {
+
+    background-image: none !important;
+
+}
+
+
+.account-tree .jstree-last {
+
+    background-image: none !important;
+
+}
+
+
+/* =========================================================
+   عدم وجود أبناء
+========================================================= */
+
+.no-children {
+
+    min-height: 120px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    color: #999;
+
+    font-size: 14px;
+
+}
+
+
+.no-children i {
+
+    color: #bbb;
+
+    font-size: 26px;
+
+}
+
+
+/* =========================================================
+   الشاشات المتوسطة
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .accounts-grid {
+
+        grid-template-columns: 1fr;
+
     }
 
-    .tree-row {
-        display: flex;
-        align-items: center;
+
+    .account-card:last-child {
+
+        grid-column: auto;
+
         width: 100%;
-        gap: 8px;
+
+        max-width: none;
+
     }
+
+}
+
+
+/* =========================================================
+   الجوال
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .chart-page {
+
+        padding: 15px;
+
+    }
+
+
+    .chart-header {
+
+        padding: 20px;
+
+        text-align: center;
+
+        justify-content: center;
+
+    }
+
+
+    .chart-title {
+
+        flex-direction: column;
+
+    }
+
+
+    .chart-title h3 {
+
+        font-size: 22px;
+
+    }
+
+
+    .chart-title-icon {
+
+        width: 52px;
+        height: 52px;
+
+    }
+
+
+    .account-card {
+
+        border-radius: 18px;
+
+    }
+
+
+    .account-main-name {
+
+        font-size: 17px;
+
+    }
+
+
+    .account-tree .jstree-anchor {
+
+        font-size: 13px;
+
+        min-height: 40px;
+
+    }
+
 
     .tree-actions {
-        margin-left: auto;
-        display: none;
-        gap: 10px;
+
+        gap: 3px;
+
     }
+
 
     .tree-actions i {
-        cursor: pointer;
-        font-size: 14px;
-        color: #6c757d;
+
+        width: 26px;
+
+        height: 26px;
+
+        font-size: 10px;
+
     }
 
-    .tree-actions i:hover {
-        color: #0d6efd;
-    }
+}
 
-    .tree-actions .delete {
-        color: #dc3545;
-    }
-
-    .jstree-anchor:hover .tree-actions {
-        display: inline-flex;
-    }
 </style>
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-body">
 
-            <h4 class="fw-bold text-end mb-3">
-                {% trans "Chart of Accounts" %}
-            </h4>
+<!-- =========================================================
+     الصفحة
+========================================================= -->
 
-            <div id="chartTree"></div>
+<div class="chart-page">
+
+    <div class="chart-wrapper">
+
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="chart-header">
+
+            <div class="chart-title">
+
+                <div class="chart-title-icon">
+
+                    <i class="fa-solid fa-sitemap"></i>
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        {% trans "Chart of Accounts Tree" %}
+
+                    </h3>
+
+                    <p>
+
+                        {% trans "Chart of Accounts Tree" %}
+
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
+
+
+        <!-- =================================================
+             الحسابات الرئيسية
+             الكروت محفوظة
+        ================================================= -->
+
+        <div id="accountsGrid"
+             class="accounts-grid">
+
+        </div>
+
+
     </div>
+
 </div>
 
+
 <script>
+
 $(function () {
 
-    const tree = $("#chartTree").jstree({
-        core: {
-            data: {
-                url: "{% url 'accounting:chart_tree_api' %}",
-                data: function(node) {
-                    return { id: node.id };
-                },
-                dataType: "json"
-            },
-            themes: { dots: true, icons: true },
-            check_callback: true
+    const LANG = "{{ LANGUAGE_CODE }}";
+
+    const API_URL =
+        "{% url 'accounting:chart_tree_api' %}";
+
+
+    /* =====================================================
+       تحميل الحسابات الرئيسية
+    ===================================================== */
+
+    $.ajax({
+
+        url: API_URL,
+
+        data: {
+            id: "#"
         },
-        plugins: ["wholerow"],
-        rtl: {% if LANGUAGE_CODE == 'ar' %}true{% else %}false{% endif %}
+
+        dataType: "json",
+
+        success: function (roots) {
+
+            const grid =
+                $("#accountsGrid");
+
+            grid.empty();
+
+
+            if (!roots || roots.length === 0) {
+
+                grid.html(`
+
+                    <div class="account-card"
+                         style="grid-column:1/-1;">
+
+                        <div class="account-card-body">
+
+                            <div class="no-children">
+
+                                <i class="fa-solid fa-folder-open"></i>
+
+                                <span>
+
+                                    {% trans "No accounts found" %}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `);
+
+                return;
+
+            }
+
+
+            roots.forEach(function (root) {
+
+                const cardId =
+                    "accountTree_" + root.id;
+
+
+                const card = `
+
+                    <div class="account-card">
+
+                        <div class="account-card-header">
+
+                            <div class="account-main-info">
+
+                                <div class="account-main-icon">
+
+                                    <i class="fa-solid fa-folder-tree"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="account-main-name">
+
+                                        ${escapeHtml(root.text)}
+
+                                    </div>
+
+
+                                    <div class="account-main-code">
+
+                                        ${escapeHtml(root.code || "")}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <a
+
+                                href="/accounting/accounts/${root.id}/view/"
+
+                                class="main-view-btn"
+
+                                title="{% trans 'View' %}"
+
+                            >
+
+                                <i class="fa fa-eye"></i>
+
+                            </a>
+
+                        </div>
+
+
+                        <div class="account-card-body">
+
+                            <div class="children-title">
+
+                                <i class="fa-solid fa-layer-group"></i>
+
+                                {% trans "Child Accounts" %}
+
+                            </div>
+
+
+                            <div
+
+                                id="${cardId}"
+
+                                class="account-tree"
+
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                grid.append(card);
+
+
+                initAccountTree(
+                    cardId,
+                    root.id
+                );
+
+            });
+
+        },
+
+
+        error: function () {
+
+            $("#accountsGrid").html(`
+
+                <div class="account-card"
+                     style="grid-column:1/-1;">
+
+                    <div class="account-card-body">
+
+                        <div class="no-children">
+
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+
+                            <span>
+
+                                {% trans "Unable to load accounts" %}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `);
+
+        }
+
     });
 
-    function addActions() {
-        $("#chartTree li").each(function () {
-            const $li = $(this);
-            if ($li.find(".tree-actions").length) return;
 
-            const node = tree.jstree(true).get_node($li.attr("id"));
-            if (!node) return;
+    /* =====================================================
+       إنشاء شجرة داخل الكرت
+    ===================================================== */
 
-            const id = node.id;
-            const is_root = node.parent === "#";
+    function initAccountTree(
+        elementId,
+        rootId
+    ) {
 
-            let actions = `<span class="tree-actions">
+        const $tree =
+            $("#" + elementId);
 
-                <i class="fa fa-eye"
-                   title="{% trans 'View' %}"
-                   onclick="window.location.href='/accounting/accounts/${id}/view/'"></i>
 
-                <i class="fa fa-plus"
-                   title="{% trans 'Add Child' %}"
-                   onclick="window.location.href='/accounting/accounts/${id}/add-child/'"></i>
-            `;
+        $tree.jstree({
 
-            if (!is_root) {
-                actions += `<i class="fa fa-pen"
-                   title="{% trans 'Edit' %}"
-                   onclick="window.location.href='/accounting/accounts/${id}/edit/'"></i>`;
+            core: {
 
-                if (!node.children || node.children.length === 0) {
-                    actions += `<i class="fa fa-trash delete"
-                       title="{% trans 'Delete' %}"
-                       onclick="if(confirm('{% trans "Confirm deletion?" %}')) {
-                           window.location.href='/accounting/accounts/${id}/delete/';
-                       }"></i>`;
+                multiple: false,
+
+                check_callback: true,
+
+                data: function (
+                    node,
+                    callback
+                ) {
+
+                    let requestId;
+
+
+                    if (node.id === "#") {
+
+                        requestId = rootId;
+
+                    } else {
+
+                        requestId = node.id;
+
+                    }
+
+
+                    $.ajax({
+
+                        url: API_URL,
+
+                        data: {
+                            id: requestId
+                        },
+
+                        dataType: "json",
+
+                        success: function (data) {
+
+                            callback(data || []);
+
+                        },
+
+                        error: function () {
+
+                            callback([]);
+
+                        }
+
+                    });
+
+                },
+
+
+                themes: {
+
+                    dots: true,
+
+                    icons: true,
+
+                    responsive: true
+
                 }
-            }
 
-            actions += "</span>";
+            },
 
-            const textEl = $li.find("> .jstree-anchor");
-            if (!textEl.find(".tree-row").length) {
-                textEl.wrapInner('<span class="tree-row"></span>');
-                textEl.find(".tree-row").append(actions);
-            }
+
+            plugins: [
+                "wholerow"
+            ],
+
+
+            rtl:
+                LANG === "ar"
+
         });
+
+
+        $tree.on(
+            "ready.jstree",
+            function () {
+
+                openAllNodes(
+                    elementId
+                );
+
+                addActions(
+                    elementId
+                );
+
+            }
+        );
+
+
+        $tree.on(
+            "open_node.jstree",
+            function () {
+
+                setTimeout(function () {
+
+                    openAllNodes(
+                        elementId
+                    );
+
+                    addActions(
+                        elementId
+                    );
+
+                }, 100);
+
+            }
+        );
+
+
+        $tree.on(
+            "load_node.jstree",
+            function () {
+
+                setTimeout(function () {
+
+                    openAllNodes(
+                        elementId
+                    );
+
+                    addActions(
+                        elementId
+                    );
+
+                }, 100);
+
+            }
+        );
+
     }
 
-    $("#chartTree").on("ready.jstree open_node.jstree refresh.jstree loaded.jstree", function () {
-        addActions();
-    });
+
+    /* =====================================================
+       فتح جميع الحسابات
+    ===================================================== */
+
+    function openAllNodes(
+        elementId
+    ) {
+
+        const tree =
+            $("#" + elementId)
+            .jstree(true);
+
+
+        if (!tree) {
+
+            return;
+
+        }
+
+
+        $("#" + elementId)
+            .find("li")
+            .each(function () {
+
+                const id =
+                    $(this).attr("id");
+
+
+                if (!id) {
+
+                    return;
+
+                }
+
+
+                const node =
+                    tree.get_node(id);
+
+
+                if (
+                    node &&
+                    node.children &&
+                    node.children.length > 0
+                ) {
+
+                    tree.open_node(node);
+
+                }
+
+            });
+
+    }
+
+
+    /* =====================================================
+       إضافة أزرار الإجراءات
+    ===================================================== */
+
+    function addActions(
+        elementId
+    ) {
+
+        const $tree =
+            $("#" + elementId);
+
+
+        const tree =
+            $tree.jstree(true);
+
+
+        if (!tree) {
+
+            return;
+
+        }
+
+
+        $tree.find("li").each(
+            function () {
+
+                const $li =
+                    $(this);
+
+
+                if (
+                    $li.find(
+                        ".tree-actions"
+                    ).length
+                ) {
+
+                    return;
+
+                }
+
+
+                const id =
+                    $li.attr("id");
+
+
+                if (!id) {
+
+                    return;
+
+                }
+
+
+                const node =
+                    tree.get_node(id);
+
+
+                if (!node) {
+
+                    return;
+
+                }
+
+
+                let actions = `
+
+                    <span class="tree-actions">
+
+                        <i
+
+                            class="fa fa-eye"
+
+                            title="{% trans 'View' %}"
+
+                            onclick="
+                                event.stopPropagation();
+
+                                window.location.href =
+                                '/accounting/accounts/${id}/view/';
+                            "
+
+                        ></i>
+
+
+                        <i
+
+                            class="fa fa-pen"
+
+                            title="{% trans 'Edit' %}"
+
+                            onclick="
+                                event.stopPropagation();
+
+                                window.location.href =
+                                '/accounting/accounts/${id}/edit/';
+                            "
+
+                        ></i>
+
+
+                        <i
+
+                            class="fa fa-plus"
+
+                            title="{% trans 'Add Child' %}"
+
+                            onclick="
+                                event.stopPropagation();
+
+                                window.location.href =
+                                '/accounting/accounts/${id}/add-child/';
+                            "
+
+                        ></i>
+
+                `;
+
+
+                if (
+                    !node.children ||
+                    node.children.length === 0
+                ) {
+
+                    actions += `
+
+                        <i
+
+                            class="fa fa-trash delete"
+
+                            title="{% trans 'Delete' %}"
+
+                            onclick="
+                                event.stopPropagation();
+
+                                deleteAccount('${id}');
+                            "
+
+                        ></i>
+
+                    `;
+
+                }
+
+
+                actions += "</span>";
+
+
+                const $anchor =
+                    $li.find(
+                        "> .jstree-anchor"
+                    );
+
+
+                if (
+                    !$anchor.find(
+                        ".tree-row"
+                    ).length
+                ) {
+
+                    $anchor.wrapInner(
+                        '<span class="tree-row"></span>'
+                    );
+
+
+                    $anchor.find(
+                        ".tree-row"
+                    ).append(actions);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       حذف الحساب
+    ===================================================== */
+
+    window.deleteAccount = function (id) {
+
+        if (
+            !confirm(
+                '{% trans "Confirm deletion?" %}'
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const form =
+            document.createElement("form");
+
+
+        form.method = "POST";
+
+
+        form.action =
+            `/accounting/accounts/${id}/delete/`;
+
+
+        const csrf =
+            document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+            );
+
+
+        if (csrf) {
+
+            form.appendChild(
+                csrf.cloneNode(true)
+            );
+
+        }
+
+
+        document.body.appendChild(form);
+
+        form.submit();
+
+    };
+
+
+    /* =====================================================
+       حماية النصوص القادمة من API
+    ===================================================== */
+
+    function escapeHtml(
+        value
+    ) {
+
+        return $("<div>")
+            .text(value || "")
+            .html();
+
+    }
 
 });
+
 </script>
+
 
 {% endblock %}

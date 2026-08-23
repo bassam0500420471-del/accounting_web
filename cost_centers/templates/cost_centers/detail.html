@@ -1,0 +1,565 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- =========================================================
+         رأس الصفحة
+    ========================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h4 class="page-title">
+                تفاصيل مركز التكلفة
+            </h4>
+
+            <div class="text-muted small">
+                عرض بيانات مركز التكلفة
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a
+                href="{% url 'cost_center_edit' cost_center.id %}"
+                class="btn btn-primary"
+            >
+                <i class="bi bi-pencil"></i>
+                تعديل
+            </a>
+
+            <a
+                href="{% url 'cost_centers_list' %}"
+                class="btn btn-secondary"
+            >
+                <i class="bi bi-arrow-right"></i>
+                العودة
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         بطاقة البيانات
+    ========================================================== -->
+
+    <div class="detail-card">
+
+        <!-- الاسم -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                اسم مركز التكلفة
+            </div>
+
+            <div class="detail-value">
+                {{ cost_center.name }}
+            </div>
+
+        </div>
+
+
+        <!-- الكود -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                الكود
+            </div>
+
+            <div class="detail-value">
+
+                {% if cost_center.code %}
+                    {{ cost_center.code }}
+                {% else %}
+                    <span class="text-muted">
+                        غير محدد
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- النوع -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                النوع
+            </div>
+
+            <div class="detail-value">
+
+                {{ cost_center.get_type_display }}
+
+            </div>
+
+        </div>
+
+
+        <!-- المركز الأب -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                المركز الأب
+            </div>
+
+            <div class="detail-value">
+
+                {% if cost_center.parent %}
+
+                    {{ cost_center.parent.name }}
+
+                {% else %}
+
+                    <span class="text-muted">
+                        مركز رئيسي
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- الفرع -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                الفرع
+            </div>
+
+            <div class="detail-value">
+
+                {% if cost_center.branch %}
+
+                    {{ cost_center.branch.name }}
+
+                {% else %}
+
+                    <span class="text-muted">
+                        غير مرتبط بفرع
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- الحالة -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                الحالة
+            </div>
+
+            <div class="detail-value">
+
+                {% if cost_center.status == "ACTIVE" %}
+
+                    <span class="status active">
+                        نشط
+                    </span>
+
+                {% else %}
+
+                    <span class="status closed">
+                        مغلق
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- حالة التفعيل -->
+
+        <div class="detail-row">
+
+            <div class="detail-label">
+                التفعيل
+            </div>
+
+            <div class="detail-value">
+
+                {% if cost_center.is_active %}
+
+                    <span class="status active">
+                        مفعل
+                    </span>
+
+                {% else %}
+
+                    <span class="status closed">
+                        غير مفعل
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         الإجراءات
+    ========================================================== -->
+
+    <div class="actions-card">
+
+        <a
+            href="{% url 'cost_center_edit' cost_center.id %}"
+            class="action-btn"
+        >
+
+            <i class="bi bi-pencil"></i>
+
+            تعديل مركز التكلفة
+
+        </a>
+
+
+        <a
+            href="{% url 'cost_center_add_child' cost_center.id %}"
+            class="action-btn"
+        >
+
+            <i class="bi bi-plus-lg"></i>
+
+            إضافة مركز فرعي
+
+        </a>
+
+
+        <a
+            href="{% url 'cost_centers_list' %}"
+            class="action-btn secondary"
+        >
+
+            <i class="bi bi-diagram-3"></i>
+
+            شجرة مراكز التكلفة
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.page-title {
+
+    margin: 0;
+
+    font-weight: 800;
+
+    color: #3f3f3f;
+
+}
+
+
+/* =========================================================
+   بطاقة التفاصيل
+========================================================= */
+
+.detail-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 16px;
+
+    padding: 10px 25px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   صف
+========================================================= */
+
+.detail-row {
+
+    display: flex;
+
+    align-items: center;
+
+    min-height: 58px;
+
+    border-bottom:
+        1px solid #dddddd;
+
+}
+
+
+.detail-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+/* =========================================================
+   عنوان الحقل
+========================================================= */
+
+.detail-label {
+
+    width: 220px;
+
+    flex-shrink: 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   قيمة الحقل
+========================================================= */
+
+.detail-value {
+
+    flex: 1;
+
+    color: #3f3f3f;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   الحالة
+========================================================= */
+
+.status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 12px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.status.active {
+
+    color: #555;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #cccccc
+        );
+
+    border: 1px solid #c8c8c8;
+
+}
+
+
+.status.closed {
+
+    color: #888;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f1f1f1,
+            #d5d5d5
+        );
+
+    border: 1px solid #d0d0d0;
+
+}
+
+
+/* =========================================================
+   بطاقة الإجراءات
+========================================================= */
+
+.actions-card {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+/* =========================================================
+   أزرار الإجراءات
+========================================================= */
+
+.action-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 10px 16px;
+
+    color: #555;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #d8d8d8
+        );
+
+    border: 1px solid #cecece;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+    transition: .2s;
+
+}
+
+
+.action-btn:hover {
+
+    color: #222;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 13px rgba(0,0,0,.15);
+
+}
+
+
+.action-btn.secondary {
+
+    background:
+        linear-gradient(
+            145deg,
+            #f5f5f5,
+            #dddddd
+        );
+
+}
+
+
+/* =========================================================
+   الجوال
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .detail-row {
+
+        display: block;
+
+        padding: 12px 0;
+
+    }
+
+
+    .detail-label {
+
+        width: auto;
+
+        margin-bottom: 5px;
+
+        font-size: 12px;
+
+    }
+
+
+    .detail-value {
+
+        font-size: 13px;
+
+    }
+
+
+    .actions-card {
+
+        flex-direction: column;
+
+    }
+
+
+    .action-btn {
+
+        justify-content: center;
+
+        width: 100%;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

@@ -1,64 +1,525 @@
 {% load i18n %}
-
 {% extends "layout/base.html" %}
 
-{% block title %}{% trans "Add Account Branch" %}{% endblock %}
+{% block title %}
+    {% trans "Add Account Branch" %}
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+<div class="container-fluid invoices-page mt-4">
 
-            <!-- العنوان -->
-            <h4 class="fw-bold mb-4 text-end">
-                {% blocktrans %}Add branch under account: {{ parent.name }}{% endblocktrans %}
-            </h4>
+    <div class="invoice-card">
 
-            <form method="post">
-                {% csrf_token %}
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
 
-                <!-- اسم الحساب -->
-                <div class="mb-3 text-end">
-                    <label class="form-label fw-bold">{% trans "Account Name" %}</label>
-                    <input
-                        type="text"
-                        name="name"
-                        class="form-control"
-                        value="{{ form.name.value|default_if_none:'' }}"
-                        required
-                    >
-                </div>
+        <div class="page-header">
 
-                <!-- الرمز -->
-                <div class="mb-4 text-end">
-                    <label class="form-label fw-bold">{% trans "Code" %}</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        value="{{ auto_code }}"
-                        readonly
-                    >
-                </div>
+            <div>
 
-                <!-- الأزرار -->
-                <div class="d-flex gap-2 justify-content-end">
+                <h3>
 
-                    <button type="submit" class="btn btn-secondary">
-                        {% trans "Add" %}
-                    </button>
+                    <i class="fa-solid fa-code-branch"></i>
 
-                    <a href="{% url 'accounting:account_view' parent.pk %}"
-                       class="btn btn-secondary">
-                        {% trans "Cancel" %}
-                    </a>
+                    {% trans "Add Account Branch" %}
 
-                </div>
+                </h3>
 
-            </form>
+                <p>
+
+                    {% blocktrans %}
+                        Add branch under account: {{ parent.name }}
+                    {% endblocktrans %}
+
+                </p>
+
+            </div>
 
         </div>
+
+
+        <!-- ============================= -->
+        <!-- النموذج -->
+        <!-- ============================= -->
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <!-- ============================= -->
+            <!-- اسم الحساب -->
+            <!-- ============================= -->
+
+            <div class="form-section">
+
+                <label class="form-label-custom">
+
+                    {% trans "Account Name" %}
+
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control-custom"
+                    value="{{ form.name.value|default_if_none:'' }}"
+                    required
+                >
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- الرمز -->
+            <!-- ============================= -->
+
+            <div class="form-section">
+
+                <label class="form-label-custom">
+
+                    {% trans "Code" %}
+
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control-custom readonly-input"
+                    value="{{ auto_code }}"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- الأزرار -->
+            <!-- ============================= -->
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="add-btn"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    {% trans "Add" %}
+
+                </button>
+
+
+                <a
+                    href="{% url 'accounting:account_view' parent.pk %}"
+                    class="back-btn"
+                >
+
+                    <i class="fa-solid fa-arrow-right"></i>
+
+                    {% trans "Cancel" %}
+
+                </a>
+
+            </div>
+
+
+        </form>
+
     </div>
 
 </div>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.invoices-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.invoice-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   أقسام النموذج
+========================================================= */
+
+.form-section{
+
+    margin-bottom:25px;
+
+}
+
+
+.form-label-custom{
+
+    display:block;
+
+    margin-bottom:9px;
+
+    font-weight:700;
+
+    color:#444;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.form-control-custom{
+
+    width:100%;
+
+    padding:12px 15px;
+
+    border:1px solid #aaa;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    color:#444;
+
+    font-size:14px;
+
+    box-sizing:border-box;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+}
+
+
+.form-control-custom:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الحقل للقراءة فقط
+========================================================= */
+
+.readonly-input{
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d8d8d8
+    );
+
+    color:#666;
+
+    cursor:not-allowed;
+
+}
+
+
+/* =========================================================
+   الأزرار
+========================================================= */
+
+.form-actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:30px;
+
+}
+
+
+/* =========================================================
+   زر الإضافة
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:11px 22px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   زر الإلغاء
+========================================================= */
+
+.back-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #888,
+        #666
+    );
+
+    color:white;
+
+    padding:11px 22px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.15),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.back-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #777,
+        #555
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.22);
+
+}
+
+
+/* =========================================================
+   الأيقونات
+========================================================= */
+
+.add-btn i,
+.back-btn i{
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .invoices-page{
+
+        padding:15px;
+
+    }
+
+
+    .invoice-card{
+
+        padding:20px;
+
+    }
+
+
+    .page-header{
+
+        text-align:center;
+
+    }
+
+
+    .page-header h3{
+
+        font-size:22px;
+
+    }
+
+
+    .form-actions{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+
+    .add-btn,
+    .back-btn{
+
+        width:100%;
+
+        text-align:center;
+
+        box-sizing:border-box;
+
+    }
+
+}
+
+</style>
+
 {% endblock %}

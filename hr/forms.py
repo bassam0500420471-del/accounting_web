@@ -14,10 +14,10 @@ from .models import (
     EvaluationScore,
     EvaluationType,
     Department,
+    Branch,
     HRPermission,
     WorkLocation,
 )
-
 # ==========================
 # نموذج الموظف
 # ==========================
@@ -86,21 +86,38 @@ class EmployeeForm(forms.ModelForm):
             "active",
             "department",
             "branch",
-        "work_location",
+            "work_location",
 
             "job_title",
             "employee_type",
             "supervisor",
+
+            # ==========================
+            # الراتب
+            # ==========================
+            "base_salary",
+            "housing_allowance",
+            "transport_allowance",
+            "clothing_allowance",
+            "other_allowances",
             "use_user_account",
-          "annual_leave_entitlement",
-          "current_annual_leave",
-          "compensatory_leave",
-          "photo",
-          "national_id_file",
-          "passport_number",
-          "passport_file",
-          "contract_file",
-          "other_files",
+
+            # ==========================
+            # الإجازات
+            # ==========================
+            "annual_leave_entitlement",
+            "current_annual_leave",
+            "compensatory_leave",
+
+            # ==========================
+            # المستندات
+            # ==========================
+            "photo",
+            "national_id_file",
+            "passport_number",
+            "passport_file",
+            "contract_file",
+            "other_files",
         ]
         labels = {
             "first_name_ar": _("First Name (Arabic)"),
@@ -222,18 +239,73 @@ class EmployeeForm(forms.ModelForm):
             "other_files": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
 
-        if self.instance and self.instance.pk:
-            self.fields["display_employee_number"].initial = self.instance.employee_number or ""
-            
+    # ==========================================
+    # رقم الموظف
+    # ==========================================
+    if self.instance and self.instance.pk:
+        self.fields["display_employee_number"].initial = (
+            self.instance.employee_number or ""
+        )
 
-            if self.instance.user_id:
-                self.fields["username"].initial = self.instance.user.username
+        # ==========================================
+        # بيانات حساب المستخدم
+        # ==========================================
+        if self.instance.user_id:
+            self.fields["username"].initial = self.instance.user.username
+            self.fields["use_user_account"].initial = True
         else:
-            self.fields["display_employee_number"].initial = ""
             self.fields["use_user_account"].initial = False
+
+    else:
+        self.fields["display_employee_number"].initial = ""
+        self.fields["use_user_account"].initial = False
+
+    # ==========================================
+    # الشركة الحالية
+    # ==========================================
+    company = getattr(self.instance, "company", None)
+
+    # ==========================================
+    # الأقسام
+    # ==========================================
+    if company:
+        self.fields["department"].queryset = Department.objects.filter(
+            company=company
+        ).order_by("name")
+
+        # ==========================================
+        # الفروع
+        # ==========================================
+        self.fields["branch"].queryset = Branch.objects.filter(
+            company=company
+        ).order_by("name")
+
+        # ==========================================
+        # مواقع العمل
+        # ==========================================
+        self.fields["work_location"].queryset = WorkLocation.objects.filter(
+            company=company,
+            active=True
+        ).order_by("name")
+
+        # ==========================================
+        # المشرفين
+        # ==========================================
+        self.fields["supervisor"].queryset = Employee.objects.filter(
+            company=company,
+            active=True
+        ).exclude(
+            pk=self.instance.pk if self.instance.pk else None
+        ).order_by("employee_number")
+
+    else:
+        self.fields["department"].queryset = Department.objects.none()
+        self.fields["branch"].queryset = Branch.objects.none()
+        self.fields["work_location"].queryset = WorkLocation.objects.none()
+        self.fields["supervisor"].queryset = Employee.objects.none()
 
     def clean_email(self):
         email = (self.cleaned_data.get("email") or "").strip().lower()
@@ -473,7 +545,22 @@ class DepartmentForm(forms.ModelForm):
             }),
         }
 
-
+# ==========================
+# نموذج الفروع
+# ==========================
+class BranchForm(forms.ModelForm):
+    class Meta:
+        model = Branch
+        fields = ["name"]
+        labels = {
+            "name": _("Branch Name")
+        }
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": _("Enter branch name")
+            }),
+        }
 # ==========================
 # نموذج مواقع العمل
 # ==========================

@@ -1,63 +1,228 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Stock Movement Details" %}{% endblock %}
+{% block title %}
+    {% trans "Stock Movement Details" %}
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
 
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h4 class="mb-0">{% trans "Stock Movement Details" %}</h4>
+<style>
+    body {
+        background: #f0f2f5;
+        font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .page-wrapper {
+        max-width: 1100px;
+        margin: 30px auto;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: #fff;
+        border-radius: 14px 14px 0 0;
+        padding: 18px 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .page-header h4 {
+        margin: 0;
+        font-weight: bold;
+    }
+
+    .main-card {
+        background: #fff;
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+    }
+
+    .details-table {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .details-table th {
+        width: 30%;
+        background: #f1f3f5;
+        color: #495057;
+        font-weight: bold;
+        vertical-align: middle;
+        text-align: right;
+        padding: 14px 16px;
+    }
+
+    .details-table td {
+        background: #fff;
+        color: #212529;
+        vertical-align: middle;
+        padding: 14px 16px;
+        text-align: right;
+    }
+
+    .details-table tr:hover th,
+    .details-table tr:hover td {
+        background: #f8f9fa;
+    }
+
+    .quantity-value {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .movement-id {
+        font-weight: bold;
+        color: #6c757d;
+    }
+
+    .btn-grey {
+        background: #6c757d !important;
+        color: #fff !important;
+        border: none !important;
+        padding: 9px 25px;
+        border-radius: 8px;
+    }
+
+    .btn-grey:hover {
+        background: #5c636a !important;
+        color: #fff !important;
+    }
+
+    .action-area {
+        border-top: 1px solid #e9ecef;
+        margin-top: 25px;
+        padding-top: 20px;
+    }
+</style>
+
+
+<div class="page-wrapper">
+
+    <div class="main-card">
+
+        <!-- Header -->
+        <div class="page-header">
+            <h4>
+                {% trans "Stock Movement Details" %}
+            </h4>
         </div>
 
-        <div class="card-body">
 
-            <table class="table table-bordered">
+        <!-- Body -->
+        <div class="card-body p-4">
 
-                <tr>
-                    <th width="30%">{% trans "Movement No." %}</th>
-                    <td>{{ move.id }}</td>
-                </tr>
+            <div class="table-responsive">
 
-                <tr>
-                    <th>{% trans "Product" %}</th>
-                    <td>{{ move.product.name }}</td>
-                </tr>
+                <table class="table table-bordered details-table">
 
-                <tr>
-                    <th>{% trans "Type" %}</th>
-                    <td>{{ move.reason.name }}</td>
-                </tr>
+                    <tbody>
 
-                <tr>
-                    <th>{% trans "Quantity" %}</th>
-                    <td>{{ move.qty_delta }}</td>
-                </tr>
+                        <tr>
+                            <th>
+                                {% trans "Movement No." %}
+                            </th>
 
-                <tr>
-                    <th>{% trans "Notes" %}</th>
-                    <td>{{ move.note|default:"-" }}</td>
-                </tr>
+                            <td class="movement-id">
+                                {{ move.id }}
+                            </td>
+                        </tr>
 
-                <tr>
-                    <th>{% trans "Created At" %}</th>
-                    <td>{{ move.created_at }}</td>
-                </tr>
 
-                <tr>
-                    <th>{% trans "Created By" %}</th>
-                    <td>{{ move.created_by|default:"-" }}</td>
-                </tr>
+                        <tr>
+                            <th>
+                                {% trans "Product" %}
+                            </th>
 
-            </table>
+                            <td>
+                                {{ move.product.name }}
+                            </td>
+                        </tr>
 
-            <a href="{% url 'products:stock_ledger' %}" class="btn btn-secondary">
-                {% trans "Back" %}
-            </a>
+
+                        <tr>
+                            <th>
+                                {% trans "Type" %}
+                            </th>
+
+                            <td>
+                                {% if move.reason %}
+                                    {{ move.reason.name }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <th>
+                                {% trans "Quantity" %}
+                            </th>
+
+                            <td class="quantity-value">
+                                {{ move.qty_delta }}
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <th>
+                                {% trans "Notes" %}
+                            </th>
+
+                            <td>
+                                {{ move.note|default:"-" }}
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <th>
+                                {% trans "Created At" %}
+                            </th>
+
+                            <td>
+                                {{ move.created_at }}
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <th>
+                                {% trans "Created By" %}
+                            </th>
+
+                            <td>
+                                {{ move.created_by|default:"-" }}
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="action-area">
+
+                <a href="{% url 'products:stock_ledger' %}"
+                   class="btn btn-grey">
+
+                    ↩ {% trans "Back" %}
+
+                </a>
+
+            </div>
 
         </div>
+
     </div>
 
 </div>
+
 {% endblock %}

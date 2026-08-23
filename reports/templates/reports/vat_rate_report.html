@@ -1,154 +1,614 @@
 {% extends "layout/base.html" %}
 {% load humanize %}
+
 {% block title %}تقرير تفصيلي لضريبة القيمة المضافة{% endblock %}
 
 {% block content %}
+
+<style>
+
+/* =========================================================
+   الصفحة الرئيسية
+========================================================= */
+
+body {
+    background: linear-gradient(
+        135deg,
+        #eef1f5 0%,
+        #dfe3e8 50%,
+        #f8f9fa 100%
+    );
+}
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.vat-report-wrapper {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 30px;
+    margin-top: 25px;
+    margin-bottom: 40px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.10),
+        0 3px 8px rgba(0, 0, 0, 0.06);
+
+    border: 1px solid #e5e7eb;
+}
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.page-title {
+    font-weight: 800;
+    text-align: center;
+    color: #212529;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+/* =========================================================
+   كرت الفلاتر
+========================================================= */
+
+.filter-card {
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #f5f6f8
+    );
+
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    padding: 20px;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+    margin-bottom: 30px;
+}
+
+.form-label {
+    color: #343a40;
+}
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    min-height: 40px;
+
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.04);
+
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #6c757d;
+
+    box-shadow:
+        0 0 0 0.2rem rgba(108, 117, 125, 0.15);
+}
+
+/* =========================================================
+   زر عرض التقرير
+========================================================= */
+
+.btn-report {
+    min-height: 40px;
+    border-radius: 8px;
+
+    background: linear-gradient(
+        145deg,
+        #6c757d,
+        #495057
+    );
+
+    border: none;
+    color: #fff;
+
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.15);
+
+    transition: all 0.2s ease;
+}
+
+.btn-report:hover {
+    color: #fff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.20);
+}
+
+/* =========================================================
+   أقسام التقرير
+========================================================= */
+
+.report-section {
+    margin-bottom: 28px;
+
+    border-radius: 14px;
+    overflow: hidden;
+
+    border: 1px solid #dee2e6;
+
+    box-shadow:
+        0 5px 14px rgba(0, 0, 0, 0.07);
+}
+
+/* =========================================================
+   عنوان القسم
+========================================================= */
+
+.section-header {
+    background: linear-gradient(
+        145deg,
+        #343a40,
+        #212529
+    );
+
+    color: #fff;
+
+    padding: 13px 18px;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    border-bottom: 1px solid #1c1f21;
+}
+
+/* =========================================================
+   الجداول
+========================================================= */
+
+.report-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.report-table thead th {
+    background: #f1f3f5;
+    color: #212529;
+
+    font-weight: 800;
+    text-align: center;
+
+    padding: 12px;
+
+    border: 1px solid #dee2e6;
+}
+
+.report-table tbody td {
+    padding: 11px;
+
+    border: 1px solid #dee2e6;
+
+    text-align: center;
+
+    background: #fff;
+}
+
+.report-table tbody tr:hover td {
+    background: #f8f9fa;
+}
+
+/* =========================================================
+   الأرقام
+========================================================= */
+
+.amount-cell {
+    text-align: left !important;
+    direction: ltr;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   لا توجد بيانات
+========================================================= */
+
+.empty-row {
+    color: #6c757d;
+    font-weight: 600;
+    padding: 18px !important;
+}
+
+/* =========================================================
+   كرت صافي الضريبة
+========================================================= */
+
+.net-vat-section {
+    border-radius: 14px;
+    overflow: hidden;
+
+    border: 1px solid #ced4da;
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.08);
+
+    margin-top: 30px;
+}
+
+.net-vat-value {
+    font-size: 22px;
+    font-weight: 800;
+    text-align: left !important;
+    direction: ltr;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   الجوال
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .vat-report-wrapper {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .page-title {
+        font-size: 22px;
+    }
+
+    .report-table {
+        min-width: 600px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+}
+
+</style>
+
+
 <div class="container mt-4">
 
-<h3 class="text-center fw-bold mb-4">
-    تقرير تفصيلي لضريبة القيمة المضافة حسب النسبة
-</h3>
+    <div class="vat-report-wrapper">
 
-<form method="get" class="row g-3 mb-4">
-    <div class="col-md-4">
-        <label class="form-label fw-bold">من تاريخ</label>
-        <input type="date" name="date_from" value="{{ date_from }}" class="form-control" required>
+        <!-- =====================================================
+             عنوان الصفحة
+        ====================================================== -->
+
+        <h3 class="page-title">
+            📊 تقرير تفصيلي لضريبة القيمة المضافة حسب النسبة
+        </h3>
+
+
+        <!-- =====================================================
+             الفلاتر
+        ====================================================== -->
+
+        <div class="filter-card">
+
+            <form method="get" class="row g-3 align-items-end">
+
+                <!-- من تاريخ -->
+                <div class="col-md-4">
+
+                    <label class="form-label fw-bold">
+                        من تاريخ
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_from"
+                        value="{{ date_from }}"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- إلى تاريخ -->
+                <div class="col-md-4">
+
+                    <label class="form-label fw-bold">
+                        إلى تاريخ
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date_to"
+                        value="{{ date_to }}"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- زر العرض -->
+                <div class="col-md-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-report w-100 fw-bold"
+                    >
+                        🔍 عرض التقرير
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        {% if date_from and date_to %}
+
+
+        <!-- =====================================================
+             المبيعات
+        ====================================================== -->
+
+        <div class="report-section">
+
+            <div class="section-header">
+                🛒 المبيعات
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>نسبة الضريبة</th>
+                            <th>قبل الضريبة</th>
+                            <th>قيمة الضريبة</th>
+                            <th>بعد الضريبة</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in sales_data %}
+
+                        <tr>
+
+                            <td class="fw-bold">
+                                {{ row.tax }}%
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.before_tax|intcomma }}
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.tax_value|intcomma }}
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.after_tax|intcomma }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td
+                                colspan="4"
+                                class="empty-row text-center"
+                            >
+                                لا توجد بيانات
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             نقاط البيع POS
+        ====================================================== -->
+
+        <div class="report-section">
+
+            <div class="section-header">
+                🧾 نقاط البيع POS
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>نسبة الضريبة</th>
+                            <th>قبل الضريبة</th>
+                            <th>قيمة الضريبة</th>
+                            <th>بعد الضريبة</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in pos_data %}
+
+                        <tr>
+
+                            <td class="fw-bold">
+                                {{ row.tax }}%
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.before_tax|intcomma }}
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.tax_value|intcomma }}
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.after_tax|intcomma }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td
+                                colspan="4"
+                                class="empty-row text-center"
+                            >
+                                لا توجد بيانات
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             المشتريات
+        ====================================================== -->
+
+        <div class="report-section">
+
+            <div class="section-header">
+                🛍️ المشتريات
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>نسبة الضريبة</th>
+                            <th>قبل الضريبة</th>
+                            <th>قيمة الضريبة</th>
+                            <th>بعد الضريبة</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for row in purchase_data %}
+
+                        <tr>
+
+                            <td class="fw-bold">
+                                {{ row.tax_rate }}%
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.before_tax|intcomma }}
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.tax_value|intcomma }}
+                            </td>
+
+                            <td class="amount-cell">
+                                {{ row.after_tax|intcomma }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td
+                                colspan="4"
+                                class="empty-row text-center"
+                            >
+                                لا توجد بيانات
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             صافي الضريبة
+        ====================================================== -->
+
+        <div class="net-vat-section">
+
+            <div class="section-header">
+                🧮 صافي الضريبة
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>البيان</th>
+                            <th>القيمة</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td class="fw-bold">
+                                صافي ضريبة الفترة الحالية
+                            </td>
+
+                            <td class="net-vat-value">
+                                {{ vat_period|intcomma }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        {% endif %}
+
     </div>
-    <div class="col-md-4">
-        <label class="form-label fw-bold">إلى تاريخ</label>
-        <input type="date" name="date_to" value="{{ date_to }}" class="form-control" required>
-    </div>
-    <div class="col-md-4 d-flex align-items-end">
-        <button class="btn btn-secondary w-100">عرض التقرير</button>
-    </div>
-</form>
-
-{% if date_from and date_to %}
-
-<!-- ===================== المبيعات ===================== -->
-<div class="card mb-4">
-<div class="card-header bg-dark text-white fw-bold">المبيعات</div>
-<table class="table table-bordered text-center mb-0">
-<thead class="table-light">
-<tr>
-    <th>نسبة الضريبة</th>
-    <th>قبل الضريبة</th>
-    <th>قيمة الضريبة</th>
-    <th>بعد الضريبة</th>
-</tr>
-</thead>
-<tbody>
-{% for row in sales_data %}
-<tr>
-    <td>{{ row.tax }}%</td>
-    <td>{{ row.before_tax|intcomma }}</td>
-    <td>{{ row.tax_value|intcomma }}</td>
-    <td>{{ row.after_tax|intcomma }}</td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="4">لا توجد بيانات</td>
-</tr>
-{% endfor %}
-
-</tbody>
-</table>
-</div>
-
-<!-- ===================== نقاط البيع POS ===================== -->
-<div class="card mb-4">
-<div class="card-header bg-dark text-white fw-bold">نقاط البيع</div>
-
-<table class="table table-bordered text-center mb-0">
-<thead class="table-light">
-<tr>
-    <th>نسبة الضريبة</th>
-    <th>قبل الضريبة</th>
-    <th>قيمة الضريبة</th>
-    <th>بعد الضريبة</th>
-</tr>
-</thead>
-
-<tbody>
-{% for row in pos_data %}
-<tr>
-    <td>{{ row.tax }}%</td>
-    <td>{{ row.before_tax|intcomma }}</td>
-    <td>{{ row.tax_value|intcomma }}</td>
-    <td>{{ row.after_tax|intcomma }}</td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="4">لا توجد بيانات</td>
-</tr>
-{% endfor %}
-</tbody>
-
-</table>
-</div>
-
-
-<!-- ===================== المشتريات ===================== -->
-<div class="card mb-4">
-<div class="card-header bg-dark text-white fw-bold">المشتريات</div>
-<table class="table table-bordered text-center mb-0">
-<thead class="table-light">
-<tr>
-    <th>نسبة الضريبة</th>
-    <th>قبل الضريبة</th>
-    <th>قيمة الضريبة</th>
-    <th>بعد الضريبة</th>
-</tr>
-</thead>
-<tbody>
-{% for row in purchase_data %}
-<tr>
-    <td>{{ row.tax_rate }}%</td>
-    <td>{{ row.before_tax|intcomma }}</td>
-    <td>{{ row.tax_value|intcomma }}</td>
-    <td>{{ row.after_tax|intcomma }}</td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="4">لا توجد بيانات</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-
-<!-- ===================== صافي ضريبة الفترة الحالية ===================== -->
-<div class="card mb-4">
-
-<div class="card-header bg-dark text-white fw-bold">
-    صافي الضريبة
-</div>
-
-<table class="table table-bordered text-center mb-0">
-<thead class="table-light">
-<tr>
-    <th>البيان</th>
-    <th>القيمة</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-    <td class="fw-bold">
-        صافي ضريبة الفترة الحالية
-    </td>
-
-    <td class="fw-bold">
-        {{ vat_period|intcomma }}
-    </td>
-</tr>
-</tbody>
-
-</table>
 
 </div>
 
-{% endif %}
-
-</div>
 {% endblock %}

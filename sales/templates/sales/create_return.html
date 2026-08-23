@@ -1,206 +1,1382 @@
 {% extends "layout/base.html" %}
 {% load l10n %}
 {% load i18n %}
+
+{% block title %}
+    {% trans "Credit Note (Sales Return)" %}
+{% endblock %}
+
 {% block content %}
 
-<style>
-.page-box {
-    background:#fff;
-    padding:25px;
-    border-radius:12px;
-    width:90%;
-    margin:auto;
-}
-.input-box {
-    width:100%;
-    background:#f8f9fa;
-    border:1px solid #ccc;
-    padding:7px 12px;
-    border-radius:6px;
-}
-.table th, .table td {
-    text-align:center;
-    vertical-align:middle;
-}
-.totals-box {
-    width:45%;
-    margin-left:auto;
-}
-.btn-main {
-    background:#6c757d !important;
-    color:white !important;
-    border-radius:6px;
-    font-size:16px;
-    padding:10px 25px;
-}
-.section-title {
-    margin-top:25px;
-    font-weight:bold;
-    border-right:5px solid #6c757d;
-    padding-right:10px;
-}
-.alert-box {
-    display:none;
-    background:#fff3cd;
-    color:#664d03;
-    border:1px solid #ffecb5;
-    padding:10px 15px;
-    border-radius:6px;
-    margin-bottom:15px;
-    font-weight:bold;
-}
-</style>
+<div class="container-fluid returns-page mt-4">
 
-<form method="POST" action="{% url 'sales:save_return' invoice.id %}">
-{% csrf_token %}
+    <form method="POST" action="{% url 'sales:save_return' invoice.id %}">
+        {% csrf_token %}
 
-<div class="page-box">
+        <div class="return-card">
 
-    <h2 class="text-center fw-bold mb-4">{% trans "Credit Note (Sales Return)" %}</h2>
+            <!-- ============================= -->
+            <!-- رأس الصفحة -->
+            <!-- ============================= -->
 
-    <!-- Invoice Info -->
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label>{% trans "Customer Name" %}</label>
-            <input class="input-box" value="{{ invoice.customer.name }}" readonly>
+            <div class="page-header">
+
+                <div>
+
+                    <h3>
+                        <i class="fa-solid fa-rotate-left"></i>
+                        {% trans "Credit Note (Sales Return)" %}
+                    </h3>
+
+                    <p>
+                        {% trans "Create a sales return for the selected invoice" %}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- بيانات الفاتورة -->
+            <!-- ============================= -->
+
+            <div class="section-card">
+
+                <h4 class="section-title">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    {% trans "Invoice Information" %}
+                </h4>
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="field-label">
+                            {% trans "Customer Name" %}
+                        </label>
+
+                        <input
+                            class="input-box"
+                            value="{{ invoice.customer.name }}"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="field-label">
+                            {% trans "Invoice Date" %}
+                        </label>
+
+                        <input
+                            class="input-box"
+                            value="{{ invoice.date_invoice }}"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <label class="field-label">
+                            {% trans "Invoice No" %}
+                        </label>
+
+                        <input
+                            class="input-box"
+                            value="{{ invoice.invoice_no }}"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- سبب المرتجع -->
+            <!-- ============================= -->
+
+            <div class="section-card">
+
+                <h4 class="section-title">
+                    <i class="fa-solid fa-circle-info"></i>
+                    {% trans "Return Information" %}
+                </h4>
+
+                <label class="field-label">
+                    {% trans "Return Reason" %}
+                    <span class="text-danger">*</span>
+                </label>
+
+                <textarea
+                    name="reason"
+                    class="input-box reason-box"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- تنبيه الكمية -->
+            <!-- ============================= -->
+
+            <div id="qtyAlert" class="alert-box">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                {% trans "Cannot return a quantity greater than available" %}
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- الأصناف -->
+            <!-- ============================= -->
+
+            <div class="section-card">
+
+                <h4 class="section-title">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    {% trans "Items" %}
+
+                </h4>
+
+
+                <div class="table-box">
+
+                    <table class="return-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    {% trans "Item" %}
+                                </th>
+
+                                <th>
+                                    {% trans "Available Quantity" %}
+                                </th>
+
+                                <th>
+                                    {% trans "Price" %}
+                                </th>
+
+                                <th>
+                                    {% trans "Discount" %}
+                                </th>
+
+                                <th>
+                                    {% trans "Tax %" %}
+                                </th>
+
+                                <th>
+                                    {% trans "Total After Tax" %}
+                                </th>
+
+                                <th style="width:150px;">
+                                    {% trans "Return Quantity" %}
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for item in items %}
+
+                            <tr>
+
+                                <!-- الصنف -->
+
+                                <td class="product-name">
+
+                                    <i class="fa-solid fa-box"></i>
+
+                                    {{ item.product.name }}
+
+                                </td>
+
+
+                                <!-- الكمية المتاحة -->
+
+                                <td class="quantity-info">
+
+                                    <div>
+                                        أصلية:
+                                        <strong>
+                                            {{ item.qty|default:"0" }}
+                                        </strong>
+                                    </div>
+
+                                    <div>
+                                        مرتجع سابق:
+                                        <strong>
+                                            {{ item.returned_qty_calculated|default:"0" }}
+                                        </strong>
+                                    </div>
+
+                                    <div class="remaining-quantity">
+                                        المتبقي:
+                                        <strong>
+                                            {{ item.remaining_qty|default:"0" }}
+                                        </strong>
+                                    </div>
+
+                                </td>
+
+
+                                <!-- السعر -->
+
+                                <td class="number-cell">
+
+                                    {{ item.price|unlocalize }}
+
+                                </td>
+
+
+                                <!-- الخصم -->
+
+                                <td class="number-cell">
+
+                                    {{ item.discount|unlocalize }}
+
+                                </td>
+
+
+                                <!-- الضريبة -->
+
+                                <td class="number-cell">
+
+                                    {{ item.tax|unlocalize }}%
+
+                                </td>
+
+
+                                <!-- الإجمالي -->
+
+                                <td class="total-cell row-unit-total">
+
+                                    0.00
+
+                                </td>
+
+
+                                <!-- كمية المرتجع -->
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        name="qty_{{ item.id }}"
+                                        class="return-input"
+                                        min="0"
+                                        step="0.01"
+                                        value="0"
+                                        data-max="{{ item.remaining_qty|unlocalize }}"
+                                        data-price="{{ item.price|unlocalize }}"
+                                        data-discount="{{ item.discount|unlocalize }}"
+                                        data-tax="{{ item.tax|unlocalize }}"
+                                    >
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="7"
+                                    class="empty"
+                                >
+
+                                    <i class="fa-solid fa-box-open"></i>
+
+                                    <div>
+                                        {% trans "No items available" %}
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- الإجماليات -->
+            <!-- ============================= -->
+
+            <div class="section-card totals-section">
+
+                <h4 class="section-title">
+
+                    <i class="fa-solid fa-calculator"></i>
+
+                    {% trans "Totals" %}
+
+                </h4>
+
+
+                <div class="totals-box">
+
+                    <div class="total-row">
+
+                        <span>
+                            {% trans "Total Before Tax:" %}
+                        </span>
+
+                        <strong id="total_before">
+                            0.00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="total-row">
+
+                        <span>
+                            {% trans "Total After Discount:" %}
+                        </span>
+
+                        <strong id="total_after_discount">
+                            0.00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="total-row">
+
+                        <span>
+                            {% trans "Tax Value:" %}
+                        </span>
+
+                        <strong id="total_tax">
+                            0.00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="total-row final-total">
+
+                        <span>
+                            {% trans "Total After Tax:" %}
+                        </span>
+
+                        <strong id="total_after_tax">
+                            0.00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- زر الحفظ -->
+            <!-- ============================= -->
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    {% trans "Save Return" %}
+
+                </button>
+
+            </div>
+
         </div>
-        <div class="col-md-4">
-            <label>{% trans "Invoice Date" %}</label>
-            <input class="input-box" value="{{ invoice.date_invoice }}" readonly>
-        </div>
-        <div class="col-md-4">
-            <label>{% trans "Invoice No" %}</label>
-            <input class="input-box" value="{{ invoice.invoice_no }}" readonly>
-        </div>
-    </div>
 
-    <!-- Return Reason -->
-    <div class="mb-3">
-        <label class="fw-bold">{% trans "Return Reason" %} <span class="text-danger">*</span></label>
-        <textarea name="reason" class="input-box" required></textarea>
-    </div>
-
-    <div id="qtyAlert" class="alert-box">
-        ⚠ {% trans "Cannot return a quantity greater than available" %}
-    </div>
-
-    <!-- Items -->
-    <h4 class="section-title">{% trans "Items" %}</h4>
-
-    <table class="table table-bordered items-table mt-2">
-        <thead>
-            <tr>
-                <th>{% trans "Item" %}</th>
-                <th>{% trans "Available Quantity" %}</th>
-                <th>{% trans "Price" %}</th>
-                <th>{% trans "Discount" %}</th>
-                <th>{% trans "Tax %" %}</th>
-                <th>{% trans "Total After Tax" %}</th>
-                <th style="width:140px;">{% trans "Return Quantity" %}</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>
-    أصلية: {{ item.qty|default:"0" }} | 
-    مرتجع سابق: {{ item.returned_qty_calculated|default:"0" }} | 
-    المتبقي: {{ item.remaining_qty|default:"0" }}
-</td>
-            <td>{{ item.price|unlocalize }}</td>
-            <td>{{ item.discount|unlocalize }}</td>
-            <td>{{ item.tax|unlocalize }}</td>
-            <td class="row-unit-total fw-bold">0.00</td>
-            <td>
-                <input type="number"
-                       name="qty_{{ item.id }}"
-                       class="form-control text-center return-input"
-                       min="0"
-                       step="0.01"
-                       value="0"
-                       data-max="{{ item.remaining_qty|unlocalize }}"
-                       data-price="{{ item.price|unlocalize }}"
-                       data-discount="{{ item.discount|unlocalize }}"
-                       data-tax="{{ item.tax|unlocalize }}">
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <h4 class="section-title">{% trans "Totals" %}</h4>
-
-    <table class="table table-bordered totals-box mt-2">
-        <tr><td>{% trans "Total Before Tax:" %}</td><td id="total_before">0.00</td></tr>
-        <tr><td>{% trans "Total After Discount:" %}</td><td id="total_after_discount">0.00</td></tr>
-        <tr><td>{% trans "Tax Value:" %}</td><td id="total_tax">0.00</td></tr>
-        <tr style="background:#e7f1ff;">
-            <td class="fw-bold">{% trans "Total After Tax:" %}</td>
-            <td id="total_after_tax" class="fw-bold">0.00</td>
-        </tr>
-    </table>
-
-    <div class="text-end mt-4">
-        <button type="submit" class="btn-main">💾 {% trans "Save Return" %}</button>
-    </div>
+    </form>
 
 </div>
-</form>
+
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.returns-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.return-card{
+
+    background:#ffffff;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   كرت القسم
+========================================================= */
+
+.section-card{
+
+    background:#ffffff;
+
+    border-radius:18px;
+
+    padding:22px;
+
+    margin-bottom:22px;
+
+    box-shadow:
+    0 7px 18px rgba(0,0,0,.07);
+
+}
+
+
+/* =========================================================
+   عنوان القسم
+========================================================= */
+
+.section-title{
+
+    margin-top:0;
+
+    margin-bottom:20px;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    color:#444;
+
+    border-right:5px solid #666;
+
+    padding-right:12px;
+
+}
+
+
+.section-title i{
+
+    color:#666;
+
+    margin-left:6px;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.field-label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#555;
+
+    font-size:13px;
+
+    font-weight:700;
+
+}
+
+
+.input-box{
+
+    width:100%;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e8e8e8
+    );
+
+    border:1px solid #aaa;
+
+    padding:10px 13px;
+
+    border-radius:10px;
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.07),
+    0 2px 4px rgba(0,0,0,.05);
+
+}
+
+
+.input-box:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.07);
+
+}
+
+
+.reason-box{
+
+    min-height:100px;
+
+    resize:vertical;
+
+}
+
+
+/* =========================================================
+   تنبيه الكمية
+========================================================= */
+
+.alert-box{
+
+    display:none;
+
+    background:
+    linear-gradient(
+        135deg,
+        #fff3cd,
+        #ffe8a1
+    );
+
+    color:#664d03;
+
+    border:1px solid #e5c96b;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    margin-bottom:22px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.08);
+
+}
+
+
+.alert-box i{
+
+    margin-left:7px;
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.return-table{
+
+    width:100%;
+
+    min-width:950px;
+
+    border-collapse:collapse;
+
+    background:#ffffff;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.return-table thead{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:#ffffff;
+
+}
+
+
+.return-table thead th{
+
+    padding:16px 12px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+    border:0;
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.return-table tbody td{
+
+    padding:14px 10px;
+
+    border-bottom:1px solid #eeeeee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   تأثير الصف
+========================================================= */
+
+.return-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.return-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+}
+
+
+/* =========================================================
+   اسم المنتج
+========================================================= */
+
+.product-name{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+.product-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   معلومات الكمية
+========================================================= */
+
+.quantity-info{
+
+    font-size:12px;
+
+    line-height:1.8;
+
+    color:#666 !important;
+
+}
+
+
+.quantity-info strong{
+
+    color:#444;
+
+}
+
+
+.remaining-quantity{
+
+    font-weight:800;
+
+}
+
+
+/* =========================================================
+   الأرقام
+========================================================= */
+
+.number-cell{
+
+    font-weight:600;
+
+    color:#555 !important;
+
+}
+
+
+/* =========================================================
+   الإجمالي
+========================================================= */
+
+.total-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+/* =========================================================
+   إدخال كمية المرتجع
+========================================================= */
+
+.return-input{
+
+    width:120px;
+
+    max-width:100%;
+
+    padding:9px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    font-weight:700;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+}
+
+
+.return-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الإجماليات
+========================================================= */
+
+.totals-section{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.totals-box{
+
+    width:48%;
+
+    margin-right:auto;
+
+    margin-left:0;
+
+    border-radius:14px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,.08);
+
+}
+
+
+.total-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:13px 18px;
+
+    border-bottom:1px solid #eeeeee;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f3f3f3
+    );
+
+    color:#555;
+
+}
+
+
+.total-row strong{
+
+    color:#444;
+
+    font-weight:800;
+
+}
+
+
+.final-total{
+
+    background:
+    linear-gradient(
+        135deg,
+        #e7e7e7,
+        #cccccc
+    );
+
+    font-size:16px;
+
+    color:#333;
+
+}
+
+
+.final-total strong{
+
+    font-size:18px;
+
+}
+
+
+/* =========================================================
+   زر الحفظ
+========================================================= */
+
+.form-actions{
+
+    display:flex;
+
+    justify-content:flex-start;
+
+    margin-top:25px;
+
+}
+
+
+.save-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:#ffffff;
+
+    border:0;
+
+    padding:12px 25px;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.save-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:#ffffff;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   لا توجد أصناف
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .returns-page{
+
+        padding:15px;
+
+    }
+
+
+    .return-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        text-align:center;
+
+    }
+
+
+    .section-card{
+
+        padding:16px;
+
+    }
+
+
+    .totals-box{
+
+        width:100%;
+
+    }
+
+
+    .form-actions{
+
+        justify-content:center;
+
+    }
+
+
+    .save-btn{
+
+        width:100%;
+
+    }
+
+
+    .return-table{
+
+        min-width:950px;
+
+    }
+
+}
+
+</style>
+
 
 <script>
+
+/* =========================================================
+   تحويل القيمة إلى رقم
+========================================================= */
+
 function toNum(v){
+
     const n = parseFloat(v);
+
     return isNaN(n) ? 0 : n;
+
 }
+
+
+/* =========================================================
+   حساب الإجماليات
+========================================================= */
 
 function calcTotals(){
+
     let total_before = 0;
+
     let total_after_discount = 0;
+
     let total_tax = 0;
 
-    const alertBox = document.getElementById("qtyAlert");
+
+    const alertBox =
+        document.getElementById("qtyAlert");
+
+
     alertBox.style.display = "none";
 
-    document.querySelectorAll(".return-input").forEach(input => {
-        const maxQty = toNum(input.dataset.max);
-        let qty = toNum(input.value);
 
-        if (qty > maxQty + 0.000001){
-            qty = maxQty;
-            input.value = maxQty;
-            alertBox.style.display = "block";
-        }
+    document
+        .querySelectorAll(".return-input")
+        .forEach(input => {
 
-        const price = toNum(input.dataset.price);
-        const discount = toNum(input.dataset.discount);
-        const tax = toNum(input.dataset.tax);
 
-        const afterDiscount = price - discount;
-        const taxValue = afterDiscount * tax / 100;
-        const unitTotal = afterDiscount + taxValue;
+            const maxQty =
+                toNum(input.dataset.max);
 
-        input.closest("tr").querySelector(".row-unit-total").innerText =
-            unitTotal.toFixed(2);
 
-        total_before += qty * price;
-        total_after_discount += qty * afterDiscount;
-        total_tax += qty * taxValue;
-    });
+            let qty =
+                toNum(input.value);
 
-    document.getElementById("total_before").innerText = total_before.toFixed(2);
-    document.getElementById("total_after_discount").innerText = total_after_discount.toFixed(2);
-    document.getElementById("total_tax").innerText = total_tax.toFixed(2);
-    document.getElementById("total_after_tax").innerText =
-        (total_after_discount + total_tax).toFixed(2);
+
+            /* =============================================
+               منع تجاوز الكمية المتاحة
+            ============================================= */
+
+            if(
+                qty >
+                maxQty +
+                0.000001
+            ){
+
+                qty = maxQty;
+
+                input.value = maxQty;
+
+                alertBox.style.display = "block";
+
+            }
+
+
+            /* =============================================
+               القيم
+            ============================================= */
+
+            const price =
+                toNum(input.dataset.price);
+
+
+            const discount =
+                toNum(input.dataset.discount);
+
+
+            const tax =
+                toNum(input.dataset.tax);
+
+
+            /* =============================================
+               بعد الخصم
+            ============================================= */
+
+            const afterDiscount =
+                price - discount;
+
+
+            /* =============================================
+               قيمة الضريبة
+            ============================================= */
+
+            const taxValue =
+                afterDiscount *
+                tax /
+                100;
+
+
+            /* =============================================
+               إجمالي الوحدة
+            ============================================= */
+
+            const unitTotal =
+                afterDiscount +
+                taxValue;
+
+
+            const row =
+                input.closest("tr");
+
+
+            const totalCell =
+                row.querySelector(
+                    ".row-unit-total"
+                );
+
+
+            if(totalCell){
+
+                totalCell.innerText =
+                    unitTotal.toFixed(2);
+
+            }
+
+
+            /* =============================================
+               الإجماليات
+            ============================================= */
+
+            total_before +=
+                qty * price;
+
+
+            total_after_discount +=
+                qty * afterDiscount;
+
+
+            total_tax +=
+                qty * taxValue;
+
+        });
+
+
+    /* =============================================
+       عرض الإجماليات
+    ============================================= */
+
+    document.getElementById(
+        "total_before"
+    ).innerText =
+        total_before.toFixed(2);
+
+
+    document.getElementById(
+        "total_after_discount"
+    ).innerText =
+        total_after_discount.toFixed(2);
+
+
+    document.getElementById(
+        "total_tax"
+    ).innerText =
+        total_tax.toFixed(2);
+
+
+    document.getElementById(
+        "total_after_tax"
+    ).innerText =
+        (
+            total_after_discount +
+            total_tax
+        ).toFixed(2);
+
 }
 
-document.querySelectorAll(".return-input").forEach(el => {
-    el.addEventListener("input", calcTotals);
-});
 
-calcTotals();
+/* =========================================================
+   تشغيل الحساب عند تغيير الكمية
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        document
+            .querySelectorAll(".return-input")
+            .forEach(el => {
+
+                el.addEventListener(
+                    "input",
+                    calcTotals
+                );
+
+            });
+
+
+        calcTotals();
+
+    }
+);
+
 </script>
 
 {% endblock %}

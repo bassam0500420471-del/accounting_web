@@ -1,357 +1,1987 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% if edit_mode %}{% trans "Edit Evaluation" %}{% else %}{% trans "Create New Evaluation" %}{% endif %}{% endblock %}
+{% block title %}
+    {% if edit_mode %}
+        {% trans "Edit Evaluation" %}
+    {% else %}
+        {% trans "Create New Evaluation" %}
+    {% endif %}
+{% endblock %}
 
-{% block content %}
-<div class="container-fluid mt-4" style="background:#f1f3f5; min-height: calc(100vh - 120px); padding: 20px; border-radius: 10px;">
 
-    <h3 class="fw-bold mb-4">
-        {% if edit_mode %}✏ {% trans "Edit Evaluation" %}{% else %}➕ {% trans "Create New Evaluation" %}{% endif %}
-    </h3>
-
-    <form method="post">
-        {% csrf_token %}
-
-        <!-- ================= Evaluation Information ================= -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header fw-bold">🟦 {% trans "Evaluation Information" %}</div>
-            <div class="card-body">
-                <div class="row">
-
-                    <!-- Evaluation Name -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "Evaluation Name" %}</label>
-                        <input type="text"
-                               name="name"
-                               class="form-control"
-                               placeholder="{% trans 'Enter evaluation name' %}"
-                               value="{% if evaluation %}{{ evaluation.name }}{% endif %}"
-                               required>
-                    </div>
-
-                    <!-- Evaluation Type -->
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">{% trans "Evaluation Type" %}</label>
-                        <select name="evaluation_type"
-                                id="evaluation_type_select"
-                                class="form-select">
-                            <option value="">{% trans "Select evaluation type" %}</option>
-                            <option value="__add__">➕ {% trans "Add New Evaluation Type" %}</option>
-
-                            {% for etype in evaluation_types %}
-                                <option value="{{ etype.id }}"
-                                    {% if evaluation and evaluation.evaluation_type_id == etype.id %}selected{% endif %}>
-                                    {{ etype.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Status -->
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">{% trans "Status" %}</label>
-                        <select name="status" class="form-select" required>
-                            <option value="active" {% if evaluation and evaluation.status == 'active' %}selected{% endif %}>🟢 {% trans "Active" %}</option>
-                            <option value="draft"  {% if evaluation and evaluation.status == 'draft' %}selected{% endif %}>🔴 {% trans "Inactive" %}</option>
-                            {% if evaluation and evaluation.status == 'closed' %}
-                                <option value="closed" selected>🔒 {% trans "Closed" %}</option>
-                            {% endif %}
-                        </select>
-                    </div>
-
-                    <!-- Start Date -->
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">{% trans "Start Date" %}</label>
-                        <input type="date"
-                               name="start_date"
-                               id="start_date"
-                               class="form-control"
-                               value="{% if evaluation and evaluation.start_date %}{{ evaluation.start_date|date:'Y-m-d' }}{% endif %}"
-                               required>
-                    </div>
-
-                    <!-- End Date -->
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label fw-bold">{% trans "End Date" %}</label>
-                        <input type="date"
-                               name="end_date"
-                               id="end_date"
-                               class="form-control"
-                               value="{% if evaluation and evaluation.end_date %}{{ evaluation.end_date|date:'Y-m-d' }}{% endif %}"
-                               required>
-                    </div>
-
-                    <!-- Department -->
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "Department" %}</label>
-                        <select name="department" id="department_select" class="form-select">
-                            <option value="">{% trans "Select Department" %}</option>
-                            <option value="__add__">➕ {% trans "Add New Department" %}</option>
-                            {% for dept in departments %}
-                                <option value="{{ dept.id }}"
-                                    {% if evaluation and evaluation.department_id == dept.id %}selected{% endif %}>
-                                    {{ dept.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= Target Group ================= -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header fw-bold">🟦 {% trans "Target Group" %}</div>
-            <div class="card-body">
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">{% trans "Evaluation Method" %}</label>
-                        <select name="target_type" id="target_type" class="form-select">
-                            <option value="employee" {% if target_type_selected == 'employee' %}selected{% endif %}>
-                                {% trans "Specific Employee" %}
-                            </option>
-                            <option value="department" {% if target_type_selected == 'department' %}selected{% endif %}>
-                                {% trans "Full Department" %}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6 mb-3" id="employee-field">
-                        <label class="form-label fw-bold">{% trans "Employee" %}</label>
-
-                        <select class="form-select" id="employee_select">
-                            <option value="">{% trans "Select Employee" %}</option>
-                            {% for emp in employees %}
-                                <option value="{{ emp.id }}">{{ emp.display_employee_number }} - {{ emp.first_name_ar }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <div class="mt-2" id="selected-employees-box"></div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= Evaluation Criteria ================= -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                🟦 {% trans "Evaluation Criteria" %}
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCriteriaRow()">
-                    ➕ {% trans "Add Criteria" %}
-                </button>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-bordered mb-0 text-center align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>{% trans "Criteria Name" %}</th>
-                            <th>{% trans "Criteria Type" %}</th>
-                            <th>{% trans "Weight (%)" %}</th>
-                            <th>{% trans "Delete" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody id="criteria-body">
-
-                        {% if edit_mode and criteria %}
-                            {% for c in criteria %}
-                            <tr>
-                                <td>
-                                    <input type="text" name="criteria_name[]" class="form-control" value="{{ c.name }}" required>
-                                </td>
-                                <td>
-                                    <select name="criteria_type[]" class="form-select">
-                                        <option value="score"   {% if c.criteria_type == 'score' %}selected{% endif %}>{% trans "Score (1-5)" %}</option>
-                                        <option value="yesno"   {% if c.criteria_type == 'yesno' %}selected{% endif %}>{% trans "Yes / No" %}</option>
-                                        <option value="percent" {% if c.criteria_type == 'percent' %}selected{% endif %}>{% trans "Percentage" %}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" name="criteria_weight[]" class="form-control" min="1" max="100" value="{{ c.weight }}" required>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove();">✖</button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td><input type="text" name="criteria_name[]" class="form-control" required></td>
-                                <td>
-                                    <select name="criteria_type[]" class="form-select">
-                                        <option value="score">{% trans "Score (1-5)" %}</option>
-                                        <option value="yesno">{% trans "Yes / No" %}</option>
-                                        <option value="percent">{% trans "Percentage" %}</option>
-                                    </select>
-                                </td>
-                                <td><input type="number" name="criteria_weight[]" class="form-control" min="1" max="100" required></td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove();">✖</button>
-                                </td>
-                            </tr>
-                        {% endif %}
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ================= Notes ================= -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header fw-bold">🟦 {% trans "Notes" %}</div>
-            <div class="card-body">
-                <textarea name="comment" class="form-control" rows="3" placeholder="{% trans 'Enter notes' %}">{% if evaluation and evaluation.comment %}{{ evaluation.comment }}{% endif %}</textarea>
-            </div>
-        </div>
-
-        <!-- ================= Save Buttons ================= -->
-        <div class="card shadow-sm mb-2">
-            <div class="card-body text-end">
-                <button type="submit" class="btn btn-secondary px-4">💾 {% trans "Save Evaluation" %}</button>
-                <a href="{% url 'hr:evaluations' %}" class="btn btn-secondary px-4">↩ {% trans "Cancel" %}</a>
-            </div>
-        </div>
-
-    </form>
-</div>
+{% block extra_css %}
 
 <style>
-.employee-chip{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 10px;
-    margin:4px 6px 0 0;
-    border:1px solid #ddd;
-    border-radius:999px;
-    background:#fff;
-    font-size:14px;
+
+/* =========================================================
+   صفحة إضافة / تعديل التقييم
+   HR 3D Gray Gradient Design
+   ========================================================= */
+
+.hr-evaluation-page {
+
+    background: linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d9d9d9
+    );
+
+    min-height: calc(100vh - 100px);
+
+    padding: 25px;
+
+    direction: rtl;
+
 }
-.employee-chip .remove-chip{
-    border:none;
-    background:transparent;
-    color:#c0392b;
-    font-weight:bold;
-    cursor:pointer;
-    line-height:1;
-    font-size:14px;
-    padding:0 2px;
+
+
+/* =========================================================
+   الكرت الرئيسي
+   ========================================================= */
+
+.evaluation-main-card {
+
+    background: #ffffff;
+
+    border-radius: 22px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.15);
+
 }
+
+
+/* =========================================================
+   رأس الصفحة
+   ========================================================= */
+
+.evaluation-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.evaluation-title {
+
+    margin: 0;
+
+    font-size: 26px;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+.evaluation-subtitle {
+
+    margin-top: 7px;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   أزرار الرأس
+   ========================================================= */
+
+.evaluation-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.evaluation-btn {
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 10px 18px;
+
+    text-decoration: none;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    transition: .25s;
+
+    box-shadow:
+        3px 3px 8px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.12);
+
+}
+
+
+.evaluation-btn:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+.evaluation-btn-save {
+
+    background: linear-gradient(
+        145deg,
+        #555,
+        #777
+    );
+
+    color: #fff;
+
+}
+
+
+.evaluation-btn-save:hover {
+
+    background: linear-gradient(
+        145deg,
+        #444,
+        #666
+    );
+
+    color: #fff;
+
+}
+
+
+.evaluation-btn-cancel {
+
+    background: linear-gradient(
+        145deg,
+        #777,
+        #555
+    );
+
+    color: #fff;
+
+}
+
+
+.evaluation-btn-cancel:hover {
+
+    color: #fff;
+
+    background: linear-gradient(
+        145deg,
+        #666,
+        #444
+    );
+
+}
+
+
+/* =========================================================
+   كروت الأقسام
+   ========================================================= */
+
+.evaluation-card {
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,.07);
+
+}
+
+
+.evaluation-card-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #eeeeee;
+
+}
+
+
+.evaluation-section-title {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+.evaluation-section-title i {
+
+    color: #666;
+
+    margin-left: 7px;
+
+}
+
+
+/* =========================================================
+   الحقول
+   ========================================================= */
+
+.evaluation-field {
+
+    margin-bottom: 15px;
+
+}
+
+
+.evaluation-field label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #555;
+
+}
+
+
+.evaluation-field input,
+.evaluation-field select,
+.evaluation-field textarea {
+
+    width: 100%;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 10px;
+
+    padding: 11px 12px;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 13px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #444;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,.04);
+
+    transition: .2s;
+
+}
+
+
+.evaluation-field input:focus,
+.evaluation-field select:focus,
+.evaluation-field textarea:focus {
+
+    border-color: #777;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.10),
+        inset 2px 2px 5px rgba(0,0,0,.04);
+
+}
+
+
+/* =========================================================
+   اختيار الموظفين
+   ========================================================= */
+
+.employee-selection-box {
+
+    min-height: 45px;
+
+    margin-top: 10px;
+
+    padding: 5px;
+
+    border-radius: 10px;
+
+}
+
+
+/* =========================================================
+   الموظف المحدد
+   ========================================================= */
+
+.employee-chip {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 12px;
+
+    margin: 4px;
+
+    border: 1px solid #d0d0d0;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    color: #444;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    box-shadow:
+        2px 2px 6px rgba(0,0,0,.12);
+
+}
+
+
+.employee-chip .remove-chip {
+
+    border: none;
+
+    background: #666;
+
+    color: #fff;
+
+    border-radius: 50%;
+
+    width: 22px;
+
+    height: 22px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    line-height: 20px;
+
+    padding: 0;
+
+}
+
+
+.employee-chip .remove-chip:hover {
+
+    background: #444;
+
+}
+
+
+/* =========================================================
+   جدول معايير التقييم
+   ========================================================= */
+
+.criteria-table-wrapper {
+
+    overflow-x: auto;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.05);
+
+}
+
+
+.criteria-table {
+
+    width: 100%;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    background: #fff;
+
+}
+
+
+.criteria-table thead {
+
+    background:
+        linear-gradient(
+            90deg,
+            #444 0%,
+            #666 50%,
+            #888 100%
+        );
+
+    color: #fff;
+
+}
+
+
+.criteria-table th {
+
+    padding: 14px 10px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    color: #fff;
+
+    border: none;
+
+}
+
+
+.criteria-table th:first-child {
+
+    border-top-right-radius: 15px;
+
+}
+
+
+.criteria-table th:last-child {
+
+    border-top-left-radius: 15px;
+
+}
+
+
+.criteria-table td {
+
+    padding: 10px 8px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #eeeeee;
+
+    background: #fff;
+
+}
+
+
+.criteria-table tbody tr {
+
+    transition: .2s;
+
+}
+
+
+.criteria-table tbody tr:hover td {
+
+    background: #f3f3f3;
+
+}
+
+
+.criteria-table input,
+.criteria-table select {
+
+    width: 100%;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 8px;
+
+    padding: 9px 8px;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 13px;
+
+    outline: none;
+
+}
+
+
+.criteria-table input:focus,
+.criteria-table select:focus {
+
+    border-color: #777;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.10);
+
+}
+
+
+/* =========================================================
+   زر إضافة معيار
+   ========================================================= */
+
+.add-criteria-btn {
+
+    border: none;
+
+    border-radius: 9px;
+
+    padding: 8px 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777,
+            #555
+        );
+
+    color: #fff;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        3px 3px 8px rgba(0,0,0,.15);
+
+    transition: .2s;
+
+}
+
+
+.add-criteria-btn:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #666,
+            #444
+        );
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   زر حذف المعيار
+   ========================================================= */
+
+.delete-criteria-btn {
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 7px 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777,
+            #555
+        );
+
+    color: #fff;
+
+    cursor: pointer;
+
+    box-shadow:
+        2px 2px 6px rgba(0,0,0,.15);
+
+}
+
+
+.delete-criteria-btn:hover {
+
+    background:
+        linear-gradient(
+            145deg,
+            #555,
+            #333
+        );
+
+}
+
+
+/* =========================================================
+   الملاحظات
+   ========================================================= */
+
+.evaluation-notes {
+
+    min-height: 100px;
+
+    resize: vertical;
+
+}
+
+
+/* =========================================================
+   أزرار أسفل الصفحة
+   ========================================================= */
+
+.evaluation-footer {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 18px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,.08);
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    .hr-evaluation-page {
+
+        padding: 15px;
+
+    }
+
+
+    .evaluation-main-card {
+
+        padding: 20px;
+
+        border-radius: 18px;
+
+    }
+
+
+    .evaluation-title {
+
+        font-size: 22px;
+
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .evaluation-header {
+
+        display: block;
+
+    }
+
+
+    .evaluation-actions {
+
+        width: 100%;
+
+        margin-top: 15px;
+
+    }
+
+
+    .evaluation-actions .evaluation-btn {
+
+        flex: 1;
+
+    }
+
+
+    .evaluation-footer {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .evaluation-footer .evaluation-btn {
+
+        width: 100%;
+
+    }
+
+}
+
 </style>
 
-<!-- ================= JS ================= -->
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="container-fluid hr-evaluation-page">
+
+
+    <div class="evaluation-main-card">
+
+
+        <!-- =================================================
+             رأس الصفحة
+             ================================================= -->
+
+        <div class="evaluation-header">
+
+            <div>
+
+                <h1 class="evaluation-title">
+
+                    {% if edit_mode %}
+
+                        ✏️ {% trans "Edit Evaluation" %}
+
+                    {% else %}
+
+                        ➕ {% trans "Create New Evaluation" %}
+
+                    {% endif %}
+
+                </h1>
+
+
+                <div class="evaluation-subtitle">
+
+                    {% if edit_mode %}
+
+                        تعديل بيانات التقييم ومعاييره
+
+                    {% else %}
+
+                        إنشاء تقييم جديد للموظفين
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="evaluation-actions">
+
+                <a
+                    href="{% url 'hr:evaluations' %}"
+                    class="evaluation-btn evaluation-btn-cancel"
+                >
+
+                    ← {% trans "Back" %}
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+
+            <!-- =================================================
+                 معلومات التقييم
+                 ================================================= -->
+
+            <div class="evaluation-card">
+
+                <div class="evaluation-card-header">
+
+                    <h2 class="evaluation-section-title">
+
+                        📋 {% trans "Evaluation Information" %}
+
+                    </h2>
+
+                </div>
+
+
+                <div class="row">
+
+
+                    <!-- اسم التقييم -->
+
+                    <div class="col-md-6 evaluation-field">
+
+                        <label>
+
+                            {% trans "Evaluation Name" %}
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="{% trans 'Enter evaluation name' %}"
+                            value="{% if evaluation %}{{ evaluation.name }}{% endif %}"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- نوع التقييم -->
+
+                    <div class="col-md-3 evaluation-field">
+
+                        <label>
+
+                            {% trans "Evaluation Type" %}
+
+                        </label>
+
+                        <select
+                            name="evaluation_type"
+                            id="evaluation_type_select"
+                        >
+
+                            <option value="">
+
+                                {% trans "Select evaluation type" %}
+
+                            </option>
+
+                            <option value="__add__">
+
+                                ➕ {% trans "Add New Evaluation Type" %}
+
+                            </option>
+
+
+                            {% for etype in evaluation_types %}
+
+                                <option
+                                    value="{{ etype.id }}"
+                                    {% if evaluation and evaluation.evaluation_type_id == etype.id %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ etype.name }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- الحالة -->
+
+                    <div class="col-md-3 evaluation-field">
+
+                        <label>
+
+                            {% trans "Status" %}
+
+                        </label>
+
+                        <select
+                            name="status"
+                            required
+                        >
+
+                            <option
+                                value="active"
+                                {% if evaluation and evaluation.status == 'active' %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                🟢 {% trans "Active" %}
+
+                            </option>
+
+
+                            <option
+                                value="draft"
+                                {% if evaluation and evaluation.status == 'draft' %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                🟡 {% trans "Inactive" %}
+
+                            </option>
+
+
+                            {% if evaluation and evaluation.status == 'closed' %}
+
+                                <option
+                                    value="closed"
+                                    selected
+                                >
+
+                                    🔒 {% trans "Closed" %}
+
+                                </option>
+
+                            {% endif %}
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- تاريخ البداية -->
+
+                    <div class="col-md-3 evaluation-field">
+
+                        <label>
+
+                            {% trans "Start Date" %}
+
+                        </label>
+
+                        <input
+                            type="date"
+                            name="start_date"
+                            id="start_date"
+                            value="{% if evaluation and evaluation.start_date %}{{ evaluation.start_date|date:'Y-m-d' }}{% endif %}"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- تاريخ النهاية -->
+
+                    <div class="col-md-3 evaluation-field">
+
+                        <label>
+
+                            {% trans "End Date" %}
+
+                        </label>
+
+                        <input
+                            type="date"
+                            name="end_date"
+                            id="end_date"
+                            value="{% if evaluation and evaluation.end_date %}{{ evaluation.end_date|date:'Y-m-d' }}{% endif %}"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- القسم -->
+
+                    <div class="col-md-6 evaluation-field">
+
+                        <label>
+
+                            {% trans "Department" %}
+
+                        </label>
+
+                        <select
+                            name="department"
+                            id="department_select"
+                        >
+
+                            <option value="">
+
+                                {% trans "Select Department" %}
+
+                            </option>
+
+                            <option value="__add__">
+
+                                ➕ {% trans "Add New Department" %}
+
+                            </option>
+
+
+                            {% for dept in departments %}
+
+                                <option
+                                    value="{{ dept.id }}"
+                                    {% if evaluation and evaluation.department_id == dept.id %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ dept.name }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 الفئة المستهدفة
+                 ================================================= -->
+
+            <div class="evaluation-card">
+
+                <div class="evaluation-card-header">
+
+                    <h2 class="evaluation-section-title">
+
+                        👥 {% trans "Target Group" %}
+
+                    </h2>
+
+                </div>
+
+
+                <div class="row">
+
+
+                    <div class="col-md-6 evaluation-field">
+
+                        <label>
+
+                            {% trans "Evaluation Method" %}
+
+                        </label>
+
+                        <select
+                            name="target_type"
+                            id="target_type"
+                        >
+
+                            <option
+                                value="employee"
+                                {% if target_type_selected == 'employee' %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {% trans "Specific Employee" %}
+
+                            </option>
+
+
+                            <option
+                                value="department"
+                                {% if target_type_selected == 'department' %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {% trans "Full Department" %}
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div
+                        class="col-md-6 evaluation-field"
+                        id="employee-field"
+                    >
+
+                        <label>
+
+                            {% trans "Employee" %}
+
+                        </label>
+
+
+                        <select
+                            id="employee_select"
+                        >
+
+                            <option value="">
+
+                                {% trans "Select Employee" %}
+
+                            </option>
+
+
+                            {% for emp in employees %}
+
+                                <option value="{{ emp.id }}">
+
+                                    {{ emp.display_employee_number }}
+                                    -
+                                    {{ emp.first_name_ar }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+
+                        <div
+                            class="employee-selection-box"
+                            id="selected-employees-box"
+                        ></div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 معايير التقييم
+                 ================================================= -->
+
+            <div class="evaluation-card">
+
+
+                <div class="evaluation-card-header">
+
+                    <h2 class="evaluation-section-title">
+
+                        📊 {% trans "Evaluation Criteria" %}
+
+                    </h2>
+
+
+                    <button
+                        type="button"
+                        class="add-criteria-btn"
+                        onclick="addCriteriaRow()"
+                    >
+
+                        ➕ {% trans "Add Criteria" %}
+
+                    </button>
+
+                </div>
+
+
+
+                <div class="criteria-table-wrapper">
+
+                    <table class="criteria-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+
+                                    {% trans "Criteria Name" %}
+
+                                </th>
+
+                                <th>
+
+                                    {% trans "Criteria Type" %}
+
+                                </th>
+
+                                <th>
+
+                                    {% trans "Weight (%)" %}
+
+                                </th>
+
+                                <th>
+
+                                    {% trans "Delete" %}
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="criteria-body">
+
+
+                            {% if edit_mode and criteria %}
+
+                                {% for c in criteria %}
+
+                                    <tr>
+
+                                        <td>
+
+                                            <input
+                                                type="text"
+                                                name="criteria_name[]"
+                                                value="{{ c.name }}"
+                                                required
+                                            >
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <select
+                                                name="criteria_type[]"
+                                            >
+
+                                                <option
+                                                    value="score"
+                                                    {% if c.criteria_type == 'score' %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+
+                                                    {% trans "Score (1-5)" %}
+
+                                                </option>
+
+
+                                                <option
+                                                    value="yesno"
+                                                    {% if c.criteria_type == 'yesno' %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+
+                                                    {% trans "Yes / No" %}
+
+                                                </option>
+
+
+                                                <option
+                                                    value="percent"
+                                                    {% if c.criteria_type == 'percent' %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+
+                                                    {% trans "Percentage" %}
+
+                                                </option>
+
+                                            </select>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <input
+                                                type="number"
+                                                name="criteria_weight[]"
+                                                min="1"
+                                                max="100"
+                                                value="{{ c.weight }}"
+                                                required
+                                            >
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <button
+                                                type="button"
+                                                class="delete-criteria-btn"
+                                                onclick="this.closest('tr').remove();"
+                                            >
+
+                                                ✖
+
+                                            </button>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+
+                            {% else %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            name="criteria_name[]"
+                                            required
+                                        >
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <select
+                                            name="criteria_type[]"
+                                        >
+
+                                            <option value="score">
+
+                                                {% trans "Score (1-5)" %}
+
+                                            </option>
+
+                                            <option value="yesno">
+
+                                                {% trans "Yes / No" %}
+
+                                            </option>
+
+                                            <option value="percent">
+
+                                                {% trans "Percentage" %}
+
+                                            </option>
+
+                                        </select>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <input
+                                            type="number"
+                                            name="criteria_weight[]"
+                                            min="1"
+                                            max="100"
+                                            required
+                                        >
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <button
+                                            type="button"
+                                            class="delete-criteria-btn"
+                                            onclick="this.closest('tr').remove();"
+                                        >
+
+                                            ✖
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endif %}
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 الملاحظات
+                 ================================================= -->
+
+            <div class="evaluation-card">
+
+                <div class="evaluation-card-header">
+
+                    <h2 class="evaluation-section-title">
+
+                        📝 {% trans "Notes" %}
+
+                    </h2>
+
+                </div>
+
+
+                <div class="evaluation-field">
+
+                    <textarea
+                        name="comment"
+                        class="evaluation-notes"
+                        rows="4"
+                        placeholder="{% trans 'Enter notes' %}"
+                    >{% if evaluation and evaluation.comment %}{{ evaluation.comment }}{% endif %}</textarea>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 أزرار الحفظ
+                 ================================================= -->
+
+            <div class="evaluation-footer">
+
+                <button
+                    type="submit"
+                    class="evaluation-btn evaluation-btn-save"
+                >
+
+                    💾 {% trans "Save Evaluation" %}
+
+                </button>
+
+
+                <a
+                    href="{% url 'hr:evaluations' %}"
+                    class="evaluation-btn evaluation-btn-cancel"
+                >
+
+                    ✖ {% trans "Cancel" %}
+
+                </a>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
 <script>
+
+/* =========================================================
+   إضافة معيار جديد
+   ========================================================= */
+
 function addCriteriaRow() {
-    const body = document.getElementById('criteria-body');
+
+    const body =
+        document.getElementById(
+            'criteria-body'
+        );
+
     const row = `
+
         <tr>
-            <td><input type="text" name="criteria_name[]" class="form-control" required></td>
+
             <td>
-                <select name="criteria_type[]" class="form-select">
-                    <option value="score">{% trans "Score (1-5)" %}</option>
-                    <option value="yesno">{% trans "Yes / No" %}</option>
-                    <option value="percent">{% trans "Percentage" %}</option>
+
+                <input
+                    type="text"
+                    name="criteria_name[]"
+                    required
+                >
+
+            </td>
+
+
+            <td>
+
+                <select
+                    name="criteria_type[]"
+                >
+
+                    <option value="score">
+                        {% trans "Score (1-5)" %}
+                    </option>
+
+                    <option value="yesno">
+                        {% trans "Yes / No" %}
+                    </option>
+
+                    <option value="percent">
+                        {% trans "Percentage" %}
+                    </option>
+
                 </select>
+
             </td>
-            <td><input type="number" name="criteria_weight[]" class="form-control" min="1" max="100" required></td>
+
+
             <td>
-                <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove();">✖</button>
+
+                <input
+                    type="number"
+                    name="criteria_weight[]"
+                    min="1"
+                    max="100"
+                    required
+                >
+
             </td>
+
+
+            <td>
+
+                <button
+                    type="button"
+                    class="delete-criteria-btn"
+                    onclick="this.closest('tr').remove();"
+                >
+
+                    ✖
+
+                </button>
+
+            </td>
+
         </tr>
+
     `;
-    body.insertAdjacentHTML('beforeend', row);
+
+    body.insertAdjacentHTML(
+        'beforeend',
+        row
+    );
+
 }
 
-document.addEventListener("DOMContentLoaded", function () {
 
-    function syncTargetFields(){
-        const targetType = document.querySelector('select[name="target_type"]');
-        const employeeField = document.getElementById('employee-field');
-        if (!targetType || !employeeField) return;
 
-        employeeField.style.display = (targetType.value === 'employee') ? 'block' : 'none';
-    }
+/* =========================================================
+   عند تحميل الصفحة
+   ========================================================= */
 
-    syncTargetFields();
-    const targetType = document.querySelector('select[name="target_type"]');
-    if (targetType) targetType.addEventListener('change', syncTargetFields);
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    const empSelect = document.getElementById("employee_select");
-    const box = document.getElementById("selected-employees-box");
-    if (empSelect && box) {
 
-        function addChip(id, label){
-            if (box.querySelector('input[type="hidden"][value="'+id+'"]')) {
-                empSelect.value = "";
+        /* ==============================================
+           إظهار / إخفاء الموظف
+        ============================================== */
+
+        function syncTargetFields() {
+
+            const targetType =
+                document.querySelector(
+                    'select[name="target_type"]'
+                );
+
+            const employeeField =
+                document.getElementById(
+                    'employee-field'
+                );
+
+
+            if (
+                !targetType ||
+                !employeeField
+            ) {
+
                 return;
+
             }
 
-            const chip = document.createElement("span");
-            chip.className = "employee-chip";
-            chip.setAttribute("data-id", id);
 
-            chip.innerHTML = `
-                <span>${label}</span>
-                <button type="button" class="remove-chip" title="{% trans "Delete" %}">✖</button>
-                <input type="hidden" name="employee_ids[]" value="${id}">
-            `;
+            employeeField.style.display =
+                targetType.value === 'employee'
+                    ? 'block'
+                    : 'none';
 
-            chip.querySelector(".remove-chip").addEventListener("click", function(){
-                chip.remove();
-            });
-
-            box.appendChild(chip);
-            empSelect.value = "";
         }
 
-        empSelect.addEventListener("change", function(){
-            const id = this.value;
-            if (!id) return;
 
-            const label = this.options[this.selectedIndex].text;
-            addChip(id, label);
-        });
+        syncTargetFields();
 
-        {% if selected_employee_ids %}
-            const selectedIds = {{ selected_employee_ids|safe }};
-            const idSet = new Set(selectedIds.map(String));
 
-            Array.from(empSelect.options).forEach(opt => {
-                if (opt.value && idSet.has(String(opt.value))) {
-                    addChip(opt.value, opt.text);
+        const targetType =
+            document.querySelector(
+                'select[name="target_type"]'
+            );
+
+
+        if (targetType) {
+
+            targetType.addEventListener(
+                'change',
+                syncTargetFields
+            );
+
+        }
+
+
+
+        /* ==============================================
+           اختيار الموظفين
+        ============================================== */
+
+        const empSelect =
+            document.getElementById(
+                "employee_select"
+            );
+
+
+        const box =
+            document.getElementById(
+                "selected-employees-box"
+            );
+
+
+        if (
+            empSelect &&
+            box
+        ) {
+
+
+            function addChip(
+                id,
+                label
+            ) {
+
+
+                if (
+                    box.querySelector(
+                        'input[type="hidden"][value="' +
+                        id +
+                        '"]'
+                    )
+                ) {
+
+                    empSelect.value = "";
+
+                    return;
+
                 }
-            });
-        {% endif %}
-    }
 
-    const evalTypeSelect = document.getElementById("evaluation_type_select");
-    if (evalTypeSelect) {
-        evalTypeSelect.addEventListener("change", function () {
-            if (this.value === "__add__") {
-                window.location.href = "{% url 'hr:add_evaluation_type' %}?next={{ request.get_full_path|urlencode }}";
+
+                const chip =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                chip.className =
+                    "employee-chip";
+
+
+                chip.setAttribute(
+                    "data-id",
+                    id
+                );
+
+
+                chip.innerHTML = `
+
+                    <span>
+                        ${label}
+                    </span>
+
+                    <button
+                        type="button"
+                        class="remove-chip"
+                        title="{% trans "Delete" %}"
+                    >
+                        ✖
+                    </button>
+
+                    <input
+                        type="hidden"
+                        name="employee_ids[]"
+                        value="${id}"
+                    >
+
+                `;
+
+
+                chip.querySelector(
+                    ".remove-chip"
+                ).addEventListener(
+                    "click",
+                    function () {
+
+                        chip.remove();
+
+                    }
+                );
+
+
+                box.appendChild(
+                    chip
+                );
+
+
+                empSelect.value = "";
+
             }
-        });
+
+
+
+            empSelect.addEventListener(
+                "change",
+                function () {
+
+                    const id =
+                        this.value;
+
+
+                    if (!id) {
+
+                        return;
+
+                    }
+
+
+                    const label =
+                        this.options[
+                            this.selectedIndex
+                        ].text;
+
+
+                    addChip(
+                        id,
+                        label
+                    );
+
+                }
+            );
+
+
+
+            {% if selected_employee_ids %}
+
+                const selectedIds =
+                    {{ selected_employee_ids|safe }};
+
+
+                const idSet =
+                    new Set(
+                        selectedIds.map(
+                            String
+                        )
+                    );
+
+
+                Array.from(
+                    empSelect.options
+                ).forEach(
+                    function (opt) {
+
+                        if (
+                            opt.value &&
+                            idSet.has(
+                                String(
+                                    opt.value
+                                )
+                            )
+                        ) {
+
+                            addChip(
+                                opt.value,
+                                opt.text
+                            );
+
+                        }
+
+                    }
+                );
+
+            {% endif %}
+
+        }
+
+
+
+        /* ==============================================
+           إضافة نوع تقييم
+        ============================================== */
+
+        const evalTypeSelect =
+            document.getElementById(
+                "evaluation_type_select"
+            );
+
+
+        if (evalTypeSelect) {
+
+            evalTypeSelect.addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        this.value ===
+                        "__add__"
+                    ) {
+
+                        window.location.href =
+                            "{% url 'hr:add_evaluation_type' %}?next={{ request.get_full_path|urlencode }}";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* ==============================================
+           إضافة قسم
+        ============================================== */
+
+        const deptSelect =
+            document.getElementById(
+                "department_select"
+            );
+
+
+        if (deptSelect) {
+
+            deptSelect.addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        this.value ===
+                        "__add__"
+                    ) {
+
+                        window.location.href =
+                            "{% url 'hr:add_department' %}?next={{ request.get_full_path|urlencode }}";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* ==============================================
+           التاريخ الافتراضي
+        ============================================== */
+
+        const today =
+            new Date()
+                .toISOString()
+                .split('T')[0];
+
+
+        const startDate =
+            document.getElementById(
+                "start_date"
+            );
+
+
+        const endDate =
+            document.getElementById(
+                "end_date"
+            );
+
+
+        if (
+            startDate &&
+            !startDate.value
+        ) {
+
+            startDate.value =
+                today;
+
+        }
+
+
+        if (
+            endDate &&
+            !endDate.value
+        ) {
+
+            endDate.value =
+                today;
+
+        }
+
     }
+);
 
-    const deptSelect = document.getElementById("department_select");
-    if (deptSelect) {
-        deptSelect.addEventListener("change", function () {
-            if (this.value === "__add__") {
-                window.location.href = "{% url 'hr:add_department' %}?next={{ request.get_full_path|urlencode }}";
-            }
-        });
-    }
-
-    const today = new Date().toISOString().split('T')[0];
-    const startDate = document.getElementById("start_date");
-    const endDate = document.getElementById("end_date");
-    if (startDate && !startDate.value) startDate.value = today;
-    if (endDate && !endDate.value) endDate.value = today;
-
-});
 </script>
 
 {% endblock %}

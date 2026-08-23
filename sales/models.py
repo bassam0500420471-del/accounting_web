@@ -165,31 +165,138 @@ class SalesItem(models.Model):
 # 🧾 المرتجعات
 # ==========================================================
 class ReturnInvoice(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="sales_returns", null=True, blank=True)
-    original_invoice = models.ForeignKey(SalesInvoice, on_delete=models.CASCADE, related_name="sales_returns", null=True, blank=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    return_no = models.PositiveIntegerField(null=True, blank=True, default=0, verbose_name="رقم المستند المرتجع")
-    description = models.TextField(blank=True, default="")
-    date_return = models.DateField(default=timezone.now)
-    total_before_tax = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
-    tax_value = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
-    total_after_tax = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="sales_returns",
+        null=True,
+        blank=True
+    )
+
+    # فاتورة المبيعات العادية
+    original_invoice = models.ForeignKey(
+        SalesInvoice,
+        on_delete=models.CASCADE,
+        related_name="sales_returns",
+        null=True,
+        blank=True
+    )
+
+    # فاتورة نقاط البيع POS
+    pos_invoice = models.ForeignKey(
+        "pos.Invoice",
+        on_delete=models.CASCADE,
+        related_name="sales_returns",
+        null=True,
+        blank=True
+    )
+
+    customer = models.ForeignKey(
+        Customer,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    return_no = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        default=0,
+        verbose_name="رقم المستند المرتجع"
+    )
+
+    description = models.TextField(
+        blank=True,
+        default=""
+    )
+
+    date_return = models.DateField(
+        default=timezone.now
+    )
+
+    total_before_tax = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
+    tax_value = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
+    total_after_tax = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     class Meta:
         ordering = ["-return_no"]
-        # 🎯 يجعل رقم المرتجع أيضاً فريداً على مستوى نفس الشركة فقط لتفادي تضارب المرتجعات
-        unique_together = ("company", "return_no")
+
+        unique_together = (
+            "company",
+            "return_no"
+        )
 
     def update_totals(self):
         items = self.items.all()
-        before_tax = sum(item.total for item in items)
-        tax = (before_tax * Decimal("15.00")) / Decimal("100")
-        
-        self.total_before_tax = before_tax
-        self.tax_value = tax
-        self.total_after_tax = before_tax + tax
-        self.save()
+
+        total_before_tax = Decimal("0.00")
+        total_tax = Decimal("0.00")
+
+        for item in items:
+
+            qty = Decimal(str(item.qty_return or 0))
+            price = Decimal(str(item.price or 0))
+            discount = Decimal(str(item.discount or 0))
+            tax_rate = Decimal(str(item.tax or 0))
+
+            subtotal = qty * price
+
+            taxable = subtotal - discount
+
+            if taxable < Decimal("0.00"):
+                taxable = Decimal("0.00")
+
+            tax = (
+                taxable *
+                tax_rate /
+                Decimal("100")
+            )
+
+            total_before_tax += taxable
+            total_tax += tax
+
+        self.total_before_tax = total_before_tax
+        self.tax_value = total_tax
+        self.total_after_tax = (
+            total_before_tax + total_tax
+        )
+
+        self.save(
+            update_fields=[
+                "total_before_tax",
+                "tax_value",
+                "total_after_tax",
+            ]
+        )
+
+    @property
+    def invoice(self):
+
+        if self.original_invoice_id:
+            return self.original_invoice
+
+        if self.pos_invoice_id:
+            return self.pos_invoice
+
+        return None
 
 
 class ReturnItem(models.Model):

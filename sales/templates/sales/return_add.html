@@ -1,108 +1,879 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
+
 {% block content %}
 
-<style>
-.btn-main {
-    background:#6c757d !important;
-    color:white !important;
-    border-radius:6px;
-    font-size:18px;
-    padding:10px 25px;
-}
-.btn-main:hover {
-    background:#5c636a !important;
-}
-</style>
+<div class="returns-page">
 
-<div class="container mt-4">
+    <div class="return-card">
 
-    <h2 class="fw-bold text-center mb-4">
-        {% trans "Create Credit Note (Sales Return)" %}
-    </h2>
+        <!-- ============================= -->
+        <!-- رأس الصفحة -->
+        <!-- ============================= -->
 
-    <!-- ================= Customer ================= -->
-    <label class="fw-bold">{% trans "Select Customer:" %}</label>
-    <select id="customerSelect" class="form-select mb-3">
-        <option value="">{% trans "-- Select Customer --" %}</option>
-        {% for c in customers %}
-            <option value="{{ c.id }}">{{ c.name }}</option>
-        {% endfor %}
-    </select>
+        <div class="page-header">
 
-    <!-- ================= Invoice ================= -->
-    <label class="fw-bold">{% trans "Select Sales Invoice:" %}</label>
-    <select id="invoiceSelect" class="form-select mb-4" disabled>
-        <option value="">{% trans "-- Select customer first --" %}</option>
-    </select>
+            <div>
 
-    <!-- ================= Continue ================= -->
-    <div class="text-center mt-4">
-        <a id="continueBtn"
-           class="btn-main btn-lg disabled"
-           role="button">
-            {% trans "Continue Creating Return" %}
-        </a>
+                <h3>
+
+                    <i class="fa-solid fa-file-circle-plus"></i>
+
+                    {% trans "Create Credit Note (Sales Return)" %}
+
+                </h3>
+
+                <p>
+
+                    {% trans "Select a customer and sales invoice to create a return" %}
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- اختيار العميل -->
+        <!-- ============================= -->
+
+        <div class="form-section">
+
+            <label class="form-label">
+
+                <i class="fa-solid fa-user"></i>
+
+                {% trans "Select Customer:" %}
+
+            </label>
+
+            <select
+                id="customerSelect"
+                class="custom-select"
+            >
+
+                <option value="">
+
+                    {% trans "-- Select Customer --" %}
+
+                </option>
+
+                {% for c in customers %}
+
+                    <option value="{{ c.id }}">
+
+                        {{ c.name }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- اختيار الفاتورة -->
+        <!-- ============================= -->
+
+        <div class="form-section">
+
+            <label class="form-label">
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                {% trans "Select Sales Invoice:" %}
+
+            </label>
+
+            <select
+                id="invoiceSelect"
+                class="custom-select"
+                disabled
+            >
+
+                <option value="">
+
+                    {% trans "-- Select customer first --" %}
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- رسالة التحميل -->
+        <!-- ============================= -->
+
+        <div
+            id="loadingMessage"
+            class="loading-box"
+        >
+
+            <i class="fa-solid fa-spinner fa-spin"></i>
+
+            {% trans "Loading invoices..." %}
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- رسالة عدم وجود فواتير -->
+        <!-- ============================= -->
+
+        <div
+            id="emptyMessage"
+            class="empty-box"
+        >
+
+            <i class="fa-solid fa-file-circle-xmark"></i>
+
+            {% trans "No sales invoices found for this customer." %}
+
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- زر المتابعة -->
+        <!-- ============================= -->
+
+        <div class="continue-section">
+
+            <a
+                id="continueBtn"
+                class="continue-btn disabled"
+                role="button"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                {% trans "Continue Creating Return" %}
+
+            </a>
+
+        </div>
+
     </div>
 
 </div>
 
+
+<style>
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body{
+
+    background:#eeeeee;
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.returns-page{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.return-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+    max-width:900px;
+
+    margin:0 auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+    border-bottom:1px solid #eeeeee;
+
+    padding-bottom:20px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:6px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:7px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   قسم الحقول
+========================================================= */
+
+.form-section{
+
+    margin-bottom:25px;
+
+}
+
+
+/* =========================================================
+   عنوان الحقل
+========================================================= */
+
+.form-label{
+
+    display:block;
+
+    margin-bottom:9px;
+
+    color:#444;
+
+    font-weight:700;
+
+    font-size:14px;
+
+}
+
+
+.form-label i{
+
+    color:#777;
+
+    margin-left:6px;
+
+}
+
+
+/* =========================================================
+   الحقول
+========================================================= */
+
+.custom-select{
+
+    width:100%;
+
+    padding:13px 15px;
+
+    border:1px solid #aaa;
+
+    border-radius:11px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 3px 7px rgba(0,0,0,.07);
+
+    transition:.3s;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+}
+
+
+.custom-select:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.custom-select:disabled{
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d8d8d8
+    );
+
+    color:#888;
+
+    cursor:not-allowed;
+
+}
+
+
+/* =========================================================
+   صندوق التحميل
+========================================================= */
+
+.loading-box{
+
+    display:none;
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d8d8d8
+    );
+
+    border:1px solid #c5c5c5;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    margin-bottom:20px;
+
+    text-align:center;
+
+    color:#555;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.08),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+.loading-box i{
+
+    margin-left:7px;
+
+}
+
+
+/* =========================================================
+   لا توجد فواتير
+========================================================= */
+
+.empty-box{
+
+    display:none;
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+    border:1px solid #c8c8c8;
+
+    padding:18px;
+
+    border-radius:13px;
+
+    margin-bottom:20px;
+
+    text-align:center;
+
+    color:#777;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.08);
+
+}
+
+
+.empty-box i{
+
+    margin-left:7px;
+
+    color:#888;
+
+}
+
+
+/* =========================================================
+   منطقة زر المتابعة
+========================================================= */
+
+.continue-section{
+
+    margin-top:35px;
+
+    padding-top:25px;
+
+    border-top:1px solid #eeeeee;
+
+    text-align:center;
+
+}
+
+
+/* =========================================================
+   زر المتابعة
+========================================================= */
+
+.continue-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    min-width:250px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:13px 25px;
+
+    border-radius:13px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.continue-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+.continue-btn.disabled{
+
+    background:
+    linear-gradient(
+        135deg,
+        #bdbdbd,
+        #999
+    );
+
+    color:#eeeeee;
+
+    cursor:not-allowed;
+
+    pointer-events:none;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10);
+
+    transform:none;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .returns-page{
+
+        padding:15px;
+
+    }
+
+
+    .return-card{
+
+        padding:20px;
+
+        border-radius:18px;
+
+    }
+
+
+    .page-header{
+
+        text-align:center;
+
+    }
+
+
+    .page-header h3{
+
+        font-size:20px;
+
+    }
+
+
+    .continue-btn{
+
+        width:100%;
+
+    }
+
+}
+
+</style>
+
+
 <script>
-// =================================================
-// Select Customer → Load Sales Invoices
-// =================================================
-document.getElementById("customerSelect").addEventListener("change", function () {
 
-    const customerId    = this.value;
-    const invoiceSelect = document.getElementById("invoiceSelect");
+document.addEventListener("DOMContentLoaded", function () {
 
-    invoiceSelect.disabled = true;
-    invoiceSelect.innerHTML = "<option>{% trans 'Loading...' %}</option>";
 
-    if (!customerId) {
-        invoiceSelect.innerHTML = "<option>{% trans '-- Select customer first --' %}</option>";
-        return;
-    }
+    /* =====================================================
+       العناصر
+    ===================================================== */
 
-    fetch(`/sales/api/invoices/by-customer/?customer_id=${customerId}`)
-        .then(res => res.json())
-        .then(data => {
+    const customerSelect =
+        document.getElementById("customerSelect");
 
-            invoiceSelect.innerHTML = "<option value=''>{% trans '-- Select invoice --' %}</option>";
-            invoiceSelect.disabled = false;
+    const invoiceSelect =
+        document.getElementById("invoiceSelect");
 
-            data.invoices.forEach(inv => {
-                invoiceSelect.innerHTML += `
-                    <option value="${inv.id}">
-                        {% trans "Invoice No." %} ${inv.invoice_no}
-                        | ${inv.total} {% trans "SAR" %}
-                        | ${inv.date}
-                    </option>
-                `;
+    const continueBtn =
+        document.getElementById("continueBtn");
+
+    const loadingMessage =
+        document.getElementById("loadingMessage");
+
+    const emptyMessage =
+        document.getElementById("emptyMessage");
+
+
+    /* =====================================================
+       اختيار العميل
+    ===================================================== */
+
+    customerSelect.addEventListener(
+        "change",
+        function () {
+
+            const customerId = this.value;
+
+
+            /* =============================================
+               إعادة ضبط الفاتورة
+            ============================================= */
+
+            invoiceSelect.disabled = true;
+
+            invoiceSelect.innerHTML =
+                "<option value=''>" +
+                "{% trans 'Loading...' %}" +
+                "</option>";
+
+
+            continueBtn.classList.add("disabled");
+
+            continueBtn.removeAttribute("href");
+
+
+            loadingMessage.style.display = "none";
+
+            emptyMessage.style.display = "none";
+
+
+            /* =============================================
+               لم يتم اختيار عميل
+            ============================================= */
+
+            if (!customerId) {
+
+                invoiceSelect.innerHTML =
+                    "<option value=''>" +
+                    "{% trans '-- Select customer first --' %}" +
+                    "</option>";
+
+                return;
+
+            }
+
+
+            /* =============================================
+               إظهار التحميل
+            ============================================= */
+
+            loadingMessage.style.display = "block";
+
+
+            /* =============================================
+               جلب الفواتير
+            ============================================= */
+
+            fetch(
+                `/sales/api/invoices/by-customer/?customer_id=${customerId}`
+            )
+
+            .then(function (res) {
+
+                if (!res.ok) {
+
+                    throw new Error(
+                        "HTTP error " + res.status
+                    );
+
+                }
+
+                return res.json();
+
+            })
+
+            .then(function (data) {
+
+
+                loadingMessage.style.display = "none";
+
+
+                invoiceSelect.innerHTML =
+                    "<option value=''>" +
+                    "{% trans '-- Select invoice --' %}" +
+                    "</option>";
+
+
+                /* =========================================
+                   لا توجد فواتير
+                ========================================= */
+
+                if (
+                    !data.invoices ||
+                    data.invoices.length === 0
+                ) {
+
+                    invoiceSelect.disabled = true;
+
+                    emptyMessage.style.display = "block";
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   توجد فواتير
+                ========================================= */
+
+                invoiceSelect.disabled = false;
+
+
+                data.invoices.forEach(
+                    function (inv) {
+
+                        const option =
+                            document.createElement("option");
+
+
+                        option.value = inv.id;
+
+
+                        option.textContent =
+                            "{% trans 'Invoice No.' %} " +
+                            inv.invoice_no +
+                            " | " +
+                            inv.total +
+                            " {% trans 'SAR' %}" +
+                            " | " +
+                            inv.date;
+
+
+                        invoiceSelect.appendChild(
+                            option
+                        );
+
+                    }
+                );
+
+            })
+
+            .catch(function (error) {
+
+                console.error(
+                    "Error loading invoices:",
+                    error
+                );
+
+
+                loadingMessage.style.display = "none";
+
+                invoiceSelect.disabled = true;
+
+                invoiceSelect.innerHTML =
+                    "<option value=''>" +
+                    "{% trans 'Unable to load invoices' %}" +
+                    "</option>";
+
             });
-        });
+
+        }
+    );
+
+
+    /* =====================================================
+       اختيار الفاتورة
+    ===================================================== */
+
+    invoiceSelect.addEventListener(
+        "change",
+        function () {
+
+            const invoiceId = this.value;
+
+
+            /* =============================================
+               لا توجد فاتورة
+            ============================================= */
+
+            if (!invoiceId) {
+
+                continueBtn.classList.add("disabled");
+
+                continueBtn.removeAttribute("href");
+
+                return;
+
+            }
+
+
+            /* =============================================
+               تفعيل زر المتابعة
+            ============================================= */
+
+            continueBtn.classList.remove("disabled");
+
+
+            /* =============================================
+               نفس الرابط السابق
+            ============================================= */
+
+            continueBtn.href =
+                "{% url 'sales:create_return' 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + invoiceId + "/"
+                );
+
+        }
+    );
+
+
+    /* =====================================================
+       منع الضغط على الزر إذا كان معطلاً
+    ===================================================== */
+
+    continueBtn.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                this.classList.contains("disabled")
+            ) {
+
+                event.preventDefault();
+
+            }
+
+        }
+    );
+
+
 });
 
-
-// =================================================
-// Select Invoice → Enable Continue Button
-// =================================================
-document.getElementById("invoiceSelect").addEventListener("change", function () {
-
-    const invoiceId = this.value;
-    const btn       = document.getElementById("continueBtn");
-
-    if (!invoiceId) {
-        btn.classList.add("disabled");
-        btn.removeAttribute("href");
-        return;
-    }
-
-    btn.classList.remove("disabled");
-
-    // 🔁 Same logic as purchases
-    btn.href = "{% url 'sales:create_return' 0 %}".replace("/0/", `/${invoiceId}/`);
-});
 </script>
 
 {% endblock %}

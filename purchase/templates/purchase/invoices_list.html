@@ -1,200 +1,1596 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Purchase Invoices List" %}{% endblock %}
-
-{% block head %}
-<style>
-    body {
-        background: #f0f0f0;
-        font-family: "Tahoma", sans-serif;
-    }
-
-    .filter-input {
-        text-align: center;
-        border: 1px solid #6c757d !important;
-        border-radius: 6px;
-    }
-    .filter-input::placeholder {
-        text-align: center;
-        color: #6c757d;
-    }
-
-    .btn-main {
-        background: #6c757d;
-        color: white;
-        border-radius: 6px;
-    }
-    .btn-main:hover {
-        background: #5c646b;
-    }
-
-    .btn-action {
-        background: #6c757d;
-        color: white;
-        border-radius: 6px;
-        font-size: 15px;
-        padding: 4px 15px;
-    }
-
-    .custom-menu {
-        min-width: 180px;
-        border-radius: 10px;
-        padding: 8px 0;
-        background: #fff;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .custom-menu .dropdown-item {
-        padding: 10px 15px;
-        font-size: 15px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .custom-menu .dropdown-item:hover {
-        background: #f1f1f1;
-        border-radius: 5px;
-    }
-
-    .icon {
-        color: #6c757d;
-        font-size: 16px;
-    }
-</style>
+{% block title %}
+{% trans "Purchase Invoices List" %}
 {% endblock %}
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0">{% trans "Purchase Invoices List" %}</h2>
+<div class="container-fluid invoices-page mt-4">
 
-    <a href="{% url 'purchase:purchase_invoice_add' %}" class="btn btn-main">
-        + {% trans "Add Purchase Invoice" %}
-    </a>
+<div class="invoice-card">
+
+    <!-- ============================= -->
+    <!-- رأس الصفحة -->
+    <!-- ============================= -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h3>
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                {% trans "Purchase Invoices List" %}
+
+            </h3>
+
+            <p>
+
+                {% trans "Manage purchase invoices and payments" %}
+
+            </p>
+
+        </div>
+
+
+        <a href="{% url 'purchase:purchase_invoice_add' %}"
+           class="add-btn">
+
+            <i class="fa-solid fa-plus"></i>
+
+            {% trans "Add Purchase Invoice" %}
+
+        </a>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- الجدول -->
+    <!-- ============================= -->
+
+    <div class="table-box">
+
+        <table class="invoice-table">
+
+            <thead>
+
+                <!-- ============================= -->
+                <!-- صف البحث -->
+                <!-- ============================= -->
+
+                <tr class="filter-row">
+
+                    <th>
+                        <input
+                            type="text"
+                            class="filter-input"
+                            placeholder="{% trans 'Search ID' %}"
+                        >
+                    </th>
+
+                    <th>
+                        <input
+                            type="text"
+                            class="filter-input"
+                            placeholder="{% trans 'Search Invoice No' %}"
+                        >
+                    </th>
+
+                    <th>
+                        <input
+                            type="text"
+                            class="filter-input"
+                            placeholder="{% trans 'Search Supplier' %}"
+                        >
+                    </th>
+
+                    <th>
+                        <input
+                            type="text"
+                            class="filter-input"
+                            placeholder="{% trans 'Search Date' %}"
+                        >
+                    </th>
+
+                    <th>
+                        <input
+                            type="text"
+                            class="filter-input"
+                            placeholder="{% trans 'Search Total' %}"
+                        >
+                    </th>
+
+                    <th>
+                        <input
+                            type="text"
+                            class="filter-input"
+                            placeholder="{% trans 'Search Status' %}"
+                        >
+                    </th>
+
+                    <th></th>
+
+                </tr>
+
+
+                <!-- ============================= -->
+                <!-- عنوان الأعمدة -->
+                <!-- ============================= -->
+
+                <tr class="header-row">
+
+                    <th>
+                        {% trans "No." %}
+                    </th>
+
+                    <th>
+                        {% trans "Invoice No" %}
+                    </th>
+
+                    <th>
+                        {% trans "Supplier" %}
+                    </th>
+
+                    <th>
+                        {% trans "Date" %}
+                    </th>
+
+                    <th>
+                        {% trans "Total" %}
+                    </th>
+
+                    <th>
+                        {% trans "Status" %}
+                    </th>
+
+                    <th>
+                        {% trans "Actions" %}
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for invoice in invoices %}
+
+                <tr>
+
+                    <!-- الرقم -->
+
+                    <td>
+
+                        <span class="order-badge">
+
+                            {{ invoice.id }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- رقم الفاتورة -->
+
+                    <td class="invoice-number">
+
+                        <i class="fa-solid fa-file-invoice"></i>
+
+                        {{ invoice.invoice_no }}
+
+                    </td>
+
+
+                    <!-- المورد -->
+
+                    <td class="supplier-name">
+
+                        <i class="fa-solid fa-truck-field"></i>
+
+                        {{ invoice.supplier.commercial_name }}
+
+                    </td>
+
+
+                    <!-- التاريخ -->
+
+                    <td>
+
+                        <span class="date-badge">
+
+                            {{ invoice.date_invoice }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- الإجمالي -->
+
+                    <td class="total-cell">
+
+                        {{ invoice.total_after_tax|floatformat:2 }}
+
+                    </td>
+
+
+                    <!-- الحالة -->
+
+                    <td>
+
+                        <span class="status-badge">
+
+                            {% if invoice.payment_status == "paid" %}
+
+                                {% trans "Paid" %}
+
+                            {% elif invoice.payment_status == "partial" %}
+
+                                {% trans "مدفوعة جزئياً" %}
+
+                            {% else %}
+
+                                {% trans "Unpaid" %}
+
+                            {% endif %}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- الخيارات -->
+
+                    <td>
+
+                        <div class="options-dropdown">
+
+                            <button
+                                type="button"
+                                class="action-btn options-button"
+                            >
+
+                                <i class="fa-solid fa-gear"></i>
+
+                                {% trans "Options" %}
+
+                            </button>
+
+
+                            <ul class="dropdown-menu custom-menu text-end">
+
+
+                                <!-- عرض -->
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item"
+                                        href="{% url 'purchase:purchase_invoice_view' invoice.id %}"
+                                    >
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                        {% trans "View" %}
+
+                                    </a>
+
+                                </li>
+
+
+                                <!-- PDF -->
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item"
+                                        href="{% url 'purchase:purchase_invoice_pdf' invoice.id %}"
+                                    >
+
+                                        <i class="fa-solid fa-file-pdf"></i>
+
+                                        {% trans "Download PDF" %}
+
+                                    </a>
+
+                                </li>
+
+
+                                <!-- طباعة -->
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item"
+                                        href="{% url 'purchase:purchase_invoice_print' invoice.id %}"
+                                        target="_blank"
+                                    >
+
+                                        <i class="fa-solid fa-print"></i>
+
+                                        {% trans "Print" %}
+
+                                    </a>
+
+                                </li>
+
+
+                                <!-- دفع -->
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item"
+                                        href="{% url 'purchase:purchase_invoice_payment' invoice.id %}"
+                                    >
+
+                                        <i class="fa-solid fa-credit-card"></i>
+
+                                        {% trans "دفع" %}
+
+                                    </a>
+
+                                </li>
+
+
+                                <!-- المرتجع -->
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item return-btn"
+                                        href="{% url 'purchase:purchase_return_from_invoice' invoice.id %}"
+                                    >
+
+                                        <i class="fa-solid fa-rotate-left return-icon"></i>
+
+                                        {% trans "Create Debit Note" %}
+
+                                    </a>
+
+                                </li>
+
+
+                            </ul>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+            {% empty %}
+
+                <tr>
+
+                    <td colspan="7" class="empty">
+
+                        <i class="fa-solid fa-file-circle-xmark"></i>
+
+                        <div>
+
+                            {% trans "No purchase invoices found" %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
 
-<table class="table text-center align-middle" dir="rtl">
-    <thead>
 
-        <tr>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search ID' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Invoice No' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Supplier' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Date' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Total' %}"></th>
-            <th><input type="text" class="filter-input form-control form-control-sm" placeholder="{% trans 'Search Status' %}"></th>
-            <th></th>
-        </tr>
+</div>
 
-        <tr class="table-dark">
-            <th>{% trans "No." %}</th>
-            <th>{% trans "Invoice No" %}</th>
-            <th>{% trans "Supplier" %}</th>
-            <th>{% trans "Date" %}</th>
-            <th>{% trans "Total" %}</th>
-            <th>{% trans "Status" %}</th>
-            <th>{% trans "Actions" %}</th>
-        </tr>
+<style>
 
-    </thead>
+/* =========================================================
+   الخلفية العامة
+========================================================= */
 
-    <tbody>
-    {% for invoice in invoices %}
-        <tr>
-            <td>{{ invoice.id }}</td>
-            <td>{{ invoice.invoice_no }}</td>
-            <td>{{ invoice.supplier.commercial_name }}</td>
-            <td>{{ invoice.date_invoice }}</td>
+body{
 
-            <td>
-                {{ invoice.total_after_tax|floatformat:2 }}
-            </td>
+    background:#eeeeee;
 
-            <td>
-                {% if invoice.payment_status == "paid" %}
-                    <span class="badge" style="background:#198754;color:white">
-                        {% trans "Paid" %}
-                    </span>
+    font-family:"Tahoma", sans-serif;
 
-                {% elif invoice.payment_status == "partial" %}
-                    <span class="badge" style="background:#ffc107;color:black">
-                        {% trans "مدفوعة جزئياً" %}
-                    </span>
+}
 
-                {% else %}
-                    <span class="badge" style="background:#dc3545;color:white">
-                        {% trans "Unpaid" %}
-                    </span>
-                {% endif %}
-            </td>
-            <td>
-                <div class="dropdown">
-                    <button class="btn-action dropdown-toggle" data-bs-toggle="dropdown">
-                        {% trans "Options" %}
-                    </button>
 
-                    <ul class="dropdown-menu custom-menu text-end">
-<li>
-    <a class="dropdown-item" href="{% url 'purchase:purchase_invoice_view' invoice.id %}">
-        👁️ {% trans "View" %}
-    </a>
-</li>
+/* =========================================================
+   الصفحة
+========================================================= */
 
-<li>
-    <a class="dropdown-item" href="{% url 'purchase:purchase_invoice_pdf' invoice.id %}">
-        📄 {% trans "Download PDF" %}
-    </a>
-</li>
+.invoices-page{
 
-<li>
-    <a class="dropdown-item" href="{% url 'purchase:purchase_invoice_print' invoice.id %}" target="_blank">
-        🖨️ {% trans "Print" %}
-    </a>
-</li>
-<li>
-    <a class="dropdown-item text-success fw-bold"
-       href="{% url 'purchase:purchase_invoice_payment' invoice.id %}">
-        💰 {% trans "دفع" %}
-    </a>
-</li>
-<li>
-    <a class="dropdown-item text-warning fw-bold"
-       href="{% url 'purchase:purchase_return_from_invoice' invoice.id %}">
-        ↩ {% trans "Create Debit Note" %}
-    </a>
-</li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="7" class="text-muted">{% trans "No purchase invoices found" %}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+    background:
+    linear-gradient(
+        135deg,
+        #f8f8f8,
+        #d5d5d5
+    );
+
+    min-height:90vh;
+
+    padding:25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.invoice-card{
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-header h3{
+
+    font-weight:800;
+
+    color:#444;
+
+    margin-bottom:5px;
+
+}
+
+
+.page-header h3 i{
+
+    color:#666;
+
+    margin-left:5px;
+
+}
+
+
+.page-header p{
+
+    color:#777;
+
+    margin:0;
+
+}
+
+
+/* =========================================================
+   زر الإضافة
+========================================================= */
+
+.add-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    padding:12px 22px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    border:0;
+
+    box-shadow:
+    0 5px 10px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition:.3s;
+
+}
+
+
+.add-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box{
+
+    overflow-x:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.invoice-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f7f7f7,
+        #dddddd
+    );
+
+}
+
+
+.filter-row th{
+
+    padding:10px;
+
+    border-bottom:1px solid #ccc;
+
+}
+
+
+/* =========================================================
+   حقول البحث
+========================================================= */
+
+.filter-input{
+
+    width:100%;
+
+    padding:8px 10px;
+
+    text-align:center;
+
+    border:1px solid #aaa;
+
+    border-radius:9px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #e5e5e5
+    );
+
+    color:#444;
+
+    box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+    font-size:12px;
+
+}
+
+
+.filter-input:focus{
+
+    outline:none;
+
+    border-color:#666;
+
+    box-shadow:
+    0 0 0 3px rgba(100,100,100,.12),
+    inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder{
+
+    text-align:center;
+
+    color:#777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row{
+
+    background:
+    linear-gradient(
+        90deg,
+        #444,
+        #888
+    );
+
+    color:white;
+
+}
+
+
+.header-row th{
+
+    padding:17px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+    0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.invoice-table td{
+
+    padding:15px;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+    color:#555;
+
+}
+
+
+/* =========================================================
+   الصفوف
+========================================================= */
+
+.invoice-table tbody tr{
+
+    transition:.3s;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #f5f5f5
+    );
+
+}
+
+
+.invoice-table tbody tr:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #f5f5f5,
+        #dddddd
+    );
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   رقم الفاتورة
+========================================================= */
+
+.invoice-number{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.invoice-number i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   اسم المورد
+========================================================= */
+
+.supplier-name{
+
+    font-weight:700;
+
+    color:#444 !important;
+
+}
+
+
+.supplier-name i{
+
+    color:#777;
+
+    margin-left:5px;
+
+}
+
+
+/* =========================================================
+   رقم ID
+========================================================= */
+
+.order-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:38px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #e5e5e5,
+        #cfcfcf
+    );
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+    color:#444;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   التاريخ
+========================================================= */
+
+.date-badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee,
+        #d4d4d4
+    );
+
+    color:#555;
+
+    font-size:12px;
+
+    box-shadow:
+    0 3px 6px rgba(0,0,0,.10),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الإجمالي
+========================================================= */
+
+.total-cell{
+
+    font-weight:800;
+
+    color:#444 !important;
+
+}
+
+
+/* =========================================================
+   الحالة - رمادي مدرج
+========================================================= */
+
+.status-badge{
+
+    display:inline-block;
+
+    min-width:95px;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.18),
+    inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn{
+
+    background:
+    linear-gradient(
+        135deg,
+        #666,
+        #444
+    );
+
+    color:white;
+
+    border:0;
+
+    padding:9px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.20),
+    inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+
+.action-btn:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #555,
+        #333
+    );
+
+    color:white;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.options-dropdown{
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+========================================================= */
+
+.custom-menu{
+
+    display:none;
+
+    position:fixed !important;
+
+    min-width:210px;
+
+    padding:8px;
+
+    margin:0 !important;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    box-shadow:
+    0 12px 25px rgba(0,0,0,.22),
+    0 3px 6px rgba(0,0,0,.12),
+    inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index:999999999 !important;
+
+}
+
+
+.custom-menu.menu-open{
+
+    display:block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    margin:2px 0;
+
+    border-radius:9px;
+
+    color:#444;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffffff,
+        #eeeeee
+    );
+
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.06),
+    inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition:.2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover{
+
+    background:
+    linear-gradient(
+        135deg,
+        #eeeeee,
+        #d2d2d2
+    );
+
+    color:#333;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+    0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+/* =========================================================
+   أيقونات القائمة
+========================================================= */
+
+.custom-menu .dropdown-item i{
+
+    width:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i{
+
+    color:#444;
+
+}
+
+
+/* =========================================================
+   المرتجع
+========================================================= */
+
+.custom-menu .return-btn{
+
+    color:#555;
+
+}
+
+
+.custom-menu .return-icon{
+
+    color:#777 !important;
+
+}
+
+
+/* =========================================================
+   لا توجد فواتير
+========================================================= */
+
+.empty{
+
+    padding:35px !important;
+
+    color:#999 !important;
+
+    font-size:14px;
+
+}
+
+
+.empty i{
+
+    display:block;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px){
+
+    .invoices-page{
+
+        padding:15px;
+
+    }
+
+
+    .invoice-card{
+
+        padding:18px;
+
+    }
+
+
+    .page-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:15px;
+
+        text-align:center;
+
+    }
+
+
+    .add-btn{
+
+        display:block;
+
+        text-align:center;
+
+    }
+
+
+    .invoice-table{
+
+        min-width:1000px;
+
+    }
+
+}
+
+</style>
+
+<!-- =========================================================
+     JavaScript
+     البحث + قائمة الخيارات
+========================================================= -->
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const filterInputs = document.querySelectorAll(".filter-input");
-    const rows = document.querySelectorAll("tbody tr");
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       البحث
+    ===================================================== */
+
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
+
+
+    const rows =
+        document.querySelectorAll(".invoice-table tbody tr");
+
 
     filterInputs.forEach((input, colIndex) => {
+
         input.addEventListener("keyup", function () {
-            const value = this.value.toLowerCase();
+
+            const value =
+                this.value.toLowerCase();
+
+
             rows.forEach(row => {
-                const cell = row.querySelectorAll("td")[colIndex];
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                const cell =
+                    cells[colIndex];
+
+
                 if (cell) {
-                    row.style.display = cell.textContent.toLowerCase().includes(value) ? "" : "none";
+
+                    const text =
+                        cell.textContent.toLowerCase();
+
+
+                    row.style.display =
+                        text.includes(value)
+                        ? ""
+                        : "none";
+
                 }
+
             });
+
         });
+
     });
+
+
+
+    /* =====================================================
+       قائمة الخيارات
+    ===================================================== */
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(".options-button");
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            const dropdown =
+                this.closest(".options-dropdown");
+
+
+            if (!dropdown) {
+
+                return;
+
+            }
+
+
+            const menu =
+                dropdown.querySelector(".custom-menu");
+
+
+            if (!menu) {
+
+                return;
+
+            }
+
+
+            if (
+                openedMenu === menu &&
+                menu.classList.contains("menu-open")
+            ) {
+
+                closeOptionsMenu();
+
+                return;
+
+            }
+
+
+            closeOptionsMenu();
+
+
+            document.body.appendChild(menu);
+
+
+            menu.classList.add("menu-open");
+
+
+            openedMenu = menu;
+
+            openedButton = this;
+
+
+            const rect =
+                this.getBoundingClientRect();
+
+
+            const menuHeight =
+                menu.offsetHeight;
+
+
+            const menuWidth =
+                menu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            menu.style.top =
+                top + "px";
+
+
+            menu.style.left =
+                left + "px";
+
+
+            menu.style.right =
+                "auto";
+
+
+            menu.style.bottom =
+                "auto";
+
+
+            menu.style.transform =
+                "none";
+
+
+            menu.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                }
+            );
+
+        });
+
+    });
+
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+        if (!openedMenu) {
+
+            return;
+
+        }
+
+
+        openedMenu.classList.remove("menu-open");
+
+
+        if (openedButton) {
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       عند تحريك الصفحة
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                openedButton.getBoundingClientRect();
+
+
+            const menuHeight =
+                openedMenu.offsetHeight;
+
+
+            const menuWidth =
+                openedMenu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            openedMenu.style.top =
+                top + "px";
+
+
+            openedMenu.style.left =
+                left + "px";
+
+        },
+        true
+    );
+
+
+
+    /* =====================================================
+       تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
 });
+
 </script>
 
 {% endblock %}

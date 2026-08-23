@@ -33,6 +33,16 @@ urlpatterns = [
         name="supplier_edit"
     ),
 
+    # ===========================
+    # عرض المورد
+    # ===========================
+
+    path(
+        "view/<int:supplier_id>/",
+        views.supplier_view,
+        name="supplier_view"
+    ),
+
     path(
         "delete/<int:supplier_id>/",
         views.supplier_delete,

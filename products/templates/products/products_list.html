@@ -2,120 +2,971 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% trans "Product Management" %}{% endblock %}
+{% block title %}
+    {% trans "Product Management" %}
+{% endblock %}
 
-{% block head %}
+{% block content %}
+
+<div class="container-fluid products-page mt-4">
+
+    <div class="product-card">
+
+        <!-- ===================================================== -->
+        <!-- رأس الصفحة -->
+        <!-- ===================================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    {% trans "Product Management" %}
+
+                </h3>
+
+                <p>
+
+                    {% trans "Manage products, prices, stock and product status" %}
+
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'products:product_add' %}"
+                class="add-btn"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                {% trans "Add Product" %}
+
+            </a>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- الجدول -->
+        <!-- ===================================================== -->
+
+        <div class="table-box">
+
+            <table class="product-table">
+
+                <thead>
+
+                    <!-- ================================================= -->
+                    <!-- صف البحث -->
+                    <!-- ================================================= -->
+
+                    <tr class="filter-row">
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Image' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Product' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Price' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Quantity' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Type' %}"
+                            >
+
+                        </th>
+
+
+                        <th>
+
+                            <input
+                                type="text"
+                                class="filter-input"
+                                placeholder="{% trans 'Search Status' %}"
+                            >
+
+                        </th>
+
+
+                        <th></th>
+
+                    </tr>
+
+
+                    <!-- ================================================= -->
+                    <!-- عناوين الأعمدة -->
+                    <!-- ================================================= -->
+
+                    <tr class="header-row">
+
+                        <th>
+                            {% trans "Image" %}
+                        </th>
+
+                        <th>
+                            {% trans "Product Name" %}
+                        </th>
+
+                        <th>
+                            {% trans "Price" %}
+                        </th>
+
+                        <th>
+                            {% trans "Available Quantity" %}
+                        </th>
+
+                        <th>
+                            {% trans "Type" %}
+                        </th>
+
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+
+                        <th>
+                            {% trans "Actions" %}
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for p in products %}
+
+                    <tr>
+
+                        <!-- ================================================= -->
+                        <!-- الصورة -->
+                        <!-- ================================================= -->
+
+                        <td class="product-image-cell">
+
+                            {% if p.image %}
+
+                                <div class="product-image-wrapper">
+
+                                    <img
+                                        src="{{ p.image.url }}"
+                                        alt="{{ p.name }}"
+                                        class="product-thumb"
+                                    >
+
+                                    <div class="product-hover-popup">
+
+                                        <img
+                                            src="{{ p.image.url }}"
+                                            alt="{{ p.name }}"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                            {% else %}
+
+                                <img
+                                    src="{% static 'images/no-image.png' %}"
+                                    class="product-thumb"
+                                    alt="No Image"
+                                >
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- اسم المنتج -->
+                        <!-- ================================================= -->
+
+                        <td class="product-name">
+
+                            <div
+                                class="product-name-text"
+                                title="{{ p.name }}"
+                            >
+
+                                <i class="fa-solid fa-box"></i>
+
+                                {{ p.name }}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- السعر -->
+                        <!-- ================================================= -->
+
+                        <td class="price-cell">
+
+                            {{ p.sale_price }}
+
+                            {% trans "SAR" %}
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- الكمية -->
+                        <!-- ================================================= -->
+
+                        <td class="qty-cell">
+
+                            {{ p.current_stock }}
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- النوع -->
+                        <!-- ================================================= -->
+
+                        <td>
+
+                            <span class="product-type">
+
+                                {% if p.type == "normal" %}
+
+                                    {% trans "Normal Product" %}
+
+                                {% elif p.type == "service" %}
+
+                                    {% trans "Service" %}
+
+                                {% elif p.type == "bundle" %}
+
+                                    {% trans "Bundle Product" %}
+
+                                {% else %}
+
+                                    {% trans "Undefined" %}
+
+                                {% endif %}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- الحالة -->
+                        <!-- ================================================= -->
+
+                        <td>
+
+                            {% if p.active %}
+
+                                <span class="status-badge active">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    {% trans "Active" %}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge inactive">
+
+                                    <i class="fa-solid fa-circle-xmark"></i>
+
+                                    {% trans "Inactive" %}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ================================================= -->
+                        <!-- الخيارات -->
+                        <!-- ================================================= -->
+
+                        <td>
+
+                            <div class="options-dropdown">
+
+                                <button
+                                    type="button"
+                                    class="action-btn options-button"
+                                >
+
+                                    <i class="fa-solid fa-gear"></i>
+
+                                    {% trans "Options" %}
+
+                                </button>
+
+
+                                <!-- ========================================= -->
+                                <!-- القائمة -->
+                                <!-- ========================================= -->
+
+                                <ul class="dropdown-menu custom-menu text-end">
+
+                                    <!-- ===================================== -->
+                                    <!-- عرض -->
+                                    <!-- ===================================== -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'products:product_view' p.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            {% trans "View" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- ===================================== -->
+                                    <!-- تعديل -->
+                                    <!-- ===================================== -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'products:product_edit' p.id %}"
+                                        >
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                            {% trans "Edit" %}
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <!-- ===================================== -->
+                                    <!-- حذف -->
+                                    <!-- ===================================== -->
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item delete-item"
+                                            href="{% url 'products:product_delete' p.id %}"
+                                            onclick="return confirm('{% trans "Are you sure you want to delete this product?" %}');"
+                                        >
+
+                                            <i class="fa-solid fa-trash"></i>
+
+                                            {% trans "Delete" %}
+
+                                        </a>
+
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+
+                            <i class="fa-solid fa-box-open"></i>
+
+                            <div>
+
+                                {% trans "No products found" %}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <style>
-    body {
-        background: #f0f2f5;
-        font-family: Tahoma;
-    }
 
-    .card {
-        border-radius: 12px;
-        box-shadow: 0px 2px 7px rgba(0,0,0,0.08);
-    }
+/* =========================================================
+   الخلفية العامة
+========================================================= */
 
-    .product-type {
-        font-size: 12px;
-        padding: 4px 8px;
-        border-radius: 6px;
-        color: white;
-        background-color: #6c757d;
-    }
+body {
 
-    .btn-add-product {
-        background-color: #6c757d !important;
-        color: white !important;
-    }
+    background: #eeeeee;
 
-    .product-image-cell {
-        width: 80px;
-        min-width: 80px;
-        text-align: center;
-        vertical-align: middle;
-    }
+    font-family: Tahoma, sans-serif;
 
-    .product-image-wrapper {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 60px;
-    }
-
-    .product-thumb {
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-        background: #fff;
-        cursor: pointer;
-    }
-
-.product-name {
-    position: relative;
-    text-align: center;
-    vertical-align: middle;
-    font-weight: 600;
-    max-width: 220px;
 }
 
-.product-name-text {
-    position: relative;
-    display: block;
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.products-page {
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8,
+            #d5d5d5
+        );
+
+    min-height: 90vh;
+
+    padding: 25px;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.product-card {
+
+    background: white;
+
+    border-radius: 22px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.15);
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.page-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+
+.page-header h3 {
+
+    font-weight: 800;
+
+    color: #444;
+
+    margin-bottom: 5px;
+
+}
+
+
+.page-header h3 i {
+
+    color: #666;
+
+    margin-left: 5px;
+
+}
+
+
+.page-header p {
+
+    color: #777;
+
+    margin: 0;
+
+}
+
+
+/* =========================================================
+   زر إضافة المنتج
+========================================================= */
+
+.add-btn {
+
+    background:
+        linear-gradient(
+            135deg,
+            #666,
+            #444
+        );
+
+    color: white;
+
+    padding: 12px 22px;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    border: 0;
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.20);
+
+    transition: .3s;
+
+}
+
+
+.add-btn:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #555,
+            #333
+        );
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 15px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   صندوق الجدول
+========================================================= */
+
+.table-box {
+
+    overflow-x: auto;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.product-table {
+
     width: 100%;
-    min-height: 60px;
-    line-height: 60px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    cursor: pointer;
+
+    border-collapse: collapse;
+
+    background: white;
+
 }
 
-.product-name-popup {
+
+/* =========================================================
+   صف البحث
+========================================================= */
+
+.filter-row {
+
+    background:
+        linear-gradient(
+            135deg,
+            #f7f7f7,
+            #dddddd
+        );
+
+}
+
+
+.filter-row th {
+
+    padding: 10px;
+
+    border-bottom: 1px solid #ccc;
+
+}
+
+
+/* =========================================================
+   حقول البحث
+========================================================= */
+
+.filter-input {
+
+    width: 100%;
+
+    padding: 8px 10px;
+
+    text-align: center;
+
+    border: 1px solid #aaa;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e5e5e5
+        );
+
+    color: #444;
+
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.08),
+        0 2px 4px rgba(0,0,0,.06);
+
+    transition: .3s;
+
+    font-size: 12px;
+
+}
+
+
+.filter-input:focus {
+
+    outline: none;
+
+    border-color: #666;
+
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.12),
+        inset 0 2px 4px rgba(0,0,0,.08);
+
+}
+
+
+.filter-input::placeholder {
+
+    text-align: center;
+
+    color: #777;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.header-row {
+
+    background:
+        linear-gradient(
+            90deg,
+            #444,
+            #888
+        );
+
+    color: white;
+
+}
+
+
+.header-row th {
+
+    padding: 17px;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.3);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.product-table td {
+
+    padding: 15px;
+
+    border-bottom: 1px solid #eee;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    color: #555;
+
+}
+
+
+/* =========================================================
+   تأثير 3D للصفوف
+========================================================= */
+
+.product-table tbody tr {
+
+    transition: .3s;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #f5f5f5
+        );
+
+}
+
+
+.product-table tbody tr:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #f5f5f5,
+            #dddddd
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 15px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   صورة المنتج
+========================================================= */
+
+.product-image-cell {
+
+    width: 90px;
+
+    min-width: 90px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+}
+
+
+.product-image-wrapper {
+
+    position: relative;
+
+    display: inline-block;
+
+    width: 60px;
+
+    height: 60px;
+
+}
+
+
+.product-thumb {
+
+    width: 60px;
+
+    height: 60px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    border: 1px solid #d5d5d5;
+
+    background: white;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.12);
+
+    transition: .3s;
+
+}
+
+
+.product-thumb:hover {
+
+    transform: scale(1.05);
+
+}
+
+
+/* =========================================================
+   صورة المنتج عند المرور
+========================================================= */
+
+.product-hover-popup {
 
     display: none;
 
-    position: absolute;
+    position: fixed;
 
-    top: 100%;
+    background: white;
 
-    left: 50%;
+    padding: 7px;
 
-    transform: translateX(-50%);
+    border-radius: 12px;
 
-    margin-top: 6px;
+    border: 1px solid #ccc;
 
-    background: #ffffff;
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.22);
 
-    color: #212529;
+    z-index: 999999;
 
-    border: 1px solid #ced4da;
+}
+
+
+.product-hover-popup img {
+
+    width: 180px;
+
+    height: 180px;
+
+    object-fit: cover;
 
     border-radius: 8px;
 
-    padding: 8px 12px;
+}
 
-    min-width: 220px;
 
-    max-width: 350px;
+/* =========================================================
+   اسم المنتج
+========================================================= */
 
-    white-space: normal;
+.product-name {
 
-    word-break: break-word;
+    position: relative;
 
-    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    text-align: center;
 
-    z-index: 99999;
+    vertical-align: middle;
+
+    font-weight: 700;
+
+    max-width: 260px;
 
 }
 
-.product-name-text:hover .product-name-popup {
+
+.product-name-text {
 
     display: block;
 
+    width: 100%;
+
+    min-height: 60px;
+
+    line-height: 60px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    cursor: pointer;
+
+    color: #444;
+
 }
+
+
+.product-name-text i {
+
+    color: #777;
+
+    margin-left: 5px;
+
+}
+
+
+/* =========================================================
+   Popup اسم المنتج
+========================================================= */
+
 .product-popup {
 
     position: fixed;
@@ -134,7 +985,8 @@
 
     max-width: 350px;
 
-    box-shadow: 0 12px 25px rgba(0,0,0,.18);
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.18);
 
     z-index: 999999;
 
@@ -148,250 +1000,1114 @@
 
 }
 
-    .product-hover-popup {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-        border: 1px solid #ccc;
-        background: #fff;
-        padding: 5px;
-        border-radius: 6px;
-        box-shadow: 0px 2px 10px rgba(0,0,0,0.2);
+
+/* =========================================================
+   السعر
+========================================================= */
+
+.price-cell {
+
+    font-weight: 800;
+
+    color: #555 !important;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   الكمية
+========================================================= */
+
+.qty-cell {
+
+    font-weight: 800;
+
+    color: #555 !important;
+
+}
+
+
+/* =========================================================
+   نوع المنتج
+========================================================= */
+
+.product-type {
+
+    display: inline-block;
+
+    min-width: 100px;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #666,
+            #444
+        );
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.20);
+
+}
+
+
+/* =========================================================
+   الحالة
+========================================================= */
+
+.status-badge {
+
+    display: inline-block;
+
+    min-width: 90px;
+
+    padding: 7px 14px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.15),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+.status-badge.active {
+
+    background:
+        linear-gradient(
+            135deg,
+            #666,
+            #444
+        );
+
+    color: white;
+
+}
+
+
+.status-badge.inactive {
+
+    background:
+        linear-gradient(
+            135deg,
+            #999,
+            #666
+        );
+
+    color: white;
+
+}
+
+
+/* =========================================================
+   زر الخيارات
+========================================================= */
+
+.action-btn {
+
+    background:
+        linear-gradient(
+            135deg,
+            #666,
+            #444
+        );
+
+    color: white;
+
+    border: 0;
+
+    padding: 9px 16px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.18);
+
+    transition: .3s;
+
+    cursor: pointer;
+
+}
+
+
+.action-btn:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #555,
+            #333
+        );
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.options-dropdown {
+
+    position: relative;
+
+}
+
+
+/* =========================================================
+   القائمة المنسدلة
+========================================================= */
+
+.custom-menu {
+
+    display: none;
+
+    position: fixed !important;
+
+    min-width: 210px;
+
+    padding: 8px;
+
+    margin: 0 !important;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dddddd
+        );
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.22),
+        0 3px 6px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+    z-index: 999999999 !important;
+
+}
+
+
+.custom-menu.menu-open {
+
+    display: block !important;
+
+}
+
+
+/* =========================================================
+   عناصر القائمة
+========================================================= */
+
+.custom-menu .dropdown-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 10px 14px;
+
+    margin: 2px 0;
+
+    border-radius: 9px;
+
+    color: #444;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    box-shadow:
+        0 2px 4px rgba(0,0,0,.06),
+        inset 0 1px 1px rgba(255,255,255,.8);
+
+    transition: .2s;
+
+}
+
+
+.custom-menu .dropdown-item:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    color: #333;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.12);
+
+}
+
+
+/* =========================================================
+   أيقونات القائمة
+========================================================= */
+
+.custom-menu .dropdown-item i {
+
+    width: 20px;
+
+    text-align: center;
+
+    color: #666;
+
+}
+
+
+.custom-menu .dropdown-item:hover i {
+
+    color: #444;
+
+}
+
+
+/* =========================================================
+   حذف
+========================================================= */
+
+.custom-menu .delete-item {
+
+    color: #555;
+
+}
+
+
+.custom-menu .delete-item i {
+
+    color: #777;
+
+}
+
+
+/* =========================================================
+   لا توجد منتجات
+========================================================= */
+
+.empty {
+
+    padding: 35px !important;
+
+    color: #999 !important;
+
+    font-size: 14px;
+
+}
+
+
+.empty i {
+
+    display: block;
+
+    font-size: 32px;
+
+    margin-bottom: 10px;
+
+    color: #aaa;
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media(max-width:768px) {
+
+    .products-page {
+
+        padding: 15px;
+
     }
 
-    .product-hover-popup img {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 6px;
+
+    .product-card {
+
+        padding: 18px;
+
     }
 
-    .price-cell, .qty-cell {
-        font-weight: bold;
-        color: #0d6efd;
+
+    .page-header {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 15px;
+
+        text-align: center;
+
     }
 
-    .dropdown {
-        position: relative;
-        display: inline-block;
-    }
 
-    .dropdown-btn {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-    }
+    .add-btn {
 
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f8f9fa;
-        min-width: 140px;
-        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
-        border-radius: 4px;
-        z-index: 10;
-    }
-
-    .dropdown-content a {
-        color: #212529;
-        padding: 8px 12px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-    }
-
-    .dropdown-content a:hover {
-        background-color: #e9ecef;
-    }
-
-    .dropdown:hover .dropdown-content {
         display: block;
+
+        text-align: center;
+
     }
+
+
+    .product-table {
+
+        min-width: 1100px;
+
+    }
+
+}
+
 </style>
-{% endblock %}
-
-{% block content %}
-
-<div class="container-fluid mt-2">
-
-    <div class="d-flex justify-content-between mb-3">
-        <h3 class="fw-bold">{% trans "Product Management" %}</h3>
-        <a href="{% url 'products:product_add' %}" class="btn btn-add-product">
-            + {% trans "Add Product" %}
-        </a>
-    </div>
-
-    <form method="get" class="mb-3">
-        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search product...' %}">
-    </form>
-
-    <div class="card p-3">
-        <table class="table table-hover text-center align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th width="80">{% trans "Image" %}</th>
-                    <th>{% trans "Product Name" %}</th>
-                    <th>{% trans "Price" %}</th>
-                    <th>{% trans "Available Quantity" %}</th>
-                    <th>{% trans "Type" %}</th>
-                    <th>{% trans "Status" %}</th>
-                    <th width="120">{% trans "Actions" %}</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-                {% for p in products %}
-                <tr>
-                    <td class="product-image-cell">
-
-                        {% if p.image %}
-
-                            <div class="product-image-wrapper">
-
-                                <img src="{{ p.image.url }}"
-                                     alt="{{ p.name }}"
-                                     class="product-thumb">
-
-                                <div class="product-hover-popup">
-                                    <img src="{{ p.image.url }}"
-                                         alt="{{ p.name }}">
-                                </div>
-
-                            </div>
-
-                        {% else %}
-
-                            <img src="{% static 'images/no-image.png' %}"
-                                 class="product-thumb"
-                                 alt="No Image">
-
-                        {% endif %}
-
-                    </td>
-
-<td class="product-name">
-
-    <div class="product-name-text"
-         title="{{ p.name }}">
 
 
-        {{ p.name }}
+<!-- =========================================================
+     JavaScript
+     البحث + صورة المنتج + اسم المنتج + قائمة الخيارات
+========================================================= -->
 
-    </div>
-
-</td>
-                    <td class="price-cell">{{ p.sale_price }} {% trans "SAR" %}</td>
-                    <td class="qty-cell">{{ p.current_stock }}</td>
-
-                    <td>
-                        <span class="product-type">
-                            {% if p.type == 'normal' %}
-                                {% trans "Normal Product" %}
-                            {% elif p.type == 'service' %}
-                                {% trans "Service" %}
-                            {% elif p.type == 'bundle' %}
-                                {% trans "Bundle Product" %}
-                            {% else %}
-                                {% trans "Undefined" %}
-                            {% endif %}
-                        </span>
-                    </td>
-
-                    <td>
-                        {% if p.active %}
-                            <span class="text-success fw-bold">{% trans "Active" %}</span>
-                        {% else %}
-                            <span class="text-danger fw-bold">{% trans "Inactive" %}</span>
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        <div class="dropdown">
-                            <button class="dropdown-btn">{% trans "Options" %} ▾</button>
-                            <div class="dropdown-content">
-                                <a href="{% url 'products:product_view' p.id %}">👁️ {% trans "View" %}</a>
-                                <a href="{% url 'products:product_edit' p.id %}">✏️ {% trans "Edit" %}</a>
-                                <a href="{% url 'products:product_delete' p.id %}">🗑️ {% trans "Delete" %}</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-muted">{% trans "No products found" %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-        </table>
-    </div>
-
-</div>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    document.querySelectorAll('.product-image-wrapper').forEach(wrapper => {
-        const popup = wrapper.querySelector('.product-hover-popup');
-
-        wrapper.addEventListener('mouseenter', () => {
-            popup.style.display = 'block';
-        });
-
-        wrapper.addEventListener('mouseleave', () => {
-            popup.style.display = 'none';
-        });
-    });
-</script>
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    const popup = document.createElement("div");
 
-    popup.className = "product-popup";
+    /* =====================================================
+       البحث داخل الجدول
+    ===================================================== */
 
-    document.body.appendChild(popup);
+    const filterInputs =
+        document.querySelectorAll(".filter-input");
 
-    document.querySelectorAll(".product-name-text").forEach(function (item) {
 
-        item.addEventListener("mouseenter", function () {
+    const rows =
+        document.querySelectorAll(".product-table tbody tr");
 
-            popup.innerText = this.textContent.trim();
 
-            const rect = this.getBoundingClientRect();
+    filterInputs.forEach((input, colIndex) => {
 
-            popup.style.display = "block";
+        input.addEventListener("keyup", function () {
 
-            popup.style.left =
-                (rect.left + rect.width / 2 - popup.offsetWidth / 2) + "px";
+            const value =
+                this.value.toLowerCase().trim();
 
-            popup.style.top =
-                (rect.bottom + 10) + "px";
 
-        });
+            rows.forEach(row => {
 
-        item.addEventListener("mouseleave", function () {
+                const cells =
+                    row.querySelectorAll("td");
 
-            popup.style.display = "none";
+
+                const cell =
+                    cells[colIndex];
+
+
+                if (!cell) {
+
+                    return;
+
+                }
+
+
+                const text =
+                    cell.textContent
+                        .toLowerCase();
+
+
+                row.style.display =
+                    text.includes(value)
+                    ? ""
+                    : "none";
+
+            });
 
         });
 
     });
 
+
+
+    /* =====================================================
+       صورة المنتج عند المرور
+    ===================================================== */
+
+    document
+        .querySelectorAll(".product-image-wrapper")
+        .forEach(wrapper => {
+
+
+            const image =
+                wrapper.querySelector(".product-thumb");
+
+
+            const popup =
+                wrapper.querySelector(".product-hover-popup");
+
+
+            if (!image || !popup) {
+
+                return;
+
+            }
+
+
+            image.addEventListener(
+                "mouseenter",
+                function () {
+
+
+                    const rect =
+                        image.getBoundingClientRect();
+
+
+                    popup.style.display =
+                        "block";
+
+
+                    const popupWidth =
+                        popup.offsetWidth;
+
+
+                    const popupHeight =
+                        popup.offsetHeight;
+
+
+                    let left =
+                        rect.left +
+                        (rect.width / 2) -
+                        (popupWidth / 2);
+
+
+                    let top =
+                        rect.bottom + 10;
+
+
+                    if (
+                        left + popupWidth >
+                        window.innerWidth - 10
+                    ) {
+
+                        left =
+                            window.innerWidth -
+                            popupWidth -
+                            10;
+
+                    }
+
+
+                    if (left < 10) {
+
+                        left = 10;
+
+                    }
+
+
+                    if (
+                        top + popupHeight >
+                        window.innerHeight - 10
+                    ) {
+
+                        top =
+                            rect.top -
+                            popupHeight -
+                            10;
+
+                    }
+
+
+                    if (top < 10) {
+
+                        top = 10;
+
+                    }
+
+
+                    popup.style.left =
+                        left + "px";
+
+
+                    popup.style.top =
+                        top + "px";
+
+                }
+            );
+
+
+            image.addEventListener(
+                "mouseleave",
+                function () {
+
+                    popup.style.display =
+                        "none";
+
+                }
+            );
+
+        });
+
+
+
+    /* =====================================================
+       Popup اسم المنتج
+    ===================================================== */
+
+    const productPopup =
+        document.createElement("div");
+
+
+    productPopup.className =
+        "product-popup";
+
+
+    document.body.appendChild(
+        productPopup
+    );
+
+
+    document
+        .querySelectorAll(".product-name-text")
+        .forEach(item => {
+
+
+            item.addEventListener(
+                "mouseenter",
+                function () {
+
+
+                    productPopup.innerText =
+                        this.textContent.trim();
+
+
+                    const rect =
+                        this.getBoundingClientRect();
+
+
+                    productPopup.style.display =
+                        "block";
+
+
+                    let left =
+                        rect.left +
+                        (rect.width / 2) -
+                        (productPopup.offsetWidth / 2);
+
+
+                    let top =
+                        rect.bottom + 10;
+
+
+                    if (
+                        left +
+                        productPopup.offsetWidth >
+                        window.innerWidth - 10
+                    ) {
+
+                        left =
+                            window.innerWidth -
+                            productPopup.offsetWidth -
+                            10;
+
+                    }
+
+
+                    if (left < 10) {
+
+                        left = 10;
+
+                    }
+
+
+                    if (
+                        top +
+                        productPopup.offsetHeight >
+                        window.innerHeight - 10
+                    ) {
+
+                        top =
+                            rect.top -
+                            productPopup.offsetHeight -
+                            10;
+
+                    }
+
+
+                    if (top < 10) {
+
+                        top = 10;
+
+                    }
+
+
+                    productPopup.style.left =
+                        left + "px";
+
+
+                    productPopup.style.top =
+                        top + "px";
+
+                }
+            );
+
+
+            item.addEventListener(
+                "mouseleave",
+                function () {
+
+                    productPopup.style.display =
+                        "none";
+
+                }
+            );
+
+        });
+
+
+
+    /* =====================================================
+       قائمة الخيارات
+       
+       نفس طريقة صفحة الفواتير:
+       يتم نقل القائمة إلى body
+       حتى لا تتأثر بـ overflow
+    ===================================================== */
+
+    let openedMenu = null;
+
+    let openedButton = null;
+
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".options-button"
+        );
+
+
+    optionButtons.forEach(button => {
+
+
+        button.addEventListener(
+            "click",
+            function (event) {
+
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const dropdown =
+                    this.closest(
+                        ".options-dropdown"
+                    );
+
+
+                if (!dropdown) {
+
+                    return;
+
+                }
+
+
+                const menu =
+                    dropdown.querySelector(
+                        ".custom-menu"
+                    );
+
+
+                if (!menu) {
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   إذا كانت نفس القائمة مفتوحة
+                ========================================= */
+
+                if (
+                    openedMenu === menu &&
+                    menu.classList.contains(
+                        "menu-open"
+                    )
+                ) {
+
+                    closeOptionsMenu();
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   إغلاق أي قائمة أخرى
+                ========================================= */
+
+                closeOptionsMenu();
+
+
+                /* =========================================
+                   نقل القائمة إلى body
+                ========================================= */
+
+                document.body.appendChild(menu);
+
+
+                menu.classList.add(
+                    "menu-open"
+                );
+
+
+                openedMenu = menu;
+
+                openedButton = this;
+
+
+                /* =========================================
+                   حساب موقع الزر
+                ========================================= */
+
+                const rect =
+                    this.getBoundingClientRect();
+
+
+                const menuHeight =
+                    menu.offsetHeight;
+
+
+                const menuWidth =
+                    menu.offsetWidth;
+
+
+                const gap = 8;
+
+
+                /* =========================================
+                   القائمة فوق الزر
+                ========================================= */
+
+                let top =
+                    rect.top -
+                    menuHeight -
+                    gap;
+
+
+                /* =========================================
+                   توسيط القائمة أفقيًا
+                ========================================= */
+
+                let left =
+                    rect.left +
+                    (
+                        rect.width -
+                        menuWidth
+                    ) / 2;
+
+
+                /* =========================================
+                   منع الخروج من اليمين
+                ========================================= */
+
+                if (
+                    left + menuWidth >
+                    window.innerWidth - 8
+                ) {
+
+                    left =
+                        window.innerWidth -
+                        menuWidth -
+                        8;
+
+                }
+
+
+                /* =========================================
+                   منع الخروج من اليسار
+                ========================================= */
+
+                if (left < 8) {
+
+                    left = 8;
+
+                }
+
+
+                /* =========================================
+                   منع الخروج من أعلى الشاشة
+                ========================================= */
+
+                if (top < 8) {
+
+                    top = 8;
+
+                }
+
+
+                menu.style.top =
+                    top + "px";
+
+
+                menu.style.left =
+                    left + "px";
+
+
+                menu.style.right =
+                    "auto";
+
+
+                menu.style.bottom =
+                    "auto";
+
+
+                menu.style.transform =
+                    "none";
+
+
+                /* =========================================
+                   منع إغلاق القائمة من الداخل
+                ========================================= */
+
+                menu.addEventListener(
+                    "click",
+                    function (e) {
+
+                        e.stopPropagation();
+
+                    }
+                );
+
+            }
+        );
+
+    });
+
+
+
+    /* =====================================================
+       إغلاق القائمة
+    ===================================================== */
+
+    function closeOptionsMenu() {
+
+
+        if (!openedMenu) {
+
+            return;
+
+        }
+
+
+        openedMenu.classList.remove(
+            "menu-open"
+        );
+
+
+        /* =========================================
+           إرجاع القائمة إلى مكانها الأصلي
+        ========================================= */
+
+        if (openedButton) {
+
+
+            const originalDropdown =
+                openedButton.closest(
+                    ".options-dropdown"
+                );
+
+
+            if (originalDropdown) {
+
+                originalDropdown.appendChild(
+                    openedMenu
+                );
+
+            }
+
+        }
+
+
+        openedMenu.style.top = "";
+
+        openedMenu.style.left = "";
+
+        openedMenu.style.right = "";
+
+        openedMenu.style.bottom = "";
+
+        openedMenu.style.transform = "";
+
+
+        openedMenu = null;
+
+        openedButton = null;
+
+    }
+
+
+
+    /* =====================================================
+       الضغط خارج القائمة
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       عند Scroll
+    ===================================================== */
+
+    window.addEventListener(
+        "scroll",
+        function () {
+
+
+            if (
+                !openedMenu ||
+                !openedButton
+            ) {
+
+                return;
+
+            }
+
+
+            const rect =
+                openedButton.getBoundingClientRect();
+
+
+            const menuHeight =
+                openedMenu.offsetHeight;
+
+
+            const menuWidth =
+                openedMenu.offsetWidth;
+
+
+            const gap = 8;
+
+
+            let top =
+                rect.top -
+                menuHeight -
+                gap;
+
+
+            let left =
+                rect.left +
+                (
+                    rect.width -
+                    menuWidth
+                ) / 2;
+
+
+            if (top < 8) {
+
+                top = 8;
+
+            }
+
+
+            if (
+                left + menuWidth >
+                window.innerWidth - 8
+            ) {
+
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    8;
+
+            }
+
+
+            if (left < 8) {
+
+                left = 8;
+
+            }
+
+
+            openedMenu.style.top =
+                top + "px";
+
+
+            openedMenu.style.left =
+                left + "px";
+
+        },
+        true
+    );
+
+
+
+    /* =====================================================
+       عند تغيير حجم الشاشة
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            closeOptionsMenu();
+
+        }
+    );
+
+
 });
 
 </script>
+
 {% endblock %}

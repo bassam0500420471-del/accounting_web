@@ -1,216 +1,1276 @@
 {% extends "layout/base.html" %}
+
+{% block title %}
+    تقرير المبيعات الضريبية
+{% endblock %}
+
 {% block content %}
 
 <style>
-    .table thead th {
-        background: #212529;
-        color: #fff;
-        text-align: center;
+
+/* =========================================================
+   الخلفية العامة
+========================================================= */
+
+body {
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #ffffff 0%,
+            #eeeeee 35%,
+            #d4d4d4 100%
+        );
+
+}
+
+
+/* =========================================================
+   الصفحة
+========================================================= */
+
+.sales-vat-page {
+
+    min-height: calc(100vh - 40px);
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f8f8 0%,
+            #e9e9e9 45%,
+            #cecece 100%
+        );
+
+}
+
+
+/* =========================================================
+   الحاوية
+========================================================= */
+
+.sales-vat-wrapper {
+
+    max-width: 1400px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+========================================================= */
+
+.sales-vat-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+
+    padding: 22px 26px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 16px 35px rgba(0,0,0,.16),
+        0 5px 12px rgba(0,0,0,.07),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   أيقونة الرأس
+========================================================= */
+
+.sales-vat-header-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #292929
+        );
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   عنوان الصفحة
+========================================================= */
+
+.sales-vat-header h3 {
+
+    margin: 0;
+
+    color: #333;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   وصف الصفحة
+========================================================= */
+
+.sales-vat-header p {
+
+    margin: 5px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+========================================================= */
+
+.sales-vat-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #eeeeee 55%,
+            #d8d8d8 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 42px rgba(0,0,0,.18),
+        0 6px 14px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   الخط العلوي
+========================================================= */
+
+.sales-vat-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 15%;
+
+    right: 15%;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.95),
+            transparent
+        );
+
+    z-index: 5;
+
+}
+
+
+/* =========================================================
+   رأس الكرت
+========================================================= */
+
+.sales-vat-card-header {
+
+    padding: 18px 24px;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #777777,
+            #3b3b3b
+        );
+
+    box-shadow:
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+}
+
+
+/* =========================================================
+   جسم الكرت
+========================================================= */
+
+.sales-vat-card-body {
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f0f0f0
+        );
+
+}
+
+
+/* =========================================================
+   منطقة الفلاتر
+========================================================= */
+
+.sales-vat-filters {
+
+    padding: 20px;
+
+    margin-bottom: 24px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d7d7d7
+        );
+
+    border: 1px solid #d0d0d0;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9),
+        0 8px 18px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   عناوين الحقول
+========================================================= */
+
+.sales-vat-filters .form-label {
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    margin-bottom: 7px;
+
+}
+
+
+/* =========================================================
+   حقول الفلاتر
+========================================================= */
+
+.sales-vat-filters .form-control {
+
+    min-height: 44px;
+
+    padding: 9px 13px;
+
+    color: #444;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.08),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+    transition: .2s ease;
+
+}
+
+
+.sales-vat-filters .form-control:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.95);
+
+}
+
+
+/* =========================================================
+   زر عرض التقرير
+========================================================= */
+
+.sales-vat-view-btn {
+
+    min-height: 44px;
+
+    padding: 10px 24px;
+
+    color: #fff !important;
+
+    border: 1px solid rgba(255,255,255,.25);
+
+    border-radius: 11px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            145deg,
+            #777777,
+            #3c3c3c
+        );
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.18),
+        inset 0 1px 1px rgba(255,255,255,.25);
+
+    transition: .2s ease;
+
+}
+
+
+.sales-vat-view-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #858585,
+            #333333
+        );
+
+    box-shadow:
+        0 9px 17px rgba(0,0,0,.22),
+        inset 0 1px 1px rgba(255,255,255,.3);
+
+}
+
+
+/* =========================================================
+   حاوية الجدول
+========================================================= */
+
+.sales-vat-table-wrapper {
+
+    overflow-x: auto;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.10);
+
+}
+
+
+/* =========================================================
+   الجدول
+========================================================= */
+
+.sales-vat-table {
+
+    width: 100%;
+
+    margin: 0;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+========================================================= */
+
+.sales-vat-table thead tr:first-child th {
+
+    padding: 13px 10px;
+
+    color: #fff;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    white-space: nowrap;
+
+    background:
+        linear-gradient(
+            135deg,
+            #666666,
+            #292929
+        );
+
+    border: 1px solid #444;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   صف الفلاتر داخل الجدول
+========================================================= */
+
+.sales-vat-table .filter-row th {
+
+    padding: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #555555,
+            #333333
+        );
+
+    border: 1px solid #444;
+
+}
+
+
+/* =========================================================
+   حقول الفلترة داخل الجدول
+========================================================= */
+
+.sales-vat-table .filter-row input,
+.sales-vat-table .filter-row select {
+
+    width: 100%;
+
+    height: 34px;
+
+    padding: 5px 8px;
+
+    color: #444;
+
+    background: #fff;
+
+    border: 1px solid #cfcfcf;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    outline: none;
+
+    box-sizing: border-box;
+
+}
+
+
+.sales-vat-table .filter-row input:focus,
+.sales-vat-table .filter-row select:focus {
+
+    border-color: #888;
+
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+========================================================= */
+
+.sales-vat-table tbody td {
+
+    padding: 11px 10px;
+
+    color: #444;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f3f3f3
+        );
+
+    border: 1px solid #d5d5d5;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    vertical-align: middle;
+
+}
+
+
+/* =========================================================
+   تأثير المرور
+========================================================= */
+
+.sales-vat-table tbody tr:hover td {
+
+    background:
+        linear-gradient(
+            145deg,
+            #f2f2f2,
+            #e4e4e4
+        );
+
+}
+
+
+/* =========================================================
+   الأرقام
+========================================================= */
+
+.sales-vat-table .amount {
+
+    text-align: left;
+
+    direction: ltr;
+
+    white-space: nowrap;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   صف لا توجد بيانات
+========================================================= */
+
+.sales-vat-empty {
+
+    padding: 25px !important;
+
+    color: #888 !important;
+
+    text-align: center;
+
+    font-weight: 700 !important;
+
+}
+
+
+/* =========================================================
+   التذييل والإجمالي
+========================================================= */
+
+.sales-vat-table tfoot td {
+
+    padding: 13px 10px;
+
+    color: #333;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #d2d2d2
+        );
+
+    border: 1px solid #c8c8c8;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   إجماليات مالية
+========================================================= */
+
+.sales-vat-total {
+
+    text-align: left;
+
+    direction: ltr;
+
+    white-space: nowrap;
+
+    font-weight: 900 !important;
+
+}
+
+
+/* =========================================================
+   خط فاصل
+========================================================= */
+
+.sales-vat-divider {
+
+    height: 1px;
+
+    margin: 20px 0;
+
+    border: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #c8c8c8,
+            transparent
+        );
+
+}
+
+
+/* =========================================================
+   الشاشات المتوسطة
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .sales-vat-page {
+
+        padding: 15px;
+
     }
-    .filter-row th {
-        background: #343a40;
-        padding: 6px;
+
+
+    .sales-vat-header {
+
+        padding: 18px;
+
     }
-    .filter-row input,
-    .filter-row select {
-        width: 100%;
-        height: 32px;
-        font-size: 13px;
+
+
+    .sales-vat-header h3 {
+
+        font-size: 21px;
+
     }
-    tfoot td {
-        background: #e9ecef;
-        font-weight: bold;
+
+
+    .sales-vat-header-icon {
+
+        width: 50px;
+
+        height: 50px;
+
+        font-size: 20px;
+
     }
+
+
+    .sales-vat-card-body {
+
+        padding: 14px;
+
+    }
+
+
+    .sales-vat-filters {
+
+        padding: 14px;
+
+    }
+
+
+    .sales-vat-table {
+
+        min-width: 1000px;
+
+    }
+
+}
+
 </style>
 
-<div class="container-fluid mt-4">
 
-    <h3 class="text-center mb-4">📊 تقرير المبيعات الضريبية</h3>
+<div class="sales-vat-page">
 
-    <!-- فلترة التاريخ -->
-    <form method="get" class="row g-3 mb-4 justify-content-center">
-        <div class="col-md-3">
-            <label class="form-label fw-bold">من تاريخ</label>
-            <input type="date" name="date_from" value="{{ date_from }}" class="form-control">
+    <div class="sales-vat-wrapper">
+
+
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
+
+        <div class="sales-vat-header">
+
+            <div class="sales-vat-header-icon">
+
+                📊
+
+            </div>
+
+            <div>
+
+                <h3>
+                    تقرير المبيعات الضريبية
+                </h3>
+
+                <p>
+                    تقرير المبيعات والفواتير والضريبة خلال الفترة المحددة
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="col-md-3">
-            <label class="form-label fw-bold">إلى تاريخ</label>
-            <input type="date" name="date_to" value="{{ date_to }}" class="form-control">
+
+        <!-- =================================================
+             الكرت الرئيسي
+        ================================================= -->
+
+        <div class="sales-vat-card">
+
+
+            <div class="sales-vat-card-header">
+
+                تقرير المبيعات الضريبية
+
+            </div>
+
+
+            <div class="sales-vat-card-body">
+
+
+                <!-- =================================================
+                     الفلاتر
+                ================================================= -->
+
+                <div class="sales-vat-filters">
+
+                    <form method="get"
+                          class="row g-3 align-items-end">
+
+
+                        <!-- من تاريخ -->
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">
+
+                                من تاريخ
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_from"
+                                value="{{ date_from }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- إلى تاريخ -->
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">
+
+                                إلى تاريخ
+
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_to"
+                                value="{{ date_to }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <!-- زر العرض -->
+
+                        <div class="col-md-4">
+
+                            <button
+                                type="submit"
+                                class="btn sales-vat-view-btn w-100"
+                            >
+
+                                🔍
+                                عرض التقرير
+
+                            </button>
+
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+
+                <hr class="sales-vat-divider">
+
+
+                <!-- =================================================
+                     الجدول
+                ================================================= -->
+
+                <div class="sales-vat-table-wrapper">
+
+                    <table
+                        class="sales-vat-table"
+                        id="salesVatTable"
+                    >
+
+                        <thead>
+
+
+                            <!-- ================================
+                                 عناوين الأعمدة
+                            ================================= -->
+
+                            <tr>
+
+                                <th>
+                                    التاريخ
+                                </th>
+
+                                <th>
+                                    النوع
+                                </th>
+
+                                <th>
+                                    الرقم
+                                </th>
+
+                                <th>
+                                    منشئ الفاتورة
+                                </th>
+
+                                <th>
+                                    طريقة الدفع
+                                </th>
+
+                                <th>
+                                    قبل الضريبة
+                                </th>
+
+                                <th>
+                                    الضريبة
+                                </th>
+
+                                <th>
+                                    بعد الضريبة
+                                </th>
+
+                            </tr>
+
+
+                            <!-- ================================
+                                 فلاتر الأعمدة
+                            ================================= -->
+
+                            <tr class="filter-row">
+
+
+                                <th>
+
+                                    <input
+                                        type="date"
+                                        class="column-filter"
+                                        data-col="0"
+                                    >
+
+                                </th>
+
+
+                                <th>
+
+                                    <select
+                                        class="column-filter"
+                                        data-col="1"
+                                    >
+
+                                        <option value="">
+                                            الكل
+                                        </option>
+
+                                        <option value="فاتورة بيع">
+                                            فاتورة بيع
+                                        </option>
+
+                                        <option value="مرتجع بيع">
+                                            مرتجع بيع
+                                        </option>
+
+                                    </select>
+
+                                </th>
+
+
+                                <th>
+
+                                    <input
+                                        type="text"
+                                        class="column-filter"
+                                        data-col="2"
+                                    >
+
+                                </th>
+
+
+                                <th>
+
+                                    <input
+                                        type="text"
+                                        class="column-filter"
+                                        data-col="3"
+                                    >
+
+                                </th>
+
+
+                                <th>
+
+                                    <input
+                                        type="text"
+                                        class="column-filter"
+                                        data-col="4"
+                                    >
+
+                                </th>
+
+
+                                <th>
+
+                                    <input
+                                        type="text"
+                                        class="column-filter"
+                                        data-col="5"
+                                    >
+
+                                </th>
+
+
+                                <th>
+
+                                    <input
+                                        type="text"
+                                        class="column-filter"
+                                        data-col="6"
+                                    >
+
+                                </th>
+
+
+                                <th>
+
+                                    <input
+                                        type="text"
+                                        class="column-filter"
+                                        data-col="7"
+                                    >
+
+                                </th>
+
+
+                            </tr>
+
+                        </thead>
+
+
+                        <!-- =================================================
+                             البيانات
+                        ================================================= -->
+
+                        <tbody>
+
+                            {% for row in rows %}
+
+                            <tr>
+
+
+                                <td>
+                                    {{ row.date }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.type }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.number }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.user }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.payment_method }}
+                                </td>
+
+
+                                <td class="amount">
+
+                                    {{ row.before_tax|floatformat:2 }}
+
+                                </td>
+
+
+                                <td class="amount">
+
+                                    {{ row.tax|floatformat:2 }}
+
+                                </td>
+
+
+                                <td class="amount">
+
+                                    {{ row.after_tax|floatformat:2 }}
+
+                                </td>
+
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="8"
+                                    class="sales-vat-empty"
+                                >
+
+                                    لا توجد بيانات
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+
+                        <!-- =================================================
+                             الإجمالي
+                        ================================================= -->
+
+                        <tfoot>
+
+                            <tr>
+
+
+                                <td
+                                    colspan="5"
+                                    class="text-center"
+                                >
+
+                                    الإجمالي
+
+                                </td>
+
+
+                                <td class="sales-vat-total">
+
+                                    {{ totals.before_tax|floatformat:2 }}
+
+                                </td>
+
+
+                                <td class="sales-vat-total">
+
+                                    {{ totals.tax|floatformat:2 }}
+
+                                </td>
+
+
+                                <td class="sales-vat-total">
+
+                                    {{ totals.after_tax|floatformat:2 }}
+
+                                </td>
+
+
+                            </tr>
+
+                        </tfoot>
+
+
+                    </table>
+
+                </div>
+
+
+            </div>
+
         </div>
-
-        <div class="col-md-2 d-flex align-items-end">
-            <button class="btn btn-secondary w-100">
-                عرض التقرير
-            </button>
-        </div>
-    </form>
-
-    <div class="table-responsive">
-
-        <table class="table table-bordered table-striped" id="salesVatTable">
-
-            <thead>
-
-                <tr>
-                    <th>التاريخ</th>
-                    <th>النوع</th>
-                    <th>الرقم</th>
-                    <th>منشئ الفاتورة</th>
-                    <th>طريقة الدفع</th>
-                    <th>قبل الضريبة</th>
-                    <th>الضريبة</th>
-                    <th>بعد الضريبة</th>
-                </tr>
-
-                <tr class="filter-row">
-
-                    <th>
-                        <input type="date" class="column-filter" data-col="0">
-                    </th>
-
-                    <th>
-                        <select class="column-filter" data-col="1">
-                            <option value="">الكل</option>
-                            <option value="فاتورة بيع">فاتورة بيع</option>
-                            <option value="مرتجع بيع">مرتجع بيع</option>
-                        </select>
-                    </th>
-
-                    <th>
-                        <input type="text" class="column-filter" data-col="2">
-                    </th>
-
-                    <th>
-                        <input type="text" class="column-filter" data-col="3">
-                    </th>
-
-                    <th>
-                        <input type="text" class="column-filter" data-col="4">
-                    </th>
-
-                    <th>
-                        <input type="text" class="column-filter" data-col="5">
-                    </th>
-
-                    <th>
-                        <input type="text" class="column-filter" data-col="6">
-                    </th>
-
-                    <th>
-                        <input type="text" class="column-filter" data-col="7">
-                    </th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for row in rows %}
-
-                <tr>
-
-                    <td>{{ row.date }}</td>
-
-                    <td>{{ row.type }}</td>
-
-                    <td>{{ row.number }}</td>
-
-                    <td>{{ row.user }}</td>
-
-                    <td>{{ row.payment_method }}</td>
-
-                    <td class="text-end">
-                        {{ row.before_tax|floatformat:2 }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ row.tax|floatformat:2 }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ row.after_tax|floatformat:2 }}
-                    </td>
-
-                </tr>
-
-                {% empty %}
-
-                <tr>
-                    <td colspan="8" class="text-center text-muted">
-                        لا توجد بيانات
-                    </td>
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-            <tfoot>
-
-                <tr>
-
-                    <td colspan="5" class="text-center">
-                        الإجمالي
-                    </td>
-
-                    <td class="text-end">
-                        {{ totals.before_tax|floatformat:2 }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ totals.tax|floatformat:2 }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ totals.after_tax|floatformat:2 }}
-                    </td>
-
-                </tr>
-
-            </tfoot>
-
-        </table>
 
     </div>
 
 </div>
 
+
+<!-- =========================================================
+     JavaScript - فلاتر الأعمدة
+========================================================= -->
+
 <script>
 
-document.querySelectorAll('.column-filter').forEach(el => {
+document.querySelectorAll('.column-filter').forEach(function (el) {
+
     el.addEventListener('input', filterTable);
+
     el.addEventListener('change', filterTable);
+
 });
+
 
 function filterTable() {
 
-    const filters = document.querySelectorAll('.column-filter');
-    const rows = document.querySelectorAll('#salesVatTable tbody tr');
+    const filters =
+        document.querySelectorAll('.column-filter');
 
-    rows.forEach(row => {
+    const rows =
+        document.querySelectorAll(
+            '#salesVatTable tbody tr'
+        );
+
+
+    rows.forEach(function (row) {
 
         let show = true;
 
-        filters.forEach(filter => {
 
-            const val = filter.value.trim();
+        filters.forEach(function (filter) {
 
-            if (!val) return;
+            const val =
+                filter.value.trim();
 
-            if (!row.children[filter.dataset.col].innerText.includes(val)) {
+
+            if (!val) {
+
+                return;
+
+            }
+
+
+            const columnIndex =
+                parseInt(filter.dataset.col);
+
+
+            const cell =
+                row.children[columnIndex];
+
+
+            if (!cell) {
+
+                return;
+
+            }
+
+
+            const cellText =
+                cell.innerText.trim();
+
+
+            if (!cellText.includes(val)) {
+
                 show = false;
+
             }
 
         });
 
-        row.style.display = show ? '' : 'none';
+
+        row.style.display =
+            show ? '' : 'none';
 
     });
 
 }
 
 </script>
+
 
 {% endblock %}

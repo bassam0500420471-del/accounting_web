@@ -1,192 +1,1989 @@
-```html
 {% extends "layout/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Evaluation Records" %}{% endblock %}
+{% block title %}
+    {% trans "Evaluation Records" %}
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   Evaluation Records
+   3D + Gray Gradient Design
+   ========================================================= */
+
+.evaluation-records-page {
+
+    background: #eeeeee;
+
+    min-height: calc(100vh - 80px);
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    direction: rtl;
+
+}
+
+
+/* =========================================================
+   الكرت الرئيسي
+   ========================================================= */
+
+.evaluation-records-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #dddddd
+    );
+
+    border-radius: 22px;
+
+    padding: 25px;
+
+    box-shadow:
+
+        8px 8px 20px #c5c5c5,
+
+        -8px -8px 20px #ffffff;
+
+}
+
+
+/* =========================================================
+   رأس الصفحة
+   ========================================================= */
+
+.evaluation-records-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.evaluation-records-title {
+
+    margin: 0;
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+.evaluation-records-subtitle {
+
+    margin-top: 7px;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   زر إنشاء سجل
+   ========================================================= */
+
+.evaluation-add-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 11px 20px;
+
+    border-radius: 13px;
+
+    background: linear-gradient(
+        145deg,
+        #777,
+        #444
+    );
+
+    color: #fff !important;
+
+    text-decoration: none;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    box-shadow:
+
+        5px 5px 12px rgba(0,0,0,.20),
+
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+    transition: .25s;
+
+}
+
+
+.evaluation-add-btn:hover {
+
+    color: #fff !important;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+
+        7px 7px 15px rgba(0,0,0,.25),
+
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+}
+
+
+/* =========================================================
+   كرت الجدول
+   ========================================================= */
+
+.evaluation-table-card {
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 20px;
+
+    box-shadow:
+
+        0 7px 18px rgba(0,0,0,.08),
+
+        inset 0 1px 0 rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   عنوان الجدول
+   ========================================================= */
+
+.evaluation-section-title {
+
+    margin: 0 0 18px;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #444;
+
+}
+
+
+.evaluation-section-title i {
+
+    color: #666;
+
+    margin-left: 7px;
+
+}
+
+
+/* =========================================================
+   غلاف الجدول
+   ========================================================= */
+
+.evaluation-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    overflow-y: visible;
+
+    border-radius: 16px;
+
+    box-shadow:
+
+        0 5px 15px rgba(0,0,0,.06);
+
+}
+
+
+/* =========================================================
+   الجدول
+   ========================================================= */
+
+.evaluation-table {
+
+    width: 100%;
+
+    min-width: 1250px;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    background: #fff;
+
+    table-layout: fixed;
+
+}
+
+
+/* =========================================================
+   رأس الجدول
+   ========================================================= */
+
+.evaluation-table thead {
+
+    background: linear-gradient(
+        90deg,
+        #444 0%,
+        #666 50%,
+        #888 100%
+    ) !important;
+
+    color: #fff !important;
+
+}
+
+
+.evaluation-table thead tr {
+
+    background: transparent !important;
+
+}
+
+
+.evaluation-table thead th {
+
+    background: transparent !important;
+
+    color: #fff !important;
+
+    padding: 15px 10px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    border: none !important;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   حواف رأس الجدول
+   ========================================================= */
+
+.evaluation-table thead th:first-child {
+
+    border-top-right-radius: 16px;
+
+}
+
+
+.evaluation-table thead th:last-child {
+
+    border-top-left-radius: 16px;
+
+}
+
+
+/* =========================================================
+   تحديد عرض الأعمدة
+   ========================================================= */
+
+.evaluation-table th:nth-child(1),
+.evaluation-table td:nth-child(1) {
+
+    width: 55px;
+
+}
+
+
+.evaluation-table th:nth-child(2),
+.evaluation-table td:nth-child(2) {
+
+    width: 180px;
+
+}
+
+
+.evaluation-table th:nth-child(3),
+.evaluation-table td:nth-child(3) {
+
+    width: 180px;
+
+}
+
+
+.evaluation-table th:nth-child(4),
+.evaluation-table td:nth-child(4) {
+
+    width: 150px;
+
+}
+
+
+.evaluation-table th:nth-child(5),
+.evaluation-table td:nth-child(5) {
+
+    width: 90px;
+
+}
+
+
+.evaluation-table th:nth-child(6),
+.evaluation-table td:nth-child(6) {
+
+    width: 160px;
+
+}
+
+
+.evaluation-table th:nth-child(7),
+.evaluation-table td:nth-child(7) {
+
+    width: 110px;
+
+}
+
+
+/* =========================================================
+   عمود الملاحظات
+   ========================================================= */
+
+.evaluation-table th:nth-child(8),
+.evaluation-table td:nth-child(8) {
+
+    width: 260px;
+
+    min-width: 260px;
+
+    max-width: 260px;
+
+}
+
+
+/* =========================================================
+   عمود المرفقات
+   ========================================================= */
+
+.evaluation-table th:nth-child(9),
+.evaluation-table td:nth-child(9) {
+
+    width: 120px;
+
+    min-width: 120px;
+
+    max-width: 120px;
+
+}
+
+
+/* =========================================================
+   خلايا الجدول
+   ========================================================= */
+
+.evaluation-table tbody td {
+
+    padding: 13px 10px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #eeeeee;
+
+    color: #444 !important;
+
+    background: #fff;
+
+    font-size: 13px;
+
+}
+
+
+.evaluation-table tbody td {
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   حركة الصف
+   ========================================================= */
+
+.evaluation-table tbody tr {
+
+    transition: .25s;
+
+}
+
+
+.evaluation-table tbody tr:hover td {
+
+    background: #f3f3f3;
+
+}
+
+
+/* =========================================================
+   اسم التقييم
+   ========================================================= */
+
+.evaluation-name {
+
+    font-weight: 800;
+
+    color: #444 !important;
+
+    text-align: right !important;
+
+    white-space: normal !important;
+
+    overflow-wrap: break-word !important;
+
+    word-break: break-word !important;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   اسم الموظف
+   ========================================================= */
+
+.evaluation-employee {
+
+    font-weight: 700;
+
+    color: #555;
+
+    text-align: right !important;
+
+    white-space: normal !important;
+
+    overflow-wrap: break-word !important;
+
+    word-break: break-word !important;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   المعيار
+   ========================================================= */
+
+.evaluation-criteria {
+
+    font-weight: 700;
+
+    color: #555;
+
+    white-space: normal !important;
+
+    overflow-wrap: break-word !important;
+
+    word-break: break-word !important;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   الدرجة
+   ========================================================= */
+
+.evaluation-score {
+
+    display: inline-block;
+
+    min-width: 50px;
+
+    padding: 6px 10px;
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+    border-radius: 8px;
+
+    font-weight: 800;
+
+    color: #444;
+
+    box-shadow:
+
+        inset 1px 1px 3px rgba(0,0,0,.08),
+
+        inset -1px -1px 3px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   الملاحظات - الخلية
+   ========================================================= */
+
+.evaluation-notes {
+
+    width: 260px;
+
+    min-width: 260px;
+
+    max-width: 260px;
+
+    padding: 12px !important;
+
+    text-align: right !important;
+
+    vertical-align: top !important;
+
+    white-space: normal !important;
+
+    overflow: hidden !important;
+
+}
+
+
+/* =========================================================
+   الملاحظات - النص الداخلي
+   ========================================================= */
+
+.evaluation-notes-text {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 100%;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere !important;
+
+    word-break: break-word !important;
+
+    word-wrap: break-word !important;
+
+    line-height: 1.8;
+
+    text-align: right;
+
+    direction: rtl;
+
+    color: #666;
+
+}
+
+
+.evaluation-notes-text {
+
+    hyphens: auto;
+
+}
+
+
+/* =========================================================
+   الشارات
+   ========================================================= */
+
+.evaluation-role {
+
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    background: linear-gradient(
+        145deg,
+        #eeeeee,
+        #d5d5d5
+    );
+
+    color: #555;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    box-shadow:
+
+        2px 2px 5px rgba(0,0,0,.12),
+
+        inset 1px 1px 2px rgba(255,255,255,.8);
+
+}
+
+
+/* =========================================================
+   المرفق - الصورة الواحدة داخل الجدول
+   ========================================================= */
+
+.attachment-preview-box {
+
+    position: relative;
+
+    width: 60px;
+
+    height: 60px;
+
+    margin: auto;
+
+}
+
+
+.attachment-preview-image {
+
+    width: 60px;
+
+    height: 60px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    border: 2px solid #ddd;
+
+    box-shadow:
+
+        3px 3px 8px rgba(0,0,0,.15),
+
+        -2px -2px 5px rgba(255,255,255,.8);
+
+    transition: .25s;
+
+}
+
+
+.attachment-preview-image:hover {
+
+    transform: scale(1.08);
+
+    border-color: #999;
+
+}
+
+
+/* =========================================================
+   عداد الصور
+   ========================================================= */
+
+.attachment-count {
+
+    position: absolute;
+
+    right: -7px;
+
+    bottom: -7px;
+
+    min-width: 28px;
+
+    height: 24px;
+
+    padding: 2px 6px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        145deg,
+        #777,
+        #444
+    );
+
+    color: #fff;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    box-shadow:
+
+        2px 2px 6px rgba(0,0,0,.25);
+
+}
+
+
+/* =========================================================
+   حالة عدم وجود سجلات
+   ========================================================= */
+
+.evaluation-empty {
+
+    padding: 60px 20px !important;
+
+    text-align: center;
+
+    color: #999 !important;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+.evaluation-empty-icon {
+
+    font-size: 40px;
+
+    margin-bottom: 12px;
+
+    color: #aaa;
+
+}
+
+
+/* =========================================================
+   نافذة عرض الصور
+   ========================================================= */
+
+.attachment-modal {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 99999;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.82);
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+}
+
+
+/* =========================================================
+   محتوى النافذة
+   ========================================================= */
+
+.attachment-modal-content {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 92vw;
+
+    height: 92vh;
+
+    max-width: 1200px;
+
+    max-height: 900px;
+
+}
+
+
+/* =========================================================
+   الصورة الكبيرة
+   ========================================================= */
+
+.attachment-modal-image {
+
+    max-width: 75vw;
+
+    max-height: 78vh;
+
+    width: auto;
+
+    height: auto;
+
+    object-fit: contain;
+
+    display: block;
+
+    border-radius: 12px;
+
+    box-shadow:
+
+        0 10px 35px rgba(0,0,0,.45);
+
+}
+
+
+/* =========================================================
+   زر الإغلاق
+   ========================================================= */
+
+.attachment-close {
+
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    z-index: 10;
+
+    width: 42px;
+
+    height: 42px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        145deg,
+        #777,
+        #444
+    );
+
+    color: #fff;
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+
+        3px 3px 10px rgba(0,0,0,.35);
+
+}
+
+
+.attachment-close:hover {
+
+    background: #333;
+
+}
+
+
+/* =========================================================
+   أسهم التنقل
+   ========================================================= */
+
+.attachment-nav {
+
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 48px;
+
+    height: 48px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.92);
+
+    color: #444;
+
+    font-size: 30px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-shadow:
+
+        3px 3px 12px rgba(0,0,0,.30);
+
+    transition: .2s;
+
+}
+
+
+.attachment-nav:hover {
+
+    transform: translateY(-50%) scale(1.08);
+
+    background: #fff;
+
+}
+
+
+/* السهم الأيمن */
+
+.attachment-next {
+
+    right: 20px;
+
+}
+
+
+/* السهم الأيسر */
+
+.attachment-prev {
+
+    left: 20px;
+
+}
+
+
+/* =========================================================
+   عداد الصور داخل النافذة
+   ========================================================= */
+
+.attachment-counter {
+
+    position: absolute;
+
+    bottom: 15px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    background: rgba(0,0,0,.65);
+
+    color: #fff;
+
+    padding: 7px 15px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    direction: ltr;
+
+    box-shadow:
+
+        2px 2px 8px rgba(0,0,0,.30);
+
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    .evaluation-records-page {
+
+        padding: 15px;
+
+    }
+
+
+    .evaluation-records-card {
+
+        padding: 20px;
+
+        border-radius: 18px;
+
+    }
+
+
+    .evaluation-records-title {
+
+        font-size: 22px;
+
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .evaluation-records-header {
+
+        display: block;
+
+    }
+
+
+    .evaluation-add-btn {
+
+        margin-top: 15px;
+
+        width: 100%;
+
+    }
+
+
+    .evaluation-table {
+
+        min-width: 1250px;
+
+    }
+
+
+    .attachment-modal-image {
+
+        max-width: 78vw;
+
+        max-height: 70vh;
+
+    }
+
+
+    .attachment-nav {
+
+        width: 42px;
+
+        height: 42px;
+
+        font-size: 25px;
+
+    }
+
+
+    .attachment-next {
+
+        right: 5px;
+
+    }
+
+
+    .attachment-prev {
+
+        left: 5px;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
 
 {% block content %}
-<div class="container-fluid mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold">📒 {% trans "Evaluation Records" %}</h3>
-        <a href="{% url 'hr:evaluation_record_start' %}" class="btn btn-primary fw-bold">
-            ➕ {% trans "Create Record" %}
-        </a>
-    </div>
-
-    <div class="card shadow-sm">
-        <div class="card-body table-responsive">
-
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>{% trans "Evaluation" %}</th>
-                        <th>{% trans "Target Employee" %}</th>
-                        <th>{% trans "Criteria" %}</th>
-                        <th>{% trans "Score" %}</th>
-                        <th>{% trans "Evaluator" %}</th>
-                        <th>{% trans "Role" %}</th>
-                        <th>{% trans "Notes" %}</th>
-                        <th>{% trans "Attachments" %}</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for r in records %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-
-                        <td>{{ r.target.evaluation.name }}</td>
-
-                        <td>
-                            {% if r.target.employee %}
-                                {{ r.target.employee.first_name_ar }} {{ r.target.employee.last_name_ar }}
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-
-                        <td>{{ r.criteria.name }}</td>
-
-                        <td class="fw-bold">{{ r.value }}</td>
-
-                        <td>
-                            {% if r.evaluator %}
-                                {{ r.evaluator.first_name_ar }} {{ r.evaluator.last_name_ar }}
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            {% if r.role == "peer" %}
-                                {% trans "Peer" %}
-                            {% elif r.role == "manager" %}
-                                {% trans "Manager" %}
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-
-                        <!-- الملاحظات -->
-                        <td>
-                            {% if r.notes %}
-                                {{ r.notes }}
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
+<div class="container-fluid evaluation-records-page">
 
 
-                        <!-- المرفقات -->
-                        <!-- المرفقات -->
-                        <td class="text-center">
+    <div class="evaluation-records-card">
 
-                            {% if r.attachment %}
 
-                                <img src="{{ r.attachment.url }}"
-                                     onclick="showAttachment('{{ r.attachment.url }}')"
-                                     style="
-                                        width:60px;
-                                        height:60px;
-                                        object-fit:cover;
-                                        border-radius:8px;
-                                        cursor:pointer;
-                                        border:1px solid #ddd;
-                                     "
-                                     title="{% trans 'Click to view' %}">
+        <!-- =================================================
+             رأس الصفحة
+        ================================================= -->
 
-                            {% else %}
+        <div class="evaluation-records-header">
 
-                                —
 
-                            {% endif %}
+            <div>
 
-                        </td>
-                    </tr>
+                <h3 class="evaluation-records-title">
 
-                    {% empty %}
-                    <tr>
-                        <td colspan="9" class="text-center">
-                            {% trans "No evaluation records yet" %}
-                        </td>
-                    </tr>
+                    📒
 
-                    {% endfor %}
-                </tbody>
+                    {% trans "Evaluation Records" %}
 
-            </table>
+                </h3>
+
+
+                <div class="evaluation-records-subtitle">
+
+                    {% trans "Manage and review employee evaluation records" %}
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{% url 'hr:evaluation_record_start' %}"
+                class="evaluation-add-btn"
+            >
+
+                ➕
+
+                {% trans "Create Record" %}
+
+            </a>
+
 
         </div>
+
+
+
+        <!-- =================================================
+             جدول السجلات
+        ================================================= -->
+
+        <div class="evaluation-table-card">
+
+
+            <h2 class="evaluation-section-title">
+
+                📋
+
+                {% trans "Evaluation Records" %}
+
+            </h2>
+
+
+            <div class="evaluation-table-wrapper">
+
+
+                <table class="evaluation-table">
+
+
+                    <thead>
+
+                        <tr>
+
+
+                            <th>
+                                #
+                            </th>
+
+
+                            <th>
+                                {% trans "Evaluation" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Target Employee" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Criteria" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Score" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Evaluator" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Role" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Notes" %}
+                            </th>
+
+
+                            <th>
+                                {% trans "Attachments" %}
+                            </th>
+
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {% for r in records %}
+
+
+                        <tr>
+
+
+                            <!-- الرقم -->
+
+                            <td>
+
+                                {{ forloop.counter }}
+
+                            </td>
+
+
+
+                            <!-- التقييم -->
+
+                            <td class="evaluation-name">
+
+                                {{ r.target.evaluation.name }}
+
+                            </td>
+
+
+
+                            <!-- الموظف -->
+
+                            <td class="evaluation-employee">
+
+                                {% if r.target.employee %}
+
+                                    {{ r.target.employee.first_name_ar }}
+
+                                    {{ r.target.employee.last_name_ar }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- المعيار -->
+
+                            <td class="evaluation-criteria">
+
+                                {{ r.criteria.name }}
+
+                            </td>
+
+
+
+                            <!-- الدرجة -->
+
+                            <td>
+
+                                <span class="evaluation-score">
+
+                                    {{ r.value }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- المقيم -->
+
+                            <td>
+
+                                {% if r.evaluator %}
+
+                                    {{ r.evaluator.first_name_ar }}
+
+                                    {{ r.evaluator.last_name_ar }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- الدور -->
+
+                            <td>
+
+                                {% if r.role == "peer" %}
+
+                                    <span class="evaluation-role">
+
+                                        {% trans "Peer" %}
+
+                                    </span>
+
+                                {% elif r.role == "manager" %}
+
+                                    <span class="evaluation-role">
+
+                                        {% trans "Manager" %}
+
+                                    </span>
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================================
+                                 الملاحظات
+                            ================================================= -->
+
+                            <td class="evaluation-notes">
+
+                                <div class="evaluation-notes-text">
+
+                                    {% if r.notes %}
+
+                                        {{ r.notes }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- =================================================
+                                 المرفقات
+                            ================================================= -->
+
+                            <td>
+
+                                {% with attachments=r.attachments.all %}
+
+                                    {% if attachments %}
+
+                                        <div class="attachment-preview-box">
+
+                                            {% for attachment in attachments %}
+
+                                                {% if attachment.file %}
+
+                                                    {% if forloop.first %}
+
+                                                        <img
+                                                            src="{{ attachment.file.url }}"
+                                                            class="attachment-preview-image"
+                                                            onclick="openAttachmentGallery({{ r.id }})"
+                                                            title="{% trans 'Click to view all attachments' %}"
+                                                            alt="{% trans 'Attachment' %}"
+                                                        >
+
+                                                    {% endif %}
+
+                                                {% endif %}
+
+                                            {% endfor %}
+
+
+                                            <span class="attachment-count">
+
+                                                {{ attachments|length }}
+
+                                            </span>
+
+
+                                        </div>
+
+
+                                        <!--
+                                             نخزن جميع الصور الخاصة
+                                             بهذا السجل داخل الصفحة
+                                        -->
+
+                                        <div
+                                            id="attachments-{{ r.id }}"
+                                            style="display:none;"
+                                        >
+
+                                            {% for attachment in attachments %}
+
+                                                {% if attachment.file %}
+
+                                                    <span
+                                                        data-image="{{ attachment.file.url }}"
+                                                    ></span>
+
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                class="evaluation-empty"
+                            >
+
+                                <div class="evaluation-empty-icon">
+
+                                    📒
+
+                                </div>
+
+                                {% trans "No evaluation records yet" %}
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
     </div>
+
 
 </div>
 
 
-<!-- نافذة عرض الصورة -->
-<div id="attachmentModal"
-     style="display:none;
-            position:fixed;
-            z-index:9999;
-            inset:0;
-            background:rgba(0,0,0,.7);
-            align-items:center;
-            justify-content:center;">
 
-    <div style="position:relative;
-                background:white;
-                padding:20px;
-                border-radius:10px;
-                max-width:90%;
-                max-height:90%;">
+<!-- =========================================================
+     نافذة معرض المرفقات
+========================================================= -->
 
-        <button onclick="closeAttachment()"
-                style="position:absolute;
-                       left:10px;
-                       top:10px;
-                       background:red;
-                       color:white;
-                       border:none;
-                       width:35px;
-                       height:35px;
-                       border-radius:50%;
-                       font-size:22px;
-                       font-weight:bold;">
+<div
+    id="attachmentModal"
+    class="attachment-modal"
+    onclick="closeAttachment(event)"
+>
+
+
+    <div
+        class="attachment-modal-content"
+        onclick="event.stopPropagation()"
+    >
+
+
+        <!-- =================================================
+             زر الإغلاق
+        ================================================= -->
+
+        <button
+            type="button"
+            class="attachment-close"
+            onclick="closeAttachment()"
+        >
+
             ×
+
         </button>
 
-        <img id="attachmentImage"
-             src=""
-             style="max-width:80vw;
-                    max-height:80vh;
-                    object-fit:contain;">
+
+
+        <!-- =================================================
+             السهم السابق
+        ================================================= -->
+
+        <button
+            type="button"
+            class="attachment-nav attachment-prev"
+            onclick="previousAttachment()"
+            aria-label="Previous"
+        >
+
+            ‹
+
+        </button>
+
+
+
+        <!-- =================================================
+             الصورة
+        ================================================= -->
+
+        <img
+            id="attachmentImage"
+            src=""
+            class="attachment-modal-image"
+            alt="{% trans 'Attachment Preview' %}"
+        >
+
+
+
+        <!-- =================================================
+             السهم التالي
+        ================================================= -->
+
+        <button
+            type="button"
+            class="attachment-nav attachment-next"
+            onclick="nextAttachment()"
+            aria-label="Next"
+        >
+
+            ›
+
+        </button>
+
+
+
+        <!-- =================================================
+             عداد الصور
+        ================================================= -->
+
+        <div
+            id="attachmentCounter"
+            class="attachment-counter"
+        >
+
+            1 / 1
+
+        </div>
+
+
     </div>
 
+
 </div>
+
 
 
 <script>
 
-function showAttachment(url){
+/* =========================================================
+   متغيرات معرض الصور
+   ========================================================= */
 
-    document.getElementById("attachmentImage").src = url;
+let currentAttachments = [];
 
-    document.getElementById("attachmentModal").style.display = "flex";
+let currentAttachmentIndex = 0;
+
+
+/* =========================================================
+   فتح معرض الصور
+   ========================================================= */
+
+function openAttachmentGallery(recordId) {
+
+    const container =
+        document.getElementById(
+            "attachments-" + recordId
+        );
+
+    const modal =
+        document.getElementById(
+            "attachmentModal"
+        );
+
+    const image =
+        document.getElementById(
+            "attachmentImage"
+        );
+
+    const counter =
+        document.getElementById(
+            "attachmentCounter"
+        );
+
+
+    if (
+        !container ||
+        !modal ||
+        !image ||
+        !counter
+    ) {
+
+        return;
+
+    }
+
+
+    const imageElements =
+        container.querySelectorAll(
+            "[data-image]"
+        );
+
+
+    currentAttachments = [];
+
+
+    imageElements.forEach(
+        function(element) {
+
+            const url =
+                element.getAttribute(
+                    "data-image"
+                );
+
+            if (url) {
+
+                currentAttachments.push(
+                    url
+                );
+
+            }
+
+        }
+    );
+
+
+    if (
+        currentAttachments.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    currentAttachmentIndex = 0;
+
+
+    updateAttachmentImage();
+
+
+    modal.style.display = "flex";
+
+
+    document.body.style.overflow = "hidden";
 
 }
 
 
-function closeAttachment(){
+/* =========================================================
+   تحديث الصورة
+   ========================================================= */
 
-    document.getElementById("attachmentModal").style.display = "none";
+function updateAttachmentImage() {
 
-    document.getElementById("attachmentImage").src = "";
+    const image =
+        document.getElementById(
+            "attachmentImage"
+        );
+
+    const counter =
+        document.getElementById(
+            "attachmentCounter"
+        );
+
+
+    if (
+        !image ||
+        !counter ||
+        currentAttachments.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    image.src =
+        currentAttachments[
+            currentAttachmentIndex
+        ];
+
+
+    counter.textContent =
+        (
+            currentAttachmentIndex + 1
+        )
+        +
+        " / "
+        +
+        currentAttachments.length;
+
+
+    /*
+       إخفاء الأسهم إذا كانت هناك
+       صورة واحدة فقط
+    */
+
+    const nextButton =
+        document.querySelector(
+            ".attachment-next"
+        );
+
+    const prevButton =
+        document.querySelector(
+            ".attachment-prev"
+        );
+
+
+    if (
+        nextButton &&
+        prevButton
+    ) {
+
+        if (
+            currentAttachments.length <= 1
+        ) {
+
+            nextButton.style.display =
+                "none";
+
+            prevButton.style.display =
+                "none";
+
+        } else {
+
+            nextButton.style.display =
+                "flex";
+
+            prevButton.style.display =
+                "flex";
+
+        }
+
+    }
 
 }
+
+
+/* =========================================================
+   الصورة التالية
+   ========================================================= */
+
+function nextAttachment() {
+
+    if (
+        currentAttachments.length <= 1
+    ) {
+
+        return;
+
+    }
+
+
+    currentAttachmentIndex++;
+
+
+    if (
+        currentAttachmentIndex >=
+        currentAttachments.length
+    ) {
+
+        currentAttachmentIndex = 0;
+
+    }
+
+
+    updateAttachmentImage();
+
+}
+
+
+/* =========================================================
+   الصورة السابقة
+   ========================================================= */
+
+function previousAttachment() {
+
+    if (
+        currentAttachments.length <= 1
+    ) {
+
+        return;
+
+    }
+
+
+    currentAttachmentIndex--;
+
+
+    if (
+        currentAttachmentIndex < 0
+    ) {
+
+        currentAttachmentIndex =
+            currentAttachments.length - 1;
+
+    }
+
+
+    updateAttachmentImage();
+
+}
+
+
+/* =========================================================
+   إغلاق المعرض
+   ========================================================= */
+
+function closeAttachment(event) {
+
+    if (
+        event &&
+        event.target &&
+        event.target.id !== "attachmentModal"
+    ) {
+
+        return;
+
+    }
+
+
+    const modal =
+        document.getElementById(
+            "attachmentModal"
+        );
+
+    const image =
+        document.getElementById(
+            "attachmentImage"
+        );
+
+
+    if (
+        !modal ||
+        !image
+    ) {
+
+        return;
+
+    }
+
+
+    modal.style.display = "none";
+
+
+    image.src = "";
+
+
+    currentAttachments = [];
+
+
+    currentAttachmentIndex = 0;
+
+
+    document.body.style.overflow = "";
+
+}
+
+
+/* =========================================================
+   لوحة المفاتيح
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+
+        const modal =
+            document.getElementById(
+                "attachmentModal"
+            );
+
+
+        if (
+            !modal ||
+            modal.style.display !== "flex"
+        ) {
+
+            return;
+
+        }
+
+
+        /* ESC */
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeAttachment();
+
+        }
+
+
+        /* سهم يمين */
+
+        else if (
+            event.key === "ArrowRight"
+        ) {
+
+            nextAttachment();
+
+        }
+
+
+        /* سهم يسار */
+
+        else if (
+            event.key === "ArrowLeft"
+        ) {
+
+            previousAttachment();
+
+        }
+
+    }
+);
 
 </script>
 
 
 {% endblock %}
-```
