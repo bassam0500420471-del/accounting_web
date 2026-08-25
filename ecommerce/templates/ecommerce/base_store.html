@@ -99,7 +99,63 @@
           href="{% static 'ecommerce/css/store.css' %}">
 
     <style>
+/* =========================================================
+   إصلاح عرض المتجر على الجوال
+   ========================================================= */
 
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+
+    /* الحاوية الرئيسية */
+    .store-container,
+    .store-page,
+    .store-content,
+    .main-container,
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* أي قسم داخلي */
+    section,
+    .section,
+    .products-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* السلايدر */
+    .products-slider,
+    .product-slider,
+    .products-track {
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* منع العناصر من دفع الصفحة */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
         :root{
 
             --primary-color: {{ store_theme.primary_color|default:"#0d6efd" }};
