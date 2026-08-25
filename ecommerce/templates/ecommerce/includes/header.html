@@ -78,24 +78,25 @@
 
 
 
-<!-- Wishlist -->
+                    <!-- Wishlist -->
 
-<a href="{% url 'ecommerce:wishlist' store.slug %}"
-   class="action-item"
-   title="المفضلة">
-
-
-    <i class="bi bi-heart"></i>
+                    <a href="{% url 'ecommerce:wishlist' store.slug %}"
+                       class="action-item"
+                       title="المفضلة">
 
 
-    <span id="wishlistCount" class="action-count">
-
-        {{ wishlist_count|default:"0" }}
-
-    </span>
+                        <i class="bi bi-heart"></i>
 
 
-</a>
+                        <span id="wishlistCount" class="action-count">
+
+                            {{ wishlist_count|default:"0" }}
+
+                        </span>
+
+
+                    </a>
+
 
 
 
@@ -118,7 +119,7 @@
                     {% else %}
 
 
-                        <a href="{% url 'login' %}"
+                        <a href="/login/"
                            class="action-item"
                            title="تسجيل الدخول">
 
