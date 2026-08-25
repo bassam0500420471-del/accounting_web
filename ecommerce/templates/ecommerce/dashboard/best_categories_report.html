@@ -1,0 +1,810 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+    أفضل التصنيفات مبيعًا
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ==========================================================
+   BEST CATEGORIES REPORT
+   ========================================================== */
+
+.best-categories-page {
+
+    direction: rtl;
+
+    background: #eeeeee;
+
+    min-height: calc(100vh - 80px);
+
+    padding: 30px;
+
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
+}
+
+
+/* ==========================================================
+   MAIN CARD
+   ========================================================== */
+
+.report-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #e9e9e9
+    );
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.11),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.report-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+
+.report-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+
+.report-icon {
+
+    width: 55px;
+
+    height: 55px;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: linear-gradient(
+        145deg,
+        #555,
+        #222
+    );
+
+    color: white;
+
+    font-size: 23px;
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.25);
+}
+
+
+.report-title h1 {
+
+    margin: 0;
+
+    color: #222;
+
+    font-size: 24px;
+
+    font-weight: bold;
+}
+
+
+.report-title p {
+
+    margin: 6px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+.store-badge {
+
+    background: #f5f5f5;
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 12px;
+
+    padding: 11px 18px;
+
+    color: #444;
+
+    font-size: 13px;
+}
+
+
+.store-badge strong {
+
+    color: #222;
+}
+
+
+/* ==========================================================
+   SUMMARY
+   ========================================================== */
+
+.best-summary {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 25px;
+}
+
+
+.best-summary-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #e9e9e9
+    );
+
+    border: 1px solid #d6d6d6;
+
+    border-radius: 16px;
+
+    padding: 20px;
+
+    min-height: 105px;
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+.best-summary-icon {
+
+    width: 43px;
+
+    height: 43px;
+
+    border-radius: 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #333;
+
+    color: white;
+
+    font-size: 19px;
+
+    margin-bottom: 10px;
+}
+
+
+.best-summary-title {
+
+    color: #777;
+
+    font-size: 13px;
+
+    margin-bottom: 5px;
+}
+
+
+.best-summary-value {
+
+    color: #222;
+
+    font-size: 21px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   TABLE CARD
+   ========================================================== */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.report-table {
+
+    width: 100%;
+
+    min-width: 850px;
+
+    border-collapse: collapse;
+}
+
+
+.report-table thead th {
+
+    background: #333;
+
+    color: white;
+
+    padding: 13px 12px;
+
+    font-size: 13px;
+
+    text-align: right;
+
+    white-space: nowrap;
+}
+
+
+.report-table thead th:first-child {
+
+    border-radius: 0 10px 0 0;
+}
+
+
+.report-table thead th:last-child {
+
+    border-radius: 10px 0 0 0;
+}
+
+
+.report-table tbody td {
+
+    padding: 13px 12px;
+
+    border-bottom: 1px solid #ddd;
+
+    color: #444;
+
+    font-size: 13px;
+
+    background: #fafafa;
+}
+
+
+.report-table tbody tr:hover td {
+
+    background: #f0f0f0;
+}
+
+
+/* ==========================================================
+   RANK
+   ========================================================== */
+
+.rank {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 32px;
+
+    height: 32px;
+
+    border-radius: 9px;
+
+    background: #333;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   CATEGORY
+   ========================================================== */
+
+.category-name {
+
+    font-weight: bold;
+
+    color: #222;
+}
+
+
+/* ==========================================================
+   PRODUCTS
+   ========================================================== */
+
+.products-value {
+
+    font-weight: bold;
+
+    color: #555;
+}
+
+
+/* ==========================================================
+   QUANTITY
+   ========================================================== */
+
+.quantity-value {
+
+    font-weight: bold;
+
+    color: #444;
+}
+
+
+/* ==========================================================
+   SALES
+   ========================================================== */
+
+.total-value {
+
+    font-weight: bold;
+
+    color: #222;
+}
+
+
+/* ==========================================================
+   EMPTY
+   ========================================================== */
+
+.empty-row {
+
+    text-align: center !important;
+
+    padding: 55px !important;
+
+    color: #888 !important;
+}
+
+
+.empty-row i {
+
+    display: block;
+
+    font-size: 42px;
+
+    margin-bottom: 12px;
+
+    color: #666;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 1000px) {
+
+    .best-summary {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .best-categories-page {
+
+        padding: 15px;
+    }
+
+
+    .report-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .best-summary {
+
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+
+<div class="best-categories-page">
+
+
+    <!-- ==================================================
+         MAIN CARD
+    ================================================== -->
+
+    <div class="report-card">
+
+
+        <!-- ==================================================
+             HEADER
+        ================================================== -->
+
+        <div class="report-header">
+
+
+            <div class="report-title">
+
+
+                <div class="report-icon">
+
+                    <i class="bi bi-bar-chart-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h1>
+
+                        أفضل التصنيفات مبيعًا
+
+                    </h1>
+
+
+                    <p>
+
+                        تقرير التصنيفات الأكثر تحقيقًا للمبيعات
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            {% if store %}
+
+            <div class="store-badge">
+
+                المتجر:
+
+                <strong>
+
+                    {{ store.name|default:"-" }}
+
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+        <!-- ==================================================
+             SUMMARY
+        ================================================== -->
+
+        <div class="best-summary">
+
+
+            <!-- عدد التصنيفات -->
+
+            <div class="best-summary-card">
+
+                <div class="best-summary-icon">
+
+                    <i class="bi bi-grid-3x3-gap"></i>
+
+                </div>
+
+
+                <div class="best-summary-title">
+
+                    عدد التصنيفات
+
+                </div>
+
+
+                <div class="best-summary-value">
+
+                    {{ total_categories|default:"0" }}
+
+                </div>
+
+            </div>
+
+
+            <!-- الكميات المباعة -->
+
+            <div class="best-summary-card">
+
+                <div class="best-summary-icon">
+
+                    <i class="bi bi-box-seam"></i>
+
+                </div>
+
+
+                <div class="best-summary-title">
+
+                    الكميات المباعة
+
+                </div>
+
+
+                <div class="best-summary-value">
+
+                    {{ total_quantity|default:"0" }}
+
+                </div>
+
+            </div>
+
+
+            <!-- إجمالي المبيعات -->
+
+            <div class="best-summary-card">
+
+                <div class="best-summary-icon">
+
+                    <i class="bi bi-cash-stack"></i>
+
+                </div>
+
+
+                <div class="best-summary-title">
+
+                    إجمالي المبيعات
+
+                </div>
+
+
+                <div class="best-summary-value">
+
+                    {{ total_sales|default:"0" }}
+
+                    ر.س
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ==================================================
+             TABLE
+        ================================================== -->
+
+        <div class="table-wrapper">
+
+
+            <table class="report-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+
+                            الترتيب
+
+                        </th>
+
+
+                        <th>
+
+                            التصنيف
+
+                        </th>
+
+
+                        <th>
+
+                            عدد المنتجات
+
+                        </th>
+
+
+                        <th>
+
+                            الكمية المباعة
+
+                        </th>
+
+
+                        <th>
+
+                            عدد الطلبات
+
+                        </th>
+
+
+                        <th>
+
+                            إجمالي المبيعات
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for category in best_categories %}
+
+
+                    <tr>
+
+
+                        <!-- ==================================================
+                             الترتيب
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="rank">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ==================================================
+                             التصنيف
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="category-name">
+
+                                {{ category.product__category__name|default:"-" }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ==================================================
+                             عدد المنتجات
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="products-value">
+
+                                {{ category.products_count|default:"0" }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ==================================================
+                             الكمية المباعة
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="quantity-value">
+
+                                {{ category.total_quantity|default:"0" }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ==================================================
+                             عدد الطلبات
+                        ================================================== -->
+
+                        <td>
+
+                            {{ category.orders_count|default:"0" }}
+
+                        </td>
+
+
+                        <!-- ==================================================
+                             إجمالي المبيعات
+                        ================================================== -->
+
+                        <td>
+
+                            <span class="total-value">
+
+                                {{ category.total_sales|default:"0" }}
+
+                                ر.س
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% empty %}
+
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="empty-row"
+                        >
+
+                            <i class="bi bi-bar-chart-line"></i>
+
+                            لا توجد بيانات مبيعات للتصنيفات حاليًا.
+
+                        </td>
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}

@@ -233,16 +233,15 @@
 <div class="products-wrapper collapsed-products"
      id="latestProducts">
 
-                {% for product in latest_products %}
+{% for product in new_products %}
 
-                    {% include "ecommerce/includes/product_card.html" %}
+    {% include "ecommerce/includes/product_card.html" with product=product.product %}
 
-                {% empty %}
+{% empty %}
 
-                    <p>لا توجد منتجات.</p>
+    <p>لا توجد منتجات.</p>
 
-                {% endfor %}
-
+{% endfor %}
             </div>
 
 <button class="slider-arrow slider-next"
@@ -296,12 +295,11 @@
 <div class="products-wrapper collapsed-products"
      id="category-{{ category.id }}">
 
-{% for product in category.products %}
+{% for store_product in category.products %}
 
-    {% include "ecommerce/includes/product_card.html" with product=product %}
+    {% include "ecommerce/includes/product_card.html" with product=store_product.product %}
 
 {% empty %}
-
     <p>
         لا توجد منتجات.
     </p>

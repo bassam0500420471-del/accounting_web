@@ -23,7 +23,8 @@
 <div class="store-dashboard-cards">
 
 
-    <a href="#" class="store-card products-card">
+    <a href="{% url 'ecommerce:dashboard_products' store_slug=store.slug %}"
+   class="store-card products-card">
 
         <div class="card-icon">
             📦
@@ -66,7 +67,8 @@
 
 
 
-    <a href="#" class="store-card customers-card">
+    <a href="{% url 'ecommerce:dashboard_customers' store_slug=store.slug %}"
+   class="store-card customers-card">
 
         <div class="card-icon">
             👥
@@ -89,7 +91,8 @@
 
 
 
-    <a href="#" class="store-card reports-card">
+    <a href="{% url 'ecommerce:dashboard_reports' store_slug=store.slug %}"
+   class="store-card reports-card">
 
         <div class="card-icon">
             📊

@@ -1,0 +1,743 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+    المنتجات المميزة
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* ==========================================================
+   اسم المنتج الطويل
+   ========================================================== */
+
+.product-name-wrapper {
+
+    position: relative;
+
+    display: inline-block;
+
+    max-width: 320px;
+
+    vertical-align: middle;
+
+}
+
+
+.product-name {
+
+    display: block;
+
+    max-width: 320px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-weight: bold;
+
+    color: #222;
+
+    cursor: pointer;
+
+}
+
+
+/* ==========================================================
+   الاسم الكامل العائم
+   ========================================================== */
+
+.product-name-tooltip {
+
+    position: absolute;
+
+    right: 0;
+
+    top: calc(100% + 8px);
+
+    z-index: 9999;
+
+    min-width: 220px;
+
+    max-width: 450px;
+
+    padding: 10px 14px;
+
+    background: #222;
+
+    color: #fff;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+
+    white-space: normal;
+
+    word-break: break-word;
+
+    text-align: right;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.25);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translateY(-5px);
+
+    transition:
+        opacity .15s ease,
+        transform .15s ease;
+
+    pointer-events: none;
+
+}
+
+
+/* السهم */
+
+.product-name-tooltip::before {
+
+    content: "";
+
+    position: absolute;
+
+    right: 18px;
+
+    top: -6px;
+
+    width: 12px;
+
+    height: 12px;
+
+    background: #222;
+
+    transform: rotate(45deg);
+
+}
+
+
+/* عند تمرير الماوس */
+
+.product-name-wrapper:hover .product-name-tooltip {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateY(0);
+
+}
+
+
+/* عند الضغط */
+
+.product-name-wrapper.active .product-name-tooltip {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateY(0);
+
+}
+
+
+/* ==========================================================
+   الشاشات الصغيرة
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .product-name-wrapper {
+
+        max-width: 220px;
+
+    }
+
+
+    .product-name {
+
+        max-width: 220px;
+
+    }
+
+
+    .product-name-tooltip {
+
+        max-width: 280px;
+
+    }
+
+}
+.featured-products-page {
+
+    direction: rtl;
+
+    background: #eeeeee;
+
+    min-height: calc(100vh - 80px);
+
+    padding: 30px;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+}
+
+
+.featured-products-header,
+.featured-products-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #e9e9e9
+    );
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.11),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+}
+
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.featured-products-header {
+
+    padding: 28px 32px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.featured-products-header-content {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.featured-products-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.featured-products-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: linear-gradient(
+        145deg,
+        #555,
+        #222
+    );
+
+    color: white;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.25);
+
+}
+
+
+.featured-products-title h1 {
+
+    margin: 0;
+
+    font-size: 25px;
+
+    color: #222;
+
+    font-weight: bold;
+
+}
+
+
+.featured-products-title p {
+
+    margin: 6px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+.store-badge {
+
+    background: #f5f5f5;
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 12px;
+
+    padding: 12px 18px;
+
+    color: #444;
+
+    font-size: 14px;
+
+}
+
+
+.store-badge strong {
+
+    color: #222;
+
+}
+
+
+/* ==========================================================
+   CARD
+   ========================================================== */
+
+.featured-products-card {
+
+    padding: 25px;
+
+}
+
+
+/* ==========================================================
+   TABLE
+   ========================================================== */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+.featured-products-table {
+
+    width: 100%;
+
+    min-width: 850px;
+
+    border-collapse: collapse;
+
+}
+
+
+.featured-products-table thead th {
+
+    background: #333;
+
+    color: white;
+
+    padding: 14px 12px;
+
+    font-size: 13px;
+
+    text-align: right;
+
+    white-space: nowrap;
+
+}
+
+
+.featured-products-table thead th:first-child {
+
+    border-radius: 0 10px 0 0;
+
+}
+
+
+.featured-products-table thead th:last-child {
+
+    border-radius: 10px 0 0 0;
+
+}
+
+
+.featured-products-table tbody td {
+
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #dddddd;
+
+    color: #444;
+
+    font-size: 13px;
+
+    background: #fafafa;
+
+}
+
+
+.featured-products-table tbody tr:hover td {
+
+    background: #f0f0f0;
+
+}
+
+
+/* ==========================================================
+   RANK
+   ========================================================== */
+
+.rank {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 34px;
+
+    height: 34px;
+
+    border-radius: 9px;
+
+    background: linear-gradient(
+        145deg,
+        #555,
+        #222
+    );
+
+    color: white;
+
+    font-weight: bold;
+
+}
+
+
+/* ==========================================================
+   PRODUCT
+   ========================================================== */
+
+.product-name {
+
+    font-weight: bold;
+
+    color: #222;
+
+}
+
+
+.featured-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 5px 10px;
+
+    border-radius: 8px;
+
+    background: #e5e5e5;
+
+    color: #333;
+
+    font-size: 11px;
+
+}
+
+
+/* ==========================================================
+   EMPTY
+   ========================================================== */
+
+.empty-row {
+
+    text-align: center !important;
+
+    padding: 55px !important;
+
+    color: #888 !important;
+
+}
+
+
+.empty-row i {
+
+    display: block;
+
+    font-size: 42px;
+
+    margin-bottom: 12px;
+
+    color: #666;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .featured-products-page {
+
+        padding: 15px;
+
+    }
+
+
+    .featured-products-header-content {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+}
+
+</style>
+
+
+<div class="featured-products-page">
+
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <div class="featured-products-header">
+
+        <div class="featured-products-header-content">
+
+
+            <div class="featured-products-title">
+
+
+                <div class="featured-products-icon">
+
+                    <i class="bi bi-star-fill"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h1>
+                        المنتجات المميزة
+                    </h1>
+
+                    <p>
+                        تقرير المنتجات المميزة في المتجر الإلكتروني
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="store-badge">
+
+                المتجر:
+
+                <strong>
+                    {{ store.name }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         TABLE
+         ================================================== -->
+
+    <div class="featured-products-card">
+
+
+        <div class="table-wrapper">
+
+
+            <table class="featured-products-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            الترتيب
+                        </th>
+
+                        <th>
+                            المنتج
+                        </th>
+
+                        <th>
+                            السعر
+                        </th>
+
+                        <th>
+                            الكمية المتاحة
+                        </th>
+
+                        <th>
+                            الحالة
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for product in products %}
+
+                    <tr>
+
+
+                        <td>
+
+                            <span class="rank">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+<td>
+
+    <div
+        class="product-name-wrapper"
+        onclick="this.classList.toggle('active')"
+    >
+
+        <span class="product-name">
+
+            {{ product.product.name|default:"-" }}
+
+        </span>
+
+
+        <div class="product-name-tooltip">
+
+            {{ product.product.name|default:"-" }}
+
+        </div>
+
+    </div>
+
+</td>
+                        <td>
+
+                            {{ product.product.sale_price|default:"0" }}
+
+
+                            ر.س
+
+                        </td>
+
+
+                        <td>
+
+                            {{ product.product.current_stock|default:"0" }}
+
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="featured-badge">
+
+                                <i class="bi bi-star-fill"></i>
+
+                                منتج مميز
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+                    {% empty %}
+
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty-row"
+                        >
+
+                            <i class="bi bi-star"></i>
+
+                            لا توجد منتجات مميزة لعرضها حاليًا.
+
+                        </td>
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,827 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+    تقرير المنتجات التي عليها عروض
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ==========================================================
+   OFFER PRODUCTS PAGE
+   ========================================================== */
+
+.offer-products-page {
+
+    direction: rtl;
+
+    background: #eeeeee;
+
+    min-height: calc(100vh - 80px);
+
+    padding: 30px;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+}
+
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.offer-products-header,
+.offer-products-card {
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #e9e9e9
+    );
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.11),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+}
+
+
+.offer-products-header {
+
+    padding: 28px 32px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.offer-products-header-content {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.offer-products-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+
+.offer-products-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: linear-gradient(
+        145deg,
+        #555,
+        #222
+    );
+
+    color: white;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 6px 12px rgba(0,0,0,.25);
+
+}
+
+
+.offer-products-title h1 {
+
+    margin: 0;
+
+    font-size: 25px;
+
+    color: #222;
+
+    font-weight: bold;
+
+}
+
+
+.offer-products-title p {
+
+    margin: 6px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+.store-badge {
+
+    background: #f5f5f5;
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 12px;
+
+    padding: 12px 18px;
+
+    color: #444;
+
+    font-size: 14px;
+
+}
+
+
+.store-badge strong {
+
+    color: #222;
+
+}
+
+
+/* ==========================================================
+   CARD
+   ========================================================== */
+
+.offer-products-card {
+
+    padding: 25px;
+
+}
+
+
+/* ==========================================================
+   TABLE WRAPPER
+   ========================================================== */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+}
+
+
+/* ==========================================================
+   TABLE
+   ========================================================== */
+
+.offer-products-table {
+
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+
+}
+
+
+.offer-products-table thead th {
+
+    background: #333;
+
+    color: white;
+
+    padding: 14px 12px;
+
+    font-size: 13px;
+
+    text-align: right;
+
+    white-space: nowrap;
+
+}
+
+
+.offer-products-table thead th:first-child {
+
+    border-radius: 0 10px 0 0;
+
+}
+
+
+.offer-products-table thead th:last-child {
+
+    border-radius: 10px 0 0 0;
+
+}
+
+
+.offer-products-table tbody td {
+
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #dddddd;
+
+    color: #444;
+
+    font-size: 13px;
+
+    background: #fafafa;
+
+    vertical-align: middle;
+
+}
+
+
+.offer-products-table tbody tr:hover td {
+
+    background: #f0f0f0;
+
+}
+
+
+/* ==========================================================
+   RANK
+   ========================================================== */
+
+.rank {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 34px;
+
+    height: 34px;
+
+    border-radius: 9px;
+
+    background: linear-gradient(
+        145deg,
+        #555,
+        #222
+    );
+
+    color: white;
+
+    font-weight: bold;
+
+}
+
+
+/* ==========================================================
+   PRODUCT NAME
+   ========================================================== */
+
+.product-name-tooltip {
+
+    position: relative;
+
+    display: inline-block;
+
+    max-width: 320px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    vertical-align: middle;
+
+    font-weight: bold;
+
+    color: #222;
+
+    cursor: help;
+
+}
+
+
+/* ==========================================================
+   TOOLTIP
+   ========================================================== */
+
+.product-name-tooltip::after {
+
+    content: attr(data-tooltip);
+
+    position: absolute;
+
+    right: 0;
+
+    top: calc(100% + 8px);
+
+    background: #222;
+
+    color: #fff;
+
+    padding: 9px 13px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: normal;
+
+    white-space: normal;
+
+    width: max-content;
+
+    max-width: 420px;
+
+    line-height: 1.8;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    z-index: 99999;
+
+    box-shadow:
+        0 6px 15px rgba(0,0,0,.25);
+
+    transition:
+        opacity .15s ease,
+        visibility .15s ease;
+
+}
+
+
+/* ==========================================================
+   SHOW TOOLTIP
+   ========================================================== */
+
+.product-name-tooltip:hover::after {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+
+/* ==========================================================
+   PRICE
+   ========================================================== */
+
+.price {
+
+    font-weight: bold;
+
+    color: #222;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   OLD PRICE
+   ========================================================== */
+
+.old-price {
+
+    color: #888;
+
+    text-decoration: line-through;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   OFFER PRICE
+   ========================================================== */
+
+.offer-price {
+
+    font-weight: bold;
+
+    color: #222;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   DISCOUNT
+   ========================================================== */
+
+.discount-value {
+
+    font-weight: bold;
+
+    color: #333;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   OFFER BADGE
+   ========================================================== */
+
+.offer-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 6px 11px;
+
+    border-radius: 8px;
+
+    background: #e5e5e5;
+
+    color: #333;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   EMPTY
+   ========================================================== */
+
+.empty-row {
+
+    text-align: center !important;
+
+    padding: 55px !important;
+
+    color: #888 !important;
+
+}
+
+
+.empty-row i {
+
+    display: block;
+
+    font-size: 42px;
+
+    margin-bottom: 12px;
+
+    color: #666;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .offer-products-page {
+
+        padding: 15px;
+
+    }
+
+
+    .offer-products-header-content {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+
+    .product-name-tooltip {
+
+        max-width: 220px;
+
+    }
+
+}
+
+</style>
+
+
+<div class="offer-products-page">
+
+
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+
+    <div class="offer-products-header">
+
+        <div class="offer-products-header-content">
+
+
+            <!-- العنوان -->
+
+            <div class="offer-products-title">
+
+
+                <div class="offer-products-icon">
+
+                    <i class="bi bi-tags"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h1>
+
+                        المنتجات التي عليها عروض
+
+                    </h1>
+
+
+                    <p>
+
+                        تقرير المنتجات المخفضة والعروض الحالية
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- المتجر -->
+
+            {% if store %}
+
+            <div class="store-badge">
+
+                المتجر:
+
+                <strong>
+
+                    {{ store.name }}
+
+                </strong>
+
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         TABLE CARD
+    ================================================== -->
+
+    <div class="offer-products-card">
+
+
+        <div class="table-wrapper">
+
+
+            <table class="offer-products-table">
+
+
+                <!-- ==================================================
+                     TABLE HEADER
+                ================================================== -->
+
+                <thead>
+
+                    <tr>
+
+
+                        <th>
+
+                            الترتيب
+
+                        </th>
+
+
+                        <th>
+
+                            المنتج
+
+                        </th>
+
+
+                        <th>
+
+                            السعر الأصلي
+
+                        </th>
+
+
+                        <th>
+
+                            سعر العرض
+
+                        </th>
+
+
+                        <th>
+
+                            الخصم
+
+                        </th>
+
+
+                        <th>
+
+                            الحالة
+
+                        </th>
+
+
+                    </tr>
+
+                </thead>
+
+
+                <!-- ==================================================
+                     TABLE BODY
+                ================================================== -->
+
+                <tbody>
+
+
+                    {% for store_product in offer_products %}
+
+
+                    <tr>
+
+
+                        <!-- الترتيب -->
+
+                        <td>
+
+                            <span class="rank">
+
+                                {{ forloop.counter }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- المنتج -->
+
+                        <td>
+
+
+                            <span
+                                class="product-name-tooltip"
+                                data-tooltip="{{ store_product.product.name|default:'-' }}"
+                                title="{{ store_product.product.name|default:'-' }}"
+                            >
+
+                                {{ store_product.product.name|default:"-"|truncatechars:35 }}
+
+                            </span>
+
+
+                        </td>
+
+
+                        <!-- السعر الأصلي -->
+
+                        <td>
+
+                            <span class="old-price">
+
+                                {{ store_product.product.sale_price|default:"0" }}
+
+                                ر.س
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- سعر العرض -->
+
+                        <td>
+
+                            <span class="offer-price">
+
+                                {{ store_product.offer_price|default:"0" }}
+
+                                ر.س
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- الخصم -->
+
+                        <td>
+
+                            {% if store_product.discount_percentage %}
+
+                                <span class="discount-value">
+
+                                    {{ store_product.discount_percentage }} %
+
+                                </span>
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- الحالة -->
+
+                        <td>
+
+                            <span class="offer-badge">
+
+                                <i class="bi bi-percent"></i>
+
+                                عرض
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% empty %}
+
+
+                    <tr>
+
+
+                        <td
+                            colspan="6"
+                            class="empty-row"
+                        >
+
+                            <i class="bi bi-tags"></i>
+
+                            لا توجد منتجات عليها عروض حاليًا.
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

@@ -853,27 +853,53 @@ def add_leave(request):
 @hr_permission_required("leaves_approve")
 def approve_leave(request, leave_id):
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    leave = get_object_or_404(Leave, company=company, id=leave_id)
+    if (
+        not request.user.is_superuser
+        or not hasattr(request.user, "profile")
+        or request.user.profile.company_id != company.id
+    ):
+        return HttpResponseForbidden("غير مصرح لك بالموافقة.")
+
+    leave = get_object_or_404(
+        Leave,
+        company=company,
+        id=leave_id
+    )
+
     leave.status = "approved"
     leave.save()
-    return redirect("hr:leaves")
 
+    return redirect("hr:leaves")
 
 @login_required
 @hr_permission_required("leaves_reject")
 def reject_leave(request, leave_id):
+
+    # =========================================
+    # Admin فقط
+    # =========================================
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("غير مصرح لك برفض طلبات الإجازات.")
+
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    leave = get_object_or_404(Leave, company=company, id=leave_id)
-    leave.status = "rejected"
-    leave.save()
-    return redirect("hr:leaves")
+    leave = get_object_or_404(
+        Leave,
+        company=company,
+        id=leave_id
+    )
 
+    leave.status = "rejected"
+    leave.save(update_fields=["status"])
+
+    return redirect("hr:leaves")
 
 # ==========================
 # إدارة الأقسام

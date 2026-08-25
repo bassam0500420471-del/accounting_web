@@ -6,6 +6,8 @@ from django.http import JsonResponse
 
 from ecommerce.models import (
     Store,
+    StoreProduct,
+    StoreCategory,
     Wishlist,
     Cart,
     CartItem,
@@ -14,7 +16,6 @@ from ecommerce.models import (
     PaymentMethod,
     StoreNotification,
 )
-
 from products.models import Category, Product
 
 
@@ -37,6 +38,14 @@ def get_store(store_slug):
 # الصفحة الرئيسية
 # =====================================================
 
+# =====================================================
+# الصفحة الرئيسية
+# =====================================================
+
+# =====================================================
+# الصفحة الرئيسية
+# =====================================================
+
 def home(request, store_slug):
 
     store = get_store(store_slug)
@@ -44,66 +53,237 @@ def home(request, store_slug):
     company = store.company
 
 
-    products = Product.objects.filter(
-        company=company,
-        active=True
+    # =================================================
+    # منتجات المتجر الظاهرة
+    # =================================================
+
+    store_products = (
+        StoreProduct.objects
+        .filter(
+            store=store,
+            product__company=company,
+            product__active=True,
+            is_visible=True,
+        )
+        .select_related("product")
+        .order_by("sort_order", "id")
     )
 
 
-    categories = Category.objects.filter(
-        company=company
-    ).order_by("name")
+    # =================================================
+    # المنتجات الأساسية
+    # =================================================
 
+    product_ids = store_products.values_list(
+        "product_id",
+        flat=True,
+    )
+
+    products = Product.objects.filter(
+        id__in=product_ids,
+        company=company,
+        active=True,
+    )
+
+
+    # =================================================
+    # التصنيفات الظاهرة
+    # =================================================
+
+    visible_category_ids = (
+        StoreCategory.objects
+        .filter(
+            store=store,
+            category__company=company,
+            is_visible=True,
+        )
+        .values_list(
+            "category_id",
+            flat=True,
+        )
+    )
+
+
+    categories = (
+        Category.objects
+        .filter(
+            id__in=visible_category_ids,
+            company=company,
+        )
+        .order_by("name")
+    )
+
+
+    # =================================================
+    # المنتجات المميزة
+    # =================================================
+
+    featured_ids = (
+        StoreProduct.objects
+        .filter(
+            store=store,
+            product__company=company,
+            product__active=True,
+            is_visible=True,
+            is_featured=True,
+        )
+        .order_by(
+            "featured_order",
+            "id",
+        )
+        .values_list(
+            "product_id",
+            flat=True,
+        )[:8]
+    )
+
+
+    featured_products = Product.objects.filter(
+        id__in=featured_ids,
+        company=company,
+        active=True,
+    )
+
+
+    # =================================================
+    # العروض
+    # =================================================
+
+    offer_ids = (
+        StoreProduct.objects
+        .filter(
+            store=store,
+            product__company=company,
+            product__active=True,
+            is_visible=True,
+            is_offer=True,
+        )
+        .order_by(
+            "offer_order",
+            "id",
+        )
+        .values_list(
+            "product_id",
+            flat=True,
+        )[:8]
+    )
+
+
+    offer_products = Product.objects.filter(
+        id__in=offer_ids,
+        company=company,
+        active=True,
+    )
+
+
+    # =================================================
+    # وصل حديثًا
+    # =================================================
+
+    new_products = (
+        StoreProduct.objects
+        .filter(
+            store=store,
+            product__company=company,
+            product__active=True,
+            is_visible=True,
+            is_new=True,
+        )
+        .select_related(
+            "product",
+            "product__category",
+        )
+        .order_by(
+            "new_order",
+            "id",
+        )[:8]
+    )
+
+
+    # =================================================
+    # أحدث المنتجات
+    # =================================================
+
+    latest_products = products.order_by(
+        "-id"
+    )[:8]
+
+    # =================================================
+    # أفضل المنتجات
+    # =================================================
+
+    best_products = products.order_by(
+        "-current_stock"
+    )[:8]
+
+
+    # =================================================
+    # أقسام التصنيفات
+    # =================================================
 
     category_sections = []
 
 
     for category in categories:
 
-        category_products = Product.objects.filter(
-            company=company,
-            category=category,
-            active=True
-        ).order_by("-id")[:8]
+        category_products = (
+            StoreProduct.objects
+            .filter(
+                store=store,
+                product__company=company,
+                product__active=True,
+                is_visible=True,
+                product__category=category,
+            )
+            .select_related(
+                "product",
+                "product__category",
+            )
+            .order_by(
+                "sort_order",
+                "id",
+            )
+        )
 
 
         if category_products.exists():
 
             category_sections.append({
+              "id": category.id,
 
                 "name": category.name,
+
                 "slug": category.slug,
+
                 "products": category_products,
 
             })
 
-
+    # =================================================
+    # عرض الصفحة
+    # =================================================
 
     return render(
         request,
         "ecommerce/home.html",
         {
-
             "store": store,
 
             "store_categories": categories,
 
-            "featured_products":
-                products.order_by("-created_at")[:8],
+            "featured_products": featured_products,
 
-            "latest_products":
-                products.order_by("-id")[:8],
+            "offer_products": offer_products,
 
-            "best_products":
-                products.order_by("-current_stock")[:8],
+            "latest_products": latest_products,
 
-            "category_sections":
-                category_sections,
+            "new_products": new_products,
 
+            "best_products": best_products,
+
+            "category_sections": category_sections,
         }
     )
-
-
 
 # =====================================================
 # المنتجات
@@ -191,6 +371,7 @@ def product_detail(request, store_slug, product_slug):
         }
 
     )
+
 # =====================================================
 # التصنيف
 # =====================================================
@@ -199,49 +380,41 @@ def category(request, store_slug, category_slug):
 
     store = get_store(store_slug)
 
-
-    category = get_object_or_404(
-
-        Category,
-
-        company=store.company,
-
-        slug=category_slug
-
+    store_category = get_object_or_404(
+        StoreCategory,
+        store=store,
+        category__company=store.company,
+        category__slug=category_slug,
+        is_visible=True,
     )
 
-
-    products = Product.objects.filter(
-
-        company=store.company,
-
-        category=category,
-
-        active=True
-
+    products = (
+        StoreProduct.objects
+        .filter(
+            store=store,
+            product__company=store.company,
+            product__category=store_category.category,
+            product__active=True,
+            is_visible=True,
+        )
+        .select_related("product")
+        .order_by("sort_order", "id")
     )
-
 
     return render(
-
         request,
-
         "ecommerce/category.html",
-
         {
-
             "store": store,
-
-            "category": category,
-
+            "category": store_category.category,
             "products": products,
-
         }
-
     )
 
 
-
+# =====================================================
+# عداد السلة
+# =====================================================
 # =====================================================
 # السلة
 # =====================================================
@@ -250,79 +423,41 @@ def cart(request, store_slug):
 
     store = get_store(store_slug)
 
-
     cart = None
-
     items = []
-
     total = 0
-
-
 
     if request.user.is_authenticated:
 
-
         cart = Cart.objects.filter(
-
             customer=request.user,
-
             store=store
-
         ).first()
-
-
 
         if cart:
 
-
             items = cart.items.select_related(
-
                 "product"
-
             ).all()
-
-
 
             for item in items:
 
                 total += item.subtotal()
 
-
-
     shipping_cost = 15 if 0 < total < 100 else 0
 
-
-
     return render(
-
         request,
-
         "ecommerce/cart.html",
-
         {
-
             "store": store,
-
             "cart": cart,
-
             "items": items,
-
             "total": total,
-
             "shipping_cost": shipping_cost,
-
             "final_total": total + shipping_cost,
-
         }
-
     )
-
-
-
-# =====================================================
-# عداد السلة
-# =====================================================
-
 def cart_count(request, store_slug):
 
     store = get_store(store_slug)

@@ -806,54 +806,51 @@ body {
                         </td>
 
 
-                        <!-- الإجراءات -->
+<!-- الإجراءات -->
 
-                        <td>
+<td>
 
-                            {% if leave.status == 'pending' %}
+    {% if leave.status == 'pending' %}
 
-                            <div class="leave-actions">
+        {% if user.is_superuser %}
 
+            <div class="leave-actions">
 
-                                <a
-                                    href="{% url 'hr:approve_leave' leave.id %}"
-                                    class="hr-action approve-action"
-                                >
+                <a
+                    href="{% url 'hr:approve_leave' leave.id %}"
+                    class="hr-action approve-action"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    {% trans "Approve" %}
+                </a>
 
-                                    <i class="fa-solid fa-check"></i>
+                <a
+                    href="{% url 'hr:reject_leave' leave.id %}"
+                    class="hr-action reject-action"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                    {% trans "Reject" %}
+                </a>
 
-                                    {% trans "Approve" %}
+            </div>
 
-                                </a>
+        {% else %}
 
+            <span class="text-muted">
+                {% trans "Waiting for admin approval" %}
+            </span>
 
-                                <a
-                                    href="{% url 'hr:reject_leave' leave.id %}"
-                                    class="hr-action reject-action"
-                                >
+        {% endif %}
 
-                                    <i class="fa-solid fa-xmark"></i>
+    {% else %}
 
-                                    {% trans "Reject" %}
+        <span class="text-muted">
+            —
+        </span>
 
-                                </a>
+    {% endif %}
 
-
-                            </div>
-
-
-                            {% else %}
-
-                            <span class="text-muted">
-
-                                —
-
-                            </span>
-
-                            {% endif %}
-
-                        </td>
-
+</td>
 
                     </tr>
 

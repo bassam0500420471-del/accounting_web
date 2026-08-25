@@ -1,0 +1,513 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+    العملاء
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* ==========================================================
+       الصفحة
+       ========================================================== */
+
+    .customers-page {
+
+        direction: rtl;
+
+        background: #eeeeee;
+
+        min-height: calc(100vh - 80px);
+
+        padding: 30px;
+
+        font-family: Tahoma, Arial, sans-serif;
+
+    }
+
+
+    /* ==========================================================
+       البطاقة الرئيسية
+       ========================================================== */
+
+    .customers-card {
+
+        background: #ffffff;
+
+        border-radius: 18px;
+
+        padding: 25px;
+
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.08);
+
+    }
+
+
+    /* ==========================================================
+       الرأس
+       ========================================================== */
+
+    .customers-header {
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 25px;
+
+        gap: 15px;
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .customers-title {
+
+        margin: 0;
+
+        font-size: 26px;
+
+        font-weight: bold;
+
+        color: #222222;
+
+    }
+
+
+    .customers-count {
+
+        background: #f1f1f1;
+
+        border-radius: 10px;
+
+        padding: 10px 16px;
+
+        color: #555555;
+
+        font-size: 14px;
+
+    }
+
+
+    /* ==========================================================
+       الجدول
+       ========================================================== */
+
+    .customers-table-wrapper {
+
+        width: 100%;
+
+        overflow-x: auto;
+
+    }
+
+
+    .customers-table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        min-width: 850px;
+
+    }
+
+
+    .customers-table th {
+
+        background: #f5f5f5;
+
+        color: #333333;
+
+        font-weight: bold;
+
+        padding: 15px;
+
+        text-align: right;
+
+        border-bottom: 2px solid #dddddd;
+
+        white-space: nowrap;
+
+    }
+
+
+    .customers-table td {
+
+        padding: 15px;
+
+        border-bottom: 1px solid #eeeeee;
+
+        color: #444444;
+
+        vertical-align: middle;
+
+    }
+
+
+    .customers-table tbody tr {
+
+        transition: 0.2s;
+
+    }
+
+
+    .customers-table tbody tr:hover {
+
+        background: #fafafa;
+
+    }
+
+
+    /* ==========================================================
+       اسم العميل
+       ========================================================== */
+
+    .customer-name {
+
+        font-weight: bold;
+
+        color: #222222;
+
+    }
+
+
+    .customer-username {
+
+        display: block;
+
+        margin-top: 4px;
+
+        font-size: 12px;
+
+        color: #888888;
+
+    }
+
+
+    /* ==========================================================
+       البريد
+       ========================================================== */
+
+    .customer-email {
+
+        direction: ltr;
+
+        text-align: right;
+
+    }
+
+
+    /* ==========================================================
+       الإحصائيات
+       ========================================================== */
+
+    .orders-count {
+
+        font-weight: bold;
+
+        color: #333333;
+
+    }
+
+
+    .total-spent {
+
+        font-weight: bold;
+
+        color: #16803c;
+
+    }
+
+
+    /* ==========================================================
+       لا يوجد عملاء
+       ========================================================== */
+
+    .empty-customers {
+
+        text-align: center;
+
+        padding: 60px 20px;
+
+        color: #777777;
+
+    }
+
+
+    .empty-customers-icon {
+
+        font-size: 45px;
+
+        margin-bottom: 15px;
+
+    }
+
+
+    .empty-customers-title {
+
+        font-size: 20px;
+
+        font-weight: bold;
+
+        margin-bottom: 8px;
+
+        color: #444444;
+
+    }
+
+
+    .empty-customers-text {
+
+        font-size: 14px;
+
+        color: #888888;
+
+    }
+
+
+    /* ==========================================================
+       الهاتف
+       ========================================================== */
+
+    @media (max-width: 768px) {
+
+        .customers-page {
+
+            padding: 15px;
+
+        }
+
+        .customers-card {
+
+            padding: 15px;
+
+        }
+
+        .customers-title {
+
+            font-size: 22px;
+
+        }
+
+    }
+
+</style>
+
+
+<div class="customers-page">
+
+    <div class="customers-card">
+
+        <!-- =====================================================
+             رأس الصفحة
+             ===================================================== -->
+
+        <div class="customers-header">
+
+            <h1 class="customers-title">
+
+                👥 العملاء
+
+            </h1>
+
+            <div class="customers-count">
+
+                إجمالي العملاء:
+                {{ customers|length }}
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             العملاء
+             ===================================================== -->
+
+        {% if customers %}
+
+            <div class="customers-table-wrapper">
+
+                <table class="customers-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                العميل
+                            </th>
+
+                            <th>
+                                البريد الإلكتروني
+                            </th>
+
+                            <th>
+                                عدد الطلبات
+                            </th>
+
+                            <th>
+                                إجمالي المشتريات
+                            </th>
+
+                            <th>
+                                آخر طلب
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for customer in customers %}
+
+                            <tr>
+
+                                <td>
+
+                                    {{ forloop.counter }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="customer-name">
+
+                                        {% if customer.customer__first_name or customer.customer__last_name %}
+
+                                            {{ customer.customer__first_name }}
+
+                                            {{ customer.customer__last_name }}
+
+                                        {% else %}
+
+                                            {{ customer.customer__username }}
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <span class="customer-username">
+
+                                        @{{ customer.customer__username }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="customer-email">
+
+                                        {% if customer.customer__email %}
+
+                                            {{ customer.customer__email }}
+
+                                        {% else %}
+
+                                            لا يوجد بريد
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="orders-count">
+
+                                        {{ customer.orders_count }}
+
+                                    </span>
+
+                                    طلب
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="total-spent">
+
+                                        {{ customer.total_spent|default:"0.00" }}
+
+                                    </span>
+
+                                    ريال
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if customer.last_order %}
+
+                                        {{ customer.last_order|date:"Y-m-d H:i" }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-customers">
+
+                <div class="empty-customers-icon">
+
+                    👥
+
+                </div>
+
+                <div class="empty-customers-title">
+
+                    لا يوجد عملاء
+
+                </div>
+
+                <div class="empty-customers-text">
+
+                    لا توجد طلبات مرتبطة بعملاء في هذا المتجر حتى الآن.
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
