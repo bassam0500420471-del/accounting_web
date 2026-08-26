@@ -2,89 +2,846 @@
 
 
 {% block title %}
-طلباتي
+    طلباتي
 {% endblock %}
-
 
 
 {% block content %}
 
-<div class="container py-5">
+<style>
+
+/* ==========================================================
+   MY ORDERS
+   3D MODERN DESIGN
+   ========================================================== */
+
+.account-page {
+
+    direction: rtl;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee 0%,
+            #dcdcdc 50%,
+            #f7f7f7 100%
+        );
+
+    min-height: calc(100vh - 80px);
+
+    font-family: Tahoma, Arial, sans-serif;
+}
 
 
-<h3 class="mb-4">
-🛒 طلباتي
-</h3>
+/* ==========================================================
+   MAIN CONTAINER
+   ========================================================== */
+
+.account-page .container {
+
+    max-width: 1200px;
+}
+
+
+/* ==========================================================
+   PAGE HEADER
+   ========================================================== */
+
+.orders-header {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 20px;
+
+    padding: 25px 28px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        5px 7px 16px rgba(0,0,0,0.10),
+        -4px -4px 10px rgba(255,255,255,0.9);
+}
+
+
+.orders-header h2 {
+
+    margin: 0 0 8px;
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    color: #222;
+
+    text-shadow:
+        1px 1px 0 #ffffff,
+        2px 2px 3px rgba(0,0,0,0.08);
+}
+
+
+.orders-header p {
+
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   ORDERS LIST
+   ========================================================== */
+
+.orders-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+/* ==========================================================
+   ORDER CARD
+   ========================================================== */
+
+.order-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        5px 8px 20px rgba(0,0,0,0.12),
+        -4px -4px 10px rgba(255,255,255,0.85);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.order-card:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        7px 11px 24px rgba(0,0,0,0.16),
+        -4px -4px 10px rgba(255,255,255,0.9);
+}
+
+
+/* ==========================================================
+   ORDER HEADER
+   ========================================================== */
+
+.order-card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid #dddddd;
+}
+
+
+.order-number-box {
+
+    display: inline-block;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e8e8e8
+        );
+
+    padding: 9px 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid #d8d8d8;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,0.09);
+
+    color: #222;
+
+    font-size: 15px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   ORDER DATE
+   ========================================================== */
+
+.order-date {
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================================
+   ORDER INFORMATION
+   ========================================================== */
+
+.order-info {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-top: 18px;
+}
+
+
+/* ==========================================================
+   INFO BOX
+   ========================================================== */
+
+.order-info-box {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #dddddd;
+
+    border-radius: 13px;
+
+    padding: 14px;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.04),
+        inset -2px -2px 5px rgba(255,255,255,0.9),
+        2px 3px 7px rgba(0,0,0,0.06);
+}
+
+
+.order-info-label {
+
+    display: block;
+
+    color: #888;
+
+    font-size: 12px;
+
+    margin-bottom: 6px;
+}
+
+
+.order-info-value {
+
+    color: #222;
+
+    font-size: 15px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   STATUS
+   ========================================================== */
+
+.order-status {
+
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border: 1px solid #d8d8d8;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.08);
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   PAYMENT STATUS
+   ========================================================== */
+
+.order-payment-status {
+
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #d8d8d8;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.08);
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   TOTAL
+   ========================================================== */
+
+.order-total {
+
+    color: #222;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   PRODUCTS SECTION
+   ========================================================== */
+
+.order-products {
+
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #dddddd;
+}
+
+
+.order-products-title {
+
+    margin-bottom: 12px;
+
+    color: #333;
+
+    font-size: 15px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   PRODUCT ITEM
+   ========================================================== */
+
+.order-product {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f1f1f1
+        );
+
+    border: 1px solid #dddddd;
+
+    border-radius: 12px;
+
+    padding: 12px 15px;
+
+    margin-bottom: 8px;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,0.06),
+        inset -2px -2px 5px rgba(255,255,255,0.8);
+}
+
+
+.order-product:last-child {
+
+    margin-bottom: 0;
+}
+
+
+.product-name {
+
+    color: #333;
+
+    font-size: 14px;
+
+    font-weight: bold;
+}
+
+
+.product-quantity {
+
+    display: inline-block;
+
+    min-width: 40px;
+
+    text-align: center;
+
+    padding: 5px 9px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #ffffff
+        );
+
+    border: 1px solid #d5d5d5;
+
+    box-shadow:
+        1px 2px 5px rgba(0,0,0,0.07);
+
+    color: #444;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   ORDER ACTIONS
+   ========================================================== */
+
+.order-actions {
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #dddddd;
+}
+
+
+.order-view-btn {
+
+    display: inline-block;
+
+    padding: 9px 16px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    border: none;
+
+    box-shadow:
+        3px 4px 8px rgba(0,0,0,0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.order-view-btn:hover {
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        4px 7px 12px rgba(0,0,0,0.27);
+}
+
+
+.order-view-btn:active {
+
+    transform: translateY(1px);
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.20);
+}
+
+
+/* ==========================================================
+   EMPTY
+   ========================================================== */
+
+.orders-empty {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        4px 6px 14px rgba(0,0,0,0.10),
+        -3px -3px 8px rgba(255,255,255,0.9);
+
+    color: #777;
+
+    font-size: 15px;
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 767px) {
+
+    .account-page {
+
+        padding-top: 25px !important;
+
+        padding-bottom: 25px !important;
+    }
+
+
+    .orders-header {
+
+        padding: 20px;
+
+        border-radius: 16px;
+    }
+
+
+    .orders-header h2 {
+
+        font-size: 22px;
+    }
+
+
+    .order-card {
+
+        padding: 15px;
+
+        border-radius: 16px;
+    }
+
+
+    .order-card-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .order-info {
+
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+
+    .order-product {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .product-quantity {
+
+        align-self: flex-start;
+    }
+
+
+    .order-total {
+
+        font-size: 17px;
+    }
+
+
+    .order-view-btn {
+
+        width: 100%;
+
+        text-align: center;
+
+        padding: 10px 12px;
+    }
+
+}
+
+</style>
+
+
+<section class="account-page py-5">
+
+    <div class="container">
+
+
+        <!-- =====================================================
+             العنوان
+        ====================================================== -->
+
+        <div class="orders-header">
+
+            <h2>
+                🛒 طلباتي
+            </h2>
+
+            <p>
+                جميع طلباتك ومعلوماتها في هذا المتجر
+            </p>
+
+        </div>
+
+
+        <!-- =====================================================
+             الطلبات
+        ====================================================== -->
+
+        {% if orders %}
+
+            <div class="orders-list">
+
+
+                {% for order in orders %}
+
+                    <div class="order-card">
+
+
+                        <!-- =================================================
+                             رأس الطلب
+                        ================================================== -->
+
+                        <div class="order-card-header">
+
+
+                            <div>
+
+                                <span class="order-number-box">
+
+                                    🛒 رقم الطلب:
+                                    {{ order.order_no }}
+
+                                </span>
+
+                            </div>
+
+
+                            {% if order.created_at %}
+
+                                <div class="order-date">
+
+                                    {{ order.created_at|date:"Y-m-d H:i" }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                        <!-- =================================================
+                             معلومات الطلب
+                        ================================================== -->
+
+                        <div class="order-info">
+
+
+                            <div class="order-info-box">
+
+                                <span class="order-info-label">
+                                    حالة الطلب
+                                </span>
+
+                                <span class="order-status">
+
+                                    {{ order.get_status_display }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="order-info-box">
+
+                                <span class="order-info-label">
+                                    حالة الدفع
+                                </span>
+
+                                <span class="order-payment-status">
+
+                                    {{ order.get_payment_status_display }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="order-info-box">
+
+                                <span class="order-info-label">
+                                    الإجمالي
+                                </span>
+
+                                <span class="order-total">
+
+                                    {{ order.total }} ر.س
+
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- =================================================
+                             المنتجات
+                        ================================================== -->
+
+                        <div class="order-products">
+
+
+                            <div class="order-products-title">
+
+                                🛍️ المنتجات
+
+                            </div>
+
+
+                            {% for item in order.items.all %}
+
+                                <div class="order-product">
+
+
+                                    <span class="product-name">
+
+                                        {{ item.product.name }}
+
+                                    </span>
+
+
+                                    <span class="product-quantity">
+
+                                        × {{ item.quantity }}
+
+                                    </span>
+
+
+                                </div>
+
+                            {% endfor %}
+
+
+                        </div>
 
 
 
-{% for order in orders %}
+
+                    </div>
+
+                {% endfor %}
 
 
-<div class="card shadow-sm mb-3">
+            </div>
 
 
-<div class="card-body">
+        {% else %}
 
 
-<h5>
-رقم الطلب:
-{{ order.order_no }}
-</h5>
+            <!-- =====================================================
+                 لا توجد طلبات
+            ====================================================== -->
+
+            <div class="orders-empty">
+
+                🛒 لا توجد طلبات حالياً.
+
+            </div>
 
 
-<p>
-الحالة:
-{{ order.get_status_display }}
-</p>
-
-<p>
-حالة الدفع:
-{{ order.get_payment_status_display }}
-</p>
-
-<p>
-الإجمالي:
-{{ order.total }} ر.س
-</p>
+        {% endif %}
 
 
-<hr>
+    </div>
 
-
-{% for item in order.items.all %}
-
-<div>
-{{ item.product.name }}
-×
-{{ item.quantity }}
-</div>
-
-
-{% endfor %}
-
-
-</div>
-
-
-</div>
-
-
-{% empty %}
-
-
-<div class="alert alert-info">
-
-لا توجد طلبات حالياً
-
-</div>
-
-
-{% endfor %}
-
-
-
-</div>
-
+</section>
 
 {% endblock %}

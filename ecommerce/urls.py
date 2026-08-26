@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 
 from .views import storefront, dashboard, checkout
 
@@ -7,6 +8,11 @@ app_name = "ecommerce"
 
 
 urlpatterns = [
+    path(
+        "<slug:store_slug>/profile/invoices/",
+        views.customer_invoices,
+        name="customer_invoices",
+    ),
 
     # ==========================================================
     # لوحة تحكم المتجر
@@ -447,8 +453,25 @@ path(
     ),
 
     path(
+        "<slug:store_slug>/account/edit/",
+        storefront.account_edit,
+        name="account_edit",
+    ),
+
+    # ==========================================================
+    # فواتير العميل
+    # ==========================================================
+
+    path(
         "<slug:store_slug>/account/invoices/",
-        storefront.invoices,
+        dashboard.customer_invoices,
         name="invoices",
     ),
+
+    path(
+        "<slug:store_slug>/account/invoices/<int:order_id>/",
+        dashboard.customer_invoice_detail,
+        name="customer_invoice_detail",
+    ),
+
 ]

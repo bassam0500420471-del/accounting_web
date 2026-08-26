@@ -28,7 +28,7 @@ class Order(models.Model):
         ("unpaid", "غير مدفوع"),
        ("cash_on_delivery", "الدفع عند الاستلام"),
 
-            ("bank_transfer", "تحويل بنكي - بانتظار المراجعة"),
+            ("bank_transfer", "تحويل بنكي  "),
 
         ("paid", "مدفوع"),
         ("partial", "دفع جزئي"),

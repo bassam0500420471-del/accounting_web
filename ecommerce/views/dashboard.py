@@ -5463,3 +5463,195 @@ def returning_customers_report(
             ),
         },
     )
+# ==========================================================
+# فواتيري - العميل
+# ==========================================================
+
+@login_required
+def customer_invoices(
+    request,
+    store_slug
+):
+
+    # ======================================================
+    # المتجر
+    # ======================================================
+
+    store = get_object_or_404(
+        Store,
+        slug=store_slug,
+        is_active=True,
+    )
+
+    # ======================================================
+    # DEBUG - فحص الطلبات
+    # ======================================================
+
+    print("======================================")
+    print("CUSTOMER INVOICES DEBUG")
+    print("USER ID:", request.user.id)
+    print("USERNAME:", request.user.username)
+    print("STORE ID:", store.id)
+    print("STORE NAME:", store.name)
+
+    print(
+        "ALL ORDERS:",
+        Order.objects.count()
+    )
+
+    print(
+        "STORE ORDERS:",
+        Order.objects.filter(
+            store=store
+        ).count()
+    )
+
+    print(
+        "USER ORDERS:",
+        Order.objects.filter(
+            customer=request.user
+        ).count()
+    )
+
+    print(
+        "STORE + USER ORDERS:",
+        Order.objects.filter(
+            store=store,
+            customer=request.user
+        ).count()
+    )
+
+    print("======================================")
+
+# ======================================================
+# فواتير العميل
+# ======================================================
+
+@login_required
+def customer_invoices(request, store_slug):
+
+    store = get_object_or_404(
+        Store,
+        slug=store_slug,
+    )
+
+    # ======================================================
+    # الفواتير تظهر فقط للطلبات التي تم تسليمها
+    # ======================================================
+
+    orders = (
+        Order.objects
+        .filter(
+            store=store,
+            customer=request.user,
+            status="delivered",
+        )
+        .select_related(
+            "customer",
+            "payment_method",
+        )
+        .prefetch_related(
+            "items",
+            "items__product",
+            "items__variant",
+        )
+        .order_by(
+            "-created_at",
+        )
+    )
+    # ======================================================
+    # البحث برقم الطلب
+    # ======================================================
+
+    search = request.GET.get(
+        "search",
+        "",
+    ).strip()
+
+    if search:
+
+        orders = orders.filter(
+            order_no__icontains=search,
+        )
+
+    # ======================================================
+    # لا نسمح بفلترة الحالات الأخرى
+    # ======================================================
+
+    status = "delivered"
+
+    # ======================================================
+    # الترقيم
+    # ======================================================
+
+    paginator = Paginator(
+        orders,
+        20,
+    )
+
+    page_number = request.GET.get(
+        "page",
+    )
+
+    page_obj = paginator.get_page(
+        page_number,
+    )
+
+    return render(
+        request,
+        "ecommerce/account/invoices.html",
+        {
+            "store": store,
+            "orders": page_obj,
+            "page_obj": page_obj,
+            "search": search,
+            "status": status,
+        },
+    )
+
+
+# ======================================================
+# تفاصيل فاتورة العميل
+# ======================================================
+
+@login_required
+def customer_invoice_detail(
+    request,
+    store_slug,
+    order_id,
+):
+
+    store = get_object_or_404(
+        Store,
+        slug=store_slug,
+    )
+
+    # ======================================================
+    # لا يمكن فتح الفاتورة إلا بعد التسليم
+    # ======================================================
+
+    order = get_object_or_404(
+        Order.objects
+        .select_related(
+            "customer",
+            "payment_method",
+        )
+        .prefetch_related(
+            "items",
+            "items__product",
+            "items__variant",
+        ),
+        pk=order_id,
+        store=store,
+        customer=request.user,
+        status="delivered",
+    )
+
+    return render(
+        request,
+        "ecommerce/account/invoice_detail.html",
+        {
+            "store": store,
+            "order": order,
+        },
+    )

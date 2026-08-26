@@ -11,7 +11,7 @@
 {% if product.image %}
 
 <img src="{{ product.image.url }}"
-     alt="{{ product.name }}">
+     alt="{{ product.get_name }}">
 
 {% else %}
 

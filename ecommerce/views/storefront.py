@@ -1440,16 +1440,77 @@ def customer_logout(request, store_slug):
 @login_required
 def account(request, store_slug):
 
-    store = get_store(store_slug)
+    store = get_object_or_404(
+        Store,
+        slug=store_slug
+    )
+
+    context = {
+        "store_slug": store_slug,
+        "store": store,
+    }
 
     return render(
         request,
         "ecommerce/account.html",
-        {
-            "store": store,
-        }
+        context
     )
 
+
+@login_required
+def account_edit(request, store_slug):
+
+    store = get_object_or_404(
+        Store,
+        slug=store_slug
+    )
+
+    user = request.user
+
+    if request.method == "POST":
+
+        first_name = request.POST.get(
+            "first_name",
+            ""
+        ).strip()
+
+        last_name = request.POST.get(
+            "last_name",
+            ""
+        ).strip()
+
+        email = request.POST.get(
+            "email",
+            ""
+        ).strip()
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+
+        user.save()
+
+        messages.success(
+            request,
+            "تم تحديث بيانات حسابك بنجاح."
+        )
+
+        return redirect(
+            "ecommerce:account",
+            store_slug=store.slug
+        )
+
+    context = {
+        "store": store,
+        "store_slug": store_slug,
+        "user": user,
+    }
+
+    return render(
+        request,
+        "ecommerce/account_edit.html",
+        context
+    )
 
 # =====================================================
 # التحويل البنكي

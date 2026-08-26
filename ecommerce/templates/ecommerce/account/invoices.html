@@ -1,65 +1,1008 @@
 {% extends "ecommerce/base_store.html" %}
 
 {% block title %}
-فواتيري
+    فواتيري
 {% endblock %}
-
 
 {% block content %}
 
+<style>
+
+/* ==========================================================
+   MY INVOICES
+   3D MODERN DESIGN
+   ========================================================== */
+
+.account-page {
+
+    direction: rtl;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee 0%,
+            #dcdcdc 50%,
+            #f7f7f7 100%
+        );
+
+    min-height: calc(100vh - 80px);
+
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+
+/* ==========================================================
+   MAIN CONTAINER
+   ========================================================== */
+
+.account-page .container {
+
+    max-width: 1200px;
+}
+
+
+/* ==========================================================
+   PAGE HEADER
+   ========================================================== */
+
+.invoices-header {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 20px;
+
+    padding: 25px 28px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        5px 7px 16px rgba(0,0,0,0.10),
+        -4px -4px 10px rgba(255,255,255,0.9);
+}
+
+
+.invoices-header h2 {
+
+    margin: 0 0 8px;
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    color: #222;
+
+    text-shadow:
+        1px 1px 0 #ffffff,
+        2px 2px 3px rgba(0,0,0,0.08);
+}
+
+
+.invoices-header p {
+
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   SEARCH CARD
+   ========================================================== */
+
+.invoice-filter-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        4px 6px 14px rgba(0,0,0,0.09),
+        -3px -3px 9px rgba(255,255,255,0.9);
+}
+
+
+/* ==========================================================
+   INPUTS
+   ========================================================== */
+
+.invoice-filter-card .form-control,
+.invoice-filter-card .form-select {
+
+    min-height: 45px;
+
+    border-radius: 11px;
+
+    border: 1px solid #d5d5d5;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f2f2f2
+        );
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.06),
+        inset -2px -2px 5px rgba(255,255,255,0.9);
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    direction: rtl;
+
+    text-align: right;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.invoice-filter-card .form-control:focus,
+.invoice-filter-card .form-select:focus {
+
+    border-color: #999;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.08),
+        0 0 0 3px rgba(0,0,0,0.06);
+
+    outline: none;
+}
+
+
+/* ==========================================================
+   SEARCH BUTTON
+   ========================================================== */
+
+.invoice-search-btn {
+
+    width: 100%;
+
+    min-height: 45px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color: #ffffff;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    box-shadow:
+        4px 5px 10px rgba(0,0,0,0.23);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.invoice-search-btn:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        5px 8px 15px rgba(0,0,0,0.28);
+
+    color: #ffffff;
+}
+
+
+.invoice-search-btn:active {
+
+    transform: translateY(1px);
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.20);
+}
+
+
+/* ==========================================================
+   TABLE CARD
+   ========================================================== */
+
+.invoice-table-card {
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 15px;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        5px 8px 20px rgba(0,0,0,0.12),
+        -4px -4px 10px rgba(255,255,255,0.85);
+}
+
+
+/* ==========================================================
+   TABLE WRAPPER
+   ========================================================== */
+
+.invoice-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    border-radius: 15px;
+}
+
+
+/* ==========================================================
+   TABLE
+   ========================================================== */
+
+.invoice-table {
+
+    width: 100%;
+
+    min-width: 850px;
+
+    margin: 0;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #dddddd;
+
+    border-radius: 14px;
+
+    box-shadow:
+        3px 5px 12px rgba(0,0,0,0.07);
+}
+
+
+/* ==========================================================
+   TABLE HEADER
+   ========================================================== */
+
+.invoice-table thead th {
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #dcdcdc
+        );
+
+    color: #333;
+
+    padding: 16px 12px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    border-bottom: 2px solid #cfcfcf;
+
+    text-shadow:
+        1px 1px 0 #ffffff;
+}
+
+
+/* ==========================================================
+   TABLE BODY
+   ========================================================== */
+
+.invoice-table tbody td {
+
+    padding: 15px 12px;
+
+    text-align: center;
+
+    vertical-align: middle;
+
+    color: #444;
+
+    font-size: 14px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+/* ==========================================================
+   LAST ROW
+   ========================================================== */
+
+.invoice-table tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* ==========================================================
+   ROW 3D HOVER
+   ========================================================== */
+
+.invoice-table tbody tr {
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.invoice-table tbody tr:hover td {
+
+    background: #f7f7f7;
+}
+
+
+/* ==========================================================
+   ORDER NUMBER
+   ========================================================== */
+
+.order-number {
+
+    display: inline-block;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e8e8e8
+        );
+
+    padding: 7px 12px;
+
+    border-radius: 9px;
+
+    border: 1px solid #d8d8d8;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.08);
+
+    color: #222;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   TOTAL
+   ========================================================== */
+
+.invoice-total {
+
+    font-weight: bold;
+
+    color: #222;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   STATUS
+   ========================================================== */
+
+.invoice-status {
+
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border: 1px solid #d8d8d8;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.08);
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   PAYMENT STATUS
+   ========================================================== */
+
+.payment-status {
+
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #d8d8d8;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.08);
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   VIEW INVOICE BUTTON
+   ========================================================== */
+
+.invoice-view-btn {
+
+    display: inline-block;
+
+    padding: 9px 15px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    border: none;
+
+    box-shadow:
+        3px 4px 8px rgba(0,0,0,0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.invoice-view-btn:hover {
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        4px 7px 12px rgba(0,0,0,0.27);
+}
+
+
+/* ==========================================================
+   EMPTY
+   ========================================================== */
+
+.invoice-empty {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        4px 6px 14px rgba(0,0,0,0.10),
+        -3px -3px 8px rgba(255,255,255,0.9);
+
+    color: #777;
+
+    font-size: 15px;
+}
+
+
+/* ==========================================================
+   PAGINATION
+   ========================================================== */
+
+.invoice-pagination {
+
+    margin-top: 25px;
+}
+
+
+.invoice-pagination .pagination {
+
+    gap: 7px;
+}
+
+
+.invoice-pagination .page-link {
+
+    border: 1px solid #d5d5d5;
+
+    border-radius: 9px !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e8e8e8
+        );
+
+    color: #333;
+
+    min-width: 42px;
+
+    min-height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,0.08);
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.invoice-pagination .page-link:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        3px 5px 10px rgba(0,0,0,0.12);
+
+    color: #222;
+}
+
+
+.invoice-pagination .page-item.active .page-link {
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    border-color: #111111;
+
+    color: #ffffff;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,0.22);
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 767px) {
+
+    .account-page {
+
+        padding-top: 25px !important;
+
+        padding-bottom: 25px !important;
+    }
+
+
+    .invoices-header {
+
+        padding: 20px;
+
+        border-radius: 16px;
+    }
+
+
+    .invoices-header h2 {
+
+        font-size: 22px;
+    }
+
+
+    .invoice-filter-card {
+
+        padding: 15px;
+
+        border-radius: 16px;
+    }
+
+
+    .invoice-table-card {
+
+        padding: 9px;
+
+        border-radius: 16px;
+    }
+
+
+    .invoice-table {
+
+        min-width: 800px;
+    }
+
+
+    .invoice-table thead th {
+
+        padding: 13px 9px;
+
+        font-size: 13px;
+    }
+
+
+    .invoice-table tbody td {
+
+        padding: 13px 9px;
+
+        font-size: 13px;
+    }
+
+
+    .invoice-view-btn {
+
+        padding: 8px 12px;
+
+        font-size: 12px;
+    }
+
+}
+
+</style>
+
+
 <section class="account-page py-5">
 
-<div class="container">
-
-    <h2 class="mb-4">
-        🧾 فواتيري
-    </h2>
+    <div class="container">
 
 
-    {% if invoices %}
+        <!-- =====================================================
+             العنوان
+        ====================================================== -->
 
-        <div class="table-responsive">
+        <div class="invoices-header">
 
-            <table class="table">
+            <h2>
+                🧾 فواتيري
+            </h2>
 
-                <thead>
-                    <tr>
-                        <th>رقم الفاتورة</th>
-                        <th>التاريخ</th>
-                        <th>المبلغ</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                {% for invoice in invoices %}
-
-                    <tr>
-                        <td>{{ invoice.invoice_no }}</td>
-                        <td>{{ invoice.date }}</td>
-                        <td>{{ invoice.total }}</td>
-                        <td>{{ invoice.status }}</td>
-                    </tr>
-
-                {% endfor %}
-
-                </tbody>
-
-            </table>
+            <p>
+                جميع طلباتك وفواتيرك في هذا المتجر
+            </p>
 
         </div>
 
-    {% else %}
 
-        <div class="alert alert-info">
-            لا توجد فواتير حالياً
+        <!-- =====================================================
+             البحث والفلترة
+        ====================================================== -->
+
+        <div class="invoice-filter-card">
+
+            <form method="get">
+
+                <div class="row g-3">
+
+
+                    <div class="col-md-6">
+
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ search }}"
+                            class="form-control"
+                            placeholder="البحث برقم الطلب..."
+                        >
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <select
+                            name="status"
+                            class="form-select"
+                        >
+
+                            <option
+                                value="delivered"
+                                selected
+                            >
+                                تم التسليم
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-2">
+
+                        <button
+                            type="submit"
+                            class="invoice-search-btn"
+                        >
+                            بحث
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
         </div>
 
-    {% endif %}
+        <!-- =====================================================
+             الفواتير
+        ====================================================== -->
+
+        {% if orders %}
+
+            <div class="invoice-table-card">
+
+                <div class="invoice-table-wrapper">
+
+                    <table class="invoice-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    رقم الطلب
+                                </th>
+
+                                <th>
+                                    التاريخ
+                                </th>
+
+                                <th>
+                                    المبلغ
+                                </th>
+
+                                <th>
+                                    حالة الطلب
+                                </th>
+
+                                <th>
+                                    حالة الدفع
+                                </th>
+
+                                <th>
+                                    الفاتورة
+                                </th>
+
+                            </tr>
+
+                        </thead>
 
 
-</div>
+                        <tbody>
+
+                        {% for order in orders %}
+
+                            <tr>
+
+
+                                <td>
+
+                                    <span class="order-number">
+
+                                        #{{ order.order_no }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ order.created_at|date:"Y-m-d H:i" }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="invoice-total">
+
+                                        {{ order.total }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="invoice-status">
+
+                                        {{ order.get_status_display }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="payment-status">
+
+                                        {{ order.get_payment_status_display }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <a
+                                        href="{% url 'ecommerce:customer_invoice_detail' store.slug order.id %}"
+                                        class="invoice-view-btn"
+                                    >
+
+                                        🧾 عرض الفاتورة
+
+                                    </a>
+
+                                </td>
+
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 الترقيم
+            ================================================== -->
+
+            {% if page_obj.has_other_pages %}
+
+                <div class="invoice-pagination">
+
+                    <nav>
+
+                        <ul class="pagination justify-content-center">
+
+
+                            {% if page_obj.has_previous %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search|urlencode }}{% endif %}{% if status %}&status={{ status }}{% endif %}"
+                                    >
+                                        السابق
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <li class="page-item active">
+
+                                <span class="page-link">
+
+                                    {{ page_obj.number }}
+
+                                </span>
+
+                            </li>
+
+
+                            {% if page_obj.has_next %}
+
+                                <li class="page-item">
+
+                                    <a
+                                        class="page-link"
+                                        href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search|urlencode }}{% endif %}{% if status %}&status={{ status }}{% endif %}"
+                                    >
+                                        التالي
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+
+                        </ul>
+
+                    </nav>
+
+                </div>
+
+            {% endif %}
+
+
+        {% else %}
+
+            <div class="invoice-empty">
+
+                🧾 لا توجد فواتير حالياً.
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
 
 </section>
 

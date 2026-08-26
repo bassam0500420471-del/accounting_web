@@ -2,75 +2,689 @@
 {% load static %}
 
 
+{% block title %}
+    حسابي
+{% endblock %}
+
+
 {% block content %}
 
+<style>
 
-<div class="account-page py-5">
+/* ==========================================================
+   ACCOUNT PAGE
+   3D MODERN DESIGN
+   ========================================================== */
+
+.account-page {
+
+    direction: rtl;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee 0%,
+            #dcdcdc 50%,
+            #f7f7f7 100%
+        );
+
+    min-height: calc(100vh - 80px);
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    padding: 40px 0;
+}
+
+
+/* ==========================================================
+   MAIN CONTAINER
+   ========================================================== */
+
+.account-page > .row {
+
+    max-width: 1200px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    padding-left: 15px;
+
+    padding-right: 15px;
+}
+
+
+/* ==========================================================
+   3D CARD BASE
+   ========================================================== */
+
+.account-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-radius: 20px;
+
+    border: 1px solid #dddddd;
+
+    box-shadow:
+        5px 8px 20px rgba(0,0,0,0.12),
+        -4px -4px 10px rgba(255,255,255,0.90);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.account-card:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        7px 11px 24px rgba(0,0,0,0.15),
+        -4px -4px 10px rgba(255,255,255,0.95);
+}
+
+
+/* ==========================================================
+   PROFILE CARD
+   ========================================================== */
+
+.profile-card {
+
+    padding: 25px;
+
+    text-align: center;
+}
+
+
+/* ==========================================================
+   PROFILE ICON
+   ========================================================== */
+
+.profile-icon {
+
+    width: 105px;
+
+    height: 105px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #dedede
+        );
+
+    border: 1px solid #d5d5d5;
+
+    box-shadow:
+        5px 7px 14px rgba(0,0,0,0.14),
+        -4px -4px 9px rgba(255,255,255,0.95);
+
+    color: #444;
+}
+
+
+.profile-icon i {
+
+    font-size: 65px;
+}
+
+
+/* ==========================================================
+   PROFILE NAME
+   ========================================================== */
+
+.profile-name {
+
+    margin: 0 0 8px;
+
+    font-size: 19px;
+
+    font-weight: bold;
+
+    color: #222;
+
+    text-shadow:
+        1px 1px 0 #ffffff,
+        2px 2px 3px rgba(0,0,0,0.08);
+}
+
+
+/* ==========================================================
+   PROFILE EMAIL
+   ========================================================== */
+
+.profile-email {
+
+    margin: 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    word-break: break-word;
+}
+
+
+/* ==========================================================
+   ACCOUNT MAIN CARD
+   ========================================================== */
+
+.account-main-card {
+
+    padding: 0;
+}
+
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.account-header {
+
+    padding: 24px 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border-bottom: 1px solid #dcdcdc;
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,0.06);
+}
+
+
+.account-header h4 {
+
+    margin: 0;
+
+    font-size: 25px;
+
+    font-weight: bold;
+
+    color: #222;
+
+    text-shadow:
+        1px 1px 0 #ffffff,
+        2px 2px 3px rgba(0,0,0,0.08);
+}
+
+
+/* ==========================================================
+   BODY
+   ========================================================== */
+
+.account-body {
+
+    padding: 28px;
+}
+
+
+/* ==========================================================
+   INFORMATION GRID
+   ========================================================== */
+
+.account-info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+
+/* ==========================================================
+   INFORMATION BOX
+   ========================================================== */
+
+.account-info-item {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border: 1px solid #d9d9d9;
+
+    border-radius: 13px;
+
+    padding: 15px;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.04),
+        inset -2px -2px 5px rgba(255,255,255,0.90),
+        2px 4px 8px rgba(0,0,0,0.06);
+}
+
+
+/* ==========================================================
+   LABEL
+   ========================================================== */
+
+.account-info-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+
+/* ==========================================================
+   VALUE
+   ========================================================== */
+
+.account-info-value {
+
+    min-height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 9px 12px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8f8f8,
+            #e9e9e9
+        );
+
+    border: 1px solid #d3d3d3;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.06),
+        inset -2px -2px 5px rgba(255,255,255,0.9);
+
+    color: #333;
+
+    font-size: 14px;
+
+    word-break: break-word;
+}
+
+
+/* ==========================================================
+   DIVIDER
+   ========================================================== */
+
+.account-divider {
+
+    margin: 25px 0;
+
+    border: 0;
+
+    border-top: 1px solid #d5d5d5;
+
+    opacity: 1;
+}
+
+
+/* ==========================================================
+   ACTION BUTTONS
+   ========================================================== */
+
+.account-actions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+
+/* ==========================================================
+   ACCOUNT BUTTON
+   ========================================================== */
+
+.account-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 45px;
+
+    padding: 10px 18px;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    border: none;
+
+    box-shadow:
+        3px 5px 10px rgba(0,0,0,0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.account-btn:hover {
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        5px 8px 15px rgba(0,0,0,0.28);
+}
+
+
+.account-btn:active {
+
+    transform: translateY(1px);
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,0.20);
+}
+
+
+/* ==========================================================
+   LOGIN AREA
+   ========================================================== */
+
+.login-area {
+
+    text-align: center;
+
+    padding: 25px 10px;
+}
+
+
+.login-area h5 {
+
+    margin-bottom: 10px;
+
+    color: #333;
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+
+.login-area p {
+
+    color: #777;
+
+    font-size: 14px;
+
+    margin-bottom: 20px;
+}
+
+
+/* ==========================================================
+   LOGIN BUTTON
+   ========================================================== */
+
+.login-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 45px;
+
+    padding: 10px 22px;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    box-shadow:
+        3px 5px 10px rgba(0,0,0,0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.login-btn:hover {
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        5px 8px 15px rgba(0,0,0,0.28);
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 991px) {
+
+    .account-page {
+
+        padding-top: 25px;
+
+        padding-bottom: 25px;
+    }
+
+
+    .account-info-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 767px) {
+
+    .account-page {
+
+        padding-top: 20px;
+
+        padding-bottom: 20px;
+    }
+
+
+    .account-page > .row {
+
+        padding-left: 12px;
+
+        padding-right: 12px;
+    }
+
+
+    .profile-card {
+
+        padding: 20px;
+    }
+
+
+    .profile-icon {
+
+        width: 90px;
+
+        height: 90px;
+    }
+
+
+    .profile-icon i {
+
+        font-size: 55px;
+    }
+
+
+    .account-header {
+
+        padding: 20px;
+    }
+
+
+    .account-header h4 {
+
+        font-size: 22px;
+    }
+
+
+    .account-body {
+
+        padding: 18px;
+    }
+
+
+    .account-info-grid {
+
+        gap: 12px;
+    }
+
+
+    .account-actions {
+
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+
+    .account-btn {
+
+        width: 100%;
+
+        text-align: center;
+    }
+
+}
+
+</style>
+
+
+<div class="account-page">
 
 
     <div class="row g-4">
 
 
-        <!-- القائمة الجانبية -->
+        <!-- =====================================================
+             القائمة الجانبية
+        ====================================================== -->
 
         <div class="col-lg-3">
 
 
-            <div class="card shadow-sm border-0">
+            <div class="account-card profile-card">
 
 
-                <div class="card-body text-center">
+                {% if request.user.is_authenticated %}
 
 
-                    {% if request.user.is_authenticated %}
+                    <div class="profile-icon">
+
+                        <i class="bi bi-person-circle"></i>
+
+                    </div>
 
 
-                        <div class="mb-3">
+                    <h5 class="profile-name">
 
-                            <i class="bi bi-person-circle"
-                               style="font-size:70px;">
-                            </i>
+                        {{ request.user.get_full_name|default:request.user.username }}
 
-                        </div>
+                    </h5>
 
 
-                        <h5>
+                    <p class="profile-email">
 
-                            {{ request.user.get_full_name|default:request.user.username }}
+                        {{ request.user.email }}
 
-                        </h5>
-
-
-                        <p class="text-muted">
-
-                            {{ request.user.email }}
-
-                        </p>
+                    </p>
 
 
-                    {% else %}
+                {% else %}
 
 
-                        <div class="mb-3">
+                    <div class="profile-icon">
 
-                            <i class="bi bi-person-circle"
-                               style="font-size:70px;">
-                            </i>
+                        <i class="bi bi-person-circle"></i>
 
-                        </div>
+                    </div>
 
 
-                        <h5>
+                    <h5 class="profile-name">
 
-                            زائر
+                        زائر
 
-                        </h5>
-
-
-                    {% endif %}
+                    </h5>
 
 
-                </div>
+                {% endif %}
 
 
             </div>
@@ -79,117 +693,120 @@
         </div>
 
 
-
-        <!-- محتوى الحساب -->
+        <!-- =====================================================
+             محتوى الحساب
+        ====================================================== -->
 
         <div class="col-lg-9">
 
 
-            <div class="card shadow-sm border-0">
+            <div class="account-card account-main-card">
 
 
-                <div class="card-header bg-transparent">
+                <!-- =================================================
+                     العنوان
+                ================================================== -->
 
+                <div class="account-header">
 
-                    <h4 class="mb-0">
+                    <h4>
 
                         حسابي
 
                     </h4>
 
-
                 </div>
 
 
+                <!-- =================================================
+                     المحتوى
+                ================================================== -->
 
-                <div class="card-body">
+                <div class="account-body">
 
 
                     {% if request.user.is_authenticated %}
 
 
-                        <div class="row">
+                        <div class="account-info-grid">
 
 
-                            <div class="col-md-6 mb-3">
+                            <!-- الاسم -->
 
+                            <div class="account-info-item">
 
-                                <label class="text-muted">
+                                <span class="account-info-label">
 
                                     الاسم
 
-                                </label>
+                                </span>
 
 
-                                <div class="form-control">
+                                <div class="account-info-value">
 
                                     {{ request.user.get_full_name }}
 
                                 </div>
 
-
                             </div>
 
 
+                            <!-- اسم المستخدم -->
 
-                            <div class="col-md-6 mb-3">
+                            <div class="account-info-item">
 
-
-                                <label class="text-muted">
+                                <span class="account-info-label">
 
                                     اسم المستخدم
 
-                                </label>
+                                </span>
 
 
-                                <div class="form-control">
+                                <div class="account-info-value">
 
                                     {{ request.user.username }}
 
                                 </div>
 
-
                             </div>
 
 
+                            <!-- البريد الإلكتروني -->
 
-                            <div class="col-md-6 mb-3">
+                            <div class="account-info-item">
 
-
-                                <label class="text-muted">
+                                <span class="account-info-label">
 
                                     البريد الإلكتروني
 
-                                </label>
+                                </span>
 
 
-                                <div class="form-control">
+                                <div class="account-info-value">
 
                                     {{ request.user.email }}
 
                                 </div>
 
-
                             </div>
 
 
+                            <!-- المتجر -->
 
-                            <div class="col-md-6 mb-3">
+                            <div class="account-info-item">
 
-
-                                <label class="text-muted">
+                                <span class="account-info-label">
 
                                     المتجر
 
-                                </label>
+                                </span>
 
 
-                                <div class="form-control">
+                                <div class="account-info-value">
 
                                     {{ store.name }}
 
                                 </div>
-
 
                             </div>
 
@@ -197,32 +814,57 @@
                         </div>
 
 
-
-                        <hr>
-
+                        <hr class="account-divider">
 
 
-<div class="d-flex gap-2">
+                        <!-- =================================================
+                             الأزرار
+                        ================================================== -->
 
-    <a href="{% url 'ecommerce:orders' store.slug %}" class="account-btn">
-        🛒 طلباتي
-    </a>
-
-    <a href="{% url 'ecommerce:invoices' store.slug %}" class="account-btn">
-        🧾 فواتيري
-    </a>
-
-    <a href="#" class="account-btn">
-        ✏️ تعديل البيانات
-    </a>
-
-</div>
+                        <div class="account-actions">
 
 
-{% else %}
+                            <a
+                                href="{% url 'ecommerce:orders' store.slug %}"
+                                class="account-btn"
+                            >
+
+                                🛒 طلباتي
+
+                            </a>
 
 
-                        <div class="text-center py-4">
+                            <a
+                                href="{% url 'ecommerce:invoices' store.slug %}"
+                                class="account-btn"
+                            >
+
+                                🧾 فواتيري
+
+                            </a>
+
+
+                            <a
+                                href="{% url 'ecommerce:account_edit' store.slug %}"
+                                class="account-btn"
+                            >
+
+                                ✏️ تعديل البيانات
+
+                            </a>
+
+
+                        </div>
+
+
+                    {% else %}
+
+
+                        <!-- =================================================
+                             الزائر
+                        ================================================== -->
+
+                        <div class="login-area">
 
 
                             <h5>
@@ -232,30 +874,27 @@
                             </h5>
 
 
-                            <p class="text-muted">
+                            <p>
 
                                 يمكنك إنشاء حساب ومتابعة الطلبات والفواتير الخاصة بك.
 
                             </p>
 
 
-
-                            <a href="/login/"
-                               class="btn btn-primary">
-
+                            <a
+                                href="/login/"
+                                class="login-btn"
+                            >
 
                                 تسجيل الدخول
 
-
                             </a>
-
 
 
                         </div>
 
 
                     {% endif %}
-
 
 
                 </div>
@@ -271,7 +910,6 @@
 
 
 </div>
-
 
 
 {% endblock %}
