@@ -36,7 +36,6 @@
 
 
 
-
             <!-- Search -->
 
             <div class="col-lg-5 col-md-4 col-12">
@@ -44,7 +43,6 @@
                 {% include "ecommerce/includes/search.html" %}
 
             </div>
-
 
 
 
@@ -58,13 +56,13 @@
 
                     <!-- Cart -->
 
-                    <a href="{% url 'ecommerce:cart' store.slug %}"
-                       class="action-item"
-                       title="السلة">
-
+                    <a
+                        href="{% url 'ecommerce:cart' store.slug %}"
+                        class="action-item"
+                        title="السلة"
+                    >
 
                         <i class="bi bi-cart3"></i>
-
 
                         <span class="action-count">
 
@@ -72,31 +70,30 @@
 
                         </span>
 
-
                     </a>
-
 
 
 
                     <!-- Wishlist -->
 
-                    <a href="{% url 'ecommerce:wishlist' store.slug %}"
-                       class="action-item"
-                       title="المفضلة">
-
+                    <a
+                        href="{% url 'ecommerce:wishlist' store.slug %}"
+                        class="action-item"
+                        title="المفضلة"
+                    >
 
                         <i class="bi bi-heart"></i>
 
-
-                        <span id="wishlistCount" class="action-count">
+                        <span
+                            id="wishlistCount"
+                            class="action-count"
+                        >
 
                             {{ wishlist_count|default:"0" }}
 
                         </span>
 
-
                     </a>
-
 
 
 
@@ -105,13 +102,15 @@
                     {% if user.is_authenticated %}
 
 
-                        <a href="{% url 'ecommerce:account' store.slug %}"
-                           class="action-item"
-                           title="حسابي">
+                        <!-- حساب العميل -->
 
+                        <a
+                            href="{% url 'ecommerce:account' store.slug %}"
+                            class="action-item"
+                            title="حسابي"
+                        >
 
                             <i class="bi bi-person-circle"></i>
-
 
                         </a>
 
@@ -119,13 +118,15 @@
                     {% else %}
 
 
-                        <a href="/login/"
-                           class="action-item"
-                           title="تسجيل الدخول">
+                        <!-- تسجيل دخول العميل -->
 
+                        <a
+                            href="{% url 'ecommerce:customer_login' store.slug %}"
+                            class="action-item"
+                            title="تسجيل دخول العميل"
+                        >
 
                             <i class="bi bi-box-arrow-in-right"></i>
-
 
                         </a>
 

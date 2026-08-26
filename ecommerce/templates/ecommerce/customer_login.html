@@ -1,0 +1,293 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+    تسجيل دخول العميل - {{ store.name }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .customer-auth-page {
+        direction: rtl;
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 15px;
+        font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .customer-auth-card {
+        width: 100%;
+        max-width: 460px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 35px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .customer-auth-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #f1f3f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+    }
+
+    .customer-auth-title {
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .customer-auth-subtitle {
+        text-align: center;
+        color: #777;
+        margin-bottom: 30px;
+    }
+
+    .customer-form-group {
+        margin-bottom: 18px;
+    }
+
+    .customer-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .customer-form-control {
+        width: 100%;
+        height: 48px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 0 14px;
+        font-family: Tahoma, Arial, sans-serif;
+        font-size: 15px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .customer-form-control:focus {
+        border-color: #999;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .customer-login-btn {
+        width: 100%;
+        height: 50px;
+        border: 0;
+        border-radius: 10px;
+        background: #212529;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .customer-login-btn:hover {
+        opacity: 0.9;
+    }
+
+    .customer-auth-error {
+        background: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .customer-register-box {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        text-align: center;
+    }
+
+    .customer-register-box p {
+        margin-bottom: 10px;
+        color: #777;
+    }
+
+    .customer-register-link {
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .customer-back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #777;
+        text-decoration: none;
+    }
+
+    .customer-back-link:hover {
+        color: #000;
+    }
+
+    @media (max-width: 576px) {
+
+        .customer-auth-page {
+            padding: 25px 12px;
+        }
+
+        .customer-auth-card {
+            padding: 25px 20px;
+            border-radius: 14px;
+        }
+
+    }
+
+</style>
+
+
+<div class="customer-auth-page">
+
+    <div class="customer-auth-card">
+
+        <!-- الأيقونة -->
+
+        <div class="customer-auth-icon">
+            👤
+        </div>
+
+
+        <!-- العنوان -->
+
+        <h3 class="customer-auth-title">
+            تسجيل الدخول
+        </h3>
+
+        <div class="customer-auth-subtitle">
+
+            مرحبًا بك في {{ store.name }}
+
+        </div>
+
+
+        <!-- رسالة الخطأ -->
+
+        {% if error %}
+
+            <div class="customer-auth-error">
+
+                {{ error }}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- النموذج -->
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="next"
+                value="{{ request.GET.next }}"
+            >
+
+
+            <!-- اسم المستخدم -->
+
+            <div class="customer-form-group">
+
+                <label for="username">
+                    اسم المستخدم
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="customer-form-control"
+                    placeholder="أدخل اسم المستخدم"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- كلمة المرور -->
+
+            <div class="customer-form-group">
+
+                <label for="password">
+                    كلمة المرور
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="customer-form-control"
+                    placeholder="أدخل كلمة المرور"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- زر الدخول -->
+
+            <button
+                type="submit"
+                class="customer-login-btn"
+            >
+
+                تسجيل الدخول
+
+            </button>
+
+        </form>
+
+
+        <!-- إنشاء حساب -->
+
+        <div class="customer-register-box">
+
+            <p>
+                ليس لديك حساب؟
+            </p>
+
+            <a
+                href="{% url 'ecommerce:customer_register' store.slug %}"
+                class="customer-register-link"
+            >
+                إنشاء حساب جديد
+            </a>
+
+        </div>
+
+
+        <!-- العودة للمتجر -->
+
+        <a
+            href="{% url 'ecommerce:home' store.slug %}"
+            class="customer-back-link"
+        >
+
+            ← العودة إلى المتجر
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

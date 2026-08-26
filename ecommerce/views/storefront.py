@@ -1,9 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.contrib.auth.models import User
 
+from django.http import JsonResponse
+from django.contrib import messages
 from ecommerce.models import (
     Store,
     StoreProduct,
@@ -1195,34 +1198,257 @@ def wishlist(request, store_slug):
 
     )
 
+# =====================================================
+# تسجيل دخول عميل المتجر
+# =====================================================
 
+def customer_login(request, store_slug):
+
+    store = get_store(store_slug)
+
+    if request.user.is_authenticated:
+        return redirect(
+            "ecommerce:account",
+            store_slug=store.slug
+        )
+
+    if request.method == "POST":
+
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+
+        if not username or not password:
+
+            return render(
+                request,
+                "ecommerce/customer_login.html",
+                {
+                    "store": store,
+                    "error": "يرجى إدخال اسم المستخدم وكلمة المرور.",
+                }
+            )
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+
+        if user is None:
+
+            return render(
+                request,
+                "ecommerce/customer_login.html",
+                {
+                    "store": store,
+                    "error": "اسم المستخدم أو كلمة المرور غير صحيحة.",
+                }
+            )
+
+        login(request, user)
+
+        next_url = request.POST.get("next")
+
+        if next_url:
+            return redirect(next_url)
+
+        return redirect(
+            "ecommerce:account",
+            store_slug=store.slug
+        )
+
+    return render(
+        request,
+        "ecommerce/customer_login.html",
+        {
+            "store": store,
+        }
+    )
+# =====================================================
+# إنشاء حساب عميل المتجر
+# =====================================================
+
+def customer_register(request, store_slug):
+
+    store = get_store(store_slug)
+
+    if request.user.is_authenticated:
+        return redirect(
+            "ecommerce:account",
+            store_slug=store.slug
+        )
+
+    if request.method == "POST":
+
+        full_name = request.POST.get(
+            "full_name",
+            ""
+        ).strip()
+
+        username = request.POST.get(
+            "username",
+            ""
+        ).strip()
+
+        email = request.POST.get(
+            "email",
+            ""
+        ).strip()
+
+        password = request.POST.get(
+            "password",
+            ""
+        )
+
+        password_confirm = request.POST.get(
+            "password_confirm",
+            ""
+        )
+
+        # ==========================================
+        # التحقق
+        # ==========================================
+
+        if not full_name:
+
+            return render(
+                request,
+                "ecommerce/customer_register.html",
+                {
+                    "store": store,
+                    "error": "الاسم مطلوب.",
+                }
+            )
+
+        if not username:
+
+            return render(
+                request,
+                "ecommerce/customer_register.html",
+                {
+                    "store": store,
+                    "error": "اسم المستخدم مطلوب.",
+                }
+            )
+
+        if User.objects.filter(
+            username__iexact=username
+        ).exists():
+
+            return render(
+                request,
+                "ecommerce/customer_register.html",
+                {
+                    "store": store,
+                    "error": "اسم المستخدم مستخدم بالفعل.",
+                }
+            )
+
+        if email and User.objects.filter(
+            email__iexact=email
+        ).exists():
+
+            return render(
+                request,
+                "ecommerce/customer_register.html",
+                {
+                    "store": store,
+                    "error": "البريد الإلكتروني مستخدم بالفعل.",
+                }
+            )
+
+        if len(password) < 6:
+
+            return render(
+                request,
+                "ecommerce/customer_register.html",
+                {
+                    "store": store,
+                    "error": "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
+                }
+            )
+
+        if password != password_confirm:
+
+            return render(
+                request,
+                "ecommerce/customer_register.html",
+                {
+                    "store": store,
+                    "error": "كلمتا المرور غير متطابقتين.",
+                }
+            )
+
+        # ==========================================
+        # إنشاء المستخدم
+        # ==========================================
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+        )
+
+        # تقسيم الاسم
+        name_parts = full_name.split(maxsplit=1)
+
+        user.first_name = name_parts[0]
+
+        if len(name_parts) > 1:
+            user.last_name = name_parts[1]
+
+        user.save()
+
+        # ==========================================
+        # تسجيل الدخول مباشرة
+        # ==========================================
+
+        login(request, user)
+
+        return redirect(
+            "ecommerce:account",
+            store_slug=store.slug
+        )
+
+    return render(
+        request,
+        "ecommerce/customer_register.html",
+        {
+            "store": store,
+        }
+    )
+# =====================================================
+# تسجيل خروج عميل المتجر
+# =====================================================
+
+@login_required
+def customer_logout(request, store_slug):
+
+    store = get_store(store_slug)
+
+    logout(request)
+
+    return redirect(
+        "ecommerce:home",
+        store_slug=store.slug
+    )
 
 # =====================================================
-# الحساب
+# حساب العميل
 # =====================================================
 
 @login_required
 def account(request, store_slug):
 
-
     store = get_store(store_slug)
 
-
-
     return render(
-
         request,
-
         "ecommerce/account.html",
-
         {
-
-            "store": store
-
+            "store": store,
         }
-
     )
-
 
 
 # =====================================================

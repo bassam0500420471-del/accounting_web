@@ -1,0 +1,358 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+{% block title %}
+    إنشاء حساب - {{ store.name }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .customer-auth-page {
+        direction: rtl;
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 15px;
+        font-family: Tahoma, Arial, sans-serif;
+    }
+
+    .customer-auth-card {
+        width: 100%;
+        max-width: 500px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 35px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .customer-auth-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #f1f3f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+    }
+
+    .customer-auth-title {
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .customer-auth-subtitle {
+        text-align: center;
+        color: #777;
+        margin-bottom: 30px;
+    }
+
+    .customer-form-group {
+        margin-bottom: 17px;
+    }
+
+    .customer-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .customer-form-control {
+        width: 100%;
+        height: 48px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 0 14px;
+        font-family: Tahoma, Arial, sans-serif;
+        font-size: 15px;
+        outline: none;
+        transition: 0.2s;
+        box-sizing: border-box;
+    }
+
+    .customer-form-control:focus {
+        border-color: #999;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .customer-register-btn {
+        width: 100%;
+        height: 50px;
+        border: 0;
+        border-radius: 10px;
+        background: #212529;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 5px;
+    }
+
+    .customer-register-btn:hover {
+        opacity: 0.9;
+    }
+
+    .customer-auth-error {
+        background: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .customer-login-box {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        text-align: center;
+    }
+
+    .customer-login-box p {
+        margin-bottom: 10px;
+        color: #777;
+    }
+
+    .customer-login-link {
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .customer-back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #777;
+        text-decoration: none;
+    }
+
+    .customer-back-link:hover {
+        color: #000;
+    }
+
+    @media (max-width: 576px) {
+
+        .customer-auth-page {
+            padding: 25px 12px;
+        }
+
+        .customer-auth-card {
+            padding: 25px 20px;
+            border-radius: 14px;
+        }
+
+    }
+
+</style>
+
+
+<div class="customer-auth-page">
+
+    <div class="customer-auth-card">
+
+        <!-- الأيقونة -->
+
+        <div class="customer-auth-icon">
+            👤
+        </div>
+
+
+        <!-- العنوان -->
+
+        <h3 class="customer-auth-title">
+            إنشاء حساب جديد
+        </h3>
+
+
+        <div class="customer-auth-subtitle">
+
+            أنشئ حسابك في {{ store.name }}
+
+        </div>
+
+
+        <!-- رسالة الخطأ -->
+
+        {% if error %}
+
+            <div class="customer-auth-error">
+
+                {{ error }}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- النموذج -->
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <!-- الاسم الكامل -->
+
+            <div class="customer-form-group">
+
+                <label for="full_name">
+                    الاسم الكامل
+                </label>
+
+                <input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    class="customer-form-control"
+                    placeholder="أدخل اسمك الكامل"
+                    value="{{ request.POST.full_name }}"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- اسم المستخدم -->
+
+            <div class="customer-form-group">
+
+                <label for="username">
+                    اسم المستخدم
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="customer-form-control"
+                    placeholder="اختر اسم مستخدم"
+                    value="{{ request.POST.username }}"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- البريد الإلكتروني -->
+
+            <div class="customer-form-group">
+
+                <label for="email">
+                    البريد الإلكتروني
+                    <span style="color:#999;">
+                        (اختياري)
+                    </span>
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="customer-form-control"
+                    placeholder="example@email.com"
+                    value="{{ request.POST.email }}"
+                    autocomplete="email"
+                >
+
+            </div>
+
+
+            <!-- كلمة المرور -->
+
+            <div class="customer-form-group">
+
+                <label for="password">
+                    كلمة المرور
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="customer-form-control"
+                    placeholder="6 أحرف على الأقل"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- تأكيد كلمة المرور -->
+
+            <div class="customer-form-group">
+
+                <label for="password_confirm">
+                    تأكيد كلمة المرور
+                </label>
+
+                <input
+                    type="password"
+                    id="password_confirm"
+                    name="password_confirm"
+                    class="customer-form-control"
+                    placeholder="أعد كتابة كلمة المرور"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- زر إنشاء الحساب -->
+
+            <button
+                type="submit"
+                class="customer-register-btn"
+            >
+
+                إنشاء الحساب
+
+            </button>
+
+        </form>
+
+
+        <!-- تسجيل الدخول -->
+
+        <div class="customer-login-box">
+
+            <p>
+                لديك حساب بالفعل؟
+            </p>
+
+            <a
+                href="{% url 'ecommerce:customer_login' store.slug %}"
+                class="customer-login-link"
+            >
+                تسجيل الدخول
+            </a>
+
+        </div>
+
+
+        <!-- العودة للمتجر -->
+
+        <a
+            href="{% url 'ecommerce:home' store.slug %}"
+            class="customer-back-link"
+        >
+
+            ← العودة إلى المتجر
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
