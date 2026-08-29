@@ -1,73 +1,666 @@
-{% extends "ecommerce/base.html" %}
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
 {% block title %}
-{{ product.name }}
+{{ product.get_name }}
 {% endblock %}
 
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   صفحة تفاصيل المنتج
+========================================================= */
+
+.product-detail-page {
+    padding: 40px 0 70px;
+}
+
+
+/* =========================================================
+   البطاقة الرئيسية
+========================================================= */
+
+.product-detail-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, .08);
+}
+
+
+/* =========================================================
+   معرض الصور
+========================================================= */
+
+.product-gallery {
+    width: 100%;
+}
+
+
+/* الصورة الرئيسية */
+
+.product-main-image-wrapper {
+    width: 100%;
+    height: 420px;
+    background: #f8f9fa;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.product-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    display: block;
+}
+
+
+/* عدم وجود صورة */
+
+.product-no-image {
+    width: 100%;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 18px;
+    color: #888;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   الصور المصغرة
+========================================================= */
+
+.product-thumbnails {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    overflow-x: auto;
+    padding: 5px 2px 10px;
+    scrollbar-width: thin;
+}
+
+
+.product-thumbnail {
+    width: 78px;
+    height: 78px;
+    min-width: 78px;
+    padding: 4px;
+    background: #fff;
+    border: 2px solid #e5e5e5;
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all .2s ease;
+}
+
+
+.product-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+}
+
+
+.product-thumbnail:hover {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+}
+
+
+.product-thumbnail.active {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, .12);
+}
+
+
+/* =========================================================
+   بيانات المنتج
+========================================================= */
+
+.product-info {
+    padding: 10px 10px 10px 25px;
+}
+
+
+.product-title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+
+.product-description {
+    color: #666;
+    line-height: 1.9;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+
+.product-description p {
+    margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   نوع المنتج
+========================================================= */
+
+.product-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 15px;
+    border-radius: 20px;
+    background: #f1f3f5;
+    margin-bottom: 18px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   السعر
+========================================================= */
+
+.product-price {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #0d6efd;
+}
+
+
+.product-price span {
+    font-size: 18px;
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+
+/* =========================================================
+   مكونات المنتج المركب
+========================================================= */
+
+.bundle-section {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+}
+
+
+.bundle-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #222;
+}
+
+
+.bundle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.bundle-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 14px 16px;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 12px;
+}
+
+
+.bundle-item-name {
+    font-weight: 600;
+    color: #333;
+}
+
+
+.bundle-item-qty {
+    font-weight: 700;
+    white-space: nowrap;
+    color: #0d6efd;
+}
+
+
+/* =========================================================
+   أزرار المنتج
+========================================================= */
+
+.product-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+
+.product-actions a {
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   الجوال
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .product-detail-page {
+        padding: 20px 0 40px;
+    }
+
+
+    .product-detail-card {
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+
+    .product-main-image-wrapper {
+        height: 300px;
+    }
+
+
+    .product-no-image {
+        height: 300px;
+    }
+
+
+    .product-thumbnail {
+        width: 68px;
+        height: 68px;
+        min-width: 68px;
+    }
+
+
+    .product-info {
+        padding: 25px 5px 5px;
+    }
+
+
+    .product-title {
+        font-size: 24px;
+    }
+
+
+    .product-description {
+        font-size: 15px;
+    }
+
+
+    .product-price {
+        font-size: 24px;
+    }
+
+
+    .product-actions {
+        flex-direction: column;
+    }
+
+
+    .product-actions a {
+        width: 100%;
+        text-align: center;
+    }
+
+
+    .bundle-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}
+
+</style>
+
+{% endblock %}
 
 {% block content %}
 
-<div class="container py-5">
+<div class="product-detail-page">
 
-    <div class="row">
 
-        <!-- صورة المنتج -->
-        <div class="col-md-5">
+<div class="container">
 
-            {% if product.image %}
-                <img src="{{ product.image.url }}"
-                     class="img-fluid rounded">
-            {% else %}
-                <div class="text-center p-5 border rounded">
-                    لا توجد صورة
+    <div class="product-detail-card">
+
+        <div class="row align-items-start g-4">
+
+
+            <!-- =====================================================
+                 معرض صور المنتج
+            ====================================================== -->
+
+            <div class="col-lg-5 col-md-6">
+
+                <div class="product-gallery">
+
+                    {% with gallery_images=product.images.all %}
+
+
+                        <!-- =================================================
+                             الصورة الرئيسية
+                        ================================================== -->
+
+                        <div class="product-main-image-wrapper">
+
+                            {% if product.image %}
+
+                                <img
+                                    src="{{ product.image.url }}"
+                                    alt="{{ product.get_name }}"
+                                    class="product-main-image"
+                                    id="mainProductImage"
+                                >
+
+                            {% elif gallery_images %}
+
+                                {% with first_image=gallery_images|first %}
+
+                                    {% if first_image.image %}
+
+                                        <img
+                                            src="{{ first_image.image.url }}"
+                                            alt="{{ first_image.alt_text|default:product.get_name }}"
+                                            class="product-main-image"
+                                            id="mainProductImage"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="product-no-image">
+                                            لا توجد صورة للمنتج
+                                        </div>
+
+                                    {% endif %}
+
+                                {% endwith %}
+
+                            {% else %}
+
+                                <div class="product-no-image">
+
+                                    <img
+                                        src="{% static 'ecommerce/images/no-image.png' %}"
+                                        alt="لا توجد صورة"
+                                        style="max-width: 180px; max-height: 180px;"
+                                    >
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- =================================================
+                             الصور المصغرة
+                        ================================================== -->
+
+                        {% if product.image or gallery_images %}
+
+                            <div class="product-thumbnails">
+
+
+                                <!-- الصورة الأساسية -->
+
+                                {% if product.image %}
+
+                                    <button
+                                        type="button"
+                                        class="product-thumbnail active"
+                                        onclick="changeProductImage(this)"
+                                        data-image="{{ product.image.url }}"
+                                        aria-label="الصورة الرئيسية"
+                                    >
+
+                                        <img
+                                            src="{{ product.image.url }}"
+                                            alt="{{ product.get_name }}"
+                                        >
+
+                                    </button>
+
+                                {% endif %}
+
+
+
+                                <!-- الصور الإضافية -->
+
+                                {% for gallery_image in gallery_images %}
+
+                                    {% if gallery_image.image %}
+
+                                        <button
+                                            type="button"
+                                            class="product-thumbnail {% if not product.image and forloop.first %}active{% endif %}"
+                                            onclick="changeProductImage(this)"
+                                            data-image="{{ gallery_image.image.url }}"
+                                            aria-label="صورة المنتج {{ forloop.counter }}"
+                                        >
+
+                                            <img
+                                                src="{{ gallery_image.image.url }}"
+                                                alt="{{ gallery_image.alt_text|default:product.get_name }}"
+                                            >
+
+                                        </button>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
                 </div>
-            {% endif %}
 
-        </div>
-
-
-        <!-- بيانات المنتج -->
-        <div class="col-md-7">
-
-            <h2>
-                {{ product.name }}
-            </h2>
-
-
-            <p class="text-muted">
-                {{ product.description }}
-            </p>
-
-
-            <h4 class="text-primary">
-
-                {{ product.sale_price }}
-                
-            </h4>
-
-
-            <div class="mt-4">
-
-
-                <a href="{% url 'ecommerce:add_to_cart' store.slug product.id %}"
-                   class="btn btn-primary btn-lg">
-
-                    <i class="bi bi-cart-plus"></i>
-
-                    أضف للسلة
-
-                </a>
+            </div>
 
 
 
-                <a href="{% url 'ecommerce:toggle_wishlist' store.slug product.id %}"
-                   class="btn btn-outline-danger btn-lg">
+            <!-- =====================================================
+                 بيانات المنتج
+            ====================================================== -->
 
-                    <i class="bi bi-heart"></i>
+            <div class="col-lg-7 col-md-6">
 
-                    المفضلة
+                <div class="product-info">
 
-                </a>
 
+                    <!-- =================================================
+                         نوع المنتج
+                    ================================================== -->
+
+                    {% if product.type == "bundle" %}
+
+                        <div class="product-type">
+                            📦 منتج مركب
+                        </div>
+
+                    {% elif product.type == "service" %}
+
+                        <div class="product-type">
+                            🛠️ خدمة
+                        </div>
+
+                    {% else %}
+
+                        <div class="product-type">
+                            🛍️ منتج
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- =================================================
+                         اسم المنتج
+                    ================================================== -->
+
+                    <h1 class="product-title">
+
+                        {{ product.get_name }}
+
+                    </h1>
+
+
+
+                    <!-- =================================================
+                         الوصف
+                    ================================================== -->
+
+                    {% if product.description %}
+
+                        <div class="product-description">
+
+                            {{ product.description|linebreaks }}
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- =================================================
+                         السعر
+                    ================================================== -->
+
+                    <div class="product-price">
+
+                        {{ product.sale_price }}
+
+                        <span>
+                            ر.س
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         مكونات المنتج المركب
+                    ================================================== -->
+
+                    {% if product.type == "bundle" %}
+
+                        <div class="bundle-section">
+
+                            <div class="bundle-title">
+                                📦 مكونات المنتج
+                            </div>
+
+
+                            {% if bundle_components %}
+
+                                <div class="bundle-list">
+
+                                    {% for item in bundle_components %}
+
+                                        <div class="bundle-item">
+
+                                            <div class="bundle-item-name">
+
+                                                {{ item.component.get_name }}
+
+                                            </div>
+
+
+                                            <div class="bundle-item-qty">
+
+                                                الكمية:
+
+                                                {{ item.quantity }}
+
+                                            </div>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <p class="text-muted">
+
+                                    لا توجد مكونات مضافة لهذا المنتج.
+
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- =================================================
+                         أزرار المنتج
+                    ================================================== -->
+
+                    <div class="product-actions">
+
+
+                        <!-- إضافة للسلة -->
+
+                        <a
+                            href="{% url 'ecommerce:add_to_cart' store.slug product.id %}"
+                            class="btn btn-primary"
+                        >
+
+                            <i class="bi bi-cart-plus"></i>
+
+                            أضف للسلة
+
+                        </a>
+
+
+
+                        <!-- المفضلة -->
+
+                        <a
+                            href="{% url 'ecommerce:toggle_wishlist' store.slug product.id %}"
+                            class="btn btn-outline-danger"
+                        >
+
+                            <i class="bi bi-heart"></i>
+
+                            المفضلة
+
+                        </a>
+
+                    </div>
+
+
+                </div>
 
             </div>
 
@@ -78,5 +671,50 @@
 
 </div>
 
+</div>
+
+<!-- =========================================================
+     JavaScript معرض الصور
+========================================================= -->
+
+<script>
+
+function changeProductImage(button) {
+
+    const mainImage =
+        document.getElementById("mainProductImage");
+
+
+    if (!mainImage || !button) {
+        return;
+    }
+
+
+    const imageUrl =
+        button.getAttribute("data-image");
+
+
+    if (!imageUrl) {
+        return;
+    }
+
+
+    mainImage.src = imageUrl;
+
+
+    document
+        .querySelectorAll(".product-thumbnail")
+        .forEach(function (item) {
+
+            item.classList.remove("active");
+
+        });
+
+
+    button.classList.add("active");
+
+}
+
+</script>
 
 {% endblock %}

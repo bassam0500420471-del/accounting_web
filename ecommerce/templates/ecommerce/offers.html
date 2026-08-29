@@ -1,0 +1,168 @@
+{% extends "ecommerce/base_store.html" %}
+{% load static %}
+
+
+{% block title %}
+العروض
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<section class="products-section py-5">
+
+    <div class="container">
+
+
+        <div class="section-title">
+
+            <h2>
+                🔥 جميع العروض
+            </h2>
+
+        </div>
+
+
+
+        <div class="products-wrapper expanded-grid">
+
+
+            {% for product in products %}
+
+
+                {% include "ecommerce/includes/product_card.html" with product=product %}
+
+
+            {% empty %}
+
+
+                <p>
+                    لا توجد عروض حالياً.
+                </p>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+        {% if products.has_other_pages %}
+
+            <div class="pagination-wrapper mt-4">
+
+                {% if products.has_previous %}
+
+                    <a
+                        href="?page={{ products.previous_page_number }}"
+                        class="pagination-btn"
+                    >
+                        <i class="bi bi-chevron-right"></i>
+                        السابق
+                    </a>
+
+                {% endif %}
+
+
+                <span class="pagination-current">
+
+                    صفحة {{ products.number }}
+                    من {{ products.paginator.num_pages }}
+
+                </span>
+
+
+                {% if products.has_next %}
+
+                    <a
+                        href="?page={{ products.next_page_number }}"
+                        class="pagination-btn"
+                    >
+                        التالي
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+</section>
+
+
+<style>
+
+.pagination-wrapper {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-top: 30px;
+
+}
+
+
+.pagination-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 18px;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #2563eb;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    border: 1px solid #e0e4ea;
+
+    transition: .25s ease;
+
+}
+
+
+.pagination-btn:hover {
+
+    transform: translateY(-2px);
+
+    background: #f4f7fb;
+
+}
+
+
+.pagination-current {
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #606979;
+
+}
+
+
+</style>
+
+
+{% endblock %}

@@ -147,7 +147,7 @@
 
 <div class="fw-bold text-primary subtotal-value">
 
-    {{ item.subtotal }}
+    {{ item.subtotal|floatformat:2 }}
 
 </div>
 
@@ -207,7 +207,7 @@
 
     <strong id="cart-total">
 
-        {{ total }}
+        {{ total|floatformat:2 }}
 
     </strong>
 
@@ -219,7 +219,7 @@
 
     <strong id="shipping-cost">
 
-        {{ shipping_cost }}
+        {{ shipping_cost|floatformat:2 }}
 
     </strong>
 
@@ -236,7 +236,7 @@
 
     <strong class="text-primary" id="final-total">
 
-        {{ final_total }}
+        {{ final_total|floatformat:2 }}
 
     </strong>
 
@@ -286,15 +286,14 @@
 
             </p>
 
-            <a href="{% url 'ecommerce:products' store.slug %}"
-               class="btn btn-primary px-5">
+<a href="{% url 'ecommerce:home' store.slug %}"
+   class="btn btn-primary px-5">
 
-                <i class="bi bi-bag"></i>
+    <i class="bi bi-bag"></i>
 
-                ابدأ التسوق
+    ابدأ التسوق
 
-            </a>
-
+</a>
         </div>
 
     </div>

@@ -26,7 +26,100 @@
 
 
 <style>
+/* =========================================================
+   صور المنتج - لوحة التحكم
+========================================================= */
 
+.product-images-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+
+/* الصورة الرئيسية */
+
+.current-main-image {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.current-main-image .product-image {
+    width: 140px;
+    height: 110px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+
+/* الصور الحالية */
+
+.existing-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+
+.existing-gallery-item {
+    width: 140px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 8px;
+}
+
+
+.existing-gallery-item img {
+    width: 100%;
+    height: 110px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+
+.delete-image-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #dc3545;
+    cursor: pointer;
+}
+
+
+/* معاينة الصور الجديدة */
+
+.gallery-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+
+.gallery-preview-item {
+    width: 140px;
+    height: 120px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 5px;
+    background: #fff;
+}
+
+
+.gallery-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 7px;
+}
     /* =========================================================
        الصفحة
     ========================================================= */
@@ -877,37 +970,140 @@
             </div>
 
 
-            <!-- =================================================
-                 صورة المنتج
-            ================================================== -->
+<!-- =================================================
+     صور المنتج
+================================================= -->
 
-            <div class="mb-4 text-end">
+<div class="product-images-section mb-4 text-end">
 
-                <label class="form-label">
-
-                    {% trans "Image" %}
-
-                </label>
+    <label class="form-label">
+        صور المنتج
+    </label>
 
 
-                <input
-                    type="file"
-                    name="image"
-                    class="form-control"
-                    accept="image/*">
+    <!-- ==========================================
+         الصورة الرئيسية
+    =========================================== -->
+
+    <div class="mb-3">
+
+        <label class="form-label fw-bold">
+            الصورة الرئيسية
+        </label>
+
+        <input
+            type="file"
+            name="image"
+            class="form-control"
+            accept="image/*"
+        >
+
+        <small class="text-muted">
+            هذه هي الصورة الأساسية التي ستظهر أولاً في المتجر.
+        </small>
 
 
-                {% if product.image %}
+        {% if product.image %}
 
-                    <img
-                        src="{{ product.image.url }}"
-                        class="product-image"
-                        alt="{{ product.name }}">
+            <div class="current-main-image mt-3">
 
-                {% endif %}
+                <img
+                    src="{{ product.image.url }}"
+                    class="product-image"
+                    alt="{{ product.get_name }}"
+                >
 
             </div>
 
+        {% endif %}
+
+    </div>
+
+
+    <!-- ==========================================
+         الصور الإضافية
+    =========================================== -->
+
+    <div class="mb-3">
+
+        <label class="form-label fw-bold">
+            الصور الإضافية
+        </label>
+
+        <input
+            type="file"
+            name="gallery_images"
+            class="form-control"
+            accept="image/*"
+            multiple
+            id="galleryImagesInput"
+        >
+
+        <small class="text-muted">
+            يمكنك اختيار عدة صور للمنتج مرة واحدة.
+        </small>
+
+    </div>
+
+
+    <!-- ==========================================
+         معاينة الصور الجديدة
+    =========================================== -->
+
+    <div
+        id="galleryPreview"
+        class="gallery-preview mt-3"
+    ></div>
+
+
+    <!-- ==========================================
+         الصور الحالية
+    =========================================== -->
+
+    {% if gallery_images %}
+
+        <div class="mt-4">
+
+            <h6 class="fw-bold mb-3">
+                الصور الإضافية الحالية
+            </h6>
+
+
+            <div class="existing-gallery">
+
+                {% for gallery_image in gallery_images %}
+
+                    <div class="existing-gallery-item">
+
+                        <img
+                            src="{{ gallery_image.image.url }}"
+                            alt="{{ gallery_image.alt_text|default:product.get_name }}"
+                        >
+
+
+                        <label class="delete-image-label">
+
+                            <input
+                                type="checkbox"
+                                name="delete_gallery_images"
+                                value="{{ gallery_image.id }}"
+                            >
+
+                            حذف الصورة
+
+                        </label>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
 
             <!-- =================================================
                  منطقة Bundle
@@ -1498,6 +1694,83 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+<script>
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    const galleryInput =
+        document.getElementById("galleryImagesInput");
+
+    const galleryPreview =
+        document.getElementById("galleryPreview");
+
+
+    if (!galleryInput || !galleryPreview) {
+        return;
+    }
+
+
+    galleryInput.addEventListener(
+        "change",
+        function () {
+
+            galleryPreview.innerHTML = "";
+
+
+            const files =
+                Array.from(this.files);
+
+
+            files.forEach(function (file) {
+
+                if (!file.type.startsWith("image/")) {
+                    return;
+                }
+
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function (event) {
+
+                        const wrapper =
+                            document.createElement("div");
+
+                        wrapper.className =
+                            "gallery-preview-item";
+
+
+                        const img =
+                            document.createElement("img");
+
+                        img.src =
+                            event.target.result;
+
+
+                        img.alt =
+                            file.name;
+
+
+                        wrapper.appendChild(img);
+
+                        galleryPreview.appendChild(
+                            wrapper
+                        );
+
+                    };
+
+
+                reader.readAsDataURL(file);
+
+            });
+
+        }
+    );
+
+});
+
+</script>
 
 {% endblock %}

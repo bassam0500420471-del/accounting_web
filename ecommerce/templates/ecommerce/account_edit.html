@@ -8,11 +8,11 @@
 
 {% block content %}
 
+
 <style>
 
 /* ==========================================================
    ACCOUNT EDIT PAGE
-   3D MODERN DESIGN
    ========================================================== */
 
 .account-page {
@@ -36,7 +36,7 @@
 
 
 /* ==========================================================
-   MAIN CONTAINER
+   CONTAINER
    ========================================================== */
 
 .account-edit-container {
@@ -50,7 +50,7 @@
 
 
 /* ==========================================================
-   MAIN CARD
+   CARD
    ========================================================== */
 
 .edit-card {
@@ -123,32 +123,24 @@
 
 
 /* ==========================================================
-   ALERTS
+   SECTION TITLE
    ========================================================== */
 
-.edit-alert {
+.edit-section-title {
 
-    border-radius: 11px;
+    margin-top: 5px;
 
-    border: 1px solid #d8d8d8;
+    margin-bottom: 20px;
 
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #eeeeee
-        );
+    padding-bottom: 10px;
 
-    box-shadow:
-        2px 4px 8px rgba(0,0,0,0.07);
+    border-bottom: 1px solid #d5d5d5;
 
-    padding: 12px 15px;
+    color: #333;
 
-    margin-bottom: 15px;
+    font-size: 18px;
 
-    color: #555;
-
-    font-size: 13px;
+    font-weight: bold;
 }
 
 
@@ -259,7 +251,61 @@
 
 
 /* ==========================================================
-   HELP TEXT
+   TEXTAREA
+   ========================================================== */
+
+.edit-textarea {
+
+    width: 100%;
+
+    min-height: 110px;
+
+    padding: 12px 13px;
+
+    border-radius: 11px;
+
+    border: 1px solid #d3d3d3;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.06),
+        inset -2px -2px 5px rgba(255,255,255,0.90),
+        2px 3px 7px rgba(0,0,0,0.05);
+
+    color: #333;
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    font-size: 14px;
+
+    direction: rtl;
+
+    text-align: right;
+
+    resize: vertical;
+}
+
+
+.edit-textarea:focus {
+
+    border-color: #999;
+
+    outline: none;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,0.07),
+        0 0 0 3px rgba(0,0,0,0.06);
+}
+
+
+/* ==========================================================
+   HELP
    ========================================================== */
 
 .edit-help {
@@ -275,12 +321,42 @@
 
 
 /* ==========================================================
+   ALERT
+   ========================================================== */
+
+.edit-alert {
+
+    border-radius: 11px;
+
+    border: 1px solid #d8d8d8;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    box-shadow:
+        2px 4px 8px rgba(0,0,0,0.07);
+
+    padding: 12px 15px;
+
+    margin-bottom: 15px;
+
+    color: #555;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================================
    DIVIDER
    ========================================================== */
 
 .edit-divider {
 
-    margin: 25px 0;
+    margin: 30px 0;
 
     border: 0;
 
@@ -305,7 +381,7 @@
 
 
 /* ==========================================================
-   SAVE BUTTON
+   SAVE
    ========================================================== */
 
 .edit-save-btn {
@@ -355,17 +431,8 @@
 }
 
 
-.edit-save-btn:active {
-
-    transform: translateY(1px);
-
-    box-shadow:
-        2px 3px 6px rgba(0,0,0,0.20);
-}
-
-
 /* ==========================================================
-   CANCEL BUTTON
+   CANCEL
    ========================================================== */
 
 .edit-cancel-btn {
@@ -403,10 +470,6 @@
 
     box-shadow:
         3px 5px 9px rgba(0,0,0,0.12);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
 }
 
 
@@ -416,14 +479,6 @@
 
     transform: translateY(-2px);
 
-    box-shadow:
-        4px 7px 12px rgba(0,0,0,0.16);
-}
-
-
-.edit-cancel-btn:active {
-
-    transform: translateY(1px);
 }
 
 
@@ -446,12 +501,6 @@
         padding-left: 12px;
 
         padding-right: 12px;
-    }
-
-
-    .edit-card {
-
-        border-radius: 16px;
     }
 
 
@@ -524,7 +573,7 @@
 
 
                 <!-- =================================================
-                     MESSAGES
+                     الرسائل
                 ================================================== -->
 
                 {% if messages %}
@@ -542,13 +591,21 @@
                 {% endif %}
 
 
-                <!-- =================================================
-                     FORM
-                ================================================== -->
 
                 <form method="post">
 
                     {% csrf_token %}
+
+
+                    <!-- =================================================
+                         بيانات الحساب
+                    ================================================== -->
+
+                    <div class="edit-section-title">
+
+                        👤 بيانات الحساب
+
+                    </div>
 
 
                     <!-- =================================================
@@ -569,6 +626,7 @@
                             name="first_name"
                             class="edit-input"
                             value="{{ user.first_name }}"
+                            required
                         >
 
                     </div>
@@ -628,7 +686,7 @@
 
 
                     <!-- =================================================
-                         البريد الإلكتروني
+                         البريد
                     ================================================== -->
 
                     <div class="edit-form-group">
@@ -654,7 +712,140 @@
 
 
                     <!-- =================================================
-                         ACTIONS
+                         عنوان الشحن
+                    ================================================== -->
+
+                    <div class="edit-section-title">
+
+                        📍 بيانات عنوان الشحن
+
+                    </div>
+
+
+                    <!-- =================================================
+                         اسم المستلم
+                    ================================================== -->
+
+                    <div class="edit-form-group">
+
+                        <label class="edit-form-label">
+
+                            اسم المستلم
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="full_name"
+                            class="edit-input"
+
+                            value="{% if shipping_address %}{{ shipping_address.full_name }}{% else %}{{ user.get_full_name }}{% endif %}"
+
+                            placeholder="اسم المستلم بالكامل"
+
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- =================================================
+                         رقم الجوال
+                    ================================================== -->
+
+                    <div class="edit-form-group">
+
+                        <label class="edit-form-label">
+
+                            📱 رقم الجوال
+
+                        </label>
+
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            class="edit-input"
+
+                            value="{% if shipping_address %}{{ shipping_address.phone }}{% endif %}"
+
+                            placeholder="05xxxxxxxx"
+
+                            required
+                        >
+
+
+                        <small class="edit-help">
+
+                            رقم الجوال الذي سيتم التواصل معك عليه بخصوص الطلب.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         العنوان
+                    ================================================== -->
+
+                    <div class="edit-form-group">
+
+                        <label class="edit-form-label">
+
+                            🏠 العنوان
+
+                        </label>
+
+
+                        <textarea
+                            name="address"
+                            class="edit-textarea"
+                            placeholder="المدينة، الحي، الشارع، رقم المبنى..."
+                            required
+                        >{% if shipping_address %}{{ shipping_address.address }}{% endif %}</textarea>
+
+
+                        <small class="edit-help">
+
+                            اكتب العنوان بالتفصيل لتسهيل عملية التوصيل.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         الرمز البريدي
+                    ================================================== -->
+
+                    <div class="edit-form-group">
+
+                        <label class="edit-form-label">
+
+                            📮 الرمز البريدي
+
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="postal_code"
+                            class="edit-input"
+
+                            value="{% if shipping_address %}{{ shipping_address.postal_code }}{% endif %}"
+
+                            placeholder="مثال: 21577"
+                        >
+
+                    </div>
+
+
+                    <hr class="edit-divider">
+
+
+                    <!-- =================================================
+                         BUTTONS
                     ================================================== -->
 
                     <div class="edit-actions">

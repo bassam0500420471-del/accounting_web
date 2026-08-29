@@ -1,0 +1,110 @@
+{% extends "ecommerce/base_store.html" %}
+
+
+{% block title %}
+
+{{ policy.title }} - {{ store.name }}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+
+    <div class="card border-0 shadow-sm rounded-4">
+
+
+        <div class="card-body p-4 p-md-5">
+
+
+            <!-- العنوان -->
+
+            <div class="d-flex align-items-center gap-3 mb-4">
+
+
+                <div
+                    class="d-flex align-items-center justify-content-center rounded-3"
+                    style="
+                        width:60px;
+                        height:60px;
+                        background:#f1f5f9;
+                        color:var(--primary-color);
+                        font-size:24px;
+                    "
+                >
+
+                    <i class="{{ policy.icon }}"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h1 class="fw-bold mb-1">
+
+                        {{ policy.title }}
+
+                    </h1>
+
+
+                    <div class="text-muted">
+
+                        {{ store.name }}
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <hr>
+
+
+            <!-- محتوى السياسة -->
+
+            <div
+                class="policy-content"
+                style="
+                    white-space:pre-line;
+                    line-height:2;
+                    font-size:16px;
+                    color:#444;
+                "
+            >
+
+                {% if policy.content %}
+
+                    {{ policy.content }}
+
+                {% else %}
+
+                    <div class="text-center text-muted py-5">
+
+                        <i class="fa-solid fa-file-circle-question fa-2x mb-3"></i>
+
+                        <p class="mb-0">
+
+                            لم يتم إضافة هذه السياسة من قبل إدارة المتجر.
+
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

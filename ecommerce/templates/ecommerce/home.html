@@ -91,42 +91,50 @@
 
 <section class="products-section" id="offers">
 
-    <div class="container">
+<div class="container">
 
-        <div class="section-title">
+    <div class="section-title">
 
-            <h2>
-                🔥 العروض
-            </h2>
+        <h2>
+            🔥 العروض
+        </h2>
 
-            <a href="{% url 'ecommerce:products' store.slug %}">
-                عرض الكل
-            </a>
+        <button
+            type="button"
+            class="view-all toggle-products"
+            data-target="offerProducts"
+        >
+            عرض الكل
+        </button>
 
-        </div>
+    </div>
 
 
-        <div class="products-slider">
+    <div class="products-slider">
 
-            <div class="products-wrapper">
+        <div
+            class="products-wrapper collapsed-products"
+            id="offerProducts"
+        >
 
-                {% for product in offer_products %}
+            {% for product in offer_products %}
 
-                    {% include "ecommerce/includes/product_card.html" with product=product %}
+                {% include "ecommerce/includes/product_card.html" with product=product %}
 
-                {% empty %}
+            {% empty %}
 
-                    <p>
-                        لا توجد عروض حالياً.
-                    </p>
+                <p>
+                    لا توجد عروض حالياً.
+                </p>
 
-                {% endfor %}
-
-            </div>
+            {% endfor %}
 
         </div>
 
     </div>
+
+</div>
+
 
 </section>
 

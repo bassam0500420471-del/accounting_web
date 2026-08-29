@@ -815,7 +815,104 @@
 
 
                         <hr class="account-divider">
+<!-- =================================================
+     عنوان الشحن
+================================================== -->
 
+<div class="account-info-grid">
+
+    <div class="account-info-item">
+
+        <span class="account-info-label">
+            📱 رقم الجوال
+        </span>
+
+        <div class="account-info-value">
+
+            {% if shipping_address %}
+
+                {{ shipping_address.phone }}
+
+            {% else %}
+
+                لم يتم إضافة رقم جوال
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="account-info-item">
+
+        <span class="account-info-label">
+            📍 عنوان الشحن
+        </span>
+
+        <div class="account-info-value">
+
+            {% if shipping_address %}
+
+                {{ shipping_address.address }}
+
+            {% else %}
+
+                لم يتم إضافة عنوان
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="account-info-item">
+
+        <span class="account-info-label">
+            👤 اسم المستلم
+        </span>
+
+        <div class="account-info-value">
+
+            {% if shipping_address %}
+
+                {{ shipping_address.full_name }}
+
+            {% else %}
+
+                لم يتم إضافة اسم المستلم
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="account-info-item">
+
+        <span class="account-info-label">
+            📮 الرمز البريدي
+        </span>
+
+        <div class="account-info-value">
+
+            {% if shipping_address and shipping_address.postal_code %}
+
+                {{ shipping_address.postal_code }}
+
+            {% else %}
+
+                غير مضاف
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
 
                         <!-- =================================================
                              الأزرار

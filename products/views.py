@@ -8,23 +8,49 @@ from django.db.models.deletion import ProtectedError
 from django.db import IntegrityError
 
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.contrib import messages
+
+from accounting.models import Account
+
+from .models import (
+    Product,
+    ProductImage,
+    BundleComponent,
+    Category,
+)
+
+from django.db.models.deletion import ProtectedError
+from django.db import IntegrityError
+
+
 # ================================
 #   قائمة المنتجات
 # ================================
 def products_list(request):
+
     q = request.GET.get("q", "")
 
     if not getattr(request, "company", None):
         products = Product.objects.none()
     else:
-        products = Product.objects.filter(company=request.company)
+        products = Product.objects.filter(
+            company=request.company
+        )
 
     if q:
-        products = products.filter(name__icontains=q)
+        products = products.filter(
+            name__icontains=q
+        )
 
-    return render(request, "products/products_list.html", {
-        "products": products
-    })
+    return render(
+        request,
+        "products/products_list.html",
+        {
+            "products": products
+        }
+    )
 
 
 # ================================
@@ -37,75 +63,213 @@ def product_add(request):
     print("COMPANY:", getattr(request, "company", None))
 
     if not getattr(request, "company", None):
-        messages.error(request, "لا يمكن إضافة منتج قبل ربط المستخدم بشركة.")
+
+        messages.error(
+            request,
+            "لا يمكن إضافة منتج قبل ربط المستخدم بشركة."
+        )
+
         return redirect("/")
 
-    if not getattr(request, "company", None):
-        messages.error(request, "لا يمكن إضافة منتج قبل ربط المستخدم بشركة.")
-        return redirect("/")
+    products = Product.objects.filter(
+        company=request.company
+    )
 
-    products = Product.objects.filter(company=request.company)          # لمنتجات bundle داخل نفس الشركة
-    accounts = Account.objects.all().order_by("code")  # ⭐ شجرة الحسابات
-    categories = Category.objects.filter(company=request.company, active=True)  # ✅ التصنيفات النشطة لنفس الشركة
+    accounts = Account.objects.all().order_by("code")
+
+    categories = Category.objects.filter(
+        company=request.company,
+        active=True
+    )
 
     if request.method == "POST":
 
-        product_type = request.POST.get("type", "normal")
-        category_id = request.POST.get("category") or None
-        category = Category.objects.filter(company=request.company, id=category_id).first() if category_id else None
+        # ==========================================
+        # نوع المنتج
+        # ==========================================
+
+        product_type = request.POST.get(
+            "type",
+            "normal"
+        )
+
+        # ==========================================
+        # التصنيف
+        # ==========================================
+
+        category_id = (
+            request.POST.get("category")
+            or None
+        )
+
+        category = None
+
+        if category_id:
+
+            category = Category.objects.filter(
+                company=request.company,
+                id=category_id
+            ).first()
+
+        # ==========================================
+        # الصورة الرئيسية
+        # ==========================================
+
+        main_image = request.FILES.get("image")
+
+        # ==========================================
+        # إنشاء المنتج
+        # ==========================================
 
         product = Product.objects.create(
-            company=request.company,  # ✅ الخطوة 4: تعيين الشركة تلقائياً عند الإنشاء
+
+            company=request.company,
+
             name=request.POST.get("name"),
+
             sku=request.POST.get("sku"),
-            category=category,  # ✅ ربط التصنيف
 
-            purchase_price=request.POST.get("purchase_price") or 0,
-            sale_price=request.POST.get("sale_price") or 0,
+            category=category,
 
-            min_stock=request.POST.get("min_stock") or 0,
-            alert_stock=request.POST.get("alert_stock") or 0,
+            purchase_price=(
+                request.POST.get("purchase_price")
+                or 0
+            ),
 
-            # ⭐ الربط المحاسبي
-            inventory_account_id=request.POST.get("inventory_account") or None,
-            cost_account_id=request.POST.get("cost_account") or None,
-            revenue_account_id=request.POST.get("revenue_account") or None,
+            sale_price=(
+                request.POST.get("sale_price")
+                or 0
+            ),
 
-            description=request.POST.get("description", ""),
-            image=request.FILES.get("image"),
-            type=product_type,  # ✅ حفظ النوع
+            min_stock=(
+                request.POST.get("min_stock")
+                or 0
+            ),
+
+            alert_stock=(
+                request.POST.get("alert_stock")
+                or 0
+            ),
+
+            inventory_account_id=(
+                request.POST.get("inventory_account")
+                or None
+            ),
+
+            cost_account_id=(
+                request.POST.get("cost_account")
+                or None
+            ),
+
+            revenue_account_id=(
+                request.POST.get("revenue_account")
+                or None
+            ),
+
+            description=request.POST.get(
+                "description",
+                ""
+            ),
+
+            image=main_image,
+
+            type=product_type,
+
             active=True,
         )
 
-        # ============================
-        #  مكونات المنتج المركب
-        # ============================
+        # ==========================================
+        # الصور الإضافية المتعددة
+        # ==========================================
+
+        gallery_images = request.FILES.getlist(
+            "gallery_images"
+        )
+
+        for index, image_file in enumerate(
+            gallery_images
+        ):
+
+            ProductImage.objects.create(
+
+                product=product,
+
+                image=image_file,
+
+                sort_order=index,
+
+                is_main=False,
+
+            )
+
+        # ==========================================
+        # مكونات المنتج المركب
+        # ==========================================
+
         if product_type == "bundle":
-            count = int(request.POST.get("bundle_count", 0))
-            for i in range(1, count + 1):
-                comp_id = request.POST.get(f"component_{i}")
-                qty = request.POST.get(f"qty_{i}")
+
+            count = int(
+                request.POST.get(
+                    "bundle_count",
+                    0
+                )
+            )
+
+            for i in range(
+                1,
+                count + 1
+            ):
+
+                comp_id = request.POST.get(
+                    f"component_{i}"
+                )
+
+                qty = request.POST.get(
+                    f"qty_{i}"
+                )
+
                 if comp_id and qty:
-                    # ✅ تأكيد أن المكوّن من نفس الشركة
-                    comp = Product.objects.filter(company=request.company, id=comp_id).first()
+
+                    comp = Product.objects.filter(
+                        company=request.company,
+                        id=comp_id
+                    ).first()
+
                     if comp:
+
                         BundleComponent.objects.create(
+
                             product=product,
+
                             component=comp,
+
                             quantity=qty,
+
                         )
 
-        # الرجوع للفاتورة إن وجد
+        # ==========================================
+        # الرجوع للفاتورة
+        # ==========================================
+
         if request.GET.get("return") == "invoice":
-            return redirect(f"/sales/invoices/add/?product_id={product.id}")
 
-        return redirect("/products/")
+            return redirect(
+                f"/sales/invoices/add/?product_id={product.id}"
+            )
 
-    return render(request, "products/product_form.html", {
-        "products": products,
-        "accounts": accounts,     # ⭐
-        "categories": categories,  # ✅ تمرير التصنيفات للقالب
-    })
+        return redirect(
+            "/products/"
+        )
+
+    return render(
+        request,
+        "products/product_form.html",
+        {
+            "products": products,
+            "accounts": accounts,
+            "categories": categories,
+        }
+    )
 
 
 # ================================
@@ -114,77 +278,330 @@ def product_add(request):
 def product_edit(request, pk):
 
     if not getattr(request, "company", None):
-        messages.error(request, "لا يمكن تعديل منتج قبل ربط المستخدم بشركة.")
+
+        messages.error(
+            request,
+            "لا يمكن تعديل منتج قبل ربط المستخدم بشركة."
+        )
+
         return redirect("/")
 
-    product = get_object_or_404(Product, pk=pk, company=request.company)
-    products = Product.objects.filter(company=request.company).exclude(id=pk)
-    accounts = Account.objects.all().order_by("code")
-    categories = Category.objects.filter(company=request.company, active=True)  # ✅ التصنيفات النشطة
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+        company=request.company
+    )
+
+    products = Product.objects.filter(
+        company=request.company
+    ).exclude(
+        id=pk
+    )
+
+    accounts = Account.objects.all().order_by(
+        "code"
+    )
+
+    categories = Category.objects.filter(
+        company=request.company,
+        active=True
+    )
 
     if request.method == "POST":
 
-        product.name = request.POST.get("name")
-        product.sku = request.POST.get("sku")
+        # ==========================================
+        # البيانات الأساسية
+        # ==========================================
 
-        product.purchase_price = request.POST.get("purchase_price") or 0
-        product.sale_price = request.POST.get("sale_price") or 0
+        product.name = request.POST.get(
+            "name"
+        )
 
-        product.min_stock = request.POST.get("min_stock") or 0
-        product.alert_stock = request.POST.get("alert_stock") or 0
+        product.sku = request.POST.get(
+            "sku"
+        )
 
-        # ⭐ تحديث الحسابات
-        product.inventory_account_id = request.POST.get("inventory_account") or None
-        product.cost_account_id = request.POST.get("cost_account") or None
-        product.revenue_account_id = request.POST.get("revenue_account") or None
+        product.purchase_price = (
+            request.POST.get(
+                "purchase_price"
+            )
+            or 0
+        )
 
-        # ✅ تحديث التصنيف (من نفس الشركة)
-        category_id = request.POST.get("category") or None
-        product.category = Category.objects.filter(company=request.company, id=category_id).first() if category_id else None
+        product.sale_price = (
+            request.POST.get(
+                "sale_price"
+            )
+            or 0
+        )
 
-        product.description = request.POST.get("description", "")
+        product.min_stock = (
+            request.POST.get(
+                "min_stock"
+            )
+            or 0
+        )
 
-        if request.FILES.get("image"):
-            product.image = request.FILES.get("image")
+        product.alert_stock = (
+            request.POST.get(
+                "alert_stock"
+            )
+            or 0
+        )
 
-        # ✅ تحديث النوع
-        product_type = request.POST.get("type", "normal")
+        # ==========================================
+        # الحسابات
+        # ==========================================
+
+        product.inventory_account_id = (
+            request.POST.get(
+                "inventory_account"
+            )
+            or None
+        )
+
+        product.cost_account_id = (
+            request.POST.get(
+                "cost_account"
+            )
+            or None
+        )
+
+        product.revenue_account_id = (
+            request.POST.get(
+                "revenue_account"
+            )
+            or None
+        )
+
+        # ==========================================
+        # التصنيف
+        # ==========================================
+
+        category_id = (
+            request.POST.get(
+                "category"
+            )
+            or None
+        )
+
+        if category_id:
+
+            product.category = Category.objects.filter(
+                company=request.company,
+                id=category_id
+            ).first()
+
+        else:
+
+            product.category = None
+
+        # ==========================================
+        # الوصف
+        # ==========================================
+
+        product.description = request.POST.get(
+            "description",
+            ""
+        )
+
+        # ==========================================
+        # نوع المنتج
+        # ==========================================
+
+        product_type = request.POST.get(
+            "type",
+            "normal"
+        )
+
         product.type = product_type
+
+        # ==========================================
+        # الصورة الرئيسية
+        # ==========================================
+
+        main_image = request.FILES.get(
+            "image"
+        )
+
+        if main_image:
+
+            product.image = main_image
+
+        # ==========================================
+        # حفظ المنتج
+        # ==========================================
 
         product.save()
 
-        # تحديث bundle إذا كان النوع bundle
+        # ==========================================
+        # حذف الصور الإضافية المحددة
+        # ==========================================
+
+        delete_images = request.POST.getlist(
+            "delete_gallery_images"
+        )
+
+        if delete_images:
+
+            ProductImage.objects.filter(
+                product=product,
+                id__in=delete_images
+            ).delete()
+
+        # ==========================================
+        # إضافة صور جديدة متعددة
+        # ==========================================
+
+        gallery_images = request.FILES.getlist(
+            "gallery_images"
+        )
+
+        if gallery_images:
+
+            last_image = (
+                ProductImage.objects.filter(
+                    product=product
+                )
+                .order_by("-sort_order")
+                .first()
+            )
+
+            if last_image:
+
+                next_sort_order = (
+                    last_image.sort_order + 1
+                )
+
+            else:
+
+                next_sort_order = 0
+
+            for index, image_file in enumerate(
+                gallery_images
+            ):
+
+                ProductImage.objects.create(
+
+                    product=product,
+
+                    image=image_file,
+
+                    sort_order=(
+                        next_sort_order + index
+                    ),
+
+                    is_main=False,
+
+                )
+
+        # ==========================================
+        # تحديث مكونات Bundle
+        # ==========================================
+
         if product_type == "bundle":
-            BundleComponent.objects.filter(product=product).delete()
-            count = int(request.POST.get("bundle_count", 0))
-            for i in range(1, count + 1):
-                comp_id = request.POST.get(f"component_{i}")
-                qty = request.POST.get(f"qty_{i}")
+
+            BundleComponent.objects.filter(
+                product=product
+            ).delete()
+
+            count = int(
+                request.POST.get(
+                    "bundle_count",
+                    0
+                )
+            )
+
+            for i in range(
+                1,
+                count + 1
+            ):
+
+                comp_id = request.POST.get(
+                    f"component_{i}"
+                )
+
+                qty = request.POST.get(
+                    f"qty_{i}"
+                )
+
                 if comp_id and qty:
-                    comp = Product.objects.filter(company=request.company, id=comp_id).first()
+
+                    comp = Product.objects.filter(
+                        company=request.company,
+                        id=comp_id
+                    ).first()
+
                     if comp:
+
                         BundleComponent.objects.create(
+
                             product=product,
+
                             component=comp,
+
                             quantity=qty,
+
                         )
 
-        next_url = request.GET.get("next")
+        else:
+
+            # لو تغير المنتج من Bundle
+            # إلى عادي أو خدمة
+            BundleComponent.objects.filter(
+                product=product
+            ).delete()
+
+        # ==========================================
+        # الرجوع
+        # ==========================================
+
+        next_url = request.GET.get(
+            "next"
+        )
+
         if next_url:
-            return redirect(next_url)
 
-        return redirect("/products/")
+            return redirect(
+                next_url
+            )
 
-    components = BundleComponent.objects.filter(product=product)
+        return redirect(
+            "/products/"
+        )
 
-    return render(request, "products/product_form.html", {
-        "product": product,
-        "products": products,
-        "components": components,
-        "accounts": accounts,     # ⭐
-        "categories": categories,  # ✅ تمرير التصنيفات للقالب
-    })
+    # ==========================================
+    # البيانات المطلوبة للقالب
+    # ==========================================
 
+    components = BundleComponent.objects.filter(
+        product=product
+    )
+
+    gallery_images = ProductImage.objects.filter(
+        product=product
+    ).order_by(
+        "sort_order",
+        "id"
+    )
+
+    return render(
+        request,
+        "products/product_form.html",
+        {
+            "product": product,
+
+            "products": products,
+
+            "components": components,
+
+            "accounts": accounts,
+
+            "categories": categories,
+
+            "gallery_images": gallery_images,
+        }
+    )
 
 # ================================
 #   حذف منتج

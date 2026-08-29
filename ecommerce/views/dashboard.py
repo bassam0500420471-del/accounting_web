@@ -8,7 +8,7 @@ from django.db.models.functions import (
     TruncMonth,
 )
 from django.core.paginator import Paginator
-
+from django.contrib import messages
 from django.db.models import (
     Q,
     Sum,
@@ -27,9 +27,16 @@ from ecommerce.models import (
     Store,
     StoreProduct,
     StoreCategory,
+    Wishlist,
+    Cart,
+    CartItem,
     Order,
     OrderItem,
     PaymentMethod,
+    StoreNotification,
+    CustomerAddress,
+    StorePolicy,
+   StoreAnnouncement,
 )
 
 from ecommerce.models.notifications import StoreNotification
@@ -2764,16 +2771,301 @@ def dashboard_reports(
 # إعدادات المتجر
 # ==========================================================
 
-
 @login_required
-def dashboard_settings(
-    request,
-    store_slug
-):
+def dashboard_settings(request, store_slug):
 
     store = get_object_or_404(
         Store,
         slug=store_slug
+    )
+
+    # ==========================================================
+    # السياسات الافتراضية
+    # ==========================================================
+
+    default_policies = {
+        "shipping": {
+            "title": "سياسة الشحن",
+            "content": (
+                "يتم تجهيز الطلب وشحنه إلى العنوان المسجل من قبل العميل. "
+                "تختلف مدة التوصيل حسب موقع العميل وشركة الشحن، "
+                "وقد يتم التواصل مع العميل لتأكيد بيانات الطلب قبل الشحن."
+            ),
+        },
+
+        "return": {
+            "title": "سياسة الاسترجاع",
+            "content": (
+                "يمكن للعميل طلب استرجاع المنتج وفقًا لشروط الاسترجاع "
+                "المعتمدة لدى المتجر، على أن يكون المنتج بحالته الأصلية "
+                "وغير مستخدم، وأن يتم تقديم طلب الاسترجاع خلال المدة المحددة."
+            ),
+        },
+
+        "terms": {
+            "title": "الشروط والأحكام",
+            "content": (
+                "باستخدام هذا المتجر وإتمام عملية الشراء، يقر العميل "
+                "بصحة البيانات المدخلة ويلتزم بالشروط والأحكام الخاصة "
+                "بالمتجر. يحتفظ المتجر بحقه في تحديث هذه الشروط عند الحاجة."
+            ),
+        },
+
+        "privacy": {
+            "title": "سياسة الخصوصية",
+            "content": (
+                "يلتزم المتجر بالحفاظ على خصوصية بيانات العملاء وعدم "
+                "استخدامها إلا للأغراض المتعلقة بتقديم الخدمات ومعالجة "
+                "الطلبات وتحسين تجربة التسوق، وفقًا للأنظمة واللوائح المعمول بها."
+            ),
+        },
+    }
+
+    # ==========================================================
+    # إنشاء السياسات الافتراضية إذا لم تكن موجودة
+    # ==========================================================
+
+    for policy_type, data in default_policies.items():
+
+        StorePolicy.objects.get_or_create(
+            store=store,
+            policy_type=policy_type,
+            defaults={
+                "title": data["title"],
+                "content": data["content"],
+            }
+        )
+
+    # ==========================================================
+    # حفظ البيانات
+    # ==========================================================
+
+    if request.method == "POST":
+
+        # ======================================================
+        # سعر التوصيل
+        # ======================================================
+
+        shipping_cost = request.POST.get(
+            "shipping_cost",
+            "0"
+        )
+
+        try:
+
+            shipping_cost = Decimal(
+                shipping_cost
+            )
+
+            if shipping_cost < 0:
+                raise ValueError
+
+        except (
+            InvalidOperation,
+            ValueError,
+            TypeError
+        ):
+
+            messages.error(
+                request,
+                "سعر التوصيل غير صحيح."
+            )
+
+            return redirect(
+                "ecommerce:dashboard_settings",
+                store_slug=store.slug
+            )
+
+        # ======================================================
+        # حفظ سعر التوصيل
+        # ======================================================
+
+        store.shipping_cost = shipping_cost
+
+        # ======================================================
+        # روابط التواصل الاجتماعي
+        # ======================================================
+
+        store.facebook_url = request.POST.get(
+            "facebook_url",
+            ""
+        ).strip()
+
+        store.instagram_url = request.POST.get(
+            "instagram_url",
+            ""
+        ).strip()
+
+        store.twitter_url = request.POST.get(
+            "twitter_url",
+            ""
+        ).strip()
+
+        store.whatsapp_url = request.POST.get(
+            "whatsapp_url",
+            ""
+        ).strip()
+
+        store.youtube_url = request.POST.get(
+            "youtube_url",
+            ""
+        ).strip()
+
+        # ======================================================
+        # DEBUG - روابط التواصل الاجتماعي
+        # ======================================================
+
+        print("===== SOCIAL LINKS =====")
+
+        print(
+            "FACEBOOK:",
+            request.POST.get("facebook_url")
+        )
+
+        print(
+            "INSTAGRAM:",
+            request.POST.get("instagram_url")
+        )
+
+        print(
+            "TWITTER:",
+            request.POST.get("twitter_url")
+        )
+
+        print(
+            "WHATSAPP:",
+            request.POST.get("whatsapp_url")
+        )
+
+        print(
+            "YOUTUBE:",
+            request.POST.get("youtube_url")
+        )
+
+        # ======================================================
+        # حفظ بيانات المتجر
+        # ======================================================
+
+        store.save()
+
+
+        # ======================================================
+        # حفظ السياسات
+        # ======================================================
+
+        for policy_type in default_policies.keys():
+
+            policy = StorePolicy.objects.filter(
+                store=store,
+                policy_type=policy_type
+            ).first()
+
+            if policy:
+
+                content = request.POST.get(
+                    f"policy_{policy_type}"
+                )
+
+                if content is not None:
+
+                    policy.content = content.strip()
+
+                    policy.save(
+                        update_fields=[
+                            "content",
+                            "updated_at"
+                        ]
+                    )
+
+        # ======================================================
+        # حفظ إعلانات الشريط العلوي
+        # ======================================================
+
+        announcement_texts = request.POST.getlist(
+            "announcement_text"
+        )
+
+        announcement_active = request.POST.getlist(
+            "announcement_active"
+        )
+
+        # ======================================================
+        # حذف الإعلانات القديمة لهذا المتجر
+        # ======================================================
+
+        StoreAnnouncement.objects.filter(
+            store=store
+        ).delete()
+
+        # ======================================================
+        # إنشاء الإعلانات الجديدة
+        # ======================================================
+
+        for index, text in enumerate(
+            announcement_texts
+        ):
+
+            text = text.strip()
+
+            if not text:
+                continue
+
+            StoreAnnouncement.objects.create(
+                store=store,
+                text=text,
+                sort_order=index,
+                is_active=str(index) in announcement_active,
+            )
+
+        # ======================================================
+        # رسالة النجاح
+        # ======================================================
+
+        messages.success(
+            request,
+            "تم حفظ إعدادات المتجر والسياسات بنجاح."
+        )
+
+        return redirect(
+            "ecommerce:dashboard_settings",
+            store_slug=store.slug
+        )
+
+    # ==========================================================
+    # جلب السياسات
+    # ==========================================================
+
+    policies = StorePolicy.objects.filter(
+        store=store
+    )
+
+    # ==========================================================
+    # جلب إعلانات الشريط العلوي
+    # ==========================================================
+
+    announcements = StoreAnnouncement.objects.filter(
+        store=store
+    ).order_by(
+        "sort_order",
+        "id"
+    )
+
+    # ==========================================================
+    # عرض صفحة الإعدادات
+    # ==========================================================
+
+    print(
+        "===== SETTINGS PAGE ====="
+    )
+
+    print(
+        "STORE:",
+        store.slug
+    )
+
+    print(
+        "SHIPPING COST:",
+        store.shipping_cost
     )
 
     return render(
@@ -2781,7 +3073,17 @@ def dashboard_settings(
         "ecommerce/dashboard/settings.html",
         {
             "store": store,
-        }
+
+            "shipping_cost_display": (
+                f"{store.shipping_cost:.2f}"
+                if store.shipping_cost is not None
+                else "15.00"
+            ),
+
+            "policies": policies,
+
+            "announcements": announcements,
+        },
     )
 
 
@@ -2841,6 +3143,31 @@ def store_address(
         store.google_map_url = request.POST.get(
             "google_map_url"
         )
+
+        store.facebook_url = request.POST.get(
+            "facebook_url",
+            ""
+        ).strip()
+
+        store.instagram_url = request.POST.get(
+            "instagram_url",
+            ""
+        ).strip()
+
+        store.twitter_url = request.POST.get(
+            "twitter_url",
+            ""
+        ).strip()
+
+        store.whatsapp_url = request.POST.get(
+            "whatsapp_url",
+            ""
+        ).strip()
+
+        store.youtube_url = request.POST.get(
+            "youtube_url",
+            ""
+        ).strip()
 
         store.save()
 

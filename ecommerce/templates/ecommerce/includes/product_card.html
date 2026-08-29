@@ -1,256 +1,920 @@
 {% load static %}
 
-<div class="product-card">
+<div class="product-card wishlist-card">
 
+    {% if wishlist_page %}
 
-    <!-- صورة المنتج -->
+        <button
+            type="button"
+            class="wishlist-remove"
+            data-product-id="{{ product.id }}"
+            title="إزالة من المفضلة"
+            aria-label="إزالة من المفضلة">
 
-    <div class="product-image">
+            ×
 
-
-{% if product.image %}
-
-<img src="{{ product.image.url }}"
-     alt="{{ product.get_name }}">
-
-{% else %}
-
-<img src="{% static 'ecommerce/images/no-image.png' %}">
-
-{% endif %}
-
-
-
-<!-- شارة الخصم -->
-{% if show_discount %}
-    <span class="product-badge">
-        خصم
-    </span>
-{% endif %}
-
-
-<!-- شارة جديد -->
-{% if product.is_new %}
-    <span class="product-badge product-new">
-        جديد
-    </span>
-{% endif %}
-
-
-
-
-
-
-<!-- أدوات سريعة -->
-
-<div class="product-actions">
-
-
-    <!-- المفضلة -->
-
-    <a href="javascript:void(0)"
-       class="wishlist-btn"
-       data-product="{{ product.id }}"
-       title="إضافة للمفضلة">
-
-        <i class="bi bi-heart"></i>
-
-    </a>
-
-
-
-    <!-- عرض التفاصيل -->
-
-    {% if product.slug %}
-
-        <a href="{% url 'ecommerce:product_detail' store.slug product.slug %}"
-           title="عرض المنتج">
-
-            <i class="bi bi-eye"></i>
-
-        </a>
-
-    {% else %}
-
-        <a href="javascript:void(0)"
-           title="المنتج لا يملك رابطاً">
-
-            <i class="bi bi-eye-slash"></i>
-
-        </a>
+        </button>
 
     {% endif %}
 
 
+    <!-- ==========================================================
+         صورة المنتج / معرض الصور
+    =========================================================== -->
 
-    <!-- مقارنة -->
+    <div class="product-image product-image-gallery">
 
-    <a href="javascript:void(0)"
-       class="compare-btn"
-       data-product="{{ product.id }}"
-       title="مقارنة">
+        <div class="product-gallery-images">
 
-        <i class="bi bi-arrow-left-right"></i>
 
-    </a>
+            <!-- ==================================================
+                 الصورة الرئيسية للمنتج
+            =================================================== -->
 
-</div>
+            {% if product.image %}
+
+                <img
+                    src="{{ product.image.url }}"
+                    alt="{{ product.get_name }}"
+                    class="product-gallery-image active-image"
+                    loading="lazy"
+                >
+
+            {% endif %}
+
+
+            <!-- ==================================================
+                 الصور الإضافية
+            =================================================== -->
+
+            {% for gallery_image in product.images.all %}
+
+                {% if gallery_image.image %}
+
+                    <img
+                        src="{{ gallery_image.image.url }}"
+                        alt="{{ gallery_image.alt_text|default:product.get_name }}"
+                        class="product-gallery-image"
+                        loading="lazy"
+                    >
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            <!-- ==================================================
+                 لا توجد أي صورة
+            =================================================== -->
+
+            {% if not product.image and not product.images.all %}
+
+                <img
+                    src="{% static 'ecommerce/images/no-image.png' %}"
+                    alt="لا توجد صورة"
+                    class="product-gallery-image active-image"
+                    loading="lazy"
+                >
+
+            {% endif %}
+
+
+        </div>
+
+
+        <!-- ======================================================
+             أسهم الصور
+        ======================================================= -->
+
+        <button
+            type="button"
+            class="gallery-arrow gallery-prev"
+            aria-label="الصورة السابقة">
+
+            <i class="bi bi-chevron-right"></i>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="gallery-arrow gallery-next"
+            aria-label="الصورة التالية">
+
+            <i class="bi bi-chevron-left"></i>
+
+        </button>
+
+
+        <!-- ======================================================
+             نقاط الصور
+        ======================================================= -->
+
+        <div class="gallery-dots">
+
+            {% if product.image %}
+
+                <span
+                    class="gallery-dot active"
+                    aria-label="الصورة الرئيسية">
+                </span>
+
+            {% endif %}
+
+
+            {% for gallery_image in product.images.all %}
+
+                {% if gallery_image.image %}
+
+                    <span
+                        class="gallery-dot"
+                        aria-label="صورة إضافية">
+                    </span>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- ======================================================
+             شارة الخصم
+        ======================================================= -->
+
+        {% if show_discount %}
+
+            <span class="product-badge">
+
+                خصم
+
+            </span>
+
+        {% endif %}
+
+
+        <!-- ======================================================
+             شارة جديد
+        ======================================================= -->
+
+        {% if product.is_new %}
+
+            <span class="product-badge product-new">
+
+                جديد
+
+            </span>
+
+        {% endif %}
+
+
+        <!-- ======================================================
+             أدوات سريعة
+        ======================================================= -->
+
+        <div class="product-actions">
+
+
+            <!-- المفضلة -->
+
+            <a
+                href="javascript:void(0)"
+                class="wishlist-btn"
+                data-product="{{ product.id }}"
+                title="إضافة للمفضلة">
+
+                <i class="bi bi-heart"></i>
+
+            </a>
+
+
+            <!-- عرض المنتج -->
+
+            {% if product.slug %}
+
+                <a
+                    href="{% url 'ecommerce:product_detail' store.slug product.slug %}"
+                    title="عرض المنتج">
+
+                    <i class="bi bi-eye"></i>
+
+                </a>
+
+            {% else %}
+
+                <a
+                    href="javascript:void(0)"
+                    title="المنتج لا يملك رابطاً">
+
+                    <i class="bi bi-eye-slash"></i>
+
+                </a>
+
+            {% endif %}
+
+
+            <!-- مقارنة -->
+
+            <a
+                href="javascript:void(0)"
+                class="compare-btn"
+                data-product="{{ product.id }}"
+                title="مقارنة">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+            </a>
+
+
+        </div>
 
 
     </div>
 
 
-
-
-
-
-
-    <!-- معلومات المنتج -->
-
+    <!-- ==========================================================
+         معلومات المنتج
+    =========================================================== -->
 
     <div class="product-content">
 
 
+        <!-- التصنيف -->
 
         {% if product.category %}
 
-
             <div class="product-category">
-
 
                 {{ product.category.name }}
 
-
             </div>
-
 
         {% endif %}
 
 
-
-
-
-
+        <!-- اسم المنتج -->
 
         <div class="product-name">
 
-
-            {{ product.name }}
-
+            {{ product.get_name }}
 
         </div>
-
-
-
-
-
 
 
         <!-- التقييم -->
 
-
         <div class="product-rating">
 
-
             ★★★★★
-
 
         </div>
 
 
-
-
-
-
-
-
         <!-- السعر -->
-
 
         <div class="product-price">
 
 
-
             {% if product.sale_price %}
 
-
-
                 <span class="current-price">
-
 
                     {{ product.sale_price }}
 
                     {{ store.currency.symbol|default:"ر.س" }}
 
-
                 </span>
 
 
+                {% if product.price %}
 
+                    <span class="old-price">
 
+                        {{ product.price }}
 
-                <span class="old-price">
+                    </span>
 
-
-                    {{ product.price }}
-
-
-                </span>
-
-
-
+                {% endif %}
 
 
             {% else %}
 
-
-
-
                 <span class="current-price">
-
 
                     {{ product.price }}
 
                     {{ store.currency.symbol|default:"ر.س" }}
 
-
                 </span>
 
-
-
-
-
             {% endif %}
-
 
 
         </div>
 
 
+        <!-- ======================================================
+             زر السلة
+        ======================================================= -->
 
+        <button
+            type="button"
+            class="add-to-cart add-cart-btn"
+            data-product="{{ product.id }}">
 
+            <i class="bi bi-cart-plus"></i>
 
+            إضافة إلى السلة
 
-
-
-
-<!-- زر السلة -->
-
-<button
-    type="button"
-    class="add-to-cart add-cart-btn"
-    data-product="{{ product.id }}">
-
-    <i class="bi bi-cart-plus"></i>
-
-    إضافة إلى السلة
-
-</button>
-
-
+        </button>
 
 
     </div>
 
 
 </div>
+
+
+<!-- ==========================================================
+     CSS معرض الصور
+=========================================================== -->
+
+<style>
+
+
+/* ==========================================================
+   حاوية الصورة
+=========================================================== */
+
+.product-image-gallery {
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+
+/* ==========================================================
+   حاوية الصور
+=========================================================== */
+
+.product-gallery-images {
+
+    width: 100%;
+
+    height: 100%;
+
+    position: relative;
+
+}
+
+
+/* ==========================================================
+   جميع الصور
+=========================================================== */
+
+.product-gallery-image {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition: opacity .35s ease;
+
+}
+
+
+/* ==========================================================
+   الصورة الحالية
+=========================================================== */
+
+.product-gallery-image.active-image {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+}
+
+
+/* ==========================================================
+   الأسهم
+=========================================================== */
+
+.gallery-arrow {
+
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 32px;
+
+    height: 32px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.92);
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    z-index: 20;
+
+    opacity: 0;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+}
+
+
+/* إظهار الأسهم عند وجود أكثر من صورة */
+
+.product-image-gallery.has-multiple-images .gallery-arrow {
+
+    display: flex;
+
+}
+
+
+/* ظهور الأسهم عند المرور */
+
+.product-image-gallery.has-multiple-images:hover .gallery-arrow {
+
+    opacity: 1;
+
+}
+
+
+/* السهم الأيمن */
+
+.gallery-prev {
+
+    right: 8px;
+
+}
+
+
+/* السهم الأيسر */
+
+.gallery-next {
+
+    left: 8px;
+
+}
+
+
+/* ==========================================================
+   النقاط
+=========================================================== */
+
+.gallery-dots {
+
+    position: absolute;
+
+    bottom: 10px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    display: none;
+
+    align-items: center;
+
+    gap: 5px;
+
+    z-index: 20;
+
+}
+
+
+/* إظهار النقاط عند وجود أكثر من صورة */
+
+.product-image-gallery.has-multiple-images .gallery-dots {
+
+    display: flex;
+
+}
+
+
+/* النقطة */
+
+.gallery-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: rgba(0,0,0,.25);
+
+    transition:
+        width .2s ease,
+        background .2s ease;
+
+}
+
+
+/* النقطة الحالية */
+
+.gallery-dot.active {
+
+    width: 18px;
+
+    border-radius: 10px;
+
+    background: rgba(0,0,0,.65);
+
+}
+
+
+/* ==========================================================
+   الجوال
+=========================================================== */
+
+@media (max-width: 768px) {
+
+    .product-image-gallery.has-multiple-images .gallery-arrow {
+
+        opacity: 1;
+
+    }
+
+}
+
+
+/* ==========================================================
+   منع أي CSS خارجي من إخفاء الصورة الرئيسية
+=========================================================== */
+
+.product-image-gallery
+.product-gallery-image.active-image {
+
+    display: block !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+}
+
+
+/* الصور غير النشطة */
+
+.product-image-gallery
+.product-gallery-image:not(.active-image) {
+
+    opacity: 0 !important;
+
+    visibility: hidden !important;
+
+}
+
+</style>
+
+
+<!-- ==========================================================
+     JavaScript معرض الصور
+=========================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    /*
+     * العثور على جميع المعارض
+     */
+
+    document
+        .querySelectorAll(".product-image-gallery")
+        .forEach(function (gallery) {
+
+
+            /* ==================================================
+               الصور
+            ================================================== */
+
+            const images =
+                gallery.querySelectorAll(
+                    ".product-gallery-image"
+                );
+
+
+            /* ==================================================
+               النقاط
+            ================================================== */
+
+            const dots =
+                gallery.querySelectorAll(
+                    ".gallery-dot"
+                );
+
+
+            /* ==================================================
+               الأسهم
+            ================================================== */
+
+            const prev =
+                gallery.querySelector(
+                    ".gallery-prev"
+                );
+
+
+            const next =
+                gallery.querySelector(
+                    ".gallery-next"
+                );
+
+
+            /*
+             * لا توجد صور
+             */
+
+            if (images.length === 0) {
+
+                return;
+
+            }
+
+
+            /*
+             * الصورة الحالية
+             */
+
+            let current = 0;
+
+
+            /* ==================================================
+               تحديد وجود أكثر من صورة
+            ================================================== */
+
+            if (images.length > 1) {
+
+                gallery.classList.add(
+                    "has-multiple-images"
+                );
+
+            }
+            else {
+
+                gallery.classList.remove(
+                    "has-multiple-images"
+                );
+
+            }
+
+
+            /* ==================================================
+               عرض الصورة
+            ================================================== */
+
+            function showImage(index) {
+
+
+                /*
+                 * حساب الرقم الصحيح
+                 */
+
+                current =
+                    (index + images.length)
+                    % images.length;
+
+
+                /* ==================================================
+                   تغيير الصور
+                ================================================== */
+
+                images.forEach(
+                    function (image, i) {
+
+                        image.classList.toggle(
+                            "active-image",
+                            i === current
+                        );
+
+                    }
+                );
+
+
+                /* ==================================================
+                   تغيير النقاط
+                ================================================== */
+
+                dots.forEach(
+                    function (dot, i) {
+
+                        dot.classList.toggle(
+                            "active",
+                            i === current
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               الصورة التالية
+            ================================================== */
+
+            if (next) {
+
+                next.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        showImage(
+                            current + 1
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               الصورة السابقة
+            ================================================== */
+
+            if (prev) {
+
+                prev.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        showImage(
+                            current - 1
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               الضغط على النقاط
+            ================================================== */
+
+            dots.forEach(
+                function (dot, index) {
+
+                    dot.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+                            showImage(index);
+
+                        }
+                    );
+
+                }
+            );
+
+
+            /* ==================================================
+               تغيير تلقائي عند المرور
+            ================================================== */
+
+            let autoSlide = null;
+
+
+            gallery.addEventListener(
+                "mouseenter",
+                function () {
+
+
+                    /*
+                     * لا تعمل الحركة التلقائية
+                     * إلا إذا كان هناك أكثر من صورة
+                     */
+
+                    if (images.length <= 1) {
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * منع إنشاء أكثر من مؤقت
+                     */
+
+                    if (autoSlide) {
+
+                        return;
+
+                    }
+
+
+                    autoSlide =
+                        setInterval(
+                            function () {
+
+                                showImage(
+                                    current + 1
+                                );
+
+                            },
+                            1800
+                        );
+
+                }
+            );
+
+
+            /* ==================================================
+               مغادرة المعرض
+            ================================================== */
+
+            gallery.addEventListener(
+                "mouseleave",
+                function () {
+
+
+                    /*
+                     * إيقاف الحركة
+                     */
+
+                    if (autoSlide) {
+
+                        clearInterval(
+                            autoSlide
+                        );
+
+                        autoSlide = null;
+
+                    }
+
+
+                    /*
+                     * العودة للصورة الرئيسية
+                     */
+
+                    if (images.length > 1) {
+
+                        showImage(0);
+
+                    }
+
+                }
+            );
+
+
+            /* ==================================================
+               تأكيد الصورة الأولى عند تحميل الصفحة
+            ================================================== */
+
+            showImage(0);
+
+
+        });
+
+});
+
+</script>
+

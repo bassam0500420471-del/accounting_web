@@ -1,1077 +1,2136 @@
 {% extends "layout/base.html" %}
 
-
 {% block title %}
 طلبات المتجر
 {% endblock %}
 
 
-
 {% block content %}
 
+<div class="orders-management-page">
 
-<div class="container-fluid">
-
-
-<h2 class="mb-4">
-🛒 إدارة الطلبات
-</h2>
+    <div class="container-fluid">
 
 
+        <!-- ==========================================================
+             HEADER
+        =========================================================== -->
+
+        <div class="page-header-3d">
+
+            <div>
+
+                <h2>
+                    🛒 إدارة الطلبات
+                </h2>
+
+                <p>
+                    إدارة ومتابعة جميع طلبات المتجر وحالاتها
+                </p>
+
+            </div>
+
+            <div class="orders-header-badge">
+
+                📦 إجمالي الطلبات
+
+                <strong>
+                    {{ statistics.total }}
+                </strong>
+
+            </div>
+
+        </div>
 
 
-<!-- الإحصائيات -->
+        <!-- ==========================================================
+             STATISTICS
+        =========================================================== -->
 
-<div class="stats-grid">
+        <div class="stats-grid-3d">
 
 
-<div class="card">
-<h4>كل الطلبات</h4>
-<h2>{{ statistics.total }}</h2>
+            <!-- الكل -->
+
+            <div class="stat-card-3d">
+
+                <div class="stat-icon">
+                    🛒
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        كل الطلبات
+                    </span>
+
+                    <strong>
+                        {{ statistics.total }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- pending -->
+
+            <div class="stat-card-3d pending">
+
+                <div class="stat-icon">
+                    ⏳
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        بانتظار المراجعة
+                    </span>
+
+                    <strong>
+                        {{ statistics.pending }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- confirmed -->
+
+            <div class="stat-card-3d confirmed">
+
+                <div class="stat-icon">
+                    ✅
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        مؤكد
+                    </span>
+
+                    <strong>
+                        {{ statistics.confirmed }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- processing -->
+
+            <div class="stat-card-3d processing">
+
+                <div class="stat-icon">
+                    🔧
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        قيد التجهيز
+                    </span>
+
+                    <strong>
+                        {{ statistics.processing }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- shipped -->
+
+            <div class="stat-card-3d shipped">
+
+                <div class="stat-icon">
+                    🚚
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        تم الشحن
+                    </span>
+
+                    <strong>
+                        {{ statistics.shipped }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- delivered -->
+
+            <div class="stat-card-3d delivered">
+
+                <div class="stat-icon">
+                    📦
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        تم التسليم
+                    </span>
+
+                    <strong>
+                        {{ statistics.delivered }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==========================================================
+             ORDERS TABLE SECTION
+        =========================================================== -->
+
+        <div class="section-card-3d">
+
+
+            <div class="section-title-3d">
+
+                📋 قائمة طلبات المتجر
+
+            </div>
+
+
+
+            <!-- ======================================================
+                 FILTERS
+            ======================================================= -->
+
+            <div class="filters-card-3d">
+
+
+                <div class="filters-grid-3d">
+
+
+                    <!-- رقم الطلب -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            🛒 رقم الطلب
+                        </label>
+
+                        <div class="filter-input-box">
+
+                            <input
+                                id="f_order"
+                                type="text"
+                                placeholder="رقم الطلب"
+                                onkeyup="filterOrders()"
+                            >
+
+                            <button
+                                type="button"
+                                onclick="clearFilter('f_order')"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- العميل -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            👤 العميل
+                        </label>
+
+                        <div class="filter-input-box">
+
+                            <input
+                                id="f_customer"
+                                type="text"
+                                placeholder="اسم العميل"
+                                onkeyup="filterOrders()"
+                            >
+
+                            <button
+                                type="button"
+                                onclick="clearFilter('f_customer')"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- عدد المنتجات -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            🛍️ عدد المنتجات
+                        </label>
+
+                        <div class="filter-input-box">
+
+                            <input
+                                id="f_items"
+                                type="number"
+                                placeholder="العدد"
+                                onkeyup="filterOrders()"
+                            >
+
+                            <button
+                                type="button"
+                                onclick="clearFilter('f_items')"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- الإجمالي -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            💰 الإجمالي
+                        </label>
+
+                        <div class="filter-input-box">
+
+                            <input
+                                id="f_total"
+                                type="number"
+                                step="0.01"
+                                placeholder="الإجمالي"
+                                onkeyup="filterOrders()"
+                            >
+
+                            <button
+                                type="button"
+                                onclick="clearFilter('f_total')"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- طريقة الدفع -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            💳 طريقة الدفع
+                        </label>
+
+                        <select
+                            id="f_payment"
+                            onchange="filterOrders()"
+                        >
+
+                            <option value="">
+                                كل طرق الدفع
+                            </option>
+
+                            <option value="نقدي">
+                                نقدي
+                            </option>
+
+                            <option value="بطاقة">
+                                بطاقة
+                            </option>
+
+                            <option value="تحويل بنكي">
+                                تحويل بنكي
+                            </option>
+
+                            <option value="الدفع عند الاستلام">
+                                الدفع عند الاستلام
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- الحالة -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            📦 حالة الطلب
+                        </label>
+
+                        <select
+                            id="f_status"
+                            onchange="filterOrders()"
+                        >
+
+                            <option value="">
+                                كل الحالات
+                            </option>
+
+                            <option value="بانتظار المراجعة">
+                                بانتظار المراجعة
+                            </option>
+
+                            <option value="مؤكد">
+                                مؤكد
+                            </option>
+
+                            <option value="قيد التجهيز">
+                                قيد التجهيز
+                            </option>
+
+                            <option value="جاهز للاستلام">
+                                جاهز للاستلام
+                            </option>
+
+                            <option value="تم الشحن">
+                                تم الشحن
+                            </option>
+
+                            <option value="تم التسليم">
+                                تم التسليم
+                            </option>
+
+                            <option value="ملغي">
+                                ملغي
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- التاريخ -->
+
+                    <div class="filter-item-3d">
+
+                        <label>
+                            📅 التاريخ
+                        </label>
+
+                        <div class="filter-input-box">
+
+                            <input
+                                id="f_date"
+                                type="date"
+                                onchange="filterOrders()"
+                            >
+
+                            <button
+                                type="button"
+                                onclick="clearFilter('f_date')"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- زر البحث -->
+
+                    <div class="filter-item-3d filter-search">
+
+                        <label>
+                            &nbsp;
+                        </label>
+
+                        <button
+                            type="button"
+                            class="search-btn-3d"
+                            onclick="filterOrders()"
+                        >
+
+                            🔍 بحث
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================================
+                 TABLE
+            ======================================================= -->
+
+            <div class="table-wrapper-3d">
+
+                <table class="orders-table-3d">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                🛒 رقم الطلب
+                            </th>
+
+                            <th>
+                                👤 العميل
+                            </th>
+
+                            <th>
+                                🛍️ المنتجات
+                            </th>
+
+                            <th>
+                                💰 الإجمالي
+                            </th>
+
+                            <th>
+                                💳 الدفع
+                            </th>
+
+                            <th>
+                                📦 الحالة
+                            </th>
+
+                            <th>
+                                📅 التاريخ
+                            </th>
+
+                            <th>
+                                ⚙️ إجراء
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {% for order in orders %}
+
+
+                        <tr
+
+                            data-order="{{ order.order_no }}"
+
+                            data-customer="{{ order.customer|lower }}"
+
+                            data-items="{{ order.items.count }}"
+
+                            data-total="{{ order.total|floatformat:2 }}"
+
+                            data-payment="{{ order.payment_method|default:'-' }}"
+
+                            data-status="{{ order.get_status_display }}"
+
+                            data-date="{{ order.created_at|date:'Y-m-d' }}"
+
+                        >
+
+
+                            <!-- رقم الطلب -->
+
+                            <td>
+
+                                <span class="order-number-table">
+
+                                    {{ order.order_no }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- العميل -->
+
+                            <td>
+
+                                <strong>
+                                    {{ order.customer }}
+                                </strong>
+
+                            </td>
+
+
+
+                            <!-- المنتجات -->
+
+                            <td>
+
+                                <span class="quantity-badge-3d">
+
+                                    {{ order.items.count }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- الإجمالي -->
+
+                            <td>
+
+                                <strong class="total-table">
+
+                                    {{ order.total }}
+
+                                    <small>
+                                        ر.س
+                                    </small>
+
+                                </strong>
+
+                            </td>
+
+
+
+                            <!-- طريقة الدفع -->
+
+                            <td>
+
+                                {% if order.payment_method %}
+
+                                    <span class="payment-badge-3d">
+
+                                        {{ order.payment_method }}
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="muted-badge-3d">
+                                        -
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- الحالة -->
+
+                            <td>
+
+                                <span class="status-badge-table">
+
+                                    {{ order.get_status_display }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- التاريخ -->
+
+                            <td>
+
+                                <span class="date-table">
+
+                                    {{ order.created_at|date:"Y-m-d H:i" }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- الإجراء -->
+
+                            <td>
+
+                                <a
+                                    class="view-order-btn-3d"
+                                    href="{% url 'ecommerce:order_detail' store_slug=store.slug pk=order.id %}"
+                                >
+
+                                    👁 عرض التفاصيل
+
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% empty %}
+
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="empty-orders-3d"
+                            >
+
+                                🛒 لا توجد طلبات حالياً
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==========================================================
+             PAGINATION
+        =========================================================== -->
+
+        <div class="pagination-card-3d">
+
+
+            {% if orders.has_previous %}
+
+                <a
+                    href="?page={{ orders.previous_page_number }}"
+                    class="pagination-btn-3d"
+                >
+
+                    → السابق
+
+                </a>
+
+            {% endif %}
+
+
+
+            <span class="pagination-current-3d">
+
+                صفحة
+
+                <strong>
+                    {{ orders.number }}
+                </strong>
+
+                من
+
+                <strong>
+                    {{ orders.paginator.num_pages }}
+                </strong>
+
+            </span>
+
+
+
+            {% if orders.has_next %}
+
+                <a
+                    href="?page={{ orders.next_page_number }}"
+                    class="pagination-btn-3d"
+                >
+
+                    التالي ←
+
+                </a>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </div>
+
 </div>
-
-
-<div class="card">
-<h4>بانتظار المراجعة</h4>
-<h2>{{ statistics.pending }}</h2>
-</div>
-
-
-<div class="card">
-<h4>مؤكد</h4>
-<h2>{{ statistics.confirmed }}</h2>
-</div>
-
-
-<div class="card">
-<h4>قيد التجهيز</h4>
-<h2>{{ statistics.processing }}</h2>
-</div>
-
-
-<div class="card">
-<h4>تم الشحن</h4>
-<h2>{{ statistics.shipped }}</h2>
-</div>
-
-
-<div class="card">
-<h4>تم التسليم</h4>
-<h2>{{ statistics.delivered }}</h2>
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="table-box">
-
-
-<table class="orders-table">
-
-
-<thead>
-
-
-<tr class="filters">
-
-
-
-<th>
-
-<div class="filter-box">
-
-<input 
-id="f_order"
-type="text"
-placeholder="رقم الطلب"
-onkeyup="filterOrders()">
-
-
-<button onclick="clearFilter('f_order')">
-×
-</button>
-
-</div>
-
-</th>
-
-
-
-
-<th>
-
-<div class="filter-box">
-
-<input 
-id="f_customer"
-type="text"
-placeholder="العميل"
-onkeyup="filterOrders()">
-
-
-
-<button onclick="clearFilter('f_customer')">
-×
-</button>
-
-
-</div>
-
-</th>
-
-
-
-
-<th>
-
-<div class="filter-box">
-
-<input 
-id="f_items"
-type="number"
-placeholder="عدد المنتجات"
-onkeyup="filterOrders()">
-
-
-
-<button onclick="clearFilter('f_items')">
-×
-</button>
-
-
-</div>
-
-</th>
-
-
-
-
-<th>
-
-<div class="filter-box">
-
-
-<input 
-id="f_total"
-type="number"
-placeholder="الإجمالي"
-onkeyup="filterOrders()">
-
-
-
-<button onclick="clearFilter('f_total')">
-×
-</button>
-
-
-
-</div>
-
-</th>
-
-
-
-
-<th>
-
-<select id="f_payment"
-onchange="filterOrders()">
-
-
-<option value="">
-كل طرق الدفع
-</option>
-
-
-<option value="نقدي">
-نقدي
-</option>
-
-
-<option value="بطاقة">
-بطاقة
-</option>
-
-
-</select>
-
-</th>
-
-
-
-
-<th>
-
-<select id="f_status"
-onchange="filterOrders()">
-
-
-<option value="">
-كل الحالات
-</option>
-
-
-<option value="بانتظار المراجعة">
-بانتظار المراجعة
-</option>
-
-
-<option value="مؤكد">
-مؤكد
-</option>
-
-
-<option value="قيد التجهيز">
-قيد التجهيز
-</option>
-
-
-<option value="تم الشحن">
-تم الشحن
-</option>
-
-
-<option value="تم التسليم">
-تم التسليم
-</option>
-
-
-
-</select>
-
-
-</th>
-
-
-
-
-<th>
-
-
-<div class="filter-box">
-
-
-<input 
-id="f_date"
-type="date"
-onchange="filterOrders()">
-
-
-
-<button onclick="clearFilter('f_date')">
-×
-</button>
-
-
-
-</div>
-
-
-</th>
-
-
-
-<th>
-
-<button class="search-btn"
-onclick="filterOrders()">
-
-🔍 بحث
-
-</button>
-
-
-</th>
-
-
-
-</tr>
-
-
-
-
-
-
-<tr>
-
-<th>
-رقم الطلب
-</th>
-
-
-<th>
-العميل
-</th>
-
-
-<th>
-عدد المنتجات
-</th>
-
-
-<th>
-الإجمالي
-</th>
-
-
-<th>
-طريقة الدفع
-</th>
-
-
-<th>
-الحالة
-</th>
-
-
-<th>
-التاريخ
-</th>
-
-
-<th>
-إجراء
-</th>
-
-
-</tr>
-
-
-
-</thead>
-
-
-
-
-
-<tbody>
-
-
-
-{% for order in orders %}
-
-
-
-<tr
-
-data-order="{{ order.order_no }}"
-
-data-customer="{{ order.customer|lower }}"
-
-data-items="{{ order.items.count }}"
-
-data-total="{{ order.total|floatformat:2 }}"
-
-data-payment="{{ order.payment_method|default:'-' }}"
-
-data-status="{{ order.get_status_display }}"
-
-data-date="{{ order.created_at|date:'Y-m-d' }}"
-
->
-
-
-
-
-<td>
-{{ order.order_no }}
-</td>
-
-
-
-<td>
-{{ order.customer }}
-</td>
-
-
-
-<td>
-{{ order.items.count }}
-</td>
-
-
-
-<td>
-{{ order.total }}
-</td>
-
-
-
-<td>
-{{ order.payment_method|default:"-" }}
-</td>
-
-
-
-<td>
-{{ order.get_status_display }}
-</td>
-
-
-
-<td>
-{{ order.created_at|date:"Y-m-d H:i" }}
-</td>
-
-
-
-<td>
-
-<a href="{% url 'ecommerce:order_detail' store_slug=store.slug pk=order.id %}">
-👁 عرض
-</a>
-
-
-</td>
-
-
-
-</tr>
-
-
-
-{% empty %}
-
-
-
-<tr>
-
-<td colspan="8">
-لا توجد طلبات حالياً
-</td>
-
-</tr>
-
-
-
-{% endfor %}
-
-
-
-</tbody>
-</table>
-
-
-</div>
-
-
-
-
-
-<!-- الصفحات -->
-
-
-<div class="pagination-box">
-
-
-{% if orders.has_previous %}
-
-<a href="?page={{ orders.previous_page_number }}">
-السابق
-</a>
-
-{% endif %}
-
-
-
-<span>
-صفحة {{ orders.number }}
-من {{ orders.paginator.num_pages }}
-</span>
-
-
-
-{% if orders.has_next %}
-
-<a href="?page={{ orders.next_page_number }}">
-التالي
-</a>
-
-{% endif %}
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
 
 
 
 <style>
 
+/* ==========================================================
+   GENERAL
+========================================================== */
 
-.stats-grid{
+.orders-management-page{
 
-display:grid;
+    direction:rtl;
 
-grid-template-columns:
-repeat(auto-fit,minmax(150px,1fr));
+    min-height:calc(100vh - 80px);
 
-gap:15px;
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee 0%,
+            #dcdcdc 50%,
+            #f7f7f7 100%
+        );
 
-margin-bottom:30px;
+    padding:30px 0 50px;
+
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
+
+}
+
+
+.orders-management-page .container-fluid{
+
+    max-width:1400px;
 
 }
 
 
 
+/* ==========================================================
+   HEADER
+========================================================== */
 
-.card{
+.page-header-3d{
 
-background:white;
+    display:flex;
 
-padding:20px;
+    align-items:center;
 
-border-radius:10px;
+    justify-content:space-between;
 
-text-align:center;
+    gap:20px;
 
-box-shadow:
-0 2px 8px rgba(0,0,0,.08);
+    margin-bottom:25px;
+
+    padding:25px 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:20px;
+
+    box-shadow:
+        6px 8px 20px rgba(0,0,0,.12),
+        -4px -4px 10px rgba(255,255,255,.9);
+
+}
+
+
+.page-header-3d h2{
+
+    margin:0 0 7px;
+
+    color:#222;
+
+    font-size:27px;
+
+    font-weight:bold;
+
+}
+
+
+.page-header-3d p{
+
+    margin:0;
+
+    color:#777;
+
+    font-size:14px;
+
+}
+
+
+.orders-header-badge{
+
+    padding:13px 20px;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e5e5e5
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,.1);
+
+    color:#777;
+
+    white-space:nowrap;
+
+}
+
+
+.orders-header-badge strong{
+
+    color:#222;
+
+    font-size:19px;
+
+    margin-right:8px;
 
 }
 
 
 
+/* ==========================================================
+   STATISTICS
+========================================================== */
+
+.stats-grid-3d{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(6,1fr);
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+}
 
 
-.table-box{
+.stat-card-3d{
 
-background:white;
+    display:flex;
 
-padding:20px;
+    align-items:center;
 
-border-radius:10px;
+    gap:12px;
 
-overflow:auto;
+    min-height:90px;
+
+    padding:15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:16px;
+
+    box-shadow:
+        4px 6px 14px rgba(0,0,0,.10),
+        -3px -3px 8px rgba(255,255,255,.85);
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+
+}
+
+
+.stat-card-3d:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        6px 9px 18px rgba(0,0,0,.15),
+        -3px -3px 9px rgba(255,255,255,.9);
+
+}
+
+
+.stat-icon{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:48px;
+
+    height:48px;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #ffffff
+        );
+
+    border:1px solid #ddd;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,.08);
+
+    font-size:22px;
+
+}
+
+
+.stat-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:5px;
+
+}
+
+
+.stat-content span{
+
+    color:#777;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+.stat-content strong{
+
+    color:#222;
+
+    font-size:22px;
+
+}
+
+
+.stat-card-3d.pending .stat-content strong{
+    color:#997404;
+}
+
+.stat-card-3d.confirmed .stat-content strong{
+    color:#146c43;
+}
+
+.stat-card-3d.processing .stat-content strong{
+    color:#084298;
+}
+
+.stat-card-3d.shipped .stat-content strong{
+    color:#087990;
+}
+
+.stat-card-3d.delivered .stat-content strong{
+    color:#146c43;
+}
+
+
+
+/* ==========================================================
+   SECTION
+========================================================== */
+
+.section-card-3d{
+
+    margin-bottom:20px;
+
+    padding:20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:20px;
+
+    box-shadow:
+        5px 8px 20px rgba(0,0,0,.12),
+        -4px -4px 10px rgba(255,255,255,.85);
+
+}
+
+
+.section-title-3d{
+
+    margin-bottom:18px;
+
+    padding-bottom:12px;
+
+    border-bottom:1px solid #ddd;
+
+    color:#333;
+
+    font-size:18px;
+
+    font-weight:bold;
 
 }
 
 
 
+/* ==========================================================
+   FILTERS
+========================================================== */
+
+.filters-card-3d{
+
+    margin-bottom:20px;
+
+    padding:17px;
+
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8f8f8,
+            #e9e9e9
+        );
+
+    border:1px solid #ddd;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,.04),
+        inset -2px -2px 5px rgba(255,255,255,.9);
+
+}
 
 
-.orders-table{
+.filters-grid-3d{
 
-width:100%;
+    display:grid;
 
-border-collapse:collapse;
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:15px;
+
+}
+
+
+.filter-item-3d{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+}
+
+
+.filter-item-3d label{
+
+    color:#777;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+.filter-input-box{
+
+    position:relative;
+
+}
+
+
+.filter-input-box input,
+.filter-item-3d select{
+
+    width:100%;
+
+    height:42px;
+
+    padding:
+        7px 35px 7px 10px;
+
+    border:1px solid #d0d0d0;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    box-shadow:
+        inset 2px 2px 4px rgba(0,0,0,.04),
+        2px 3px 6px rgba(0,0,0,.05);
+
+    color:#333;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    text-align:center;
+
+}
+
+
+.filter-item-3d select{
+
+    padding:
+        7px 10px;
+
+}
+
+
+.filter-input-box input:focus,
+.filter-item-3d select:focus{
+
+    outline:none;
+
+    border-color:#888;
+
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,.05),
+        inset 2px 2px 4px rgba(0,0,0,.04);
+
+}
+
+
+.filter-input-box button{
+
+    position:absolute;
+
+    left:7px;
+
+    top:9px;
+
+    width:24px;
+
+    height:24px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#999;
+
+    color:#fff;
+
+    font-size:16px;
+
+    line-height:20px;
+
+    cursor:pointer;
+
+}
+
+
+.filter-input-box button:hover{
+
+    background:#666;
+
+}
+
+
+.search-btn-3d{
+
+    width:100%;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color:white;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,.22);
+
+    transition:.2s;
+
+}
+
+
+.search-btn-3d:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        5px 7px 12px rgba(0,0,0,.27);
 
 }
 
 
 
+/* ==========================================================
+   TABLE
+========================================================== */
+
+.table-wrapper-3d{
+
+    overflow-x:auto;
+
+}
 
 
-.orders-table thead tr:not(.filters) th{
+.orders-table-3d{
 
-background:#222;
+    width:100%;
 
-color:white;
+    min-width:1000px;
 
-padding:12px;
+    border-collapse:separate;
 
-text-align:center;
+    border-spacing:0;
+
+    overflow:hidden;
+
+    border:1px solid #ddd;
+
+    border-radius:14px;
+
+}
+
+
+.orders-table-3d thead th{
+
+    padding:14px 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color:#fff;
+
+    text-align:center;
+
+    font-size:13px;
+
+    white-space:nowrap;
+
+}
+
+
+.orders-table-3d thead th:first-child{
+
+    border-top-right-radius:13px;
+
+}
+
+
+.orders-table-3d thead th:last-child{
+
+    border-top-left-radius:13px;
+
+}
+
+
+.orders-table-3d tbody td{
+
+    padding:14px 10px;
+
+    text-align:center;
+
+    border-bottom:1px solid #ddd;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f2f2f2
+        );
+
+    color:#333;
+
+    font-size:13px;
+
+}
+
+
+.orders-table-3d tbody tr:last-child td{
+
+    border-bottom:none;
+
+}
+
+
+.orders-table-3d tbody tr:hover td{
+
+    background:#e9e9e9;
 
 }
 
 
 
+/* ==========================================================
+   TABLE ELEMENTS
+========================================================== */
+
+.order-number-table{
+
+    display:inline-block;
+
+    padding:7px 10px;
+
+    border-radius:9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,.07);
+
+    font-weight:bold;
+
+}
 
 
-.filters th{
+.quantity-badge-3d{
 
-background:white;
+    display:inline-flex;
 
-padding:8px;
+    align-items:center;
 
-border-bottom:3px solid #222;
+    justify-content:center;
+
+    min-width:38px;
+
+    height:32px;
+
+    padding:0 9px;
+
+    border-radius:9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #ffffff
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        1px 2px 5px rgba(0,0,0,.07);
+
+    font-weight:bold;
+
+}
+
+
+.total-table{
+
+    color:#111;
+
+    font-size:15px;
+
+}
+
+
+.total-table small{
+
+    font-size:10px;
+
+    color:#777;
+
+}
+
+
+.payment-badge-3d{
+
+    display:inline-block;
+
+    padding:7px 10px;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e8e8e8
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,.07);
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+
+.muted-badge-3d{
+
+    color:#999;
+
+}
+
+
+.status-badge-table{
+
+    display:inline-block;
+
+    padding:7px 11px;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,.07);
+
+    color:#333;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+}
+
+
+.date-table{
+
+    color:#777;
+
+    font-size:12px;
+
+    white-space:nowrap;
+
+}
+
+
+.view-order-btn-3d{
+
+    display:inline-block;
+
+    padding:8px 13px;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color:#fff !important;
+
+    text-decoration:none;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    box-shadow:
+        3px 4px 8px rgba(0,0,0,.20);
+
+    transition:.2s;
+
+    white-space:nowrap;
+
+}
+
+
+.view-order-btn-3d:hover{
+
+    color:#fff !important;
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        4px 6px 11px rgba(0,0,0,.25);
+
+}
+
+
+.empty-orders-3d{
+
+    padding:30px !important;
+
+    color:#777 !important;
+
+    font-size:14px !important;
 
 }
 
 
 
+/* ==========================================================
+   PAGINATION
+========================================================== */
+
+.pagination-card-3d{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-top:20px;
+
+    padding:15px 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:15px;
+
+    box-shadow:
+        4px 6px 14px rgba(0,0,0,.10),
+        -3px -3px 8px rgba(255,255,255,.85);
+
+}
 
 
-.filter-box{
+.pagination-btn-3d{
 
-position:relative;
+    display:inline-block;
+
+    padding:8px 15px;
+
+    border-radius:9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color:white !important;
+
+    text-decoration:none;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    box-shadow:
+        2px 3px 7px rgba(0,0,0,.18);
+
+}
+
+
+.pagination-current-3d{
+
+    color:#777;
+
+    font-size:13px;
+
+}
+
+
+.pagination-current-3d strong{
+
+    color:#222;
 
 }
 
 
 
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media(max-width:1100px){
+
+    .stats-grid-3d{
+
+        grid-template-columns:
+            repeat(3,1fr);
+
+    }
 
 
-.filter-box input{
+    .filters-grid-3d{
 
-width:100%;
+        grid-template-columns:
+            repeat(2,1fr);
 
-height:34px;
-
-padding:5px 30px 5px 8px;
-
-border:1px solid #ccc;
-
-border-radius:6px;
-
-text-align:center;
-
-}
-
-
-
-
-
-.filter-box button{
-
-
-position:absolute;
-
-left:5px;
-
-top:5px;
-
-
-width:24px;
-
-height:24px;
-
-
-border:none;
-
-border-radius:50%;
-
-
-background:#999;
-
-
-color:white;
-
-
-font-size:16px;
-
-
-cursor:pointer;
-
+    }
 
 }
 
 
+@media(max-width:767px){
 
-.filter-box button:hover{
+    .orders-management-page{
 
-background:#666;
+        padding:
+            20px 10px
+            35px;
+
+    }
+
+
+    .page-header-3d{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        padding:20px;
+
+        border-radius:16px;
+
+    }
+
+
+    .page-header-3d h2{
+
+        font-size:22px;
+
+    }
+
+
+    .orders-header-badge{
+
+        text-align:center;
+
+    }
+
+
+    .stats-grid-3d{
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap:10px;
+
+    }
+
+
+    .stat-card-3d{
+
+        min-height:80px;
+
+        padding:12px;
+
+    }
+
+
+    .stat-icon{
+
+        min-width:40px;
+
+        height:40px;
+
+        font-size:18px;
+
+    }
+
+
+    .stat-content strong{
+
+        font-size:19px;
+
+    }
+
+
+    .stat-content span{
+
+        font-size:11px;
+
+    }
+
+
+    .section-card-3d{
+
+        padding:15px;
+
+        border-radius:16px;
+
+    }
+
+
+    .filters-grid-3d{
+
+        grid-template-columns:
+            1fr;
+
+        gap:10px;
+
+    }
+
+
+    .search-btn-3d{
+
+        margin-top:0;
+
+    }
+
+
+    .pagination-card-3d{
+
+        flex-wrap:wrap;
+
+    }
 
 }
 
 
+@media(max-width:420px){
 
+    .stats-grid-3d{
 
+        grid-template-columns:
+            1fr;
 
-.filters select{
-
-
-width:100%;
-
-height:34px;
-
-border-radius:6px;
-
-border:1px solid #ccc;
-
-text-align:center;
+    }
 
 }
-
-
-
-
-
-.search-btn{
-
-
-background:#0d6efd;
-
-
-color:white;
-
-
-border:none;
-
-
-padding:8px 18px;
-
-
-border-radius:6px;
-
-
-cursor:pointer;
-
-
-}
-
-
-
-.search-btn:hover{
-
-
-background:#0b5ed7;
-
-
-}
-
-
-
-
-
-.orders-table td{
-
-
-padding:12px;
-
-
-text-align:center;
-
-
-border-bottom:1px solid #ddd;
-
-
-}
-
-
-
-
-
-.orders-table tbody tr:hover{
-
-
-background:#f7f7f7;
-
-
-}
-
-
-
-
-
-.orders-table a{
-
-
-color:#0d6efd;
-
-
-text-decoration:none;
-
-
-font-weight:bold;
-
-
-}
-
-
-
-
-
-.pagination-box{
-
-
-margin-top:25px;
-
-
-text-align:center;
-
-
-}
-
-
-
-.pagination-box a{
-
-
-margin:10px;
-
-
-color:#0d6efd;
-
-
-}
-
-
-
-
 
 </style>
 
 
 
-
-
-
-
-
 <script>
 
+/* ==========================================================
+   FILTER ORDERS
+========================================================== */
 
 function filterOrders(){
 
+    const order =
+        document
+        .getElementById("f_order")
+        .value
+        .toLowerCase()
+        .trim();
 
 
-let order = 
-document.getElementById("f_order").value.toLowerCase();
+    const customer =
+        document
+        .getElementById("f_customer")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const items =
+        document
+        .getElementById("f_items")
+        .value
+        .trim();
+
+
+    const total =
+        document
+        .getElementById("f_total")
+        .value
+        .trim();
+
+
+    const payment =
+        document
+        .getElementById("f_payment")
+        .value
+        .trim();
+
+
+    const status =
+        document
+        .getElementById("f_status")
+        .value
+        .trim();
+
+
+    const date =
+        document
+        .getElementById("f_date")
+        .value
+        .trim();
+
+
+    const rows =
+        document.querySelectorAll(
+            ".orders-table-3d tbody tr"
+        );
+
+
+    rows.forEach(row => {
+
+
+        /*
+         * تجاهل صف عدم وجود الطلبات
+         */
+
+        if(!row.dataset.order){
+
+            return;
+
+        }
+
+
+        let show = true;
+
+
+        const rowOrder =
+            (row.dataset.order || "")
+            .toLowerCase();
+
+
+        const rowCustomer =
+            (row.dataset.customer || "")
+            .toLowerCase();
+
+
+        const rowItems =
+            row.dataset.items || "";
+
+
+        const rowTotal =
+            row.dataset.total || "";
+
+
+        const rowPayment =
+            row.dataset.payment || "";
+
+
+        const rowStatus =
+            row.dataset.status || "";
+
+
+        const rowDate =
+            row.dataset.date || "";
 
 
 
-let customer =
-document.getElementById("f_customer").value.toLowerCase();
+        /* رقم الطلب */
+
+        if(
+            order &&
+            !rowOrder.includes(order)
+        ){
+
+            show = false;
+
+        }
 
 
 
-let items =
-document.getElementById("f_items").value;
+        /* العميل */
+
+        if(
+            customer &&
+            !rowCustomer.includes(customer)
+        ){
+
+            show = false;
+
+        }
 
 
 
-let total =
-document.getElementById("f_total").value;
+        /* عدد المنتجات */
+
+        if(
+            items &&
+            rowItems !== items
+        ){
+
+            show = false;
+
+        }
 
 
 
-let payment =
-document.getElementById("f_payment").value;
+        /* الإجمالي */
+
+        if(total){
+
+            const cleanRowTotal =
+                parseFloat(
+                    rowTotal
+                    .replace(",", ".")
+                );
+
+
+            const cleanSearchTotal =
+                parseFloat(
+                    total
+                    .replace(",", ".")
+                );
+
+
+            if(
+                isNaN(cleanRowTotal) ||
+                isNaN(cleanSearchTotal) ||
+                cleanRowTotal !== cleanSearchTotal
+            ){
+
+                show = false;
+
+            }
+
+        }
 
 
 
-let status =
-document.getElementById("f_status").value;
+        /* طريقة الدفع */
+
+        if(
+            payment &&
+            rowPayment !== payment
+        ){
+
+            show = false;
+
+        }
 
 
 
-let date =
-document.getElementById("f_date").value;
+        /* الحالة */
+
+        if(
+            status &&
+            rowStatus !== status
+        ){
+
+            show = false;
+
+        }
 
 
 
-let rows =
-document.querySelectorAll(
-".orders-table tbody tr"
-);
+        /* التاريخ */
+
+        if(
+            date &&
+            rowDate !== date
+        ){
+
+            show = false;
+
+        }
 
 
 
+        row.style.display =
+            show ? "" : "none";
 
-
-rows.forEach(row=>{
-
-
-
-let show = true;
-
-
-
-let rowOrder =
-(row.dataset.order || "").toLowerCase();
-
-
-
-let rowCustomer =
-(row.dataset.customer || "").toLowerCase();
-
-
-
-let rowItems =
-row.dataset.items || "";
-
-
-
-let rowTotal =
-row.cells[3].innerText || "";
-
-
-let rowPayment =
-row.dataset.payment || "";
-
-
-
-let rowStatus =
-row.dataset.status || "";
-
-
-
-let rowDate =
-row.dataset.date || "";
-
-
-
-
-
-
-
-// رقم الطلب
-
-if(
-order &&
-!rowOrder.includes(order)
-){
-
-show=false;
+    });
 
 }
 
 
 
-
-// اسم العميل
-
-if(
-customer &&
-!rowCustomer.includes(customer)
-){
-
-show=false;
-
-}
-
-
-
-
-
-// عدد المنتجات
-
-if(
-items &&
-rowItems != items
-){
-
-show=false;
-
-}
-
-
-
-
-// الإجمالي
-
-if(total){
-
-
-let cleanRowTotal = parseFloat(
-    rowTotal
-    .replace(",", ".")
-    .trim()
-);
-
-
-
-let cleanSearchTotal = parseFloat(
-    total
-    .replace(",", ".")
-    .trim()
-);
-
-
-
-if(cleanRowTotal != cleanSearchTotal){
-
-show=false;
-
-}
-
-
-}
-
-
-
-// طريقة الدفع
-
-if(
-payment &&
-rowPayment != payment
-){
-
-show=false;
-
-}
-
-
-
-
-// الحالة
-
-if(
-status &&
-rowStatus != status
-){
-
-show=false;
-
-}
-
-
-
-
-
-// التاريخ
-
-if(
-date &&
-rowDate != date
-){
-
-show=false;
-
-}
-
-
-
-
-
-row.style.display =
-show ? "" : "none";
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
+/* ==========================================================
+   CLEAR FILTER
+========================================================== */
 
 function clearFilter(id){
 
+    const element =
+        document.getElementById(id);
 
 
-document.getElementById(id).value="";
+    if(!element){
+
+        return;
+
+    }
 
 
+    element.value = "";
 
-filterOrders();
 
-
+    filterOrders();
 
 }
 
-
-
 </script>
-
 
 
 {% endblock %}

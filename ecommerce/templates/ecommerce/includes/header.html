@@ -1,150 +1,433 @@
-<header class="store-header">
+<!-- ==========================================================
+     TOP ANNOUNCEMENT BAR
+========================================================== -->
 
-    <div class="container">
+<div class="store-fixed-header">
 
-        <div class="row align-items-center gy-3">
+    <!-- ======================================================
+         شريط الإعلانات
+    ======================================================= -->
 
+    <div class="top-announcement-bar">
 
-            <!-- Logo -->
+<div class="announcement-slider">
 
-            <div class="col-lg-3 col-md-4 col-12">
+    {% for announcement in store.announcements.all %}
 
-                <a href="{% url 'ecommerce:home' store.slug %}"
-                   class="store-logo">
+        {% if announcement.is_active %}
 
-
-                    {% if store.logo %}
-
-                        <img
-                            src="{{ store.logo.url }}"
-                            alt="{{ store.name }}"
-                            class="store-logo-img">
-
-                    {% endif %}
-
-
-                    <span class="store-name">
-
-                        {{ store.name }}
-
-                    </span>
-
-
-                </a>
-
+            <div class="announcement-item {% if forloop.first %}active{% endif %}">
+                📢 {{ announcement.text }}
             </div>
 
+        {% endif %}
+
+    {% empty %}
+
+        <div class="announcement-item active">
+            🚚 شحن سريع إلى جميع المناطق
+        </div>
+
+    {% endfor %}
+
+</div>
+    </div>
 
 
-            <!-- Search -->
+    <!-- ======================================================
+         STORE HEADER
+    ======================================================= -->
 
-            <div class="col-lg-5 col-md-4 col-12">
+    <header class="store-header">
 
-                {% include "ecommerce/includes/search.html" %}
+        <div class="container">
 
-            </div>
-
-
-
-            <!-- Actions -->
-
-            <div class="col-lg-4 col-md-4 col-12">
+            <div class="row align-items-center gy-3">
 
 
-                <div class="store-actions">
+                <!-- ==================================================
+                     Logo
+                =================================================== -->
 
-
-                    <!-- Cart -->
+                <div class="col-lg-3 col-md-4 col-12">
 
                     <a
-                        href="{% url 'ecommerce:cart' store.slug %}"
-                        class="action-item"
-                        title="السلة"
+                        href="{% url 'ecommerce:home' store.slug %}"
+                        class="store-logo"
                     >
 
-                        <i class="bi bi-cart3"></i>
+                        {% if store.logo %}
 
-                        <span class="action-count">
+                            <img
+                                src="{{ store.logo.url }}"
+                                alt="{{ store.name }}"
+                                class="store-logo-img"
+                            >
 
-                            {{ cart_count|default:"0" }}
+                        {% endif %}
 
+                        <span class="store-name">
+                            {{ store.name }}
                         </span>
 
                     </a>
 
+                </div>
 
 
-                    <!-- Wishlist -->
+                <!-- ==================================================
+                     Search
+                =================================================== -->
 
-                    <a
-                        href="{% url 'ecommerce:wishlist' store.slug %}"
-                        class="action-item"
-                        title="المفضلة"
-                    >
+                <div class="col-lg-5 col-md-4 col-12">
 
-                        <i class="bi bi-heart"></i>
+                    {% include "ecommerce/includes/search.html" %}
 
-                        <span
-                            id="wishlistCount"
-                            class="action-count"
-                        >
-
-                            {{ wishlist_count|default:"0" }}
-
-                        </span>
-
-                    </a>
+                </div>
 
 
+                <!-- ==================================================
+                     Actions
+                =================================================== -->
 
-                    <!-- Account -->
+                <div class="col-lg-4 col-md-4 col-12">
 
-                    {% if user.is_authenticated %}
+                    <div class="store-actions">
 
 
-                        <!-- حساب العميل -->
+                        <!-- Cart -->
 
                         <a
-                            href="{% url 'ecommerce:account' store.slug %}"
+                            href="{% url 'ecommerce:cart' store.slug %}"
                             class="action-item"
-                            title="حسابي"
+                            title="السلة"
                         >
 
-                            <i class="bi bi-person-circle"></i>
+                            <i class="bi bi-cart3"></i>
+
+                            <span
+                                id="cartCount"
+                                class="action-count"
+                            >
+                                {{ cart_count|default:"0" }}
+                            </span>
 
                         </a>
 
 
-                    {% else %}
-
-
-                        <!-- تسجيل دخول العميل -->
+                        <!-- Wishlist -->
 
                         <a
-                            href="{% url 'ecommerce:customer_login' store.slug %}"
+                            href="{% url 'ecommerce:wishlist' store.slug %}"
                             class="action-item"
-                            title="تسجيل دخول العميل"
+                            title="المفضلة"
                         >
 
-                            <i class="bi bi-box-arrow-in-right"></i>
+                            <i class="bi bi-heart"></i>
+
+                            <span
+                                id="headerWishlistCount"
+                                class="action-count"
+                            >
+                                {{ wishlist_count|default:"0" }}
+                            </span>
 
                         </a>
 
 
-                    {% endif %}
+                        <!-- Account -->
+
+                        {% if user.is_authenticated %}
+
+                            <a
+                                href="{% url 'ecommerce:account' store.slug %}"
+                                class="action-item"
+                                title="حسابي"
+                            >
+
+                                <i class="bi bi-person-circle"></i>
+
+                            </a>
+
+                        {% else %}
+
+                            <a
+                                href="{% url 'ecommerce:customer_login' store.slug %}"
+                                class="action-item"
+                                title="تسجيل دخول العميل"
+                            >
+
+                                <i class="bi bi-box-arrow-in-right"></i>
+
+                            </a>
+
+                        {% endif %}
 
 
+                    </div>
 
                 </div>
 
 
             </div>
 
-
         </div>
 
+    </header>
 
-    </div>
+</div>
 
 
-</header>
+
+<style>
+
+/* ==========================================================
+   الحاوية الرئيسية
+   الشريط + الهيدر ثابتين مع بعض
+========================================================== */
+
+.store-fixed-header {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+
+    z-index: 99999;
+
+}
+
+
+/* ==========================================================
+   شريط الإعلانات
+========================================================== */
+
+.top-announcement-bar {
+
+    width: 100%;
+
+    height: 52px;
+
+    min-height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    position: relative;
+
+}
+
+
+/* ==========================================================
+   منطقة السلايدر
+========================================================== */
+
+.announcement-slider {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* ==========================================================
+   الإعلان
+========================================================== */
+
+.announcement-item {
+
+    position: absolute;
+
+    width: 100%;
+
+    text-align: center;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    opacity: 0;
+
+    transform: translateY(12px);
+
+    transition:
+
+        opacity .5s ease,
+
+        transform .5s ease;
+
+    pointer-events: none;
+
+}
+
+
+/* الإعلان الحالي */
+
+.announcement-item.active {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+}
+
+
+/* ==========================================================
+   STORE HEADER
+========================================================== */
+
+.store-header {
+
+    position: relative !important;
+
+    top: auto !important;
+
+    left: auto !important;
+
+    right: auto !important;
+
+    width: 100% !important;
+
+    z-index: 99998;
+
+}
+
+
+/* ==========================================================
+   مهم:
+   منع أي transform من الأب يؤثر على fixed
+========================================================== */
+
+.store-fixed-header {
+
+    transform: none !important;
+
+}
+
+
+/* ==========================================================
+   مساحة للمحتوى أسفل الهيدر
+========================================================== */
+
+body {
+
+    padding-top: 0 !important;
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .top-announcement-bar {
+
+        height: 46px;
+
+        min-height: 46px;
+
+    }
+
+    .announcement-item {
+
+        font-size: 13px;
+
+        padding: 0 15px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 480px) {
+
+    .top-announcement-bar {
+
+        height: 44px;
+
+        min-height: 44px;
+
+    }
+
+    .announcement-item {
+
+        font-size: 12px;
+
+    }
+
+}
+
+</style>
+
+
+
+<script>
+
+/* ==========================================================
+   إعلان متحرك
+   يتغير كل 4 ثواني
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const announcements =
+        document.querySelectorAll(
+            ".announcement-item"
+        );
+
+    if (!announcements.length) {
+        return;
+    }
+
+    let current = 0;
+
+    setInterval(function () {
+
+        announcements[current]
+            .classList
+            .remove("active");
+
+        current++;
+
+        if (current >= announcements.length) {
+
+            current = 0;
+
+        }
+
+        announcements[current]
+            .classList
+            .add("active");
+
+    }, 4000);
+
+});
+
+</script>

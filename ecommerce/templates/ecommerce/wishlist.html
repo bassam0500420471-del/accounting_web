@@ -1,88 +1,1011 @@
 {% extends "ecommerce/base_store.html" %}
 
+
 {% block title %}
-
 المفضلة
-
 {% endblock %}
 
 
 
 {% block content %}
-
+{% csrf_token %}
 
 <div class="container account-page py-5">
 
 
-<div class="section-title">
+    <!-- ==========================================================
+         رأس المفضلة
+    =========================================================== -->
 
-    <h2>
-
-        <i class="bi bi-heart-fill text-danger"></i>
-
-        المنتجات المفضلة
-
-    </h2>
+    <div class="section-title wishlist-header">
 
 
-    <a href="{% url 'ecommerce:products' store.slug %}">
+        <h2>
 
-        عرض الكل
+            <i class="bi bi-heart-fill text-danger"></i>
 
-    </a>
+            المنتجات المفضلة
 
-</div>
-
-
-
-<div class="products-slider">
+        </h2>
 
 
-    <button class="slider-arrow slider-prev">
+        <span class="wishlist-count"
+              id="wishlistCount">
 
-        <i class="bi bi-chevron-right"></i>
+            {{ products|length }} منتج
 
-    </button>
-
-
-
-    <div class="products-wrapper wishlist-slider">
+        </span>
 
 
-        {% for item in products %}
+        {% if products|length > 4 %}
 
+        <button type="button"
+                id="wishlistToggleButton"
+                class="view-all">
 
-            {% include "ecommerce/includes/product_card.html" with product=item.product %}
+            عرض الكل
 
+        </button>
 
-        {% empty %}
-
-
-            <p class="text-center">
-
-                لا توجد منتجات في المفضلة
-
-            </p>
-
-
-        {% endfor %}
+        {% endif %}
 
 
     </div>
 
 
 
-    <button class="slider-arrow slider-next">
+    <!-- ==========================================================
+         المنتجات
+    =========================================================== -->
 
-        <i class="bi bi-chevron-left"></i>
+    <div class="products-slider">
 
-    </button>
+
+        <button class="slider-arrow slider-prev"
+                type="button">
+
+            <i class="bi bi-chevron-right"></i>
+
+        </button>
+
+
+
+        <div class="products-wrapper wishlist-slider"
+             id="wishlistProducts">
+
+
+            {% for item in products %}
+
+            <div class="wishlist-product-item"
+                 data-product-id="{{ item.product.id }}">
+
+
+                <!-- ==================================================
+                     الكرت
+                =================================================== -->
+
+                <div class="wishlist-card-wrapper">
+
+
+
+
+
+                    <!-- ==================================================
+                         بطاقة المنتج
+                    =================================================== -->
+
+                    {% include "ecommerce/includes/product_card.html" with product=item.product wishlist_page=True %}
+
+
+                </div>
+
+
+            </div>
+
+
+            {% empty %}
+
+
+            <div class="wishlist-empty text-center w-100 py-5">
+
+                <i class="bi bi-heart display-4 text-secondary"></i>
+
+                <p class="mt-3 text-muted">
+
+                    لا توجد منتجات في المفضلة
+
+                </p>
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+
+        <button class="slider-arrow slider-next"
+                type="button">
+
+            <i class="bi bi-chevron-left"></i>
+
+        </button>
+
+
+    </div>
 
 
 </div>
 
 
-</div>
+
+
+<style>
+
+
+/* ==========================================================
+   رأس المفضلة
+========================================================== */
+
+.wishlist-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+}
+
+
+.wishlist-header h2 {
+
+    margin: 0;
+
+}
+
+
+/* ==========================================================
+   عدد المنتجات
+========================================================== */
+
+.wishlist-count {
+
+    color: #dc3545;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    flex: 1;
+
+    text-align: center;
+
+}
+
+
+/* ==========================================================
+   زر عرض الكل / عرض أقل
+========================================================== */
+
+#wishlistToggleButton {
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    padding: 5px 10px;
+
+    white-space: nowrap;
+
+}
+
+
+#wishlistToggleButton:hover {
+
+    opacity: 0.75;
+
+}
+
+
+/* ==========================================================
+   شبكة المنتجات
+========================================================== */
+
+#wishlistProducts {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 20px;
+
+}
+
+
+/* ==========================================================
+   عنصر المنتج
+========================================================== */
+
+.wishlist-product-item {
+
+    position: relative;
+
+    min-width: 0;
+
+}
+
+
+/* ==========================================================
+   تغليف الكرت
+========================================================== */
+
+.wishlist-card-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+
+/* ==========================================================
+   المنتجات المخفية
+========================================================== */
+
+.wishlist-product-item.wishlist-hidden {
+
+    display: none !important;
+
+}
+
+
+/* ==========================================================
+   زر X
+   داخل الكرت من الجهة اليسرى
+========================================================== */
+
+.wishlist-remove {
+
+    position: absolute;
+
+    top: 10px;
+
+    left: 10px;
+
+    right: auto;
+
+    width: 32px;
+
+    height: 32px;
+
+    padding: 0;
+
+    margin: 0;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    color: #dc3545;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    z-index: 9999;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+
+}
+
+
+/* ==========================================================
+   علامة X نفسها
+========================================================== */
+
+.wishlist-remove span {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    line-height: 29px;
+
+    text-align: center;
+
+    pointer-events: none;
+
+}
+
+
+/* ==========================================================
+   Hover
+========================================================== */
+
+.wishlist-remove:hover {
+
+    transform: scale(1.08);
+
+    background: #dc3545;
+
+    color: #ffffff;
+
+}
+
+
+/* ==========================================================
+   عند الضغط
+========================================================== */
+
+.wishlist-remove:active {
+
+    transform: scale(0.95);
+
+}
+
+
+/* ==========================================================
+   الموبايل
+========================================================== */
+
+@media (max-width: 991px) {
+
+
+    #wishlistProducts {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+}
+
+
+@media (max-width: 576px) {
+
+
+    .wishlist-header {
+
+        gap: 10px;
+
+    }
+
+
+    .wishlist-header h2 {
+
+        font-size: 20px;
+
+    }
+
+
+    .wishlist-count {
+
+        font-size: 15px;
+
+    }
+
+
+    #wishlistProducts {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+
+    }
+
+
+    .wishlist-remove {
+
+        width: 28px;
+
+        height: 28px;
+
+        top: 7px;
+
+        left: 7px;
+
+        font-size: 21px;
+
+    }
+
+
+    .wishlist-remove span {
+
+        line-height: 26px;
+
+    }
+
+
+}
+
+
+</style>
+
+
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    const productsContainer =
+        document.getElementById("wishlistProducts");
+
+
+    const toggleButton =
+        document.getElementById("wishlistToggleButton");
+
+
+    const wishlistCount =
+        document.getElementById("wishlistCount");
+
+
+    if (!productsContainer) {
+        return;
+    }
+
+
+    /* ==========================================================
+       الحصول على منتجات المفضلة
+    ========================================================== */
+
+    function getWishlistItems() {
+
+        return Array.from(
+            productsContainer.querySelectorAll(
+                ".wishlist-product-item"
+            )
+        );
+
+    }
+
+
+    /* ==========================================================
+       تحديث زر عرض الكل
+    ========================================================== */
+
+    function updateToggleButton() {
+
+        if (!toggleButton) {
+            return;
+        }
+
+
+        const items = getWishlistItems();
+
+
+        if (items.length <= 4) {
+
+            toggleButton.style.display = "none";
+
+        } else {
+
+            toggleButton.style.display = "inline-block";
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       عرض أول 4
+    ========================================================== */
+
+    function showFirstFour() {
+
+        const items = getWishlistItems();
+
+
+        items.forEach(function (item, index) {
+
+            if (index < 4) {
+
+                item.classList.remove(
+                    "wishlist-hidden"
+                );
+
+            } else {
+
+                item.classList.add(
+                    "wishlist-hidden"
+                );
+
+            }
+
+        });
+
+
+        if (toggleButton) {
+
+            toggleButton.textContent = "عرض الكل";
+
+        }
+
+
+        updateToggleButton();
+
+    }
+
+
+    /* ==========================================================
+       عرض جميع المنتجات
+    ========================================================== */
+
+    function showAll() {
+
+        const items = getWishlistItems();
+
+
+        items.forEach(function (item) {
+
+            item.classList.remove(
+                "wishlist-hidden"
+            );
+
+        });
+
+
+        if (toggleButton) {
+
+            toggleButton.textContent = "عرض أقل";
+
+        }
+
+
+        updateToggleButton();
+
+    }
+
+
+    /* ==========================================================
+       الحالة الأولية
+    ========================================================== */
+
+    const initialItems =
+        getWishlistItems();
+
+
+    if (initialItems.length > 4) {
+
+        showFirstFour();
+
+    } else {
+
+        initialItems.forEach(function (item) {
+
+            item.classList.remove(
+                "wishlist-hidden"
+            );
+
+        });
+
+
+        updateToggleButton();
+
+    }
+
+
+    /* ==========================================================
+       عرض الكل / عرض أقل
+    ========================================================== */
+
+    if (toggleButton) {
+
+        toggleButton.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const hiddenItems =
+                    productsContainer.querySelectorAll(
+                        ".wishlist-product-item.wishlist-hidden"
+                    );
+
+
+                if (hiddenItems.length > 0) {
+
+                    showAll();
+
+                } else {
+
+                    showFirstFour();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================================
+       إزالة المنتج من المفضلة
+       باستخدام POST
+    ========================================================== */
+
+    productsContainer.addEventListener(
+        "click",
+        function (event) {
+
+
+            const removeButton =
+                event.target.closest(
+                    ".wishlist-remove"
+                );
+
+
+            if (!removeButton) {
+                return;
+            }
+
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            event.stopImmediatePropagation();
+
+
+            const productId =
+                removeButton.dataset.productId;
+
+
+            const productItem =
+                removeButton.closest(
+                    ".wishlist-product-item"
+                );
+
+
+            if (!productId || !productItem) {
+
+                console.error(
+                    "Wishlist product information missing"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !confirm(
+                    "هل تريد إزالة هذا المنتج من المفضلة؟"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            /* ==================================================
+               رابط المفضلة
+            ================================================== */
+
+            const url =
+                "{% url 'ecommerce:toggle_wishlist' store.slug 0 %}"
+                .replace(
+                    "/0/",
+                    "/" + productId + "/"
+                );
+
+
+            /* ==================================================
+               CSRF Token
+            ================================================== */
+
+            const csrfToken =
+                getCookie("csrftoken");
+
+
+            /* تعطيل الزر */
+
+            removeButton.disabled = true;
+
+
+            /* ==================================================
+               إرسال POST
+            ================================================== */
+
+            fetch(
+                url,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "X-Requested-With":
+                            "XMLHttpRequest",
+
+                        "Content-Type":
+                            "application/json",
+
+                        "X-CSRFToken":
+                            csrfToken
+
+                    },
+
+                    credentials: "same-origin"
+
+                }
+            )
+
+
+            .then(function (response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "HTTP " + response.status
+                    );
+
+                }
+
+
+                return response.json();
+
+            })
+
+
+            .then(function (data) {
+
+
+                console.log(
+                    "Wishlist response:",
+                    data
+                );
+
+
+                /* ==================================================
+                   التأكد أن المنتج تم حذفه
+                ================================================== */
+
+                if (
+                    data.status !== "removed"
+                ) {
+
+                    alert(
+                        data.message ||
+                        "لم يتم حذف المنتج من المفضلة"
+                    );
+
+
+                    removeButton.disabled = false;
+
+                    return;
+
+                }
+
+
+                /* ==================================================
+                   حذف الكرت من الصفحة
+                ================================================== */
+
+                productItem.remove();
+
+
+                /* ==================================================
+                   حساب العدد الجديد
+                ================================================== */
+
+                const remainingItems =
+                    getWishlistItems();
+
+
+                const remainingCount =
+                    remainingItems.length;
+
+
+                /* ==================================================
+                   تحديث العدد
+                ================================================== */
+
+                if (wishlistCount) {
+
+                    wishlistCount.textContent =
+                        remainingCount +
+                        " منتج";
+
+                }
+
+
+                /* ==================================================
+                   المفضلة أصبحت فارغة
+                ================================================== */
+
+                if (
+                    remainingCount === 0
+                ) {
+
+
+                    productsContainer.innerHTML = `
+
+                        <div class="wishlist-empty text-center w-100 py-5">
+
+                            <i class="bi bi-heart display-4 text-secondary"></i>
+
+                            <p class="mt-3 text-muted">
+
+                                لا توجد منتجات في المفضلة
+
+                            </p>
+
+                        </div>
+
+                    `;
+
+
+                    if (toggleButton) {
+
+                        toggleButton.remove();
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                /* ==================================================
+                   بقي أكثر من 4
+                ================================================== */
+
+                if (
+                    remainingCount > 4
+                ) {
+
+                    showFirstFour();
+
+                }
+
+
+                /* ==================================================
+                   بقي 4 أو أقل
+                ================================================== */
+
+                else {
+
+                    remainingItems.forEach(
+                        function (item) {
+
+                            item.classList.remove(
+                                "wishlist-hidden"
+                            );
+
+                        }
+                    );
+
+
+                    if (toggleButton) {
+
+                        toggleButton.remove();
+
+                    }
+
+                }
+
+            })
+
+
+            .catch(function (error) {
+
+
+                console.error(
+                    "Wishlist remove error:",
+                    error
+                );
+
+
+                alert(
+                    "حدث خطأ أثناء إزالة المنتج من المفضلة"
+                );
+
+
+                removeButton.disabled = false;
+
+            });
+
+        },
+        true
+    );
+
+
+    /* ==========================================================
+       قراءة CSRF Cookie
+    ========================================================== */
+
+    function getCookie(name) {
+
+        let cookieValue = null;
+
+
+        if (document.cookie) {
+
+            const cookies =
+                document.cookie.split(";");
+
+
+            for (
+                let i = 0;
+                i < cookies.length;
+                i++
+            ) {
+
+                const cookie =
+                    cookies[i].trim();
+
+
+                if (
+                    cookie.substring(
+                        0,
+                        name.length + 1
+                    ) ===
+                    name + "="
+                ) {
+
+                    cookieValue =
+                        decodeURIComponent(
+                            cookie.substring(
+                                name.length + 1
+                            )
+                        );
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        return cookieValue;
+
+    }
+
+
+});
+
+</script>
 
 
 {% endblock %}

@@ -1,41 +1,21 @@
-{% if store.top_bar_enabled %}
-<div class="store-topbar">
+<div style="background:#000; color:#fff; padding:15px; text-align:center; position:relative; z-index:99999;">
 
-    <div class="container">
+```
+<strong>📢 إعلانات المتجر</strong>
 
-        <div class="row align-items-center">
+{% for announcement in store.announcements.all %}
 
-            <div class="col-lg-6">
+    <span style="margin-right:30px; margin-left:30px;">
+        📢 {{ announcement.text }}
+    </span>
 
-                <small>
-                    <i class="bi bi-megaphone"></i>
+{% empty %}
 
-                    {{ store.top_bar_text|default:"🚚 شحن سريع إلى جميع المناطق" }}
-                </small>
+    <span>
+        لا توجد إعلانات
+    </span>
 
-            </div>
-
-            <div class="col-lg-6 text-end">
-
-                {% if store.phone %}
-                    <small class="me-3">
-                        <i class="bi bi-telephone"></i>
-                        {{ store.phone }}
-                    </small>
-                {% endif %}
-
-                {% if store.email %}
-                    <small>
-                        <i class="bi bi-envelope"></i>
-                        {{ store.email }}
-                    </small>
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
+{% endfor %}
+```
 
 </div>
-{% endif %}

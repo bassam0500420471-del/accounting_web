@@ -1,242 +1,339 @@
 <footer id="contact" class="store-footer">
 
-    <div class="container">
 
-        <div class="footer-grid">
+<div class="container">
+
+    <div class="footer-grid">
 
 
-            <!-- معلومات المتجر -->
+        <!-- =====================================================
+             معلومات المتجر
+        ====================================================== -->
 
-            <div class="footer-column">
+        <div class="footer-column">
 
-                <h3 class="store-name">
+            <h3 class="store-name">
+                {{ store.name }}
+            </h3>
 
-                    {{ store.name }}
-
-                </h3>
-
+            {% if store.description %}
 
                 <p>
-
                     {{ store.description }}
+                </p>
+
+            {% endif %}
+
+
+            <!-- رقم الجوال / الهاتف -->
+
+            {% if store.company.mobile %}
+
+                <p class="contact-info">
+
+                    <i class="bi bi-phone"></i>
+
+                    {{ store.company.mobile }}
 
                 </p>
 
+            {% elif store.company.phone %}
 
-{% if store.company.mobile %}
-<p class="contact-info">
-    <i class="bi bi-phone"></i>
-    {{ store.company.mobile }}
-</p>
-{% elif store.company.phone %}
-<p class="contact-info">
-    <i class="bi bi-telephone"></i>
-    {{ store.company.phone }}
-</p>
-{% endif %}
+                <p class="contact-info">
 
-{% if store.company.email %}
-<p class="contact-info">
-    <i class="bi bi-envelope"></i>
-    {{ store.company.email }}
-</p>
-{% endif %}
+                    <i class="bi bi-telephone"></i>
+
+                    {{ store.company.phone }}
+
+                </p>
+
+            {% endif %}
 
 
-            </div>
+            <!-- البريد الإلكتروني -->
 
+            {% if store.company.email %}
 
+                <p class="contact-info">
 
+                    <i class="bi bi-envelope"></i>
 
+                    {{ store.company.email }}
 
-            <!-- روابط سريعة -->
+                </p>
 
-            <div class="footer-column">
+            {% endif %}
 
-                <h4>
-
-                    روابط سريعة
-
-                </h4>
-
-
-                <ul>
-
-                    <li>
-                        <a href="{% url 'ecommerce:home' store.slug %}">
-                            الرئيسية
-                        </a>
-                    </li>
-
-
-                    <li>
-                        <a href="{% url 'ecommerce:products' store.slug %}">
-                            المنتجات
-                        </a>
-                    </li>
-
-
-                    <li>
-                        <a href="{% url 'ecommerce:cart' store.slug %}">
-                            السلة
-                        </a>
-                    </li>
-
-
-                    <li>
-                        <a href="{% url 'ecommerce:wishlist' store.slug %}">
-                            المفضلة
-                        </a>
-                    </li>
-
-
-                    <li>
-                        <a href="{% url 'ecommerce:account' store.slug %}">
-                            حسابي
-                        </a>
-                    </li>
-
-
-                </ul>
-
-            </div>
+        </div>
 
 
 
+        <!-- =====================================================
+             روابط سريعة
+        ====================================================== -->
+
+        <div class="footer-column">
+
+            <h4>
+                روابط سريعة
+            </h4>
+
+            <ul>
+
+                <li>
+
+                    <a href="{% url 'ecommerce:home' store_slug=store.slug %}">
+                        الرئيسية
+                    </a>
+
+                </li>
 
 
-            <!-- خدمة العملاء -->
+                <li>
 
-            <div class="footer-column">
+                    <a href="{% url 'ecommerce:products' store_slug=store.slug %}">
+                        المنتجات
+                    </a>
 
-                <h4>
-
-                    خدمة العملاء
-
-                </h4>
+                </li>
 
 
-                <ul>
+                <li>
 
-                    <li>
-                        <a href="#">
-                            سياسة الشحن
-                        </a>
-                    </li>
+                    <a href="{% url 'ecommerce:cart' store_slug=store.slug %}">
+                        السلة
+                    </a>
 
-
-                    <li>
-                        <a href="#">
-                            سياسة الاسترجاع
-                        </a>
-                    </li>
+                </li>
 
 
-                    <li>
-                        <a href="#">
-                            الشروط والأحكام
-                        </a>
-                    </li>
+                <li>
+
+                    <a href="{% url 'ecommerce:wishlist' store_slug=store.slug %}">
+                        المفضلة
+                    </a>
+
+                </li>
 
 
-                    <li>
-                        <a href="#">
-                            سياسة الخصوصية
-                        </a>
-                    </li>
+                <li>
 
+                    <a href="{% url 'ecommerce:account' store_slug=store.slug %}">
+                        حسابي
+                    </a>
 
-                </ul>
+                </li>
 
+            </ul>
 
-            </div>
+        </div>
 
 
 
+        <!-- =====================================================
+             خدمة العملاء
+        ====================================================== -->
+
+        <div class="footer-column">
+
+            <h4>
+                خدمة العملاء
+            </h4>
+
+            <ul>
 
 
-            <!-- التواصل الاجتماعي -->
+                <!-- سياسة الشحن -->
 
-            <div class="footer-column">
+                <li>
 
-                <h4>
+                    <a href="{% url 'ecommerce:store_policy' store_slug=store.slug policy_type='shipping' %}">
+                        سياسة الشحن
+                    </a>
 
-                    تابعنا
-
-                </h4>
-
-
-                <div class="footer-social">
+                </li>
 
 
-                    <a href="#">
+                <!-- سياسة الاسترجاع -->
+
+                <li>
+
+                    <a href="{% url 'ecommerce:store_policy' store_slug=store.slug policy_type='return' %}">
+                        سياسة الاسترجاع
+                    </a>
+
+                </li>
+
+
+                <!-- الشروط والأحكام -->
+
+                <li>
+
+                    <a href="{% url 'ecommerce:store_policy' store_slug=store.slug policy_type='terms' %}">
+                        الشروط والأحكام
+                    </a>
+
+                </li>
+
+
+                <!-- سياسة الخصوصية -->
+
+                <li>
+
+                    <a href="{% url 'ecommerce:store_policy' store_slug=store.slug policy_type='privacy' %}">
+                        سياسة الخصوصية
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             التواصل الاجتماعي
+        ====================================================== -->
+
+        <div class="footer-column">
+
+            <h4>
+                تابعنا
+            </h4>
+
+
+            <div class="footer-social">
+
+
+                <!-- Facebook -->
+
+                {% if store.facebook_url %}
+
+                    <a href="{{ store.facebook_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="Facebook">
+
                         <i class="bi bi-facebook"></i>
+
                     </a>
 
+                {% endif %}
 
-                    <a href="#">
+
+                <!-- Instagram -->
+
+                {% if store.instagram_url %}
+
+                    <a href="{{ store.instagram_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="Instagram">
+
                         <i class="bi bi-instagram"></i>
+
                     </a>
 
+                {% endif %}
 
-                    <a href="#">
+
+                <!-- X -->
+
+                {% if store.twitter_url %}
+
+                    <a href="{{ store.twitter_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="X">
+
                         <i class="bi bi-twitter-x"></i>
+
                     </a>
 
+                {% endif %}
 
-                    <a href="#">
+
+                <!-- WhatsApp -->
+
+                {% if store.whatsapp_url %}
+
+                    <a href="{{ store.whatsapp_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="WhatsApp">
+
                         <i class="bi bi-whatsapp"></i>
+
                     </a>
 
+                {% endif %}
 
-                    <a href="#">
+
+                <!-- YouTube -->
+
+                {% if store.youtube_url %}
+
+                    <a href="{{ store.youtube_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="YouTube">
+
                         <i class="bi bi-youtube"></i>
+
                     </a>
 
-
-                </div>
+                {% endif %}
 
 
             </div>
-
 
         </div>
 
 
     </div>
 
+</div>
 
 
-    <div class="footer-bottom">
 
-        <div class="container text-center">
+<!-- ==========================================================
+     أسفل الفوتر
+=========================================================== -->
 
+<div class="footer-bottom">
+
+    <div class="container text-center">
+
+
+        <div class="footer-copyright">
 
             © {% now "Y" %}
 
             {{ store.company.name }}
 
-            -
+            <span>
+                — جميع الحقوق محفوظة
+            </span>
 
-            جميع الحقوق محفوظة
+        </div>
 
 
-            <br>
-
+        <div class="footer-powered">
 
             متجر إلكتروني بواسطة
 
             <strong>
-
                 نظام الرائد ERP
-
             </strong>
-
 
         </div>
 
 
     </div>
+
+</div>
 
 
 </footer>

@@ -58,6 +58,46 @@ class Store(models.Model):
         verbose_name="البريد الإلكتروني",
     )
 
+    shipping_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=15.00,
+        verbose_name="سعر التوصيل",
+    )
+
+    # =====================================================
+    # روابط التواصل الاجتماعي
+    # =====================================================
+
+    facebook_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="رابط فيسبوك",
+    )
+
+    instagram_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="رابط إنستغرام",
+    )
+
+    twitter_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="رابط X",
+    )
+
+    whatsapp_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="رابط واتساب",
+    )
+
+    youtube_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="رابط يوتيوب",
+    )
 
     # =====================================================
     # عنوان المتجر
@@ -69,14 +109,12 @@ class Store(models.Model):
         verbose_name="العنوان",
     )
 
-
     country = models.CharField(
         max_length=100,
         blank=True,
         default="",
         verbose_name="الدولة",
     )
-
 
     city = models.CharField(
         max_length=100,
@@ -85,14 +123,12 @@ class Store(models.Model):
         verbose_name="المدينة",
     )
 
-
     district = models.CharField(
         max_length=100,
         blank=True,
         default="",
         verbose_name="الحي",
     )
-
 
     street = models.CharField(
         max_length=200,
@@ -101,14 +137,12 @@ class Store(models.Model):
         verbose_name="الشارع",
     )
 
-
     building_no = models.CharField(
         max_length=50,
         blank=True,
         default="",
         verbose_name="رقم المبنى",
     )
-
 
     unit_no = models.CharField(
         max_length=50,
@@ -117,7 +151,6 @@ class Store(models.Model):
         verbose_name="رقم الوحدة",
     )
 
-
     postal_code = models.CharField(
         max_length=20,
         blank=True,
@@ -125,13 +158,11 @@ class Store(models.Model):
         verbose_name="الرمز البريدي",
     )
 
-
     google_map_url = models.URLField(
         blank=True,
         default="",
         verbose_name="رابط خرائط Google",
     )
-
 
     # =====================================================
     # إعدادات الشريط العلوي
@@ -144,36 +175,88 @@ class Store(models.Model):
         verbose_name="رسالة الشريط العلوي",
     )
 
-
     top_bar_enabled = models.BooleanField(
         default=True,
         verbose_name="إظهار الشريط العلوي",
     )
 
+    # =====================================================
+    # حالة المتجر
+    # =====================================================
 
     is_active = models.BooleanField(
         default=True,
         verbose_name="نشط",
     )
 
+    # =====================================================
+    # التواريخ
+    # =====================================================
 
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
 
-
     updated_at = models.DateTimeField(
         auto_now=True,
     )
-
 
     class Meta:
         verbose_name = "متجر إلكتروني"
         verbose_name_plural = "المتاجر الإلكترونية"
 
-
     def __str__(self):
         return self.name
+
+
+# =====================================================
+# إعلانات الشريط العلوي
+# =====================================================
+
+class StoreAnnouncement(models.Model):
+
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="announcements",
+        verbose_name="المتجر",
+    )
+
+    text = models.CharField(
+        max_length=255,
+        verbose_name="نص الإعلان",
+    )
+
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="ترتيب الإعلان",
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="نشط",
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = [
+            "sort_order",
+            "id",
+        ]
+
+        verbose_name = "إعلان الشريط العلوي"
+        verbose_name_plural = "إعلانات الشريط العلوي"
+
+    def __str__(self):
+        return f"{self.store.name} - {self.text}"
+
 
 # =====================================================
 # تصميم المتجر
@@ -217,7 +300,6 @@ class StoreTheme(models.Model):
         return f"Theme - {self.store.name}"
 
 
-
 # =====================================================
 # إعدادات المتجر
 # =====================================================
@@ -255,6 +337,64 @@ class StoreSetting(models.Model):
     )
 
 
+# =====================================================
+# سياسات المتجر
+# =====================================================
+
+class StorePolicy(models.Model):
+
+    POLICY_TYPES = (
+        ("shipping", "سياسة الشحن"),
+        ("return", "سياسة الاسترجاع"),
+        ("terms", "الشروط والأحكام"),
+        ("privacy", "سياسة الخصوصية"),
+    )
+
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="policies",
+        verbose_name="المتجر",
+    )
+
+    policy_type = models.CharField(
+        max_length=20,
+        choices=POLICY_TYPES,
+        verbose_name="نوع السياسة",
+    )
+
+    title = models.CharField(
+        max_length=200,
+        verbose_name="عنوان السياسة",
+    )
+
+    content = models.TextField(
+        blank=True,
+        verbose_name="محتوى السياسة",
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="آخر تحديث",
+    )
+
+    class Meta:
+        verbose_name = "سياسة متجر"
+        verbose_name_plural = "سياسات المتجر"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "store",
+                    "policy_type",
+                ],
+                name="unique_store_policy",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.store.name} - {self.title}"
+
 
 # =====================================================
 # نطاق المتجر
@@ -284,7 +424,6 @@ class StoreDomain(models.Model):
 
     def __str__(self):
         return self.domain
-
 
 
 # =====================================================
@@ -330,7 +469,9 @@ class HomepageSection(models.Model):
     )
 
     class Meta:
-        ordering = ["sort_order"]
+        ordering = [
+            "sort_order",
+        ]
 
     def __str__(self):
         return self.title

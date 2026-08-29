@@ -14,7 +14,6 @@
 
 
 {% block content %}
-
 <div class="container py-5">
 
     <div class="row g-4">
@@ -94,9 +93,84 @@
 
 
                 <div class="card-body">
+<!-- =====================================================
+     بيانات المستلم وعنوان الشحن
+===================================================== -->
 
+<div class="card shadow-sm mb-4">
 
+    <div class="card-header">
+        📦 بيانات المستلم والشحن
+    </div>
 
+    <div class="card-body">
+
+        {% if shipping_address %}
+
+            <div class="mb-3">
+                <strong>👤 اسم المستلم:</strong>
+                {{ shipping_address.full_name }}
+            </div>
+
+            <div class="mb-3">
+                <strong>📱 رقم الجوال:</strong>
+                {{ shipping_address.phone }}
+            </div>
+
+            <div class="mb-3">
+                <strong>📍 العنوان:</strong>
+                {{ shipping_address.address }}
+            </div>
+
+            {% if shipping_address.district %}
+            <div class="mb-3">
+                <strong>🏘️ الحي:</strong>
+                {{ shipping_address.district }}
+            </div>
+            {% endif %}
+
+            {% if shipping_address.city %}
+            <div class="mb-3">
+                <strong>🏙️ المدينة:</strong>
+                {{ shipping_address.city }}
+            </div>
+            {% endif %}
+
+            {% if shipping_address.postal_code %}
+            <div class="mb-3">
+                <strong>📮 الرمز البريدي:</strong>
+                {{ shipping_address.postal_code }}
+            </div>
+            {% endif %}
+
+            <a
+                href="{% url 'ecommerce:account_edit' store.slug %}"
+                class="btn btn-outline-dark"
+            >
+                ✏️ تعديل بيانات الشحن
+            </a>
+
+        {% else %}
+
+            <div class="alert alert-warning">
+                ⚠️ لا يوجد عنوان شحن محفوظ.
+            </div>
+
+            <a
+                href="{% url 'ecommerce:account_edit' store.slug %}"
+                class="btn btn-primary"
+            >
+                إضافة عنوان الشحن
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+    </div>
+
+</div>
 <form
 id="checkoutForm"
 method="POST"

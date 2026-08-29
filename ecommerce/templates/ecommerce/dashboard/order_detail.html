@@ -6,582 +6,1919 @@
 {% endblock %}
 
 
-
 {% block content %}
 
 
+<div class="order-detail-page">
 
-<div class="container-fluid">
-
-
-
-<h2>
-🛒 تفاصيل الطلب
-</h2>
+    <div class="container-fluid">
 
 
+        <!-- ==========================================================
+             HEADER
+        =========================================================== -->
+
+        <div class="page-header-3d">
+
+            <div>
+
+                <h2>
+                    🛒 تفاصيل الطلب
+                </h2>
+
+                <p>
+                    عرض جميع تفاصيل الطلب وبيانات المستلم والشحن
+                </p>
+
+            </div>
+
+
+            <div class="order-number-3d">
+
+                🛒 رقم الطلب
+
+                <strong>
+                    {{ order.order_no }}
+                </strong>
+
+            </div>
+
+        </div>
 
 
 
-<div class="card p-3">
+        <!-- ==========================================================
+             ORDER BASIC INFORMATION
+        =========================================================== -->
+
+        <div class="section-card-3d">
+
+            <div class="section-title-3d">
+                📋 بيانات الطلب
+            </div>
+
+
+            <div class="info-grid">
+
+
+                <!-- العميل -->
+
+                <div class="info-box-3d">
+
+                    <span class="info-label">
+                        👤 العميل
+                    </span>
+
+                    <span class="info-value">
+                        {{ order.customer }}
+                    </span>
+
+                </div>
 
 
 
-<h4>
-رقم الطلب:
-{{ order.order_no }}
-</h4>
+                <!-- رقم الطلب -->
+
+                <div class="info-box-3d">
+
+                    <span class="info-label">
+                        🛒 رقم الطلب
+                    </span>
+
+                    <span class="info-value">
+                        {{ order.order_no }}
+                    </span>
+
+                </div>
 
 
 
-<p>
-العميل:
-{{ order.customer }}
-</p>
+                <!-- التاريخ -->
+
+                <div class="info-box-3d">
+
+                    <span class="info-label">
+                        📅 تاريخ الطلب
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if order.created_at %}
+                            {{ order.created_at|date:"Y-m-d H:i" }}
+                        {% else %}
+                            -
+                        {% endif %}
+
+                    </span>
+
+                </div>
 
 
 
-<p>
-الحالة الحالية:
+                <!-- حالة الطلب -->
 
-<span id="order-status">
+                <div class="info-box-3d">
 
-{{ order.get_status_display }}
+                    <span class="info-label">
+                        📦 حالة الطلب
+                    </span>
 
-</span>
+                    <span
+                        id="order-status"
+                        class="status-badge-3d">
 
-</p>
+                        {{ order.get_status_display }}
 
-<p>
+                    </span>
 
-حالة الدفع:
-
-<span id="payment-status">
-
-    {% if order.payment_status == "paid" %}
-
-        <span class="badge bg-success">
-            ✅ مدفوع
-        </span>
+                </div>
 
 
-    {% elif order.payment_status == "bank_transfer" %}
 
-        <span class="badge bg-warning text-dark">
-            🏦 تحويل بنكي - بانتظار المراجعة
-        </span>
+                <!-- حالة الدفع -->
 
+                <div class="info-box-3d">
 
-    {% elif order.payment_status == "cash_on_delivery" %}
+                    <span class="info-label">
+                        💳 حالة الدفع
+                    </span>
 
-        <span class="badge bg-info text-dark">
-            💵 الدفع عند الاستلام
-        </span>
+                    <span id="payment-status">
 
 
-    {% elif order.payment_status == "unpaid" %}
+                        {% if order.payment_status == "paid" %}
 
-        <span class="badge bg-danger">
-            ❌ غير مدفوع
-        </span>
-
-
-    {% elif order.payment_status == "partial" %}
-
-        <span class="badge bg-warning text-dark">
-            💰 دفع جزئي
-        </span>
+                            <span class="status-badge-3d success">
+                                ✅ مدفوع
+                            </span>
 
 
-    {% elif order.payment_status == "refunded" %}
+                        {% elif order.payment_status == "bank_transfer" %}
 
-        <span class="badge bg-secondary">
-            ↩️ مسترجع
-        </span>
+                            <span class="status-badge-3d warning">
+                                🏦 تحويل بنكي
+                            </span>
 
 
-    {% endif %}
+                        {% elif order.payment_status == "cash_on_delivery" %}
 
-</span>
+                            <span class="status-badge-3d info">
+                                💵 الدفع عند الاستلام
+                            </span>
 
-</p>
 
-<p>
-الإجمالي:
-{{ order.total }} ر.س
-</p>
+                        {% elif order.payment_status == "unpaid" %}
 
+                            <span class="status-badge-3d danger">
+                                ❌ غير مدفوع
+                            </span>
+
+
+                        {% elif order.payment_status == "partial" %}
+
+                            <span class="status-badge-3d warning">
+                                💰 دفع جزئي
+                            </span>
+
+
+                        {% elif order.payment_status == "refunded" %}
+
+                            <span class="status-badge-3d secondary">
+                                ↩️ مسترجع
+                            </span>
+
+
+                        {% else %}
+
+                            <span class="status-badge-3d secondary">
+                                -
+                            </span>
+
+                        {% endif %}
+
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- الإجمالي -->
+
+                <div class="info-box-3d total-box">
+
+                    <span class="info-label">
+                        💰 إجمالي الطلب
+                    </span>
+
+                    <span class="total-value">
+
+                        {{ order.total }}
+
+                        <small>
+                            ر.س
+                        </small>
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================================
+             SHIPPING INFORMATION
+        =========================================================== -->
+
+        <div class="section-card-3d shipping-section">
+
+            <div class="section-title-3d">
+                📦 بيانات المستلم والشحن
+            </div>
+
+
+            {% if order.shipping_address %}
+
+                <div class="shipping-grid-3d">
+
+
+                    <!-- اسم المستلم -->
+
+                    <div class="shipping-box-3d">
+
+                        <div class="shipping-icon">
+                            👤
+                        </div>
+
+                        <div>
+
+                            <span class="info-label">
+                                اسم المستلم
+                            </span>
+
+                            <span class="info-value">
+                                {{ order.shipping_address.full_name|default:"-" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- رقم الهاتف -->
+
+                    <div class="shipping-box-3d">
+
+                        <div class="shipping-icon">
+                            📞
+                        </div>
+
+                        <div>
+
+                            <span class="info-label">
+                                رقم التواصل
+                            </span>
+
+                            <span class="info-value">
+                                {{ order.shipping_address.phone|default:"-" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- العنوان -->
+
+                    <div class="shipping-box-3d address-box">
+
+                        <div class="shipping-icon">
+                            📍
+                        </div>
+
+                        <div>
+
+                            <span class="info-label">
+                                عنوان المستلم
+                            </span>
+
+                            <span class="info-value">
+                                {{ order.shipping_address.address|default:"-" }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- نوع التوصيل -->
+
+                    <div class="shipping-box-3d">
+
+                        <div class="shipping-icon">
+                            🚚
+                        </div>
+
+                        <div>
+
+                            <span class="info-label">
+                                طريقة الاستلام
+                            </span>
+
+                            <span class="info-value">
+
+                                {% if order.delivery_type == "pickup" %}
+
+                                    📦 استلام من المتجر
+
+                                {% else %}
+
+                                    🚚 توصيل للعميل
+
+                                {% endif %}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            {% else %}
+
+                <div class="shipping-empty-3d">
+
+                    ⚠️ لا توجد بيانات شحن محفوظة لهذا الطلب.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+
+        <!-- ==========================================================
+             BANK RECEIPT
+        =========================================================== -->
+
+        {% if order.bank_receipt %}
+
+        <div class="section-card-3d">
+
+            <div class="section-title-3d">
+                🏦 إيصال التحويل البنكي
+            </div>
+
+
+            <button
+                type="button"
+                class="receipt-button-3d"
+                onclick="openReceipt()">
+
+                📎 عرض إيصال التحويل
+
+            </button>
+
+        </div>
+
+
+
+        <!-- Receipt Modal -->
+
+        <div
+            id="receiptModal"
+            class="receipt-modal-3d"
+            onclick="closeReceipt()"
+        >
+
+            <span
+                class="close-receipt-3d"
+                onclick="closeReceipt()">
+
+                ×
+
+            </span>
+
+
+            <img
+                src="{{ order.bank_receipt.url }}"
+                class="receipt-image-3d"
+                onclick="event.stopPropagation();"
+            >
+
+        </div>
+
+        {% endif %}
+
+
+
+        <!-- ==========================================================
+             ORDER STATUS
+        =========================================================== -->
+
+        <div class="section-card-3d">
+
+            <div class="section-title-3d">
+
+                🚚 تحديث حالة الطلب
+
+            </div>
+
+
+            <!--
+                مهم:
+                لدينا مكان ثابت للإجراء الرئيسي
+                ومكان ثابت للإلغاء.
+            -->
+
+            <div
+                class="status-buttons-3d"
+                id="status-buttons"
+            >
+
+
+                <!-- ==================================================
+                     المكان الأول:
+                     الإجراء الرئيسي
+                =================================================== -->
+
+                <div
+                    id="primary-status-slot"
+                    class="status-slot"
+                >
+
+
+                    {% if order.status == "pending" %}
+
+                        <button
+                            type="button"
+                            class="status-btn confirm"
+                            data-status="confirmed"
+                            onclick="updateStatus('confirmed', this)">
+
+                            ✅ تأكيد الطلب
+
+                        </button>
+
+
+                    {% elif order.status == "confirmed" %}
+
+                        <button
+                            type="button"
+                            class="status-btn processing"
+                            data-status="processing"
+                            onclick="updateStatus('processing', this)">
+
+                            🔧 بدء التجهيز
+
+                        </button>
+
+
+                    {% elif order.status == "processing" %}
+
+
+                        {% if order.delivery_type == "pickup" %}
+
+                            <button
+                                type="button"
+                                class="status-btn ready"
+                                data-status="ready_pickup"
+                                onclick="updateStatus('ready_pickup', this)">
+
+                                📦 جاهز للاستلام
+
+                            </button>
+
+                        {% else %}
+
+                            <button
+                                type="button"
+                                class="status-btn shipped"
+                                data-status="shipped"
+                                onclick="updateStatus('shipped', this)">
+
+                                🚚 تم الشحن
+
+                            </button>
+
+                        {% endif %}
+
+
+                    {% elif order.status == "ready_pickup" %}
+
+                        <button
+                            type="button"
+                            class="status-btn delivered"
+                            data-status="delivered"
+                            onclick="updateStatus('delivered', this)">
+
+                            ✅ تم التسليم
+
+                        </button>
+
+
+                    {% elif order.status == "shipped" %}
+
+                        <button
+                            type="button"
+                            class="status-btn delivered"
+                            data-status="delivered"
+                            onclick="updateStatus('delivered', this)">
+
+                            ✅ تم التسليم
+
+                        </button>
+
+                    {% endif %}
+
+
+                </div>
+
+
+
+                <!-- ==================================================
+                     المكان الثاني:
+                     الإلغاء
+                     لا يتحرك من مكانه
+                =================================================== -->
+
+                <div
+                    id="cancel-status-slot"
+                    class="status-slot"
+                >
+
+                    {% if order.status == "pending" %}
+
+                        <button
+                            type="button"
+                            class="status-btn cancel"
+                            data-status="cancelled"
+                            onclick="updateStatus('cancelled', this)">
+
+                            ❌ إلغاء الطلب
+
+                        </button>
+
+
+                    {% elif order.status == "confirmed" %}
+
+                        <button
+                            type="button"
+                            class="status-btn cancel"
+                            data-status="cancelled"
+                            onclick="updateStatus('cancelled', this)">
+
+                            ❌ إلغاء الطلب
+
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                id="message"
+                class="status-message">
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================================
+             PRODUCTS
+        =========================================================== -->
+
+        <div class="section-card-3d products-section">
+
+            <div class="section-title-3d">
+
+                🛍️ منتجات الطلب
+
+            </div>
+
+
+            <div class="table-wrapper-3d">
+
+                <table class="products-table-3d">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                المنتج
+                            </th>
+
+                            <th>
+                                الكمية
+                            </th>
+
+                            <th>
+                                السعر
+                            </th>
+
+                            <th>
+                                الإجمالي
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {% for item in order.items.all %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    {{ item.product }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="quantity-3d">
+
+                                    × {{ item.quantity }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {{ item.price }}
+
+                                <small>
+                                    ر.س
+                                </small>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+
+                                    {{ item.total }}
+
+                                    <small>
+                                        ر.س
+                                    </small>
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="4"
+                                class="empty-products">
+
+                                لا توجد منتجات في هذا الطلب.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+
+
+            <!-- Total -->
+
+            <div class="products-total-3d">
+
+                <span>
+                    💰 إجمالي الطلب
+                </span>
+
+                <strong>
+
+                    {{ order.total }}
+
+                    <small>
+                        ر.س
+                    </small>
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </div>
 
 </div>
-
-
-
-{% if order.bank_receipt %}
-
-<div class="card p-3 mt-3 shadow-sm">
-
-    <h4>
-        🏦 إيصال التحويل البنكي
-    </h4>
-
-
-    <button 
-        type="button"
-        class="btn btn-primary"
-        onclick="openReceipt()">
-
-        📎 عرض المرفق
-
-    </button>
-
-
-</div>
-
-
-
-<!-- نافذة عرض الصورة -->
-
-<div 
-id="receiptModal"
-class="receipt-modal"
-onclick="closeReceipt()"
->
-
-
-    <span class="close-receipt">
-        ×
-    </span>
-
-
-    <img
-        src="{{ order.bank_receipt.url }}"
-        class="receipt-image"
-        onclick="event.stopPropagation();"
-    >
-
-
-</div>
-
-
-{% endif %}
-
-
-
-
-
-<!-- تحديث الحالة -->
-
-<div class="card p-3 mt-3">
-
-
-
-<h4>
-تحديث حالة الطلب
-</h4>
-
-
-
-<div class="status-buttons" id="status-buttons">
-
-
-
-{% if order.status == "pending" %}
-
-<button 
-data-status="confirmed"
-onclick="updateStatus('confirmed',this)">
-✅ تأكيد الطلب
-</button>
-
-
-<button 
-class="cancel"
-data-status="cancelled"
-onclick="updateStatus('cancelled',this)">
-❌ إلغاء الطلب
-</button>
-
-{% endif %}
-
-
-
-
-
-
-{% if order.status == "confirmed" %}
-
-<button 
-data-status="processing"
-onclick="updateStatus('processing',this)">
-🔧 بدء التجهيز
-</button>
-
-
-<button 
-class="cancel"
-data-status="cancelled"
-onclick="updateStatus('cancelled',this)">
-❌ إلغاء الطلب
-</button>
-
-{% endif %}
-
-
-
-
-
-
-{% if order.status == "processing" %}
-
-
-{% if order.delivery_type == "pickup" %}
-
-
-<button 
-data-status="ready_pickup"
-onclick="updateStatus('ready_pickup',this)">
-📦 جاهز للاستلام
-</button>
-
-
-{% else %}
-
-
-<button 
-data-status="shipped"
-onclick="updateStatus('shipped',this)">
-🚚 تم الشحن
-</button>
-
-
-{% endif %}
-
-
-
-{% endif %}
-
-
-
-
-
-
-
-{% if order.status == "ready_pickup" %}
-
-<button 
-data-status="delivered"
-onclick="updateStatus('delivered',this)">
-✅ تم التسليم
-</button>
-
-{% endif %}
-
-
-
-
-
-
-{% if order.status == "shipped" %}
-
-<button 
-data-status="delivered"
-onclick="updateStatus('delivered',this)">
-✅ تم التسليم
-</button>
-
-{% endif %}
-
-
-
-
-
-</div>
-
-
-
-<div id="message"></div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<h3 class="mt-4">
-المنتجات
-</h3>
-
-
-
-
-
-<table class="table">
-
-
-<thead>
-
-<tr>
-
-<th>
-المنتج
-</th>
-
-
-<th>
-الكمية
-</th>
-
-
-<th>
-السعر
-</th>
-
-
-<th>
-الإجمالي
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-
-
-<tbody>
-
-
-
-{% for item in order.items.all %}
-
-
-<tr>
-
-
-<td>
-{{ item.product }}
-</td>
-
-
-<td>
-{{ item.quantity }}
-</td>
-
-
-<td>
-{{ item.price }}
-</td>
-
-
-<td>
-{{ item.total }}
-</td>
-
-
-</tr>
-
-
-{% endfor %}
-
-
-
-</tbody>
-
-
-</table>
-
-
-
-
-
-</div>
-
-
-
-
-
 
 
 
 
 <style>
 
-.receipt-modal{
+/* ==========================================================
+   GENERAL
+========================================================== */
 
-display:none;
+.order-detail-page{
 
-position:fixed;
+    direction:rtl;
 
-z-index:9999;
+    min-height:calc(100vh - 80px);
 
-left:0;
+    background:
+        linear-gradient(
+            135deg,
+            #eeeeee 0%,
+            #dcdcdc 50%,
+            #f7f7f7 100%
+        );
 
-top:0;
+    padding:30px 0 50px;
 
-width:100%;
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
 
-height:100%;
+}
 
-background:rgba(0,0,0,.75);
 
-justify-content:center;
+.order-detail-page .container-fluid{
 
-align-items:center;
-
-cursor:pointer;
+    max-width:1400px;
 
 }
 
 
 
-.receipt-modal.show{
+/* ==========================================================
+   PAGE HEADER
+========================================================== */
 
-display:flex;
+.page-header-3d{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-bottom:25px;
+
+    padding:25px 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:20px;
+
+    box-shadow:
+        6px 8px 20px rgba(0,0,0,.12),
+        -4px -4px 10px rgba(255,255,255,.9);
+
+}
+
+
+.page-header-3d h2{
+
+    margin:0 0 7px;
+
+    color:#222;
+
+    font-size:27px;
+
+    font-weight:bold;
+
+}
+
+
+.page-header-3d p{
+
+    margin:0;
+
+    color:#777;
+
+    font-size:14px;
+
+}
+
+
+.order-number-3d{
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e5e5e5
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,.1);
+
+    color:#777;
+
+    white-space:nowrap;
+
+}
+
+
+.order-number-3d strong{
+
+    color:#222;
+
+    margin-right:8px;
+
+    font-size:16px;
 
 }
 
 
 
-.receipt-image{
+/* ==========================================================
+   SECTION CARD
+========================================================== */
 
-max-width:90%;
+.section-card-3d{
 
-max-height:90%;
+    margin-bottom:20px;
 
-border-radius:10px;
+    padding:20px;
 
-box-shadow:0 0 20px #000;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
 
-}
+    border:1px solid #ddd;
 
+    border-radius:20px;
 
-
-.close-receipt{
-
-position:absolute;
-
-top:20px;
-
-right:35px;
-
-font-size:45px;
-
-color:white;
-
-font-weight:bold;
-
-cursor:pointer;
-
-}
-
-.status-buttons{
-
-display:flex;
-
-gap:10px;
-
-flex-wrap:wrap;
+    box-shadow:
+        5px 8px 20px rgba(0,0,0,.12),
+        -4px -4px 10px rgba(255,255,255,.85);
 
 }
 
 
 
-.status-buttons button{
+/* ==========================================================
+   SECTION TITLE
+========================================================== */
 
-border:none;
+.section-title-3d{
 
-background:#0d6efd;
+    margin-bottom:18px;
 
-color:white;
+    padding-bottom:12px;
 
-padding:10px 18px;
+    border-bottom:1px solid #ddd;
 
-border-radius:8px;
+    color:#333;
 
-cursor:pointer;
+    font-size:18px;
 
-}
-
-
-
-.status-buttons button:hover{
-
-background:#0b5ed7;
+    font-weight:bold;
 
 }
 
 
 
-.status-buttons .cancel{
+/* ==========================================================
+   INFORMATION GRID
+========================================================== */
 
-background:#dc3545;
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:15px;
+
+}
+
+
+.info-box-3d{
+
+    min-height:75px;
+
+    padding:14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:13px;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,.04),
+        inset -2px -2px 5px rgba(255,255,255,.9),
+        2px 3px 7px rgba(0,0,0,.06);
+
+}
+
+
+.info-label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#888;
+
+    font-size:12px;
+
+}
+
+
+.info-value{
+
+    display:block;
+
+    color:#222;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    word-break:break-word;
+
+}
+
+
+.total-box{
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e5e5e5
+        );
+
+}
+
+
+.total-value{
+
+    color:#111;
+
+    font-size:21px;
+
+    font-weight:bold;
+
+}
+
+
+.total-value small{
+
+    font-size:12px;
 
 }
 
 
 
-.status-buttons .cancel:hover{
+/* ==========================================================
+   STATUS BADGE
+========================================================== */
 
-background:#bb2d3b;
+.status-badge-3d{
+
+    display:inline-block;
+
+    padding:7px 13px;
+
+    border-radius:20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,.08);
+
+    color:#333;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+}
+
+
+.status-badge-3d.success{
+
+    color:#146c43;
+
+}
+
+
+.status-badge-3d.warning{
+
+    color:#997404;
+
+}
+
+
+.status-badge-3d.info{
+
+    color:#087990;
+
+}
+
+
+.status-badge-3d.danger{
+
+    color:#b02a37;
+
+}
+
+
+.status-badge-3d.secondary{
+
+    color:#666;
 
 }
 
 
 
+/* ==========================================================
+   SHIPPING
+========================================================== */
 
-.status-buttons button:disabled{
+.shipping-grid-3d{
 
-opacity:.5;
+    display:grid;
 
-cursor:not-allowed;
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:15px;
+
+}
+
+
+.shipping-box-3d{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    min-height:80px;
+
+    padding:15px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #eeeeee
+        );
+
+    border:1px solid #ddd;
+
+    border-radius:13px;
+
+    box-shadow:
+        inset 2px 2px 5px rgba(0,0,0,.04),
+        inset -2px -2px 5px rgba(255,255,255,.9),
+        2px 3px 7px rgba(0,0,0,.06);
+
+}
+
+
+.shipping-icon{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:45px;
+
+    height:45px;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #ffffff
+        );
+
+    border:1px solid #ddd;
+
+    box-shadow:
+        2px 3px 6px rgba(0,0,0,.08);
+
+    font-size:21px;
+
+}
+
+
+.address-box{
+
+    grid-column:
+        span 2;
+
+}
+
+
+.shipping-empty-3d{
+
+    padding:18px;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f5f5f5,
+            #ffffff
+        );
+
+    border:1px solid #ddd;
+
+    color:#777;
+
+    text-align:center;
 
 }
 
 
 
-#message{
+/* ==========================================================
+   RECEIPT
+========================================================== */
 
-margin-top:15px;
+.receipt-button-3d{
 
-font-weight:bold;
+    border:none;
 
-color:green;
+    padding:11px 20px;
+
+    border-radius:11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color:white;
+
+    font-family:inherit;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,.22);
+
+    transition:.2s;
 
 }
 
 
+.receipt-button-3d:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        5px 7px 12px rgba(0,0,0,.27);
+
+}
+
+
+.receipt-modal-3d{
+
+    display:none;
+
+    position:fixed;
+
+    z-index:9999;
+
+    inset:0;
+
+    background:
+        rgba(0,0,0,.78);
+
+    align-items:center;
+
+    justify-content:center;
+
+    cursor:pointer;
+
+}
+
+
+.receipt-modal-3d.show{
+
+    display:flex;
+
+}
+
+
+.receipt-image-3d{
+
+    max-width:90%;
+
+    max-height:90%;
+
+    border-radius:14px;
+
+    box-shadow:
+        0 0 25px #000;
+
+}
+
+
+.close-receipt-3d{
+
+    position:absolute;
+
+    top:15px;
+
+    right:30px;
+
+    color:white;
+
+    font-size:48px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+
+/* ==========================================================
+   STATUS BUTTONS
+========================================================== */
+
+/*
+    مهم جدًا:
+
+    كل زر لديه Slot مستقل.
+
+    Slot الإجراء الرئيسي:
+    هو المكان الذي تتغير فيه الأزرار.
+
+    Slot الإلغاء:
+    يبقى ثابتًا في مكانه.
+*/
+
+.status-buttons-3d{
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(220px, 1fr)
+        minmax(220px, 1fr);
+
+    gap:12px;
+
+    align-items:stretch;
+
+}
+
+
+.status-slot{
+
+    min-height:48px;
+
+    display:flex;
+
+    align-items:stretch;
+
+}
+
+
+.status-btn{
+
+    width:100%;
+
+    min-height:48px;
+
+    border:none;
+
+    padding:11px 20px;
+
+    border-radius:11px;
+
+    color:white;
+
+    font-family:inherit;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,.18);
+
+    transition:
+        transform .2s,
+        box-shadow .2s,
+        opacity .2s;
+
+}
+
+
+.status-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        5px 7px 12px rgba(0,0,0,.25);
+
+}
+
+
+.status-btn:active{
+
+    transform:translateY(1px);
+
+}
+
+
+.status-btn:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+
+.status-btn.confirm{
+
+    background:
+        linear-gradient(
+            145deg,
+            #198754,
+            #146c43
+        );
+
+}
+
+
+.status-btn.processing{
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d6efd,
+            #084298
+        );
+
+}
+
+
+.status-btn.ready{
+
+    background:
+        linear-gradient(
+            145deg,
+            #6f42c1,
+            #59359a
+        );
+
+}
+
+
+.status-btn.shipped{
+
+    background:
+        linear-gradient(
+            145deg,
+            #0dcaf0,
+            #087990
+        );
+
+}
+
+
+.status-btn.delivered{
+
+    background:
+        linear-gradient(
+            145deg,
+            #198754,
+            #146c43
+        );
+
+}
+
+
+.status-btn.cancel{
+
+    background:
+        linear-gradient(
+            145deg,
+            #dc3545,
+            #b02a37
+        );
+
+}
+
+
+.status-btn.cancel:hover{
+
+    background:
+        linear-gradient(
+            145deg,
+            #bb2d3b,
+            #842029
+        );
+
+}
+
+
+.status-message{
+
+    margin-top:15px;
+
+    min-height:20px;
+
+    padding:10px;
+
+    font-weight:bold;
+
+}
+
+
+
+/* ==========================================================
+   PRODUCTS TABLE
+========================================================== */
+
+.table-wrapper-3d{
+
+    overflow-x:auto;
+
+}
+
+
+.products-table-3d{
+
+    width:100%;
+
+    border-collapse:separate;
+
+    border-spacing:0;
+
+    overflow:hidden;
+
+    border:1px solid #ddd;
+
+    border-radius:13px;
+
+}
+
+
+.products-table-3d thead th{
+
+    padding:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #333333,
+            #111111
+        );
+
+    color:white;
+
+    text-align:center;
+
+    font-size:14px;
+
+}
+
+
+.products-table-3d tbody td{
+
+    padding:14px;
+
+    text-align:center;
+
+    border-bottom:1px solid #ddd;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f2f2f2
+        );
+
+    color:#333;
+
+}
+
+
+.products-table-3d tbody tr:last-child td{
+
+    border-bottom:none;
+
+}
+
+
+.products-table-3d tbody tr:hover td{
+
+    background:#eaeaea;
+
+}
+
+
+.quantity-3d{
+
+    display:inline-block;
+
+    min-width:45px;
+
+    padding:6px 10px;
+
+    border-radius:9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eeeeee,
+            #ffffff
+        );
+
+    border:1px solid #d5d5d5;
+
+    box-shadow:
+        1px 2px 5px rgba(0,0,0,.07);
+
+    font-weight:bold;
+
+}
+
+
+.empty-products{
+
+    padding:25px !important;
+
+    color:#777 !important;
+
+}
+
+
+
+/* ==========================================================
+   PRODUCTS TOTAL
+========================================================== */
+
+.products-total-3d{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:15px;
+
+    padding:16px 20px;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #e7e7e7
+        );
+
+    border:1px solid #ddd;
+
+    box-shadow:
+        3px 4px 9px rgba(0,0,0,.08);
+
+}
+
+
+.products-total-3d span{
+
+    color:#666;
+
+    font-weight:bold;
+
+}
+
+
+.products-total-3d strong{
+
+    color:#111;
+
+    font-size:20px;
+
+}
+
+
+.products-total-3d small{
+
+    font-size:12px;
+
+}
+
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media(max-width:767px){
+
+    .order-detail-page{
+
+        padding:
+            20px 10px
+            35px;
+
+    }
+
+
+    .page-header-3d{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        padding:20px;
+
+        border-radius:16px;
+
+    }
+
+
+    .page-header-3d h2{
+
+        font-size:22px;
+
+    }
+
+
+    .order-number-3d{
+
+        text-align:center;
+
+    }
+
+
+    .section-card-3d{
+
+        padding:15px;
+
+        border-radius:16px;
+
+    }
+
+
+    .info-grid{
+
+        grid-template-columns:1fr;
+
+        gap:10px;
+
+    }
+
+
+    .shipping-grid-3d{
+
+        grid-template-columns:1fr;
+
+        gap:10px;
+
+    }
+
+
+    .address-box{
+
+        grid-column:auto;
+
+    }
+
+
+    .shipping-box-3d{
+
+        align-items:flex-start;
+
+    }
+
+
+    /*
+        على الجوال أيضًا نحافظ
+        على مكان الإجراء ومكان الإلغاء.
+    */
+
+    .status-buttons-3d{
+
+        grid-template-columns:1fr;
+
+        gap:10px;
+
+    }
+
+
+    .status-slot{
+
+        min-height:48px;
+
+    }
+
+
+    .status-btn{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+
+    .products-total-3d{
+
+        flex-direction:column;
+
+        gap:10px;
+
+        text-align:center;
+
+    }
+
+
+    .close-receipt-3d{
+
+        right:15px;
+
+        font-size:40px;
+
+    }
+
+}
 
 </style>
 
 
 
 
-
-
-
-
-
 <script>
 
+/* ==========================================================
+   متغير لمنع الضغط المزدوج
+========================================================== */
 
-function updateStatus(status,button){
+let statusRequestRunning = false;
 
 
 
-    button.disabled=true;
+/* ==========================================================
+   تحديث حالة الطلب
+========================================================== */
+
+function updateStatus(status, button){
+
+
+    /*
+        حماية إضافية من الضغط المزدوج.
+
+        حتى لو ضغط الموظف بسرعة مرتين،
+        الطلب الثاني لن يتم إرساله.
+    */
+
+    if(statusRequestRunning){
+
+        return;
+
+    }
+
+
+    if(!button){
+
+        return;
+
+    }
+
+
+    statusRequestRunning = true;
+
+
+    /*
+        نعطل جميع أزرار الحالة مؤقتًا.
+        هذا يمنع إرسال طلب آخر أثناء انتظار الخادم.
+    */
+
+    const allButtons =
+        document.querySelectorAll(
+            "#status-buttons .status-btn"
+        );
+
+
+    allButtons.forEach(function(btn){
+
+        btn.disabled = true;
+
+    });
+
+
+    /*
+        رسالة للمستخدم
+    */
+
+    document.getElementById(
+        "message"
+    ).innerHTML =
+        "⏳ جارٍ تحديث حالة الطلب...";
+
 
 
     fetch(
+
         "{% url 'ecommerce:order_update' store_slug=store.slug pk=order.id %}",
+
         {
 
             method:"POST",
@@ -589,123 +1926,516 @@ function updateStatus(status,button){
             headers:{
 
                 "X-CSRFToken":
-                "{{ csrf_token }}",
+                    "{{ csrf_token }}",
 
                 "Content-Type":
-                "application/x-www-form-urlencoded"
+                    "application/x-www-form-urlencoded"
 
             },
 
             body:
-
-            "status="+status
+                "status=" +
+                encodeURIComponent(status)
 
         }
 
     )
 
 
-    .then(response=>response.json())
+    .then(function(response){
+
+        /*
+            في حالة وجود خطأ HTTP
+            نحاول قراءة JSON أيضًا.
+        */
+
+        return response.json()
+            .then(function(data){
+
+                return {
+
+                    ok:response.ok,
+
+                    data:data
+
+                };
+
+            });
+
+    })
 
 
-    .then(data=>{
+    .then(function(result){
 
 
-        if(data.success){
+        const data = result.data;
 
+
+        if(result.ok && data.success){
+
+
+            /* ==================================================
+               تحديث حالة الطلب
+            ================================================== */
 
             document.getElementById(
                 "order-status"
-            ).innerHTML=data.status;
+            ).innerHTML =
+                data.status;
+
 
 
             document.getElementById(
                 "message"
-            ).innerHTML=
-            "✅ تم تحديث حالة الطلب";
+            ).innerHTML =
+                "✅ تم تحديث حالة الطلب بنجاح";
 
 
-            button.remove();
+
+            /*
+                بعد نجاح العملية:
+
+                لا نقوم بـ remove للـ slot.
+
+                وإنما نعيد بناء محتوى الـ slot
+                بحيث يظهر الزر التالي في نفس مكان
+                الزر السابق.
+            */
+
+            updateButtonsAfterStatus(
+                status
+            );
 
 
-            setTimeout(function(){
+            /*
+                نعيد السماح بالضغط
+                إذا كان هناك زر جديد.
+            */
 
-                location.reload();
+            statusRequestRunning = false;
 
-            },1200);
+
+            enableCurrentButtons();
 
 
 
         }else{
 
 
+            /*
+                فشل تحديث الحالة
+            */
+
             document.getElementById(
                 "message"
-            ).innerHTML=
-            "❌ "+data.message;
+            ).innerHTML =
+                "❌ " +
+                (
+                    data.message ||
+                    "تعذر تحديث حالة الطلب"
+                );
 
 
-            button.disabled=false;
+            statusRequestRunning = false;
 
+
+            enableCurrentButtons();
 
         }
-
-
 
     })
 
 
+    .catch(function(error){
 
-    .catch(function(){
+
+        console.error(error);
 
 
         document.getElementById(
             "message"
-        ).innerHTML=
-        "❌ فشل الاتصال";
+        ).innerHTML =
+            "❌ فشل الاتصال بالخادم";
 
 
-        button.disabled=false;
+        statusRequestRunning = false;
 
+
+        enableCurrentButtons();
 
     });
-
-
 
 }
 
 
 
+/* ==========================================================
+   إنشاء زر جديد
+========================================================== */
 
-// =============================
-// عرض إيصال التحويل
-// =============================
+function createStatusButton(
+    status,
+    text,
+    cssClass
+){
 
+
+    const button =
+        document.createElement("button");
+
+
+    button.type =
+        "button";
+
+
+    button.className =
+        "status-btn " +
+        cssClass;
+
+
+    button.dataset.status =
+        status;
+
+
+    button.innerHTML =
+        text;
+
+
+    button.onclick =
+        function(){
+
+            updateStatus(
+                status,
+                this
+            );
+
+        };
+
+
+    return button;
+
+}
+
+
+
+/* ==========================================================
+   تحديث زر الإجراء الرئيسي
+========================================================== */
+
+function updateButtonsAfterStatus(status){
+
+
+    const primarySlot =
+        document.getElementById(
+            "primary-status-slot"
+        );
+
+
+    const cancelSlot =
+        document.getElementById(
+            "cancel-status-slot"
+        );
+
+
+    /*
+        مهم:
+        نمسح محتوى Slot الأول فقط.
+
+        Slot الإلغاء لا يتم تحريكه.
+    */
+
+    primarySlot.innerHTML = "";
+
+
+
+    /* ======================================================
+       تم تأكيد الطلب
+       التالي = بدء التجهيز
+    ======================================================= */
+
+    if(status === "confirmed"){
+
+
+        primarySlot.appendChild(
+
+            createStatusButton(
+
+                "processing",
+
+                "🔧 بدء التجهيز",
+
+                "processing"
+
+            )
+
+        );
+
+
+        /*
+            الإلغاء يبقى مكانه.
+        */
+
+        return;
+
+    }
+
+
+
+    /* ======================================================
+       بدأ التجهيز
+       التالي يعتمد على نوع الاستلام
+    ======================================================= */
+
+    if(status === "processing"){
+
+
+        const deliveryType =
+            "{{ order.delivery_type|default:'' }}";
+
+
+        if(deliveryType === "pickup"){
+
+
+            primarySlot.appendChild(
+
+                createStatusButton(
+
+                    "ready_pickup",
+
+                    "📦 جاهز للاستلام",
+
+                    "ready"
+
+                )
+
+            );
+
+
+        }else{
+
+
+            primarySlot.appendChild(
+
+                createStatusButton(
+
+                    "shipped",
+
+                    "🚚 تم الشحن",
+
+                    "shipped"
+
+                )
+
+            );
+
+        }
+
+
+        /*
+            بعد بدء التجهيز لا نحتاج
+            إلى تحريك زر الإلغاء.
+
+            إذا كان موجودًا يبقى في نفس Slot.
+        */
+
+        return;
+
+    }
+
+
+
+    /* ======================================================
+       جاهز للاستلام
+       التالي = تم التسليم
+    ======================================================= */
+
+    if(status === "ready_pickup"){
+
+
+        primarySlot.appendChild(
+
+            createStatusButton(
+
+                "delivered",
+
+                "✅ تم التسليم",
+
+                "delivered"
+
+            )
+
+        );
+
+
+        /*
+            الإلغاء لا يظهر بعد هذه المرحلة.
+        */
+
+        cancelSlot.innerHTML = "";
+
+
+        return;
+
+    }
+
+
+
+    /* ======================================================
+       تم الشحن
+       التالي = تم التسليم
+    ======================================================= */
+
+    if(status === "shipped"){
+
+
+        primarySlot.appendChild(
+
+            createStatusButton(
+
+                "delivered",
+
+                "✅ تم التسليم",
+
+                "delivered"
+
+            )
+
+        );
+
+
+        cancelSlot.innerHTML = "";
+
+
+        return;
+
+    }
+
+
+
+    /* ======================================================
+       تم التسليم
+    ======================================================= */
+
+    if(status === "delivered"){
+
+
+        primarySlot.innerHTML = "";
+
+
+        cancelSlot.innerHTML = "";
+
+
+        return;
+
+    }
+
+
+
+    /* ======================================================
+       تم الإلغاء
+    ======================================================= */
+
+    if(status === "cancelled"){
+
+
+        primarySlot.innerHTML = "";
+
+
+        cancelSlot.innerHTML = "";
+
+
+        return;
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   إعادة تفعيل الزر الحالي فقط
+========================================================== */
+
+function enableCurrentButtons(){
+
+
+    const buttons =
+        document.querySelectorAll(
+            "#status-buttons .status-btn"
+        );
+
+
+    buttons.forEach(function(btn){
+
+        btn.disabled = false;
+
+    });
+
+}
+
+
+
+/* ==========================================================
+   إيصال التحويل
+========================================================== */
 
 function openReceipt(){
 
 
-    document
-    .getElementById("receiptModal")
-    .classList.add("show");
+    const modal =
+        document.getElementById(
+            "receiptModal"
+        );
 
+
+    if(modal){
+
+        modal.classList.add("show");
+
+    }
 
 }
-
 
 
 
 function closeReceipt(){
 
 
-    document
-    .getElementById("receiptModal")
-    .classList.remove("show");
+    const modal =
+        document.getElementById(
+            "receiptModal"
+        );
 
+
+    if(modal){
+
+        modal.classList.remove("show");
+
+    }
 
 }
 
 
+
+/* ==========================================================
+   ESC لإغلاق الإيصال
+========================================================== */
+
+document.addEventListener(
+
+    "keydown",
+
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeReceipt();
+
+        }
+
+    }
+
+);
 
 </script>
 

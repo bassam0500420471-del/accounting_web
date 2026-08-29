@@ -12,6 +12,7 @@ from ecommerce.models import (
     PaymentMethod,
     Store,
     PaymentIntent,
+    CustomerAddress,
 )
 
 from ecommerce.services.checkout_service import CheckoutService
@@ -44,7 +45,9 @@ def checkout(request, store_slug):
             slug=store_slug,
             is_active=True
         )
-
+    shipping_address = CustomerAddress.objects.filter(
+        customer=request.user
+    ).order_by("-is_default", "-id").first()
 
     # ==========================
     # GET
@@ -56,26 +59,25 @@ def checkout(request, store_slug):
             customer=request.user
         ).first()
 
-
         items = cart.items.all() if cart else []
-
 
         total = sum(
             item.subtotal()
             for item in items
         )
 
+        shipping_address = CustomerAddress.objects.filter(
+            customer=request.user
+        ).order_by("-is_default", "-id").first()
 
         payment_methods = PaymentMethod.objects.filter(
             company=store.company,
             is_active=True
         )
 
-
         bank_method = payment_methods.filter(
             payment_type="bank"
         ).first()
-
 
         return render(
             request,
@@ -86,9 +88,9 @@ def checkout(request, store_slug):
                 "total": total,
                 "payment_methods": payment_methods,
                 "bank_method": bank_method,
+                "shipping_address": shipping_address,
             }
         )
-
 
     # ==========================
     # POST
@@ -247,7 +249,7 @@ def checkout(request, store_slug):
                 customer=request.user,
 
                 store=store,
-
+            shipping_address=shipping_address,
                 payment_method=payment_method,
 
             )
@@ -345,7 +347,7 @@ def checkout(request, store_slug):
                 customer=request.user,
 
                 store=store,
-
+            shipping_address=shipping_address,
                 payment_method=payment_method,
 
             )
