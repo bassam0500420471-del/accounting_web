@@ -3,23 +3,25 @@
 {% block title %}إتمام الطلب{% endblock %}
 
 {% block extra_css %}
+
 <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.14.0/moyasar.css">
 
 <style>
-
-
 </style>
 
 {% endblock %}
 
 
 {% block content %}
+
 <div class="container py-5">
 
     <div class="row g-4">
 
 
-        <!-- ملخص الطلب -->
+        <!-- =====================================================
+             ملخص الطلب
+        ====================================================== -->
 
         <div class="col-lg-5">
 
@@ -43,7 +45,7 @@
 
 
                         <strong>
-                            {{ item.subtotal }} ر.س
+                            {{ item.subtotal|floatformat:"2" }} ر.س
                         </strong>
 
                     </div>
@@ -63,7 +65,8 @@
 
 
                     <h5 class="text-end">
-                        الإجمالي: {{ total }} ر.س
+                        الإجمالي:
+                        {{ total|floatformat:"2" }} ر.س
                     </h5>
 
 
@@ -75,8 +78,9 @@
 
 
 
-        <!-- طرق الدفع -->
-
+        <!-- =====================================================
+             طرق الدفع
+        ====================================================== -->
 
         <div class="col-lg-7">
 
@@ -93,287 +97,295 @@
 
 
                 <div class="card-body">
-<!-- =====================================================
-     بيانات المستلم وعنوان الشحن
-===================================================== -->
 
-<div class="card shadow-sm mb-4">
 
-    <div class="card-header">
-        📦 بيانات المستلم والشحن
-    </div>
+                    <!-- =====================================================
+                         بيانات المستلم وعنوان الشحن
+                    ====================================================== -->
 
-    <div class="card-body">
+                    <div class="card shadow-sm mb-4">
 
-        {% if shipping_address %}
+                        <div class="card-header">
+                            📦 بيانات المستلم والشحن
+                        </div>
 
-            <div class="mb-3">
-                <strong>👤 اسم المستلم:</strong>
-                {{ shipping_address.full_name }}
+                        <div class="card-body">
+
+                            {% if shipping_address %}
+
+                                <div class="mb-3">
+                                    <strong>👤 اسم المستلم:</strong>
+                                    {{ shipping_address.full_name }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>📱 رقم الجوال:</strong>
+                                    {{ shipping_address.phone }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>📍 العنوان:</strong>
+                                    {{ shipping_address.address }}
+                                </div>
+
+                                {% if shipping_address.district %}
+
+                                <div class="mb-3">
+                                    <strong>🏘️ الحي:</strong>
+                                    {{ shipping_address.district }}
+                                </div>
+
+                                {% endif %}
+
+
+                                {% if shipping_address.city %}
+
+                                <div class="mb-3">
+                                    <strong>🏙️ المدينة:</strong>
+                                    {{ shipping_address.city }}
+                                </div>
+
+                                {% endif %}
+
+
+                                {% if shipping_address.postal_code %}
+
+                                <div class="mb-3">
+                                    <strong>📮 الرمز البريدي:</strong>
+                                    {{ shipping_address.postal_code }}
+                                </div>
+
+                                {% endif %}
+
+
+                                <a
+                                    href="{% url 'ecommerce:account_edit' store.slug %}"
+                                    class="btn btn-outline-dark"
+                                >
+                                    ✏️ تعديل بيانات الشحن
+                                </a>
+
+                            {% else %}
+
+                                <div class="alert alert-warning">
+                                    ⚠️ لا يوجد عنوان شحن محفوظ.
+                                </div>
+
+                                <a
+                                    href="{% url 'ecommerce:account_edit' store.slug %}"
+                                    class="btn btn-primary"
+                                >
+                                    إضافة عنوان الشحن
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
             </div>
 
-            <div class="mb-3">
-                <strong>📱 رقم الجوال:</strong>
-                {{ shipping_address.phone }}
-            </div>
 
-            <div class="mb-3">
-                <strong>📍 العنوان:</strong>
-                {{ shipping_address.address }}
-            </div>
+            <!-- =====================================================
+                 نموذج الدفع
+            ====================================================== -->
 
-            {% if shipping_address.district %}
-            <div class="mb-3">
-                <strong>🏘️ الحي:</strong>
-                {{ shipping_address.district }}
-            </div>
-            {% endif %}
-
-            {% if shipping_address.city %}
-            <div class="mb-3">
-                <strong>🏙️ المدينة:</strong>
-                {{ shipping_address.city }}
-            </div>
-            {% endif %}
-
-            {% if shipping_address.postal_code %}
-            <div class="mb-3">
-                <strong>📮 الرمز البريدي:</strong>
-                {{ shipping_address.postal_code }}
-            </div>
-            {% endif %}
-
-            <a
-                href="{% url 'ecommerce:account_edit' store.slug %}"
-                class="btn btn-outline-dark"
+            <form
+                id="checkoutForm"
+                method="POST"
+                enctype="multipart/form-data"
+                action="{% url 'ecommerce:checkout' store.slug %}"
             >
-                ✏️ تعديل بيانات الشحن
-            </a>
 
-        {% else %}
+                {% csrf_token %}
 
-            <div class="alert alert-warning">
-                ⚠️ لا يوجد عنوان شحن محفوظ.
-            </div>
 
-            <a
-                href="{% url 'ecommerce:account_edit' store.slug %}"
-                class="btn btn-primary"
-            >
-                إضافة عنوان الشحن
-            </a>
+                <!-- =====================================================
+                     طرق الدفع
+                ====================================================== -->
 
-        {% endif %}
+                <div class="payment-options mb-4">
+
+
+                    {% for method in payment_methods %}
+
+
+                        {% if method.payment_type == "bank" or method.payment_type == "cash" %}
+
+
+                            <label
+                                class="payment-box d-block mb-2 p-2 border rounded"
+                                style="cursor:pointer;"
+                            >
+
+
+                                <input
+                                    type="radio"
+                                    data-type="{{ method.payment_type }}"
+                                    name="payment_method"
+                                    value="{{ method.id }}"
+                                    {% if forloop.first %}checked{% endif %}
+                                    class="form-check-input me-2"
+                                >
+
+
+                                {{ method.name }}
+
+
+                            </label>
+
+
+                        {% endif %}
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+
+                <!-- =====================================================
+                     بطاقة ميسر
+                ====================================================== -->
+
+                <div
+                    id="cardSection"
+                    style="display:none; margin-top:20px;"
+                >
+
+                    <h5>
+                        بيانات البطاقة
+                    </h5>
+
+
+                    <div class="mysr-form"></div>
+
+                </div>
+
+
+
+                <!-- =====================================================
+                     قسم التحويل البنكي
+                ====================================================== -->
+
+                <div
+                    id="bankSection"
+                    style="display:none; margin-top:20px;"
+                >
+
+
+                    <div class="alert alert-info">
+
+
+                        <h5>
+                            🏦 بيانات التحويل البنكي
+                        </h5>
+
+
+                        <p>
+
+                            <strong>
+                                البنك:
+                            </strong>
+
+                            {{ bank_method.bank_name }}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                اسم الحساب:
+                            </strong>
+
+                            {{ bank_method.account_name }}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                رقم الحساب:
+                            </strong>
+
+                            {{ bank_method.account_number }}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                الآيبان:
+                            </strong>
+
+                            {{ bank_method.iban }}
+
+                        </p>
+
+
+                    </div>
+
+
+
+
+                    <label class="form-label">
+
+                        صورة التحويل البنكي
+
+                    </label>
+
+
+
+                    <input
+                        type="file"
+                        name="bank_receipt"
+                        class="form-control"
+                        accept="image/*"
+                    >
+
+
+                </div>
+
+
+
+
+                <!-- =====================================================
+                     زر التأكيد
+                ====================================================== -->
+
+                <button
+                    class="btn btn-primary w-100 mt-4"
+                    type="button"
+                    id="submitBtn"
+                    style="display:none;"
+                >
+
+                    تأكيد الدفع
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
 
     </div>
 
-</div>
-    </div>
 
 </div>
-<form
-id="checkoutForm"
-method="POST"
-enctype="multipart/form-data"
-action="{% url 'ecommerce:checkout' store.slug %}"
->
-
-
-{% csrf_token %}
-
-
-
-<div class="payment-options mb-4">
-
-
-{% for method in payment_methods %}
-
-
-{% if method.payment_type == "bank" or method.payment_type == "cash" %}
-
-
-<label class="payment-box d-block mb-2 p-2 border rounded"
-style="cursor:pointer;">
-
-
-<input
-
-type="radio"
-
-data-type="{{ method.payment_type }}"
-
-name="payment_method"
-
-value="{{ method.id }}"
-
-{% if forloop.first %}checked{% endif %}
-
-class="form-check-input me-2"
-
->
-
-
-{{ method.name }}
-
-
-</label>
-
-
-{% endif %}
-
-
-{% endfor %}
-
-
-</div>
-
-
-
-<!-- بطاقة ميسر -->
-
-
-<div id="cardSection"
-style="display:none; margin-top:20px;">
-
-
-<h5>
-بيانات البطاقة
-</h5>
-
-
-<div class="mysr-form"></div>
-
-
-</div>
-<!-- قسم التحويل البنكي -->
-
-<div id="bankSection"
-style="display:none; margin-top:20px;">
-
-
-<div class="alert alert-info">
-
-
-<h5>
-🏦 بيانات التحويل البنكي
-</h5>
-
-
-<p>
-
-<strong>
-البنك:
-</strong>
-
-{{ bank_method.bank_name }}
-
-</p>
-
-
-<p>
-
-<strong>
-اسم الحساب:
-</strong>
-
-{{ bank_method.account_name }}
-
-</p>
-
-
-<p>
-
-<strong>
-رقم الحساب:
-</strong>
-
-{{ bank_method.account_number }}
-
-</p>
-
-
-<p>
-
-<strong>
-الآيبان:
-</strong>
-
-{{ bank_method.iban }}
-
-</p>
-
-
-</div>
-
-
-
-
-<label class="form-label">
-
-صورة التحويل البنكي
-
-</label>
-
-
-
-<input
-
-type="file"
-
-name="bank_receipt"
-
-class="form-control"
-
-accept="image/*"
-
->
-
-
-</div>
-
-
-
-
-<!-- زر التأكيد -->
-
-<button
-
-class="btn btn-primary w-100 mt-4"
-
-type="button"
-
-id="submitBtn"
-
-style="display:none;"
-
->
-
-تأكيد الدفع
-
-</button>
-
-
-
-</form>
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
 
 {% endblock %}
+
 
 
 {% block extra_js %}
@@ -382,22 +394,25 @@ style="display:none;"
 
 <script>
 
-
 document.addEventListener("DOMContentLoaded", function () {
 
-    const cardSection = document.getElementById(
-        "cardSection"
-    );
+
+    const cardSection =
+        document.getElementById(
+            "cardSection"
+        );
 
 
-    const bankSection = document.getElementById(
-        "bankSection"
-    );
+    const bankSection =
+        document.getElementById(
+            "bankSection"
+        );
 
 
-    const submitBtn = document.getElementById(
-        "submitBtn"
-    );
+    const submitBtn =
+        document.getElementById(
+            "submitBtn"
+        );
 
 
     const paymentRadios =
@@ -409,6 +424,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedKey = "";
 
 
+
+    /* =====================================================
+       تأكيد الطلب
+    ====================================================== */
 
     submitBtn.addEventListener(
         "click",
@@ -425,18 +444,15 @@ document.addEventListener("DOMContentLoaded", function () {
             submitBtn.disabled = true;
 
 
-
             console.log(
                 "CONFIRM BUTTON CLICKED"
             );
-
 
 
             const form =
                 document.getElementById(
                     "checkoutForm"
                 );
-
 
 
             const response =
@@ -446,10 +462,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         method: "POST",
 
-
                         body:
                             new FormData(form),
-
 
                         headers: {
 
@@ -462,10 +476,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-
             const data =
                 await response.json();
-
 
 
             console.log(
@@ -476,7 +488,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (data.redirect) {
 
-                window.location.href = data.redirect;
+                window.location.href =
+                    data.redirect;
 
                 return;
 
@@ -505,12 +518,10 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-
             console.log(
                 "CALLBACK:",
                 data.callback_url
             );
-
 
 
             console.log(
@@ -518,11 +529,14 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-
         }
     );
 
 
+
+    /* =====================================================
+       تهيئة طريقة الدفع
+    ====================================================== */
 
     function initPayment() {
 
@@ -531,7 +545,6 @@ document.addEventListener("DOMContentLoaded", function () {
             document.querySelector(
                 'input[name="payment_method"]:checked'
             );
-
 
 
         if (!selected) {
@@ -575,12 +588,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-
         console.log(
             "PAYMENT TYPE:",
             paymentType
         );
-
 
 
         console.log(
@@ -590,74 +601,85 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-// Moyasar
+        /* =================================================
+           Moyasar
+        ================================================== */
 
-if (
-    gateway.includes("moyasar")
-) {
-
-
-    cardSection.style.display =
-        "block";
+        if (
+            gateway.includes("moyasar")
+        ) {
 
 
-    bankSection.style.display =
-        "none";
+            cardSection.style.display =
+                "block";
 
 
-    submitBtn.style.display =
-        "none";
+            bankSection.style.display =
+                "none";
 
 
-    document.querySelector(
-        ".mysr-form"
-    ).innerHTML = "";
+            submitBtn.style.display =
+                "none";
+
+
+            document.querySelector(
+                ".mysr-form"
+            ).innerHTML = "";
 
 
 
-    Moyasar.init({
+            Moyasar.init({
 
-        element:
-            ".mysr-form",
-
-
-        amount:
-            Math.round(
-                Number(
-                    "{{ total|floatformat:'2' }}".replace(/,/g, "")
-                ) * 100
-            ),
+                element:
+                    ".mysr-form",
 
 
-        currency:
-            "SAR",
+                /*
+                 * القيمة المستخدمة للدفع تبقى رقمية.
+                 * floatformat هنا للتأكد من منزلتين فقط
+                 * قبل التحويل إلى هللة.
+                 */
+
+                amount:
+                    Math.round(
+                        Number(
+                            "{{ total|floatformat:'2' }}".replace(/,/g, "")
+                        ) * 100
+                    ),
 
 
-        description:
-            "Order from Store - {{ store.slug }}",
+                currency:
+                    "SAR",
 
 
-        publishable_api_key:
-            key,
+                description:
+                    "Order from Store - {{ store.slug }}",
 
 
-        callback_url:
-            window.location.origin +
-            "/store/{{ store.slug }}/payment/moyasar/callback/",
+                publishable_api_key:
+                    key,
 
 
-        methods:
-            [
-                "creditcard"
-            ]
-
-    });
+                callback_url:
+                    window.location.origin +
+                    "/store/{{ store.slug }}/payment/moyasar/callback/",
 
 
-}
+                methods:
+                    [
+                        "creditcard"
+                    ]
+
+            });
 
 
-        // Bank
+        }
+
+
+
+        /* =================================================
+           Bank
+        ================================================== */
 
         else if (
             paymentType === "bank"
@@ -680,7 +702,9 @@ if (
 
 
 
-        // Cash
+        /* =================================================
+           Cash
+        ================================================== */
 
         else {
 
@@ -696,7 +720,6 @@ if (
             submitBtn.style.display =
                 "block";
 
-
         }
 
 
@@ -704,17 +727,19 @@ if (
 
 
 
+    /* =====================================================
+       تغيير طريقة الدفع
+    ====================================================== */
+
     paymentRadios.forEach(
-        function(radio){
+        function(radio) {
 
 
             radio.addEventListener(
                 "change",
-                function(){
-
+                function() {
 
                     initPayment();
-
 
                 }
             );
@@ -725,12 +750,14 @@ if (
 
 
 
+    /* =====================================================
+       التشغيل الأول
+    ====================================================== */
+
     initPayment();
 
 
-
 });
-
 
 </script>
 
