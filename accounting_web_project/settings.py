@@ -88,7 +88,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',
-
+   "channels",
     # apps
     'cost_centers.apps.CostCentersConfig',
     'accounting.apps.AccountingConfig',
@@ -157,7 +157,7 @@ MIDDLEWARE = [
 # ============================================================
 ROOT_URLCONF = 'accounting_web_project.urls'
 WSGI_APPLICATION = 'accounting_web_project.wsgi.application'
-
+ASGI_APPLICATION = "accounting.asgi.application"
 # ============================================================
 # ============================================================
 # TEMPLATES
@@ -257,3 +257,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # تفعيل تفضيل https الافتراضي لحقول الروابط وإسكات تحذير جنجو للأبد
 FORMS_URLFIELD_ASSUME_HTTPS = True
+# ============================================================
+# DJANGO CHANNELS
+# ============================================================
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                os.environ.get(
+                    "REDIS_URL",
+                    "redis://127.0.0.1:6379/0"
+                )
+            ],
+        },
+    },
+}

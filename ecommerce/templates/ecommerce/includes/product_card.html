@@ -2,331 +2,229 @@
 
 <div class="product-card wishlist-card">
 
-    {% if wishlist_page %}
 
-        <button
-            type="button"
-            class="wishlist-remove"
-            data-product-id="{{ product.id }}"
-            title="إزالة من المفضلة"
-            aria-label="إزالة من المفضلة">
+{% if wishlist_page %}
 
-            ×
+    <button
+        type="button"
+        class="wishlist-remove"
+        data-product-id="{{ product.id }}"
+        title="إزالة من المفضلة"
+        aria-label="إزالة من المفضلة">
 
-        </button>
+        ×
 
-    {% endif %}
+    </button>
 
-
-    <!-- ==========================================================
-         صورة المنتج / معرض الصور
-    =========================================================== -->
-
-    <div class="product-image product-image-gallery">
-
-        <div class="product-gallery-images">
+{% endif %}
 
 
-            <!-- ==================================================
-                 الصورة الرئيسية للمنتج
-            =================================================== -->
+<!-- ==========================================================
+     صورة المنتج / معرض الصور
+=========================================================== -->
 
-            {% if product.image %}
+<div class="product-image product-image-gallery">
+
+    <div class="product-gallery-images">
+
+
+        <!-- ==================================================
+             الصورة الرئيسية للمنتج
+        =================================================== -->
+
+        {% if product.image %}
+
+            <img
+                src="{{ product.image.url }}"
+                alt="{{ product.get_name }}"
+                class="product-gallery-image active-image"
+                loading="lazy"
+            >
+
+        {% endif %}
+
+
+        <!-- ==================================================
+             الصور الإضافية
+        =================================================== -->
+
+        {% for gallery_image in product.images.all %}
+
+            {% if gallery_image.image %}
 
                 <img
-                    src="{{ product.image.url }}"
-                    alt="{{ product.get_name }}"
-                    class="product-gallery-image active-image"
+                    src="{{ gallery_image.image.url }}"
+                    alt="{{ gallery_image.alt_text|default:product.get_name }}"
+                    class="product-gallery-image"
                     loading="lazy"
                 >
 
             {% endif %}
 
-
-            <!-- ==================================================
-                 الصور الإضافية
-            =================================================== -->
-
-            {% for gallery_image in product.images.all %}
-
-                {% if gallery_image.image %}
-
-                    <img
-                        src="{{ gallery_image.image.url }}"
-                        alt="{{ gallery_image.alt_text|default:product.get_name }}"
-                        class="product-gallery-image"
-                        loading="lazy"
-                    >
-
-                {% endif %}
-
-            {% endfor %}
+        {% endfor %}
 
 
-            <!-- ==================================================
-                 لا توجد أي صورة
-            =================================================== -->
+        <!-- ==================================================
+             لا توجد أي صورة
+        =================================================== -->
 
-            {% if not product.image and not product.images.all %}
+        {% if not product.image and not product.images.all %}
 
-                <img
-                    src="{% static 'ecommerce/images/no-image.png' %}"
-                    alt="لا توجد صورة"
-                    class="product-gallery-image active-image"
-                    loading="lazy"
-                >
-
-            {% endif %}
-
-
-        </div>
-
-
-        <!-- ======================================================
-             أسهم الصور
-        ======================================================= -->
-
-        <button
-            type="button"
-            class="gallery-arrow gallery-prev"
-            aria-label="الصورة السابقة">
-
-            <i class="bi bi-chevron-right"></i>
-
-        </button>
-
-
-        <button
-            type="button"
-            class="gallery-arrow gallery-next"
-            aria-label="الصورة التالية">
-
-            <i class="bi bi-chevron-left"></i>
-
-        </button>
-
-
-        <!-- ======================================================
-             نقاط الصور
-        ======================================================= -->
-
-        <div class="gallery-dots">
-
-            {% if product.image %}
-
-                <span
-                    class="gallery-dot active"
-                    aria-label="الصورة الرئيسية">
-                </span>
-
-            {% endif %}
-
-
-            {% for gallery_image in product.images.all %}
-
-                {% if gallery_image.image %}
-
-                    <span
-                        class="gallery-dot"
-                        aria-label="صورة إضافية">
-                    </span>
-
-                {% endif %}
-
-            {% endfor %}
-
-        </div>
-
-
-        <!-- ======================================================
-             شارة الخصم
-        ======================================================= -->
-
-        {% if show_discount %}
-
-            <span class="product-badge">
-
-                خصم
-
-            </span>
+            <img
+                src="{% static 'ecommerce/images/no-image.png' %}"
+                alt="لا توجد صورة"
+                class="product-gallery-image active-image"
+                loading="lazy"
+            >
 
         {% endif %}
-
-
-        <!-- ======================================================
-             شارة جديد
-        ======================================================= -->
-
-        {% if product.is_new %}
-
-            <span class="product-badge product-new">
-
-                جديد
-
-            </span>
-
-        {% endif %}
-
-
-        <!-- ======================================================
-             أدوات سريعة
-        ======================================================= -->
-
-        <div class="product-actions">
-
-
-            <!-- المفضلة -->
-
-            <a
-                href="javascript:void(0)"
-                class="wishlist-btn"
-                data-product="{{ product.id }}"
-                title="إضافة للمفضلة">
-
-                <i class="bi bi-heart"></i>
-
-            </a>
-
-
-            <!-- عرض المنتج -->
-
-            {% if product.slug %}
-
-                <a
-                    href="{% url 'ecommerce:product_detail' store.slug product.slug %}"
-                    title="عرض المنتج">
-
-                    <i class="bi bi-eye"></i>
-
-                </a>
-
-            {% else %}
-
-                <a
-                    href="javascript:void(0)"
-                    title="المنتج لا يملك رابطاً">
-
-                    <i class="bi bi-eye-slash"></i>
-
-                </a>
-
-            {% endif %}
-
-
-            <!-- مقارنة -->
-
-            <a
-                href="javascript:void(0)"
-                class="compare-btn"
-                data-product="{{ product.id }}"
-                title="مقارنة">
-
-                <i class="bi bi-arrow-left-right"></i>
-
-            </a>
-
-
-        </div>
 
 
     </div>
 
 
-    <!-- ==========================================================
-         معلومات المنتج
-    =========================================================== -->
+    <!-- ======================================================
+         أسهم الصور
+    ======================================================= -->
 
-    <div class="product-content">
+    <button
+        type="button"
+        class="gallery-arrow gallery-prev"
+        aria-label="الصورة السابقة">
+
+        <i class="bi bi-chevron-right"></i>
+
+    </button>
 
 
-        <!-- التصنيف -->
+    <button
+        type="button"
+        class="gallery-arrow gallery-next"
+        aria-label="الصورة التالية">
 
-        {% if product.category %}
+        <i class="bi bi-chevron-left"></i>
 
-            <div class="product-category">
+    </button>
 
-                {{ product.category.name }}
 
-            </div>
+    <!-- ======================================================
+         نقاط الصور
+    ======================================================= -->
+
+    <div class="gallery-dots">
+
+        {% if product.image %}
+
+            <span
+                class="gallery-dot active"
+                aria-label="الصورة الرئيسية">
+            </span>
 
         {% endif %}
 
 
-        <!-- اسم المنتج -->
+        {% for gallery_image in product.images.all %}
 
-        <div class="product-name">
+            {% if gallery_image.image %}
 
-            {{ product.get_name }}
-
-        </div>
-
-
-        <!-- التقييم -->
-
-        <div class="product-rating">
-
-            ★★★★★
-
-        </div>
-
-
-        <!-- السعر -->
-
-        <div class="product-price">
-
-
-            {% if product.sale_price %}
-
-                <span class="current-price">
-
-                    {{ product.sale_price }}
-
-                    {{ store.currency.symbol|default:"ر.س" }}
-
-                </span>
-
-
-                {% if product.price %}
-
-                    <span class="old-price">
-
-                        {{ product.price }}
-
-                    </span>
-
-                {% endif %}
-
-
-            {% else %}
-
-                <span class="current-price">
-
-                    {{ product.price }}
-
-                    {{ store.currency.symbol|default:"ر.س" }}
-
+                <span
+                    class="gallery-dot"
+                    aria-label="صورة إضافية">
                 </span>
 
             {% endif %}
 
+        {% endfor %}
 
-        </div>
+    </div>
 
 
-        <!-- ======================================================
-             زر السلة
-        ======================================================= -->
+    <!-- ======================================================
+         شارة الخصم
+    ======================================================= -->
 
-        <button
-            type="button"
-            class="add-to-cart add-cart-btn"
-            data-product="{{ product.id }}">
+    {% if show_discount %}
 
-            <i class="bi bi-cart-plus"></i>
+        <span class="product-badge">
 
-            إضافة إلى السلة
+            خصم
 
-        </button>
+        </span>
+
+    {% endif %}
+
+
+    <!-- ======================================================
+         شارة جديد
+    ======================================================= -->
+
+    {% if product.is_new %}
+
+        <span class="product-badge product-new">
+
+            جديد
+
+        </span>
+
+    {% endif %}
+
+
+    <!-- ======================================================
+         أدوات سريعة
+    ======================================================= -->
+
+    <div class="product-actions">
+
+
+        <!-- المفضلة -->
+
+        <a
+            href="javascript:void(0)"
+            class="wishlist-btn"
+            data-product="{{ product.id }}"
+            title="إضافة للمفضلة">
+
+            <i class="bi bi-heart"></i>
+
+        </a>
+
+
+        <!-- عرض المنتج -->
+
+        {% if product.slug %}
+
+            <a
+                href="{% url 'ecommerce:product_detail' store.slug product.slug %}"
+                title="عرض المنتج">
+
+                <i class="bi bi-eye"></i>
+
+            </a>
+
+        {% else %}
+
+            <a
+                href="javascript:void(0)"
+                title="المنتج لا يملك رابطاً">
+
+                <i class="bi bi-eye-slash"></i>
+
+            </a>
+
+        {% endif %}
+
+
+        <!-- مقارنة -->
+
+        <a
+            href="javascript:void(0)"
+            class="compare-btn"
+            data-product="{{ product.id }}"
+            title="مقارنة">
+
+            <i class="bi bi-arrow-left-right"></i>
+
+        </a>
 
 
     </div>
@@ -336,10 +234,316 @@
 
 
 <!-- ==========================================================
-     CSS معرض الصور
+     معلومات المنتج
+=========================================================== -->
+
+<div class="product-content">
+
+
+    <!-- التصنيف -->
+
+    {% if product.category %}
+
+        <div class="product-category">
+
+            {{ product.category.name }}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- ======================================================
+         اسم المنتج
+    ======================================================= -->
+
+    <div
+        class="product-name product-name-tooltip"
+        data-full-name="{{ product.get_name|escape }}"
+        tabindex="0"
+        role="button"
+        aria-label="عرض اسم المنتج بالكامل">
+
+        {{ product.get_name }}
+
+    </div>
+
+
+    <!-- التقييم -->
+
+    <div class="product-rating">
+
+        ★★★★★
+
+    </div>
+
+
+    <!-- السعر -->
+
+    <div class="product-price">
+
+
+        {% if product.sale_price %}
+
+            <span class="current-price">
+
+                {{ product.sale_price }}
+
+                {{ store.currency.symbol|default:"ر.س" }}
+
+            </span>
+
+
+            {% if product.price %}
+
+                <span class="old-price">
+
+                    {{ product.price }}
+
+                </span>
+
+            {% endif %}
+
+
+        {% else %}
+
+            <span class="current-price">
+
+                {{ product.price }}
+
+                {{ store.currency.symbol|default:"ر.س" }}
+
+            </span>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- ======================================================
+         زر السلة
+    ======================================================= -->
+
+    <button
+        type="button"
+        class="add-to-cart add-cart-btn"
+        data-product="{{ product.id }}">
+
+        <i class="bi bi-cart-plus"></i>
+
+        إضافة إلى السلة
+
+    </button>
+
+
+</div>
+
+</div>
+
+<!-- ==========================================================
+     CSS
 =========================================================== -->
 
 <style>
+
+
+/* ==========================================================
+   السماح للعناصر العائمة بالخروج من الكرت
+========================================================== */
+
+.product-card,
+.product-content {
+
+    overflow: visible !important;
+
+}
+
+
+/* ==========================================================
+   اسم المنتج
+   يظهر سطرين فقط داخل الكرت
+========================================================== */
+
+.product-name-tooltip {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 48px;
+
+    line-height: 24px;
+
+    overflow: hidden;
+
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+
+    -webkit-line-clamp: 2;
+
+    text-overflow: ellipsis;
+
+    word-break: break-word;
+
+    cursor: pointer;
+
+    outline: none;
+
+}
+
+
+/* ==========================================================
+   الاسم الكامل العائم
+========================================================== */
+
+.product-name-tooltip::after {
+
+    content: attr(data-full-name);
+
+    position: fixed;
+
+    right: 50%;
+
+    top: 50%;
+
+    transform: translate(50%, -50%);
+
+    width: min(350px, calc(100vw - 30px));
+
+    max-width: 350px;
+
+    padding: 12px 16px;
+
+    background: #111827;
+
+    color: #ffffff;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1.8;
+
+    text-align: center;
+
+    white-space: normal;
+
+    word-break: break-word;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,.25);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+    z-index: 999999999;
+
+}
+
+
+/* ==========================================================
+   الكمبيوتر - تمرير الماوس
+========================================================== */
+
+@media (min-width: 769px) {
+
+    .product-name-tooltip:hover::after {
+
+        opacity: 1;
+
+        visibility: visible;
+
+        transform: translate(50%, -50%);
+
+    }
+
+}
+
+
+/* ==========================================================
+   الضغط / التركيز
+========================================================== */
+
+.product-name-tooltip:focus::after {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translate(50%, -50%);
+
+}
+
+
+/* ==========================================================
+   عند الضغط بواسطة JavaScript
+========================================================== */
+
+.product-name-tooltip.show-tooltip::after {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translate(50%, -50%);
+
+}
+
+
+/* ==========================================================
+   الجوال
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .product-name-tooltip::after {
+
+        position: fixed;
+
+        right: 15px;
+
+        left: 15px;
+
+        top: auto;
+
+        bottom: 20px;
+
+        width: auto;
+
+        max-width: none;
+
+        transform: translateY(10px);
+
+        padding: 12px 15px;
+
+        text-align: center;
+
+    }
+
+
+    .product-name-tooltip:focus::after,
+
+    .product-name-tooltip.show-tooltip::after {
+
+        opacity: 1;
+
+        visibility: visible;
+
+        transform: translateY(0);
+
+    }
+
+}
 
 
 /* ==========================================================
@@ -455,7 +659,9 @@
 }
 
 
-/* إظهار الأسهم عند وجود أكثر من صورة */
+/* ==========================================================
+   إظهار الأسهم عند وجود أكثر من صورة
+=========================================================== */
 
 .product-image-gallery.has-multiple-images .gallery-arrow {
 
@@ -464,7 +670,9 @@
 }
 
 
-/* ظهور الأسهم عند المرور */
+/* ==========================================================
+   ظهور الأسهم عند المرور
+=========================================================== */
 
 .product-image-gallery.has-multiple-images:hover .gallery-arrow {
 
@@ -473,7 +681,9 @@
 }
 
 
-/* السهم الأيمن */
+/* ==========================================================
+   السهم الأيمن
+=========================================================== */
 
 .gallery-prev {
 
@@ -482,7 +692,9 @@
 }
 
 
-/* السهم الأيسر */
+/* ==========================================================
+   السهم الأيسر
+=========================================================== */
 
 .gallery-next {
 
@@ -516,7 +728,9 @@
 }
 
 
-/* إظهار النقاط عند وجود أكثر من صورة */
+/* ==========================================================
+   إظهار النقاط عند وجود أكثر من صورة
+=========================================================== */
 
 .product-image-gallery.has-multiple-images .gallery-dots {
 
@@ -525,7 +739,9 @@
 }
 
 
-/* النقطة */
+/* ==========================================================
+   النقطة
+=========================================================== */
 
 .gallery-dot {
 
@@ -544,7 +760,9 @@
 }
 
 
-/* النقطة الحالية */
+/* ==========================================================
+   النقطة الحالية
+=========================================================== */
 
 .gallery-dot.active {
 
@@ -588,7 +806,9 @@
 }
 
 
-/* الصور غير النشطة */
+/* ==========================================================
+   الصور غير النشطة
+=========================================================== */
 
 .product-image-gallery
 .product-gallery-image:not(.active-image) {
@@ -601,9 +821,8 @@
 
 </style>
 
-
 <!-- ==========================================================
-     JavaScript معرض الصور
+     JavaScript معرض الصور + اسم المنتج
 =========================================================== -->
 
 <script>
@@ -611,9 +830,91 @@
 document.addEventListener("DOMContentLoaded", function () {
 
 
-    /*
-     * العثور على جميع المعارض
-     */
+    /* ==========================================================
+       اسم المنتج
+    =========================================================== */
+
+    document
+        .querySelectorAll(".product-name-tooltip")
+        .forEach(function (name) {
+
+
+            /* ==================================================
+               الضغط على اسم المنتج
+            ================================================== */
+
+            name.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    /*
+                     * إغلاق أي اسم آخر مفتوح
+                     */
+
+                    document
+                        .querySelectorAll(
+                            ".product-name-tooltip.show-tooltip"
+                        )
+                        .forEach(function (other) {
+
+                            if (other !== name) {
+
+                                other.classList.remove(
+                                    "show-tooltip"
+                                );
+
+                            }
+
+                        });
+
+
+                    /*
+                     * إظهار / إخفاء الاسم الكامل
+                     */
+
+                    name.classList.toggle(
+                        "show-tooltip"
+                    );
+
+                }
+            );
+
+
+        });
+
+
+    /* ==========================================================
+       الضغط خارج الاسم
+    =========================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+
+            document
+                .querySelectorAll(
+                    ".product-name-tooltip.show-tooltip"
+                )
+                .forEach(function (name) {
+
+                    name.classList.remove(
+                        "show-tooltip"
+                    );
+
+                });
+
+        }
+    );
+
+
+    /* ==========================================================
+       معرض الصور
+    =========================================================== */
 
     document
         .querySelectorAll(".product-image-gallery")
@@ -917,4 +1218,3 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
-

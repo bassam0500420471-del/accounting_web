@@ -1607,6 +1607,74 @@ if(gptChat.classList.contains("show")){
 <audio id="notificationSound" preload="auto">
     <source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
 </audio>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    if (!window.WebSocket) {
+        console.error("WebSocket غير مدعوم في المتصفح");
+        return;
+    }
+
+    const protocol =
+        window.location.protocol === "https:"
+            ? "wss://"
+            : "ws://";
+
+    const wsUrl =
+        protocol +
+        window.location.host +
+        "/ws/store/notifications/";
+
+    console.log("WEBSOCKET CONNECTING:", wsUrl);
+
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = function () {
+        console.log("================================");
+        console.log("WEBSOCKET CONNECTED");
+        console.log("================================");
+    };
+
+    socket.onmessage = function (event) {
+
+        console.log("WEBSOCKET MESSAGE:", event.data);
+
+        try {
+
+            const data = JSON.parse(event.data);
+
+            console.log("NOTIFICATION DATA:", data);
+
+        } catch (error) {
+
+            console.error(
+                "WEBSOCKET JSON ERROR:",
+                error
+            );
+
+        }
+    };
+
+    socket.onerror = function (error) {
+
+        console.error(
+            "WEBSOCKET ERROR:",
+            error
+        );
+
+    };
+
+    socket.onclose = function (event) {
+
+        console.log(
+            "WEBSOCKET CLOSED:",
+            event.code,
+            event.reason
+        );
+
+    };
+
+});
+</script>
 </body>
 </html>

@@ -2,10 +2,38 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse
+from django.contrib.staticfiles import finders
 
+def service_worker(request):
+    file_path = finders.find(
+        "ecommerce/service-worker.js"
+    )
 
+    if not file_path:
+        return HttpResponse(
+            "Service Worker not found",
+            status=404
+        )
+
+    with open(
+        file_path,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        content = file.read()
+
+    return HttpResponse(
+        content,
+        content_type="application/javascript"
+    )
 urlpatterns = [
-
+path(
+    "service-worker.js",
+    service_worker,
+    name="service_worker"
+),
     path(
         "admin/",
         admin.site.urls
