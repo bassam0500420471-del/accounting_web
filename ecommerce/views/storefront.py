@@ -1,12 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
+from decimal import Decimal
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from ecommerce.models import StorePolicy
+
 from django.http import JsonResponse
 from django.contrib import messages
+
+import pusher
+from django.conf import settings
+
 from ecommerce.models import (
     Store,
     StoreProduct,
@@ -17,13 +22,85 @@ from ecommerce.models import (
     Order,
     OrderItem,
     PaymentMethod,
-    StoreNotification,
     CustomerAddress,
     StorePolicy,
 )
+
 from products.models import Category, Product
 
 
+# =====================================================
+# إرسال إشعار عبر Pusher
+# =====================================================
+
+def send_pusher_notification(
+    store,
+    order,
+    title="طلب جديد",
+    message=None,
+):
+
+    print("\n")
+    print("========================================")
+    print("🔔 PUSHER FUNCTION CALLED")
+    print("STORE:", store)
+    print("STORE ID:", store.id)
+    print("ORDER:", order)
+    print("ORDER ID:", order.id)
+    print("ORDER NO:", order.order_no)
+    print("========================================")
+
+    try:
+
+        print("🔌 Creating Pusher client...")
+
+        client = pusher.Pusher(
+            app_id=settings.PUSHER_APP_ID,
+            key=settings.PUSHER_KEY,
+            secret=settings.PUSHER_SECRET,
+            cluster=settings.PUSHER_CLUSTER,
+            ssl=True,
+        )
+
+        print("✅ Pusher client created")
+
+        channel = f"store-{store.id}"
+
+        print("📡 CHANNEL:", channel)
+        print("📨 EVENT: new-order")
+
+        response = client.trigger(
+            channel,
+            "new-order",
+            {
+                "title": title,
+                "message": (
+                    message
+                    or f"تم استلام طلب جديد رقم {order.order_no}"
+                ),
+                "order_id": order.id,
+                "order_no": order.order_no,
+                "store_id": store.id,
+            },
+        )
+
+        print("✅ PUSHER TRIGGER SUCCESS")
+        print("PUSHER RESPONSE:", response)
+        print("========================================")
+        print("\n")
+
+        return True
+
+    except Exception as e:
+
+        print("\n")
+        print("========================================")
+        print("❌ PUSHER ERROR")
+        print("ERROR:", repr(e))
+        print("========================================")
+        print("\n")
+
+        return False
 
 # =====================================================
 # جلب المتجر
@@ -37,8 +114,6 @@ def get_store(store_slug):
     )
 
 
-
-
 # =====================================================
 # الصفحة الرئيسية
 # =====================================================
@@ -48,7 +123,6 @@ def home(request, store_slug):
     store = get_store(store_slug)
 
     company = store.company
-
 
     # =================================================
     # منتجات المتجر الظاهرة
@@ -90,7 +164,6 @@ def home(request, store_slug):
         active=True,
     )
 
-
     # =================================================
     # التصنيفات الظاهرة
     # =================================================
@@ -108,7 +181,6 @@ def home(request, store_slug):
         )
     )
 
-
     categories = (
         Category.objects
         .filter(
@@ -117,7 +189,6 @@ def home(request, store_slug):
         )
         .order_by("name")
     )
-
 
     # =================================================
     # المنتجات المميزة
@@ -142,13 +213,11 @@ def home(request, store_slug):
         )[:8]
     )
 
-
     featured_products = Product.objects.filter(
         id__in=featured_ids,
         company=company,
         active=True,
     )
-
 
     # =================================================
     # العروض
@@ -173,13 +242,11 @@ def home(request, store_slug):
         )[:8]
     )
 
-
     offer_products = Product.objects.filter(
         id__in=offer_ids,
         company=company,
         active=True,
     )
-
 
     # =================================================
     # وصل حديثًا
@@ -204,7 +271,6 @@ def home(request, store_slug):
         )[:8]
     )
 
-
     # =================================================
     # أحدث المنتجات
     # =================================================
@@ -221,13 +287,11 @@ def home(request, store_slug):
         "-current_stock"
     )[:8]
 
-
     # =================================================
     # أقسام التصنيفات
     # =================================================
 
     category_sections = []
-
 
     for category in categories:
 
@@ -250,11 +314,11 @@ def home(request, store_slug):
             )
         )
 
-
         if category_products.exists():
 
             category_sections.append({
-              "id": category.id,
+
+                "id": category.id,
 
                 "name": category.name,
 
@@ -269,9 +333,13 @@ def home(request, store_slug):
     # =================================================
 
     return render(
+
         request,
+
         "ecommerce/home.html",
+
         {
+
             "store": store,
 
             "store_categories": categories,
@@ -287,8 +355,11 @@ def home(request, store_slug):
             "best_products": best_products,
 
             "category_sections": category_sections,
+
         }
+
     )
+
 
 # =====================================================
 # المنتجات
@@ -298,15 +369,12 @@ def products(request, store_slug):
 
     store = get_store(store_slug)
 
-
     products = Product.objects.filter(
         company=store.company,
         active=True
     )
 
-
     search = request.GET.get("q")
-
 
     if search:
 
@@ -314,51 +382,68 @@ def products(request, store_slug):
             name__icontains=search
         )
 
-
     paginator = Paginator(
         products,
         20
     )
 
-
     page = request.GET.get("page")
-
 
     products = paginator.get_page(page)
 
-
-
     return render(
-        request,
-        "ecommerce/products.html",
-        {
-            "store": store,
-            "products": products,
-        }
-    )
 
+        request,
+
+        "ecommerce/products.html",
+
+        {
+
+            "store": store,
+
+            "products": products,
+
+        }
+
+    )
 
 
 # =====================================================
 # تفاصيل المنتج
 # =====================================================
 
-def product_detail(request, store_slug, product_slug):
+def product_detail(
+    request,
+    store_slug,
+    product_slug
+):
 
     store = get_store(store_slug)
 
     product = get_object_or_404(
+
         Product.objects.prefetch_related(
+
             "components__component",
+
             "images",
+
             "variants",
+
         ),
+
         company=store.company,
+
         slug=product_slug,
+
         active=True,
+
     )
 
+    # =================================================
     # مكونات المنتج المركب
+    # =================================================
+
     bundle_components = []
 
     if product.type == "bundle":
@@ -370,53 +455,95 @@ def product_detail(request, store_slug, product_slug):
         )
 
     return render(
+
         request,
+
         "ecommerce/product_detail.html",
+
         {
+
             "store": store,
+
             "product": product,
+
             "bundle_components": bundle_components,
+
         }
+
     )
+
 
 # =====================================================
 # التصنيف
 # =====================================================
 
-def category(request, store_slug, category_slug):
+def category(
+    request,
+    store_slug,
+    category_slug
+):
 
     store = get_store(store_slug)
 
     store_category = get_object_or_404(
+
         StoreCategory,
+
         store=store,
+
         category__company=store.company,
+
         category__slug=category_slug,
+
         is_visible=True,
+
     )
 
     products = (
+
         StoreProduct.objects
+
         .filter(
+
             store=store,
+
             product__company=store.company,
+
             product__category=store_category.category,
+
             product__active=True,
+
             is_visible=True,
+
         )
+
         .select_related("product")
-        .order_by("sort_order", "id")
+
+        .order_by(
+            "sort_order",
+            "id"
+        )
+
     )
 
     return render(
+
         request,
+
         "ecommerce/category.html",
+
         {
+
             "store": store,
+
             "category": store_category.category,
+
             "products": products,
+
         }
+
     )
+
 
 # =====================================================
 # جميع العروض
@@ -429,30 +556,47 @@ def offers(request, store_slug):
     company = store.company
 
     # =================================================
-    # منتجات العروض الظاهرة في المتجر
+    # منتجات العروض الظاهرة
     # =================================================
 
     offer_products = (
+
         StoreProduct.objects
+
         .filter(
+
             store=store,
+
             product__company=company,
+
             product__active=True,
+
             is_visible=True,
+
             is_offer=True,
+
         )
+
         .select_related(
+
             "product",
+
             "product__category",
+
         )
+
         .order_by(
+
             "offer_order",
+
             "id",
+
         )
+
     )
 
     # =================================================
-    # البحث داخل العروض
+    # البحث
     # =================================================
 
     search = request.GET.get("q")
@@ -460,7 +604,9 @@ def offers(request, store_slug):
     if search:
 
         offer_products = offer_products.filter(
+
             product__name__icontains=search
+
         )
 
     # =================================================
@@ -468,8 +614,11 @@ def offers(request, store_slug):
     # =================================================
 
     paginator = Paginator(
+
         offer_products,
+
         20
+
     )
 
     page = request.GET.get("page")
@@ -481,13 +630,22 @@ def offers(request, store_slug):
     # =================================================
 
     return render(
+
         request,
+
         "ecommerce/offers.html",
+
         {
+
             "store": store,
+
             "products": offer_products,
+
         }
+
     )
+
+
 # =====================================================
 # السلة
 # =====================================================
@@ -497,53 +655,173 @@ def cart(request, store_slug):
     store = get_store(store_slug)
 
     cart = None
+
     items = []
-    total = 0
+
+    # =================================================
+    # الرقم الضريبي
+    # =================================================
+
+    has_tax_number = bool(
+
+        store.company
+
+        and store.company.vat_no
+
+        and str(
+            store.company.vat_no
+        ).strip()
+
+    )
+
+    tax_rate = (
+
+        Decimal("0.15")
+        if has_tax_number
+        else Decimal("0.00")
+
+    )
+
+    # =================================================
+    # السلة
+    # =================================================
 
     if request.user.is_authenticated:
 
         cart = Cart.objects.filter(
+
             customer=request.user,
+
             store=store
+
         ).first()
 
         if cart:
 
-            items = cart.items.select_related(
-                "product"
-            ).all()
+            items = list(
 
-            for item in items:
+                cart.items.select_related(
+                    "product"
+                ).all()
 
-                total += item.subtotal()
+            )
 
-    # =====================================================
-    # تكلفة التوصيل من إعدادات المتجر
-    # =====================================================
+    # =================================================
+    # الإجمالي
+    # =================================================
 
-    shipping_cost = (
-        store.shipping_cost
-        if store.shipping_cost is not None
-        else 0
+    total = Decimal("0.00")
+
+    cart_tax = Decimal("0.00")
+
+    for item in items:
+
+        item.subtotal_value = Decimal(
+
+            str(
+                item.subtotal()
+            )
+
+        )
+
+        if has_tax_number:
+
+            item.cart_tax = (
+
+                item.subtotal_value
+                * tax_rate
+
+            ).quantize(
+                Decimal("0.01")
+            )
+
+        else:
+
+            item.cart_tax = Decimal(
+                "0.00"
+            )
+
+        total += item.subtotal_value
+
+        cart_tax += item.cart_tax
+
+    # =================================================
+    # شامل الضريبة
+    # =================================================
+
+    cart_total_with_tax = (
+
+        total + cart_tax
+
+    ).quantize(
+        Decimal("0.01")
     )
 
-    # =====================================================
-    # الإجمالي النهائي
-    # =====================================================
+    # =================================================
+    # التوصيل
+    # =================================================
 
-    final_total = total + shipping_cost
+    shipping_cost = (
+
+        store.shipping_cost
+
+        if store.shipping_cost is not None
+
+        else Decimal("0.00")
+
+    )
+
+    # =================================================
+    # الإجمالي النهائي
+    # =================================================
+
+    final_total = (
+
+        cart_total_with_tax
+        + shipping_cost
+
+    ).quantize(
+        Decimal("0.01")
+    )
+
+    # =================================================
+    # عرض الصفحة
+    # =================================================
 
     return render(
+
         request,
+
         "ecommerce/cart.html",
+
         {
+
             "store": store,
+
             "cart": cart,
+
             "items": items,
+
             "total": total,
-            "shipping_cost": shipping_cost,
-            "final_total": final_total,
+
+            "cart_tax": cart_tax,
+
+            "cart_total_with_tax":
+                cart_total_with_tax,
+
+            "has_tax_number":
+                has_tax_number,
+
+            "tax_rate": tax_rate,
+
+            "shipping_cost":
+                shipping_cost,
+
+            "final_total":
+                final_total,
+
         }
+
     )
 
 
@@ -560,8 +838,11 @@ def cart_count(request, store_slug):
     if request.user.is_authenticated:
 
         cart = Cart.objects.filter(
+
             customer=request.user,
+
             store=store
+
         ).first()
 
         if cart:
@@ -569,9 +850,10 @@ def cart_count(request, store_slug):
             count = cart.total_items()
 
     return JsonResponse({
-        "count": count
-    })
 
+        "count": count
+
+    })
 
 
 # =====================================================
@@ -582,13 +864,9 @@ def wishlist_count(request, store_slug):
 
     store = get_store(store_slug)
 
-
     count = 0
 
-
-
     if request.user.is_authenticated:
-
 
         count = Wishlist.objects.filter(
 
@@ -598,8 +876,6 @@ def wishlist_count(request, store_slug):
 
         ).count()
 
-
-
     return JsonResponse({
 
         "count": count
@@ -607,16 +883,17 @@ def wishlist_count(request, store_slug):
     })
 
 
-
 # =====================================================
 # تحديث كمية السلة
 # =====================================================
 
-def update_cart_item(request, store_slug, item_id):
+def update_cart_item(
+    request,
+    store_slug,
+    item_id
+):
 
     store = get_store(store_slug)
-
-
 
     item = get_object_or_404(
 
@@ -630,17 +907,11 @@ def update_cart_item(request, store_slug, item_id):
 
     )
 
-
-
     action = request.GET.get("action")
-
-
 
     if action == "increase":
 
         item.quantity += 1
-
-
 
     elif action == "decrease":
 
@@ -648,39 +919,148 @@ def update_cart_item(request, store_slug, item_id):
 
             item.quantity -= 1
 
-
-
     else:
 
-        quantity = request.POST.get("quantity")
+        quantity = request.POST.get(
+            "quantity"
+        )
 
         if quantity:
 
             item.quantity = int(quantity)
 
-
-
     item.save()
 
+    # =================================================
+    # حالة الضريبة
+    # =================================================
 
+    has_tax_number = bool(
 
-    total = sum(
+        store.company
 
-        x.subtotal()
+        and store.company.vat_no
 
-        for x in item.cart.items.all()
+        and str(
+            store.company.vat_no
+        ).strip()
 
     )
 
+    tax_rate = (
 
+        Decimal("0.15")
+
+        if has_tax_number
+
+        else Decimal("0.00")
+
+    )
+
+    # =================================================
+    # إعادة حساب السلة
+    # =================================================
+
+    total = Decimal("0.00")
+
+    cart_tax = Decimal("0.00")
+
+    for cart_item in item.cart.items.all():
+
+        subtotal = Decimal(
+
+            str(
+                cart_item.subtotal()
+            )
+
+        )
+
+        total += subtotal
+
+        if has_tax_number:
+
+            cart_tax += (
+                subtotal * tax_rate
+            )
+
+    cart_tax = cart_tax.quantize(
+        Decimal("0.01")
+    )
+
+    # =================================================
+    # شامل الضريبة
+    # =================================================
+
+    cart_total_with_tax = (
+
+        total + cart_tax
+
+    ).quantize(
+        Decimal("0.01")
+    )
+
+    # =================================================
+    # ضريبة المنتج الحالي
+    # =================================================
+
+    item_subtotal = Decimal(
+
+        str(
+            item.subtotal()
+        )
+
+    )
+
+    item_tax = (
+
+        item_subtotal * tax_rate
+
+    ).quantize(
+        Decimal("0.01")
+    )
+
+    # =================================================
+    # إجمالي المنتج
+    # =================================================
+
+    item_total_with_tax = (
+
+        item_subtotal + item_tax
+
+    ).quantize(
+        Decimal("0.01")
+    )
+
+    # =================================================
+    # التوصيل
+    # =================================================
 
     shipping_cost = (
-    store.shipping_cost
-    if 0 < total < 100
-    else 0
-)
 
+        store.shipping_cost
 
+        if store.shipping_cost is not None
+
+        else Decimal("0.00")
+
+    )
+
+    # =================================================
+    # الإجمالي النهائي
+    # =================================================
+
+    final_total = (
+
+        cart_total_with_tax
+        + shipping_cost
+
+    ).quantize(
+        Decimal("0.01")
+    )
+
+    # =================================================
+    # النتيجة
+    # =================================================
 
     return JsonResponse({
 
@@ -688,29 +1068,50 @@ def update_cart_item(request, store_slug, item_id):
 
         "quantity": item.quantity,
 
-        "subtotal": item.subtotal(),
+        "subtotal":
+            f"{item_subtotal:.2f}",
 
-        "total": total,
+        "tax":
+            f"{item_tax:.2f}",
 
-        "shipping_cost": shipping_cost,
+        "total_with_tax":
+            f"{item_total_with_tax:.2f}",
 
-        "final_total": total + shipping_cost,
+        "subtotal_total":
+            f"{total:.2f}",
 
-        "cart_count": item.cart.total_items(),
+        "cart_tax":
+            f"{cart_tax:.2f}",
+
+        "total":
+            f"{cart_total_with_tax:.2f}",
+
+        "shipping_cost":
+            f"{shipping_cost:.2f}",
+
+        "final_total":
+            f"{final_total:.2f}",
+
+        "cart_count":
+            item.cart.total_items(),
+
+        "has_tax_number":
+            has_tax_number,
 
     })
-
 
 
 # =====================================================
 # حذف منتج من السلة
 # =====================================================
 
-def remove_cart_item(request, store_slug, item_id):
+def remove_cart_item(
+    request,
+    store_slug,
+    item_id
+):
 
     store = get_store(store_slug)
-
-
 
     item = get_object_or_404(
 
@@ -724,15 +1125,9 @@ def remove_cart_item(request, store_slug, item_id):
 
     )
 
-
-
     cart = item.cart
 
-
-
     item.delete()
-
-
 
     total = sum(
 
@@ -742,15 +1137,15 @@ def remove_cart_item(request, store_slug, item_id):
 
     )
 
-
-
     shipping_cost = (
-    store.shipping_cost
-    if 0 < total < 100
-    else 0
-)
 
+        store.shipping_cost
 
+        if 0 < total < 100
+
+        else 0
+
+    )
 
     return JsonResponse({
 
@@ -758,13 +1153,18 @@ def remove_cart_item(request, store_slug, item_id):
 
         "total": total,
 
-        "shipping_cost": shipping_cost,
+        "shipping_cost":
+            shipping_cost,
 
-        "final_total": total + shipping_cost,
+        "final_total":
+            total + shipping_cost,
 
-        "cart_count": cart.total_items(),
+        "cart_count":
+            cart.total_items(),
 
     })
+
+
 # =====================================================
 # إتمام الطلب والدفع
 # =====================================================
@@ -774,18 +1174,21 @@ def checkout(request, store_slug):
 
     store = get_store(store_slug)
 
-    # =====================================================
+    # =================================================
     # السلة
-    # =====================================================
+    # =================================================
 
     cart = Cart.objects.filter(
+
         customer=request.user,
+
         store=store
+
     ).first()
 
     items = []
 
-    total = 0
+    total = Decimal("0.00")
 
     if cart:
 
@@ -794,52 +1197,87 @@ def checkout(request, store_slug):
         ).all()
 
         for item in items:
-            total += item.subtotal()
+
+            total += Decimal(
+                str(
+                    item.subtotal()
+                )
+            )
 
     # =================================================
-    # عنوان الشحن الافتراضي للعميل
+    # عنوان الشحن
     # =================================================
 
-    shipping_address = CustomerAddress.objects.filter(
-       customer=request.user
-    ).order_by("-id").first()
+    shipping_address = (
 
-    # =====================================================
+        CustomerAddress.objects
+
+        .filter(
+            customer=request.user
+        )
+
+        .order_by("-id")
+
+        .first()
+
+    )
+
+    # =================================================
     # POST
-    # =====================================================
+    # =================================================
 
     if request.method == "POST":
+
+        # =================================================
+        # التأكد من السلة
+        # =================================================
 
         if not items:
 
             return JsonResponse({
+
                 "success": False,
+
                 "message": "السلة فارغة"
+
             })
+
+        # =================================================
+        # طريقة الدفع
+        # =================================================
 
         payment_id = request.POST.get(
             "payment_method"
         )
 
         payment_method = get_object_or_404(
+
             PaymentMethod,
+
             id=payment_id,
+
             company=store.company,
+
             is_active=True
+
         )
 
         # =================================================
-        # التأكد من وجود عنوان
+        # التأكد من العنوان
         # =================================================
 
         if not shipping_address:
 
             return JsonResponse({
+
                 "success": False,
+
                 "message": (
-                    "يرجى إضافة اسم المستلم ورقم الجوال "
-                    "والعنوان قبل إتمام الطلب."
+                    "يرجى إضافة اسم المستلم "
+                    "ورقم الجوال والعنوان "
+                    "قبل إتمام الطلب."
                 )
+
             }, status=400)
 
         # =================================================
@@ -852,7 +1290,9 @@ def checkout(request, store_slug):
 
             customer=request.user,
 
-            order_no=f"ORD-{Order.objects.count() + 1}",
+            order_no=(
+                f"ORD-{Order.objects.count() + 1}"
+            ),
 
             payment_method=payment_method,
 
@@ -867,7 +1307,7 @@ def checkout(request, store_slug):
         )
 
         # =================================================
-        # المنتجات
+        # إضافة المنتجات
         # =================================================
 
         for item in items:
@@ -893,16 +1333,23 @@ def checkout(request, store_slug):
         # =================================================
 
         if payment_method.payment_type in [
+
             "card",
+
             "online"
+
         ]:
 
             order.payment_status = "unpaid"
 
             order.save(
+
                 update_fields=[
+
                     "payment_status"
+
                 ]
+
             )
 
             return JsonResponse({
@@ -921,7 +1368,12 @@ def checkout(request, store_slug):
                     f"Order {order.order_no}",
 
                 "callback_url":
-                    f"/store/{store.slug}/payment/moyasar/callback/"
+                    (
+                        f"/store/"
+                        f"{store.slug}"
+                        f"/payment/moyasar/"
+                        f"callback/"
+                    )
 
             })
 
@@ -934,9 +1386,13 @@ def checkout(request, store_slug):
             order.payment_status = "unpaid"
 
             order.save(
+
                 update_fields=[
+
                     "payment_status"
+
                 ]
+
             )
 
             return JsonResponse({
@@ -944,7 +1400,12 @@ def checkout(request, store_slug):
                 "success": True,
 
                 "redirect":
-                    f"/store/{store.slug}/bank-payment/?order={order.id}"
+                    (
+                        f"/store/"
+                        f"{store.slug}"
+                        f"/bank-payment/"
+                        f"?order={order.id}"
+                    )
 
             })
 
@@ -956,33 +1417,41 @@ def checkout(request, store_slug):
 
             order.status = "confirmed"
 
-            order.payment_status = "cash_on_delivery"
+            order.payment_status = (
+                "cash_on_delivery"
+            )
 
             order.save(
+
                 update_fields=[
+
                     "status",
+
                     "payment_status"
+
                 ]
+
             )
 
             # =================================================
-            # إشعار التاجر
+            # إشعار التاجر عبر Pusher
             # =================================================
 
-            StoreNotification.objects.create(
+            send_pusher_notification(
 
                 store=store,
 
-                title="طلب جديد",
+                order=order,
+
+                title="طلب جديد 🛒",
 
                 message=(
-                    f"تم إنشاء الطلب رقم "
+
+                    f"تم استلام طلب جديد رقم "
+
                     f"{order.order_no}"
+
                 ),
-
-                notification_type="order",
-
-                order=order,
 
             )
 
@@ -997,13 +1466,17 @@ def checkout(request, store_slug):
                 "success": True,
 
                 "redirect":
-                    f"/store/{store.slug}/orders/"
+                    (
+                        f"/store/"
+                        f"{store.slug}"
+                        f"/orders/"
+                    )
 
             })
 
-    # =====================================================
+    # =================================================
     # صفحة Checkout
-    # =====================================================
+    # =================================================
 
     return render(
 
@@ -1037,6 +1510,426 @@ def checkout(request, store_slug):
 
     )
 
+
+# =====================================================
+# التحويل البنكي
+# =====================================================
+
+@login_required
+def bank_payment(request, store_slug):
+
+    store = get_store(store_slug)
+
+    order_id = request.GET.get("order")
+
+    order = get_object_or_404(
+
+        Order,
+
+        id=order_id,
+
+        store=store,
+
+        customer=request.user
+
+    )
+
+    payment_method = get_object_or_404(
+
+        PaymentMethod,
+
+        company=store.company,
+
+        payment_type="bank",
+
+        is_active=True
+
+    )
+
+    if request.method == "POST":
+
+        order.status = "awaiting_payment"
+
+        order.save()
+
+        # =================================================
+        # إشعار التاجر عبر Pusher
+        # =================================================
+
+        send_pusher_notification(
+
+            store=store,
+
+            order=order,
+
+            title="تحويل بنكي جديد 💳",
+
+            message=(
+
+                f"تم إرسال طلب تحويل بنكي "
+
+                f"للطلب رقم {order.order_no}"
+
+            ),
+
+        )
+
+        return JsonResponse({
+
+            "success": True,
+
+            "message": "تم إرسال إثبات التحويل"
+
+        })
+
+    return render(
+
+        request,
+
+        "ecommerce/bank_payment.html",
+
+        {
+
+            "store": store,
+
+            "order": order,
+
+            "payment_method":
+                payment_method
+
+        }
+
+    )
+
+
+# =====================================================
+# الدفع بالبطاقة
+# =====================================================
+
+@login_required
+def card_payment(
+    request,
+    store_slug,
+    order_id
+):
+
+    store = get_store(store_slug)
+
+    order = get_object_or_404(
+
+        Order,
+
+        id=order_id,
+
+        store=store,
+
+        customer=request.user
+
+    )
+
+    if request.method == "POST":
+
+        card_number = request.POST.get(
+
+            "card_number",
+
+            ""
+
+        ).replace(
+
+            " ",
+
+            ""
+
+        )
+
+        expiry = request.POST.get(
+
+            "expiry",
+
+            ""
+
+        )
+
+        cvv = request.POST.get(
+
+            "cvv",
+
+            ""
+
+        )
+
+        # =================================================
+        # تحقق مبدئي
+        # =================================================
+
+        if len(card_number) < 16:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message":
+                    "رقم البطاقة غير صحيح"
+
+            })
+
+        if len(cvv) not in [3, 4]:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message":
+                    "رمز CVV غير صحيح"
+
+            })
+
+        if not expiry:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message":
+                    "تاريخ الانتهاء مطلوب"
+
+            })
+
+        # =================================================
+        # محاكاة OTP
+        # =================================================
+
+        request.session[
+            "payment_order_id"
+        ] = order.id
+
+        request.session[
+            "payment_otp"
+        ] = "123456"
+
+        return JsonResponse({
+
+            "success": True,
+
+            "otp_required": True,
+
+            "redirect":
+                (
+                    f"/store/"
+                    f"{store.slug}"
+                    f"/verify-otp/"
+                    f"{order.id}/"
+                )
+
+        })
+
+    return render(
+
+        request,
+
+        "ecommerce/card_payment.html",
+
+        {
+
+            "store": store,
+
+            "order": order
+
+        }
+
+    )
+
+
+# =====================================================
+# التحقق من OTP
+# =====================================================
+
+@login_required
+def verify_otp(
+    request,
+    store_slug,
+    order_id
+):
+
+    store = get_store(store_slug)
+
+    order = get_object_or_404(
+
+        Order,
+
+        id=order_id,
+
+        store=store,
+
+        customer=request.user
+
+    )
+
+    if request.method == "POST":
+
+        otp = request.POST.get(
+
+            "otp",
+
+            ""
+
+        )
+
+        saved_otp = request.session.get(
+
+            "payment_otp"
+
+        )
+
+        saved_order = request.session.get(
+
+            "payment_order_id"
+
+        )
+
+        if (
+
+            saved_order != order.id
+
+            or
+
+            otp != saved_otp
+
+        ):
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message":
+                    "رمز التحقق غير صحيح"
+
+            })
+
+        # =================================================
+        # تأكيد الدفع
+        # =================================================
+
+        order.payment_status = "paid"
+
+        order.status = "confirmed"
+
+        order.save()
+
+        # =================================================
+        # إشعار التاجر عبر Pusher
+        # =================================================
+
+        send_pusher_notification(
+
+            store=store,
+
+            order=order,
+
+            title="طلب مدفوع إلكترونيًا 💳",
+
+            message=(
+
+                f"تم الدفع بنجاح للطلب رقم "
+
+                f"{order.order_no}"
+
+            ),
+
+        )
+
+        # =================================================
+        # تفريغ السلة
+        # =================================================
+
+        cart = Cart.objects.filter(
+
+            customer=request.user,
+
+            store=store
+
+        ).first()
+
+        if cart:
+
+            cart.items.all().delete()
+
+        # =================================================
+        # تنظيف Session
+        # =================================================
+
+        request.session.pop(
+
+            "payment_otp",
+
+            None
+
+        )
+
+        request.session.pop(
+
+            "payment_order_id",
+
+            None
+
+        )
+
+        return JsonResponse({
+
+            "success": True,
+
+            "redirect":
+                (
+                    f"/store/"
+                    f"{store.slug}"
+                    f"/orders/"
+                )
+
+        })
+
+    return render(
+
+        request,
+
+        "ecommerce/verify_otp.html",
+
+        {
+
+            "store": store,
+
+            "order": order
+
+        }
+
+    )
+
+
+# =====================================================
+# الفواتير
+# =====================================================
+
+def invoices(request, store_slug):
+
+    store = get_store(store_slug)
+
+    return render(
+
+        request,
+
+        "ecommerce/account/invoices.html",
+
+        {
+
+            "store": store,
+
+            "invoices": []
+
+        }
+
+    )
+
+
 # =====================================================
 # حفظ عنوان الشحن
 # =====================================================
@@ -1052,8 +1945,12 @@ def save_shipping_address(
     if request.method != "POST":
 
         return JsonResponse({
+
             "success": False,
-            "message": "طريقة الطلب غير صحيحة."
+
+            "message":
+                "طريقة الطلب غير صحيحة."
+
         }, status=405)
 
     # =================================================
@@ -1061,23 +1958,35 @@ def save_shipping_address(
     # =================================================
 
     full_name = request.POST.get(
+
         "full_name",
+
         ""
+
     ).strip()
 
     phone = request.POST.get(
+
         "phone",
+
         ""
+
     ).strip()
 
     address = request.POST.get(
+
         "address",
+
         ""
+
     ).strip()
 
     postal_code = request.POST.get(
+
         "postal_code",
+
         ""
+
     ).strip()
 
     # =================================================
@@ -1087,32 +1996,48 @@ def save_shipping_address(
     if not full_name:
 
         return JsonResponse({
+
             "success": False,
-            "message": "اسم المستلم مطلوب."
+
+            "message":
+                "اسم المستلم مطلوب."
+
         }, status=400)
 
     if not phone:
 
         return JsonResponse({
+
             "success": False,
-            "message": "رقم الهاتف مطلوب."
+
+            "message":
+                "رقم الهاتف مطلوب."
+
         }, status=400)
 
     if not address:
 
         return JsonResponse({
+
             "success": False,
-            "message": "العنوان مطلوب."
+
+            "message":
+                "العنوان مطلوب."
+
         }, status=400)
 
     # =================================================
-    # إلغاء العنوان الافتراضي السابق
+    # إلغاء العنوان السابق
     # =================================================
 
     CustomerAddress.objects.filter(
+
         customer=request.user
+
     ).update(
+
         is_default=False
+
     )
 
     # =================================================
@@ -1140,6 +2065,7 @@ def save_shipping_address(
         postal_code=postal_code,
 
         is_default=True,
+
     )
 
     # =================================================
@@ -1150,11 +2076,14 @@ def save_shipping_address(
 
         "success": True,
 
-        "address_id": shipping_address.id,
+        "address_id":
+            shipping_address.id,
 
-        "message": "تم حفظ عنوان الشحن بنجاح."
+        "message":
+            "تم حفظ عنوان الشحن بنجاح."
 
     })
+
 
 # =====================================================
 # طلبات العميل
@@ -1165,21 +2094,27 @@ def orders(request, store_slug):
 
     store = get_store(store_slug)
 
+    orders = (
 
+        Order.objects
 
-    orders = Order.objects.filter(
+        .filter(
 
-        customer=request.user,
+            customer=request.user,
 
-        store=store
+            store=store
 
-    ).prefetch_related(
+        )
 
-        "items"
+        .prefetch_related(
 
-    ).order_by("-id")
+            "items"
 
+        )
 
+        .order_by("-id")
+
+    )
 
     return render(
 
@@ -1196,114 +2131,183 @@ def orders(request, store_slug):
         }
 
     )
+
+
 # =====================================================
 # إضافة / إزالة من المفضلة
 # =====================================================
 
 @login_required
-def toggle_wishlist(request, store_slug, product_id):
+def toggle_wishlist(
+    request,
+    store_slug,
+    product_id
+):
 
     if request.method != "POST":
 
         return JsonResponse({
+
             "status": "error"
+
         }, status=405)
 
     store = get_store(store_slug)
 
     product = get_object_or_404(
+
         Product,
+
         id=product_id,
+
         company=store.company,
+
         active=True
+
     )
 
-    wishlist, created = Wishlist.objects.get_or_create(
-        customer=request.user,
-        store=store,
-        product=product
+    wishlist, created = (
+        Wishlist.objects.get_or_create(
+
+            customer=request.user,
+
+            store=store,
+
+            product=product
+
+        )
     )
 
     if created:
 
         wishlist_count = Wishlist.objects.filter(
+
             customer=request.user,
+
             store=store
+
         ).count()
 
         return JsonResponse({
+
             "status": "added",
+
             "count": wishlist_count,
-            "message": "تمت إضافة المنتج للمفضلة"
+
+            "message":
+                "تمت إضافة المنتج للمفضلة"
+
         })
 
     wishlist.delete()
 
     wishlist_count = Wishlist.objects.filter(
+
         customer=request.user,
+
         store=store
+
     ).count()
 
     return JsonResponse({
+
         "status": "removed",
+
         "count": wishlist_count,
-        "message": "تم حذف المنتج من المفضلة"
+
+        "message":
+            "تم حذف المنتج من المفضلة"
+
     })
+
+
 # =====================================================
 # حذف منتج من المفضلة
 # =====================================================
 
 @login_required
-def remove_wishlist(request, store_slug, product_id):
+def remove_wishlist(
+    request,
+    store_slug,
+    product_id
+):
 
     if request.method != "POST":
 
         return JsonResponse({
+
             "success": False,
-            "message": "طريقة الطلب غير صحيحة"
+
+            "message":
+                "طريقة الطلب غير صحيحة"
+
         }, status=405)
 
     store = get_store(store_slug)
 
     wishlist = Wishlist.objects.filter(
+
         customer=request.user,
+
         store=store,
+
         product_id=product_id
+
     ).first()
 
     if not wishlist:
 
         wishlist_count = Wishlist.objects.filter(
+
             customer=request.user,
+
             store=store
+
         ).count()
 
         return JsonResponse({
+
             "success": False,
+
             "count": wishlist_count,
-            "message": "المنتج غير موجود في المفضلة"
+
+            "message":
+                "المنتج غير موجود في المفضلة"
+
         }, status=404)
 
     wishlist.delete()
 
     wishlist_count = Wishlist.objects.filter(
+
         customer=request.user,
+
         store=store
+
     ).count()
 
     return JsonResponse({
+
         "success": True,
+
         "count": wishlist_count,
-        "message": "تم حذف المنتج من المفضلة"
+
+        "message":
+            "تم حذف المنتج من المفضلة"
+
     })
+
 
 # =====================================================
 # إضافة للسلة
 # =====================================================
 
 @login_required
-def add_to_cart(request, store_slug, product_id):
-
+def add_to_cart(
+    request,
+    store_slug,
+    product_id
+):
 
     if request.method != "POST":
 
@@ -1313,11 +2317,7 @@ def add_to_cart(request, store_slug, product_id):
 
         }, status=405)
 
-
-
     store = get_store(store_slug)
-
-
 
     product = get_object_or_404(
 
@@ -1330,8 +2330,6 @@ def add_to_cart(request, store_slug, product_id):
         active=True
 
     )
-
-
 
     cart, created = Cart.objects.get_or_create(
 
@@ -1340,8 +2338,6 @@ def add_to_cart(request, store_slug, product_id):
         store=store
 
     )
-
-
 
     item = CartItem.objects.filter(
 
@@ -1353,19 +2349,13 @@ def add_to_cart(request, store_slug, product_id):
 
     ).first()
 
-
-
     if item:
-
 
         item.quantity += 1
 
         item.save()
 
-
-
     else:
-
 
         CartItem.objects.create(
 
@@ -1381,18 +2371,17 @@ def add_to_cart(request, store_slug, product_id):
 
         )
 
-
-
     return JsonResponse({
 
         "status": "success",
 
-        "items": cart.total_items(),
+        "items":
+            cart.total_items(),
 
-        "message": "تم تحديث السلة"
+        "message":
+            "تم تحديث السلة"
 
     })
-
 
 
 # =====================================================
@@ -1402,86 +2391,138 @@ def add_to_cart(request, store_slug, product_id):
 @login_required
 def wishlist(request, store_slug):
 
-    # =====================================================
-    # المتجر
-    # =====================================================
-
     store = get_store(store_slug)
 
-    # =====================================================
-    # منتجات المفضلة الخاصة بالعميل الحالي والمتجر الحالي
-    # =====================================================
+    products = (
 
-    products = Wishlist.objects.filter(
-        customer=request.user,
-        store=store,
-        product__company=store.company,
-        product__active=True,
-    ).select_related(
-        "product",
-        "product__category",
-    ).order_by(
-        "-id"
+        Wishlist.objects
+
+        .filter(
+
+            customer=request.user,
+
+            store=store,
+
+            product__company=store.company,
+
+            product__active=True,
+
+        )
+
+        .select_related(
+
+            "product",
+
+            "product__category",
+
+        )
+
+        .order_by("-id")
+
     )
-
-    # =====================================================
-    # عرض الصفحة
-    # =====================================================
 
     return render(
+
         request,
+
         "ecommerce/wishlist.html",
+
         {
+
             "store": store,
+
             "products": products,
+
         }
+
     )
+
 
 # =====================================================
 # تسجيل دخول عميل المتجر
 # =====================================================
 
-def customer_login(request, store_slug):
+def customer_login(
+    request,
+    store_slug
+):
 
     store = get_store(store_slug)
 
     if request.user.is_authenticated:
+
         return redirect(
+
             "ecommerce:account",
+
             store_slug=store.slug
+
         )
 
     if request.method == "POST":
 
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "")
+        username = request.POST.get(
+
+            "username",
+
+            ""
+
+        ).strip()
+
+        password = request.POST.get(
+
+            "password",
+
+            ""
+
+        )
 
         if not username or not password:
 
             return render(
+
                 request,
+
                 "ecommerce/customer_login.html",
+
                 {
+
                     "store": store,
-                    "error": "يرجى إدخال اسم المستخدم وكلمة المرور.",
+
+                    "error":
+                        "يرجى إدخال اسم المستخدم وكلمة المرور.",
+
                 }
+
             )
 
         user = authenticate(
+
             request,
+
             username=username,
+
             password=password,
+
         )
 
         if user is None:
 
             return render(
+
                 request,
+
                 "ecommerce/customer_login.html",
+
                 {
+
                     "store": store,
-                    "error": "اسم المستخدم أو كلمة المرور غير صحيحة.",
+
+                    "error":
+                        "اسم المستخدم أو كلمة المرور غير صحيحة.",
+
                 }
+
             )
 
         login(request, user)
@@ -1489,188 +2530,302 @@ def customer_login(request, store_slug):
         next_url = request.POST.get("next")
 
         if next_url:
+
             return redirect(next_url)
 
         return redirect(
+
             "ecommerce:account",
+
             store_slug=store.slug
+
         )
 
     return render(
+
         request,
+
         "ecommerce/customer_login.html",
+
         {
+
             "store": store,
+
         }
+
     )
+
+
 # =====================================================
 # إنشاء حساب عميل المتجر
 # =====================================================
 
-def customer_register(request, store_slug):
+def customer_register(
+    request,
+    store_slug
+):
 
     store = get_store(store_slug)
 
     if request.user.is_authenticated:
+
         return redirect(
+
             "ecommerce:account",
+
             store_slug=store.slug
+
         )
 
     if request.method == "POST":
 
         full_name = request.POST.get(
+
             "full_name",
+
             ""
+
         ).strip()
 
         username = request.POST.get(
+
             "username",
+
             ""
+
         ).strip()
 
         email = request.POST.get(
+
             "email",
+
             ""
+
         ).strip()
 
         password = request.POST.get(
+
             "password",
+
             ""
+
         )
 
         password_confirm = request.POST.get(
+
             "password_confirm",
+
             ""
+
         )
 
-        # ==========================================
+        # =================================================
         # التحقق
-        # ==========================================
+        # =================================================
 
         if not full_name:
 
             return render(
+
                 request,
+
                 "ecommerce/customer_register.html",
+
                 {
+
                     "store": store,
-                    "error": "الاسم مطلوب.",
+
+                    "error":
+                        "الاسم مطلوب.",
+
                 }
+
             )
 
         if not username:
 
             return render(
+
                 request,
+
                 "ecommerce/customer_register.html",
+
                 {
+
                     "store": store,
-                    "error": "اسم المستخدم مطلوب.",
+
+                    "error":
+                        "اسم المستخدم مطلوب.",
+
                 }
+
             )
 
         if User.objects.filter(
+
             username__iexact=username
+
         ).exists():
 
             return render(
+
                 request,
+
                 "ecommerce/customer_register.html",
+
                 {
+
                     "store": store,
-                    "error": "اسم المستخدم مستخدم بالفعل.",
+
+                    "error":
+                        "اسم المستخدم مستخدم بالفعل.",
+
                 }
+
             )
 
         if email and User.objects.filter(
+
             email__iexact=email
+
         ).exists():
 
             return render(
+
                 request,
+
                 "ecommerce/customer_register.html",
+
                 {
+
                     "store": store,
-                    "error": "البريد الإلكتروني مستخدم بالفعل.",
+
+                    "error":
+                        "البريد الإلكتروني مستخدم بالفعل.",
+
                 }
+
             )
 
         if len(password) < 6:
 
             return render(
+
                 request,
+
                 "ecommerce/customer_register.html",
+
                 {
+
                     "store": store,
-                    "error": "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
+
+                    "error":
+                        "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
+
                 }
+
             )
 
         if password != password_confirm:
 
             return render(
+
                 request,
+
                 "ecommerce/customer_register.html",
+
                 {
+
                     "store": store,
-                    "error": "كلمتا المرور غير متطابقتين.",
+
+                    "error":
+                        "كلمتا المرور غير متطابقتين.",
+
                 }
+
             )
 
-        # ==========================================
+        # =================================================
         # إنشاء المستخدم
-        # ==========================================
+        # =================================================
 
         user = User.objects.create_user(
+
             username=username,
+
             email=email,
+
             password=password,
+
         )
 
+        # =================================================
         # تقسيم الاسم
-        name_parts = full_name.split(maxsplit=1)
+        # =================================================
+
+        name_parts = full_name.split(
+            maxsplit=1
+        )
 
         user.first_name = name_parts[0]
 
         if len(name_parts) > 1:
+
             user.last_name = name_parts[1]
 
         user.save()
 
-        # ==========================================
-        # تسجيل الدخول مباشرة
-        # ==========================================
+        # =================================================
+        # تسجيل الدخول
+        # =================================================
 
         login(request, user)
 
         return redirect(
+
             "ecommerce:account",
+
             store_slug=store.slug
+
         )
 
     return render(
+
         request,
+
         "ecommerce/customer_register.html",
+
         {
+
             "store": store,
+
         }
+
     )
+
+
 # =====================================================
 # تسجيل خروج عميل المتجر
 # =====================================================
 
 @login_required
-def customer_logout(request, store_slug):
+def customer_logout(
+    request,
+    store_slug
+):
 
     store = get_store(store_slug)
 
     logout(request)
 
     return redirect(
+
         "ecommerce:home",
+
         store_slug=store.slug
+
     )
+
 
 # =====================================================
 # حساب العميل
@@ -1680,21 +2835,30 @@ def customer_logout(request, store_slug):
 def account(request, store_slug):
 
     store = get_object_or_404(
+
         Store,
+
         slug=store_slug
+
     )
 
-    # =====================================================
-    # عنوان الشحن للعميل
-    # =====================================================
+    # =================================================
+    # عنوان الشحن
+    # =================================================
 
-    shipping_address = CustomerAddress.objects.filter(
-        customer=request.user
-    ).order_by("-id").first()
+    shipping_address = (
 
-    # =====================================================
-    # البيانات
-    # =====================================================
+        CustomerAddress.objects
+
+        .filter(
+            customer=request.user
+        )
+
+        .order_by("-id")
+
+        .first()
+
+    )
 
     context = {
 
@@ -1702,14 +2866,19 @@ def account(request, store_slug):
 
         "store_slug": store_slug,
 
-        "shipping_address": shipping_address,
+        "shipping_address":
+            shipping_address,
 
     }
 
     return render(
+
         request,
+
         "ecommerce/account.html",
+
         context
+
     )
 
 
@@ -1718,57 +2887,91 @@ def account(request, store_slug):
 # =====================================================
 
 @login_required
-def account_edit(request, store_slug):
+def account_edit(
+    request,
+    store_slug
+):
 
     store = get_object_or_404(
+
         Store,
+
         slug=store_slug
+
     )
 
     user = request.user
 
-    # =====================================================
-    # عنوان الشحن للعميل
-    # =====================================================
+    # =================================================
+    # عنوان الشحن
+    # =================================================
 
-    shipping_address = CustomerAddress.objects.filter(
-       customer=request.user
-    ).order_by("-id").first()
+    shipping_address = (
 
-    # =====================================================
+        CustomerAddress.objects
+
+        .filter(
+            customer=request.user
+        )
+
+        .order_by("-id")
+
+        .first()
+
+    )
+
+    # =================================================
     # حفظ التعديلات
-    # =====================================================
+    # =================================================
 
     if request.method == "POST":
 
         first_name = request.POST.get(
+
             "first_name",
+
             ""
+
         ).strip()
 
         last_name = request.POST.get(
+
             "last_name",
+
             ""
+
         ).strip()
 
         email = request.POST.get(
+
             "email",
+
             ""
+
         ).strip()
 
         phone = request.POST.get(
+
             "phone",
+
             ""
+
         ).strip()
 
         address = request.POST.get(
+
             "address",
+
             ""
+
         ).strip()
 
         postal_code = request.POST.get(
+
             "postal_code",
+
             ""
+
         ).strip()
 
         # =================================================
@@ -1790,24 +2993,24 @@ def account_edit(request, store_slug):
         if shipping_address:
 
             shipping_address.full_name = (
+
                 f"{first_name} {last_name}"
+
             ).strip()
 
             shipping_address.phone = phone
 
             shipping_address.address = address
 
-            shipping_address.postal_code = postal_code
+            shipping_address.postal_code = (
+                postal_code
+            )
 
             shipping_address.is_default = True
 
             shipping_address.save()
 
         else:
-
-            # =============================================
-            # إنشاء عنوان جديد
-            # =============================================
 
             CustomerAddress.objects.create(
 
@@ -1816,7 +3019,9 @@ def account_edit(request, store_slug):
                 title="عنوان الشحن",
 
                 full_name=(
+
                     f"{first_name} {last_name}"
+
                 ).strip(),
 
                 phone=phone,
@@ -1832,6 +3037,7 @@ def account_edit(request, store_slug):
                 postal_code=postal_code,
 
                 is_default=True,
+
             )
 
         # =================================================
@@ -1839,18 +3045,24 @@ def account_edit(request, store_slug):
         # =================================================
 
         messages.success(
+
             request,
+
             "تم تحديث بيانات حسابك وعنوان الشحن بنجاح."
+
         )
 
         return redirect(
+
             "ecommerce:account",
+
             store_slug=store.slug
+
         )
 
-    # =====================================================
+    # =================================================
     # عرض الصفحة
-    # =====================================================
+    # =================================================
 
     context = {
 
@@ -1860,648 +3072,151 @@ def account_edit(request, store_slug):
 
         "user": user,
 
-        "shipping_address": shipping_address,
+        "shipping_address":
+            shipping_address,
 
     }
 
     return render(
+
         request,
+
         "ecommerce/account_edit.html",
+
         context
-    )
-
-# =====================================================
-# التحويل البنكي
-# =====================================================
-
-@login_required
-def bank_payment(request, store_slug):
-
-
-    store = get_store(store_slug)
-
-
-
-    order_id = request.GET.get("order")
-
-
-
-    order = get_object_or_404(
-
-        Order,
-
-        id=order_id,
-
-        store=store,
-
-        customer=request.user
 
     )
 
 
-
-    payment_method = get_object_or_404(
-
-        PaymentMethod,
-
-        company=store.company,
-
-        payment_type="bank",
-
-        is_active=True
-
-    )
-
-
-
-    if request.method == "POST":
-
-
-        order.status = "awaiting_payment"
-
-        order.save()
-
-
-
-        StoreNotification.objects.create(
-
-            store=store,
-
-            title="إثبات تحويل بنكي",
-
-            message=f"تم إرسال إثبات تحويل للطلب {order.order_no}",
-
-            notification_type="payment",
-
-            order=order
-
-        )
-
-
-
-        return JsonResponse({
-
-            "success": True,
-
-            "message": "تم إرسال إثبات التحويل"
-
-        })
-
-
-
-    return render(
-
-        request,
-
-        "ecommerce/bank_payment.html",
-
-        {
-
-            "store": store,
-
-            "order": order,
-
-            "payment_method": payment_method
-
-        }
-
-    )
-
-
-
 # =====================================================
-# الدفع بالبطاقة
+# سياسات المتجر
 # =====================================================
 
-@login_required
-def card_payment(request, store_slug, order_id):
-
-
-    store = get_store(store_slug)
-
-
-
-    order = get_object_or_404(
-
-        Order,
-
-        id=order_id,
-
-        store=store,
-
-        customer=request.user
-
-    )
-
-
-
-    if request.method == "POST":
-
-
-        card_number = request.POST.get(
-
-            "card_number",
-
-            ""
-
-        ).replace(
-
-            " ",
-
-            ""
-
-        )
-
-
-        expiry = request.POST.get(
-
-            "expiry",
-
-            ""
-
-        )
-
-
-        cvv = request.POST.get(
-
-            "cvv",
-
-            ""
-
-        )
-
-
-
-        # ===================================
-        # تحقق مبدئي من البيانات
-        # ===================================
-
-        if len(card_number) < 16:
-
-            return JsonResponse({
-
-                "success": False,
-
-                "message": "رقم البطاقة غير صحيح"
-
-            })
-
-
-        if len(cvv) not in [3, 4]:
-
-            return JsonResponse({
-
-                "success": False,
-
-                "message": "رمز CVV غير صحيح"
-
-            })
-
-
-        if not expiry:
-
-            return JsonResponse({
-
-                "success": False,
-
-                "message": "تاريخ الانتهاء مطلوب"
-
-            })
-
-
-
-        # ===================================
-        # محاكاة إرسال OTP
-        # ===================================
-
-        request.session["payment_order_id"] = order.id
-
-        request.session["payment_otp"] = "123456"
-
-
-
-        return JsonResponse({
-
-            "success": True,
-
-            "otp_required": True,
-
-            "redirect":
-
-            f"/store/{store.slug}/verify-otp/{order.id}/"
-
-        })
-
-
-
-    return render(
-
-        request,
-
-        "ecommerce/card_payment.html",
-
-        {
-
-            "store": store,
-
-            "order": order
-
-        }
-
-    )
-
-# =====================================================
-# التحقق من OTP
-# =====================================================
-
-@login_required
-def verify_otp(request, store_slug, order_id):
-
-
-    store = get_store(store_slug)
-
-
-
-    order = get_object_or_404(
-
-        Order,
-
-        id=order_id,
-
-        store=store,
-
-        customer=request.user
-
-    )
-
-
-
-    if request.method == "POST":
-
-
-        otp = request.POST.get(
-
-            "otp",
-
-            ""
-
-        )
-
-
-        saved_otp = request.session.get(
-
-            "payment_otp"
-
-        )
-
-
-        saved_order = request.session.get(
-
-            "payment_order_id"
-
-        )
-
-
-
-        if (
-
-            saved_order != order.id
-
-            or
-
-            otp != saved_otp
-
-        ):
-
-            return JsonResponse({
-
-                "success": False,
-
-                "message": "رمز التحقق غير صحيح"
-
-            })
-
-
-
-        order.payment_status = "paid"
-        order.status = "confirmed"
-
-
-        order.save()
-
-
-
-        cart = Cart.objects.filter(
-
-            customer=request.user,
-
-            store=store
-
-        ).first()
-
-
-
-        if cart:
-
-            cart.items.all().delete()
-
-
-
-        StoreNotification.objects.create(
-
-            store=store,
-
-            title="دفع ناجح",
-
-            message=f"تم دفع الطلب {order.order_no}",
-
-            notification_type="payment",
-
-            order=order
-
-        )
-
-
-
-        request.session.pop(
-
-            "payment_otp",
-
-            None
-
-        )
-
-
-        request.session.pop(
-
-            "payment_order_id",
-
-            None
-
-        )
-
-
-
-        return JsonResponse({
-
-            "success": True,
-
-            "redirect":
-
-            f"/store/{store.slug}/orders/"
-
-        })
-
-
-
-    return render(
-
-        request,
-
-        "ecommerce/verify_otp.html",
-
-        {
-
-            "store": store,
-
-            "order": order
-
-        }
-
-    )
-
-
-
-
-# =====================================================
-# الفواتير
-# =====================================================
-
-def invoices(request, store_slug):
-
-
-    store = get_store(store_slug)
-
-
-
-    return render(
-
-        request,
-
-        "ecommerce/account/invoices.html",
-
-        {
-
-            "store": store,
-
-            "invoices": []
-
-        }
-
-    )
-
-# =====================================================
-# حفظ عنوان الشحن
-# =====================================================
-
-@login_required
-def save_shipping_address(
+def store_policy(
     request,
-    store_slug
+    store_slug,
+    policy_type
 ):
 
     store = get_store(store_slug)
 
-    if request.method != "POST":
-
-        return JsonResponse({
-            "success": False,
-            "message": "طريقة الطلب غير صحيحة."
-        }, status=405)
-
     # =================================================
-    # بيانات العنوان
+    # أنواع السياسات
     # =================================================
 
-    full_name = request.POST.get(
-        "full_name",
-        ""
-    ).strip()
+    policy_info = {
 
-    phone = request.POST.get(
-        "phone",
-        ""
-    ).strip()
+        "shipping": {
 
-    address = request.POST.get(
-        "address",
-        ""
-    ).strip()
+            "title":
+                "سياسة الشحن",
 
-    postal_code = request.POST.get(
-        "postal_code",
-        ""
-    ).strip()
+            "icon":
+                "fa-solid fa-truck-fast",
+
+        },
+
+        "return": {
+
+            "title":
+                "سياسة الاسترجاع",
+
+            "icon":
+                "fa-solid fa-rotate-left",
+
+        },
+
+        "terms": {
+
+            "title":
+                "الشروط والأحكام",
+
+            "icon":
+                "fa-solid fa-file-contract",
+
+        },
+
+        "privacy": {
+
+            "title":
+                "سياسة الخصوصية",
+
+            "icon":
+                "fa-solid fa-shield-halved",
+
+        },
+
+    }
 
     # =================================================
     # التحقق
     # =================================================
 
-    if not full_name:
-
-        return JsonResponse({
-            "success": False,
-            "message": "اسم المستلم مطلوب."
-        }, status=400)
-
-    if not phone:
-
-        return JsonResponse({
-            "success": False,
-            "message": "رقم الهاتف مطلوب."
-        }, status=400)
-
-    if not address:
-
-        return JsonResponse({
-            "success": False,
-            "message": "العنوان مطلوب."
-        }, status=400)
-
-    # =================================================
-    # إلغاء العنوان الافتراضي السابق
-    # =================================================
-
-    CustomerAddress.objects.filter(
-        customer=request.user
-    ).update(
-        is_default=False
+    info = policy_info.get(
+        policy_type
     )
-
-    # =================================================
-    # إنشاء العنوان الجديد
-    # =================================================
-
-    shipping_address = CustomerAddress.objects.create(
-
-        customer=request.user,
-
-        title="عنوان الشحن",
-
-        full_name=full_name,
-
-        phone=phone,
-
-        country="السعودية",
-
-        city="",
-
-        district="",
-
-        address=address,
-
-        postal_code=postal_code,
-
-        is_default=True,
-    )
-
-    # =================================================
-    # النتيجة
-    # =================================================
-
-    return JsonResponse({
-
-        "success": True,
-
-        "address_id": shipping_address.id,
-
-        "message": "تم حفظ عنوان الشحن بنجاح."
-
-    })
-# ==========================================================
-# سياسات المتجر
-# ==========================================================
-
-def store_policy(request, store_slug, policy_type):
-
-    store = get_store(store_slug)
-
-    # ======================================================
-    # أنواع السياسات
-    # ======================================================
-
-    policy_info = {
-
-        "shipping": {
-            "title": "سياسة الشحن",
-            "icon": "fa-solid fa-truck-fast",
-        },
-
-        "return": {
-            "title": "سياسة الاسترجاع",
-            "icon": "fa-solid fa-rotate-left",
-        },
-
-        "terms": {
-            "title": "الشروط والأحكام",
-            "icon": "fa-solid fa-file-contract",
-        },
-
-        "privacy": {
-            "title": "سياسة الخصوصية",
-            "icon": "fa-solid fa-shield-halved",
-        },
-
-    }
-
-    # ======================================================
-    # التحقق من نوع السياسة
-    # ======================================================
-
-    info = policy_info.get(policy_type)
 
     if not info:
 
         return redirect(
+
             "ecommerce:home",
+
             store_slug=store.slug
+
         )
 
-    # ======================================================
-    # جلب السياسة من StorePolicy
-    # ======================================================
+    # =================================================
+    # جلب السياسة
+    # =================================================
 
     policy = StorePolicy.objects.filter(
+
         store=store,
+
         policy_type=policy_type,
+
     ).first()
 
-    # ======================================================
-    # إذا لم تكن السياسة موجودة
-    # ======================================================
+    # =================================================
+    # إذا لم تكن موجودة
+    # =================================================
 
     if not policy:
 
         policy = {
-            "title": info["title"],
-            "icon": info["icon"],
-            "content": "",
+
+            "title":
+                info["title"],
+
+            "icon":
+                info["icon"],
+
+            "content":
+                "",
+
         }
 
     else:
 
-        # إضافة الأيقونة للقيمة الموجودة في قاعدة البيانات
         policy.icon = info["icon"]
 
-    # ======================================================
+    # =================================================
     # عرض الصفحة
-    # ======================================================
+    # =================================================
 
     return render(
+
         request,
+
         "ecommerce/policy.html",
+
         {
+
             "store": store,
+
             "policy": policy,
+
         }
+
     )

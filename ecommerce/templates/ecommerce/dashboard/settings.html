@@ -1,6 +1,9 @@
 {% extends "layout/base.html" %}
 {% load static %}
 
+{% block sidebar %}
+{% endblock sidebar %}
+
 {% block title %}
 إعدادات المتجر
 {% endblock %}
@@ -13,12 +16,30 @@
 <style>
 
 /* =========================================================
-   SETTINGS PAGE
+   GLOBAL
 ========================================================= */
 
+.settings-page,
+.settings-page * {
+    box-sizing: border-box;
+}
+
 .settings-page {
+    direction: rtl;
     padding: 30px;
-    perspective: 1200px;
+    min-height: calc(100vh - 80px);
+
+    background:
+        linear-gradient(
+            180deg,
+            #eeeeee 0%,
+            #e2e2e2 100%
+        );
+
+    font-family: Tahoma, Arial, sans-serif;
+
+    /* اللون الأساسي للنصوص */
+    color: #000000;
 }
 
 
@@ -32,66 +53,88 @@
 
     display: flex;
     align-items: center;
-    gap: 14px;
+
+    gap: 15px;
 
     padding: 18px 24px;
 
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 
-    border-radius: 18px;
+    border-radius: 16px;
 
-    background: linear-gradient(
-        135deg,
-        #ffffff,
-        #f4f7fb
-    );
+    background: #f8f8f8;
 
-    border: 1px solid rgba(0,0,0,.06);
+    border: 1px solid #bdbdbd;
+
+    border-right: 5px solid #555555;
 
     box-shadow:
-        0 10px 25px rgba(0,0,0,.08),
-        inset 0 1px 0 rgba(255,255,255,.9);
+        0 8px 22px rgba(0, 0, 0, .14);
 
-    transform: translateZ(10px);
+    overflow: hidden;
+}
+
+
+.store-top-bar::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: -50px;
+    top: -80px;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, .025);
+
+    pointer-events: none;
 }
 
 
 .store-top-bar i {
 
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #e8edf4
-    );
+    background: #dedede;
 
-    color: #2563eb;
+    color: #000000;
 
-    box-shadow:
-        5px 5px 10px rgba(0,0,0,.12),
-        -4px -4px 8px rgba(255,255,255,.9);
+    border: 1px solid #b8b8b8;
+
+    font-size: 21px;
 }
 
 
 .store-top-bar strong {
 
-    font-size: 18px;
-    color: #172033;
+    font-size: 19px;
+
+    font-weight: 900;
+
+    color: #000000;
 }
 
 
 .store-top-bar span {
 
-    color: #7b8494;
+    color: #222222;
+
     font-size: 14px;
+
+    font-weight: 700;
 }
 
 
@@ -107,27 +150,25 @@
     align-items: center;
     justify-content: space-between;
 
-    padding: 34px;
+    padding: 32px;
 
-    margin-bottom: 35px;
+    margin-bottom: 28px;
 
-    border-radius: 26px;
+    border-radius: 20px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #eef2f7
-    );
+    background:
+        linear-gradient(
+            135deg,
+            #4a4a4a 0%,
+            #666666 100%
+        );
 
-    border: 1px solid rgba(0,0,0,.05);
+    border: 1px solid #3f3f3f;
 
     box-shadow:
-        0 18px 40px rgba(0,0,0,.10),
-        inset 0 1px 0 rgba(255,255,255,.9);
+        0 15px 32px rgba(0, 0, 0, .20);
 
     overflow: hidden;
-
-    transform: translateZ(15px);
 }
 
 
@@ -137,30 +178,57 @@
 
     position: absolute;
 
-    width: 220px;
-    height: 220px;
+    width: 300px;
+    height: 300px;
 
-    top: -120px;
+    top: -190px;
     left: -80px;
 
     border-radius: 50%;
 
-    background: rgba(37,99,235,.07);
+    background: rgba(255,255,255,.06);
 
-    filter: blur(2px);
+    pointer-events: none;
 }
 
 
+.settings-header::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -100px;
+    bottom: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.04);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   BREADCRUMB
+========================================================= */
+
 .breadcrumb-nav {
+
+    position: relative;
+    z-index: 2;
 
     display: flex;
     align-items: center;
 
     gap: 10px;
 
-    margin-bottom: 15px;
+    margin-bottom: 14px;
 
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
@@ -168,29 +236,44 @@
 
     text-decoration: none;
 
-    color: #2563eb;
+    color: #ffffff;
 
-    font-weight: 600;
+    font-weight: 900;
+
+    transition: .2s ease;
+}
+
+
+.breadcrumb-nav a:hover {
+
+    color: #eeeeee;
 }
 
 
 .breadcrumb-nav i {
 
-    color: #a0a7b4;
+    color: #dddddd;
 
-    font-size: 11px;
+    font-size: 10px;
 }
 
 
 .breadcrumb-nav span {
 
-    color: #777f8d;
+    color: #ffffff;
+
+    font-weight: 700;
 }
 
+
+/* =========================================================
+   HEADER TITLE
+========================================================= */
 
 .settings-header h1 {
 
     position: relative;
+    z-index: 2;
 
     display: flex;
     align-items: center;
@@ -201,25 +284,37 @@
 
     font-size: 30px;
 
-    font-weight: 800;
+    font-weight: 900;
 
-    color: #151c2b;
+    color: #ffffff;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.25);
 }
 
 
 .settings-header h1 i {
 
-    color: #2563eb;
+    color: #ffffff;
+
+    font-size: 28px;
 }
 
 
 .settings-header p {
 
+    position: relative;
+    z-index: 2;
+
     margin: 0;
 
-    color: #737c8c;
+    color: #f1f1f1;
 
     font-size: 15px;
+
+    font-weight: 700;
+
+    line-height: 1.8;
 }
 
 
@@ -229,47 +324,41 @@
 
 .header-icon {
 
+    position: relative;
+    z-index: 2;
+
     width: 100px;
     height: 100px;
+
+    min-width: 100px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 28px;
+    border-radius: 25px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #e4e9f0
-    );
+    background: rgba(255,255,255,.10);
 
-    color: #2563eb;
+    color: #ffffff;
 
     font-size: 40px;
 
+    border: 1px solid rgba(255,255,255,.25);
+
     box-shadow:
-        12px 12px 24px rgba(0,0,0,.14),
-        -8px -8px 18px rgba(255,255,255,.95);
+        inset 0 1px 0 rgba(255,255,255,.12),
+        0 12px 25px rgba(0,0,0,.20);
 
-    transform:
-        rotateY(-12deg)
-        rotateX(8deg);
-
-    transition: .35s ease;
+    transition: .3s ease;
 }
 
 
 .settings-header:hover .header-icon {
 
-    transform:
-        rotateY(0deg)
-        rotateX(0deg)
-        translateY(-5px);
+    transform: translateY(-4px);
 
-    box-shadow:
-        16px 20px 30px rgba(0,0,0,.16),
-        -8px -8px 18px rgba(255,255,255,.95);
+    background: rgba(255,255,255,.15);
 }
 
 
@@ -284,14 +373,14 @@
     grid-template-columns:
         repeat(3, minmax(0, 1fr));
 
-    gap: 28px;
+    gap: 22px;
 
     align-items: stretch;
 }
 
 
 /* =========================================================
-   3D CARD
+   SETTINGS CARDS
 ========================================================= */
 
 .settings-card {
@@ -299,12 +388,6 @@
     position: relative;
 
     min-height: 350px;
-
-    /*
-     * مهم:
-     * إذا زاد المحتوى يظهر Scrollbar
-     * داخل الكرت بدل أن يكبر الكرت بلا حدود.
-     */
 
     max-height: 560px;
 
@@ -314,101 +397,63 @@
     display: flex;
     flex-direction: column;
 
-    padding: 30px;
+    padding: 27px;
 
-    border-radius: 26px;
+    border-radius: 19px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #f0f3f7
-    );
+    background: #f8f8f8;
 
-    border: 1px solid rgba(255,255,255,.9);
+    border: 1px solid #bcbcbc;
 
     box-shadow:
-
-        14px 14px 30px rgba(0,0,0,.12),
-
-        -10px -10px 22px rgba(255,255,255,.95),
-
-        inset 0 1px 0 rgba(255,255,255,.9);
+        0 8px 22px rgba(0, 0, 0, .12);
 
     transition:
-        transform .35s ease,
-        box-shadow .35s ease;
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
 
-    transform-style: preserve-3d;
-
-    /*
-     * السماح للـ Scrollbar بالظهور
-     */
     scrollbar-width: thin;
 
     scrollbar-color:
-        #b8c1cf
+        #888888
         transparent;
 }
 
 
-/* =========================================================
-   CUSTOM SCROLLBAR - CHROME / EDGE
-========================================================= */
-
-.settings-card::-webkit-scrollbar {
-
-    width: 7px;
-}
-
-
-.settings-card::-webkit-scrollbar-track {
-
-    background: transparent;
-
-    margin: 14px 0;
-}
-
-
-.settings-card::-webkit-scrollbar-thumb {
-
-    background: linear-gradient(
-        180deg,
-        #c5ceda,
-        #9faaba
-    );
-
-    border-radius: 20px;
-
-    border: 1px solid rgba(255,255,255,.8);
-}
-
-
-.settings-card::-webkit-scrollbar-thumb:hover {
-
-    background: linear-gradient(
-        180deg,
-        #9faaba,
-        #7f8b9d
-    );
-}
-
-
-/* =========================================================
-   CARD HOVER
-========================================================= */
-
 .settings-card:hover {
 
-    transform:
-        translateY(-10px)
-        rotateX(2deg)
-        rotateY(-2deg);
+    transform: translateY(-4px);
+
+    border-color: #999999;
 
     box-shadow:
+        0 15px 30px rgba(0, 0, 0, .17);
+}
 
-        20px 25px 45px rgba(0,0,0,.16),
 
-        -10px -10px 25px rgba(255,255,255,.95);
+/* =========================================================
+   CARD TOP ACCENT
+========================================================= */
+
+.settings-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: #666666;
+
+    border-radius:
+        19px 19px 0 0;
+
+    opacity: 1;
 }
 
 
@@ -422,17 +467,49 @@
 
     position: absolute;
 
-    width: 160px;
-    height: 160px;
+    width: 150px;
+    height: 150px;
 
     border-radius: 50%;
 
-    right: -70px;
+    right: -80px;
     bottom: -80px;
 
-    background: rgba(37,99,235,.035);
+    background: rgba(0,0,0,.025);
 
     pointer-events: none;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.settings-card::-webkit-scrollbar {
+
+    width: 7px;
+}
+
+
+.settings-card::-webkit-scrollbar-track {
+
+    background: transparent;
+
+    margin: 12px 0;
+}
+
+
+.settings-card::-webkit-scrollbar-thumb {
+
+    background: #999999;
+
+    border-radius: 20px;
+}
+
+
+.settings-card::-webkit-scrollbar-thumb:hover {
+
+    background: #666666;
 }
 
 
@@ -442,39 +519,41 @@
 
 .settings-card-icon {
 
-    width: 72px;
-    height: 72px;
+    position: relative;
+    z-index: 2;
 
-    min-width: 72px;
+    width: 70px;
+    height: 70px;
+
+    min-width: 70px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 20px;
+    border-radius: 17px;
 
-    font-size: 28px;
+    font-size: 27px;
 
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+
+    border: 1px solid;
 
     box-shadow:
+        0 7px 16px rgba(0,0,0,.10);
 
-        7px 7px 14px rgba(0,0,0,.12),
-
-        -5px -5px 12px rgba(255,255,255,.95);
-
-    transform: translateZ(25px);
-
-    transition: .3s ease;
+    transition: .25s ease;
 }
 
 
 .settings-card:hover .settings-card-icon {
 
     transform:
-        translateZ(35px)
-        translateY(-4px)
-        scale(1.05);
+        translateY(-3px)
+        scale(1.03);
+
+    box-shadow:
+        0 10px 20px rgba(0,0,0,.14);
 }
 
 
@@ -484,73 +563,61 @@
 
 .address-icon {
 
-    background: linear-gradient(
-        145deg,
-        #eef5ff,
-        #dbe9ff
-    );
+    background: #dedede;
 
-    color: #2563eb;
+    color: #000000;
+
+    border-color: #a8a8a8;
 }
 
 
 .payment-icon {
 
-    background: linear-gradient(
-        145deg,
-        #effcf4,
-        #d9f5e5
-    );
+    background: #dcdcdc;
 
-    color: #16a34a;
+    color: #000000;
+
+    border-color: #a8a8a8;
 }
 
 
 .shipping-icon {
 
-    background: linear-gradient(
-        145deg,
-        #fff8e9,
-        #ffedc2
-    );
+    background: #e2e2e2;
 
-    color: #e59b00;
+    color: #000000;
+
+    border-color: #aaaaaa;
 }
 
 
 .return-icon {
 
-    background: linear-gradient(
-        145deg,
-        #fff0f5,
-        #ffdce8
-    );
+    background: #dedede;
 
-    color: #e11d48;
+    color: #000000;
+
+    border-color: #a8a8a8;
 }
 
 
 .terms-icon {
 
-    background: linear-gradient(
-        145deg,
-        #f3efff,
-        #e5ddff
-    );
+    background: #e0e0e0;
 
-    color: #7c3aed;
+    color: #000000;
+
+    border-color: #aaaaaa;
 }
 
 
 .privacy-icon {
 
-    background: linear-gradient(
-        145deg,
-        #eafcff,
-        #d5f5fa
-    );
+    background: #dddddd;
 
-    color: #0891b2;
+    color: #000000;
+
+    border-color: #a8a8a8;
 }
 
 
@@ -560,35 +627,51 @@
 
 .card-title {
 
-    font-size: 22px;
+    position: relative;
+    z-index: 2;
 
-    font-weight: 800;
+    font-size: 21px;
 
-    color: #182033;
+    font-weight: 900;
 
-    margin-bottom: 12px;
+    color: #000000;
 
-    transform: translateZ(18px);
-}
+    margin-bottom: 10px;
 
-
-.settings-card p {
-
-    color: #70798a;
-
-    font-size: 15px;
-
-    line-height: 1.9;
-
-    margin-bottom: 24px;
+    text-shadow:
+        0 0 0 #000000;
 }
 
 
 /* =========================================================
-   BUTTON
+   CARD DESCRIPTION
+========================================================= */
+
+.settings-card p {
+
+    position: relative;
+    z-index: 2;
+
+    color: #111111;
+
+    font-size: 14px;
+
+    line-height: 1.9;
+
+    margin-bottom: 22px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BUTTONS
 ========================================================= */
 
 .settings-card .btn {
+
+    position: relative;
+    z-index: 2;
 
     margin-top: auto;
 
@@ -596,13 +679,13 @@
 
     border: 0;
 
-    border-radius: 14px;
+    border-radius: 12px;
 
     padding: 13px 18px;
 
-    font-size: 15px;
+    font-size: 14px;
 
-    font-weight: 700;
+    font-weight: 900;
 
     text-decoration: none;
 
@@ -615,28 +698,47 @@
     gap: 9px;
 
     box-shadow:
-
-        5px 7px 14px rgba(0,0,0,.15),
-
-        inset 0 1px 0 rgba(255,255,255,.25);
+        0 7px 15px rgba(0,0,0,.18);
 
     transition: .25s ease;
 }
 
 
+/* زر الإعدادات */
+
+.settings-card .btn-primary {
+
+    background: #3f3f3f !important;
+
+    color: #ffffff !important;
+
+    border: 1px solid #292929 !important;
+}
+
+
+/* زر الدفع */
+
+.settings-card .btn-success {
+
+    background: #555555 !important;
+
+    color: #ffffff !important;
+
+    border: 1px solid #333333 !important;
+}
+
+
 .settings-card .btn:hover {
 
-    transform:
-        translateY(-3px);
+    transform: translateY(-3px);
 
     box-shadow:
-
-        8px 12px 20px rgba(0,0,0,.18);
+        0 11px 22px rgba(0,0,0,.24);
 }
 
 
 /* =========================================================
-   ANNOUNCEMENT CARD
+   ANNOUNCEMENT
 ========================================================= */
 
 .announcement-card {
@@ -647,25 +749,20 @@
 }
 
 
-/* =========================================================
-   ANNOUNCEMENT FORM
-========================================================= */
-
 .announcement-form {
+
+    position: relative;
+    z-index: 2;
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 12px;
+    gap: 11px;
 
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
-
-/* =========================================================
-   ANNOUNCEMENT ROW
-========================================================= */
 
 .announcement-row {
 
@@ -679,10 +776,6 @@
 }
 
 
-/* =========================================================
-   ANNOUNCEMENT INPUT
-========================================================= */
-
 .announcement-input {
 
     flex: 1;
@@ -691,11 +784,11 @@
 
     height: 46px;
 
-    border: 1px solid #e0e4ea;
+    border: 1px solid #999999;
 
-    border-radius: 12px;
+    border-radius: 11px;
 
-    background: #f5f7fa;
+    background: #ffffff;
 
     padding: 0 12px;
 
@@ -705,13 +798,14 @@
 
     font-size: 13px;
 
-    color: #202838;
+    color: #000000;
+
+    font-weight: 600;
 
     box-shadow:
+        inset 0 1px 3px rgba(0,0,0,.06);
 
-        inset 3px 3px 7px rgba(0,0,0,.05),
-
-        inset -3px -3px 7px rgba(255,255,255,.9);
+    transition: .2s ease;
 }
 
 
@@ -719,16 +813,23 @@
 
     background: #ffffff;
 
-    border-color: #93b4f5;
+    border-color: #333333;
 
     box-shadow:
+        0 0 0 3px rgba(0,0,0,.10);
+}
 
-        0 0 0 3px rgba(37,99,235,.08);
+
+.announcement-input::placeholder {
+
+    color: #555555;
+
+    opacity: 1;
 }
 
 
 /* =========================================================
-   ACTIVE CHECKBOX
+   CHECKBOX
 ========================================================= */
 
 .announcement-check {
@@ -741,21 +842,23 @@
 
     gap: 5px;
 
-    padding: 0 8px;
+    padding: 0 7px;
 
     white-space: nowrap;
 
     font-size: 12px;
 
-    font-weight: 700;
+    font-weight: 900;
 
-    color: #4e5767;
+    color: #000000;
 }
 
 
 .announcement-check input {
 
-    accent-color: #2563eb;
+    accent-color: #333333;
+
+    cursor: pointer;
 }
 
 
@@ -770,9 +873,9 @@
 
     flex-shrink: 0;
 
-    border: 0;
+    border: 1px solid #999999;
 
-    border-radius: 11px;
+    border-radius: 10px;
 
     display: flex;
 
@@ -781,11 +884,11 @@
 
     cursor: pointer;
 
-    background: #fff0f2;
+    background: #e5e5e5;
 
-    color: #e11d48;
+    color: #000000;
 
-    transition: .25s ease;
+    transition: .2s ease;
 }
 
 
@@ -793,7 +896,12 @@
 
     transform: translateY(-2px);
 
-    background: #ffe0e6;
+    background: #d2d2d2;
+
+    border-color: #777777;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.14);
 }
 
 
@@ -803,7 +911,10 @@
 
 .announcement-add-button {
 
-    margin-top: 15px;
+    position: relative;
+    z-index: 2;
+
+    margin-top: 14px;
 
     width: 100%;
 
@@ -811,27 +922,23 @@
 
     flex-shrink: 0;
 
-    border: 0;
+    border: 1px solid #999999;
 
-    border-radius: 12px;
+    border-radius: 11px;
 
-    background: linear-gradient(
-        145deg,
-        #eef5ff,
-        #dbe9ff
-    );
+    background: #e5e5e5;
 
-    color: #2563eb;
+    color: #000000;
 
     font-family: inherit;
 
     font-size: 14px;
 
-    font-weight: 800;
+    font-weight: 900;
 
     cursor: pointer;
 
-    transition: .25s ease;
+    transition: .2s ease;
 }
 
 
@@ -839,9 +946,12 @@
 
     transform: translateY(-2px);
 
-    box-shadow:
+    background: #d5d5d5;
 
-        5px 8px 15px rgba(37,99,235,.15);
+    border-color: #777777;
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.14);
 }
 
 
@@ -857,17 +967,16 @@
 }
 
 
-/* =========================================================
-   SOCIAL FORM
-========================================================= */
-
 .social-form {
+
+    position: relative;
+    z-index: 2;
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 12px;
+    gap: 11px;
 
     margin-top: auto;
 }
@@ -891,19 +1000,16 @@
 
     overflow: hidden;
 
-    border-radius: 30px;
+    border-radius: 13px;
 
     background: #ffffff;
 
-    border: 1px solid #e0e4ea;
+    border: 1px solid #999999;
 
     box-shadow:
+        0 4px 10px rgba(0,0,0,.07);
 
-        5px 7px 14px rgba(0,0,0,.08),
-
-        inset 0 1px 0 rgba(255,255,255,.95);
-
-    transition: .25s ease;
+    transition: .2s ease;
 }
 
 
@@ -911,25 +1017,19 @@
 
     transform: translateY(-2px);
 
-    border-color: #cbd5e1;
+    border-color: #777777;
 
     box-shadow:
-
-        7px 10px 18px rgba(0,0,0,.11),
-
-        inset 0 1px 0 rgba(255,255,255,.95);
+        0 7px 15px rgba(0,0,0,.11);
 }
 
 
 .social-input-group:focus-within {
 
-    border-color: #93b4f5;
+    border-color: #333333;
 
     box-shadow:
-
-        0 0 0 3px rgba(37,99,235,.08),
-
-        5px 7px 14px rgba(0,0,0,.08);
+        0 0 0 3px rgba(0,0,0,.10);
 }
 
 
@@ -939,10 +1039,10 @@
 
 .social-input-icon {
 
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
 
-    min-width: 42px;
+    min-width: 40px;
 
     margin-right: 5px;
     margin-left: 4px;
@@ -952,51 +1052,53 @@
     align-items: center;
     justify-content: center;
 
-    border-radius: 50%;
+    border-radius: 10px;
 
     font-size: 18px;
-
-    background: #f5f7fa;
 }
 
 
+/* =========================================================
+   SOCIAL COLORS
+========================================================= */
+
 .social-input-icon.facebook {
 
-    color: #1877f2;
+    color: #000000;
 
-    background: #eef5ff;
+    background: #dedede;
 }
 
 
 .social-input-icon.instagram {
 
-    color: #e1306c;
+    color: #000000;
 
-    background: #fff0f5;
+    background: #dedede;
 }
 
 
 .social-input-icon.twitter {
 
-    color: #111827;
+    color: #000000;
 
-    background: #f1f3f5;
+    background: #dedede;
 }
 
 
 .social-input-icon.whatsapp {
 
-    color: #16a34a;
+    color: #000000;
 
-    background: #effcf4;
+    background: #dedede;
 }
 
 
 .social-input-icon.youtube {
 
-    color: #dc2626;
+    color: #000000;
 
-    background: #fff1f1;
+    background: #dedede;
 }
 
 
@@ -1009,7 +1111,6 @@
     flex: 1;
 
     width: 100%;
-
     height: 100%;
 
     border: 0;
@@ -1018,13 +1119,15 @@
 
     background: transparent;
 
-    padding: 0 16px;
+    padding: 0 15px;
 
     font-family: inherit;
 
     font-size: 14px;
 
-    color: #202838;
+    font-weight: 700;
+
+    color: #000000;
 
     direction: ltr;
 
@@ -1034,12 +1137,14 @@
 
 .social-input::placeholder {
 
-    color: #9aa2af;
+    color: #555555;
+
+    opacity: 1;
 }
 
 
 /* =========================================================
-   SHIPPING CARD
+   SHIPPING
 ========================================================= */
 
 .shipping-card {
@@ -1050,9 +1155,12 @@
 
 .shipping-input-group {
 
+    position: relative;
+    z-index: 2;
+
     margin-top: auto;
 
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 
@@ -1064,9 +1172,9 @@
 
     font-size: 14px;
 
-    font-weight: 700;
+    font-weight: 900;
 
-    color: #4e5767;
+    color: #000000;
 }
 
 
@@ -1082,17 +1190,27 @@
 
     overflow: hidden;
 
-    border-radius: 14px;
+    border-radius: 13px;
 
-    background: #f5f7fa;
+    background: #ffffff;
 
-    border: 1px solid #e0e4ea;
+    border: 1px solid #999999;
 
     box-shadow:
+        inset 0 1px 3px rgba(0,0,0,.06);
 
-        inset 4px 4px 8px rgba(0,0,0,.06),
+    transition: .2s ease;
+}
 
-        inset -3px -3px 7px rgba(255,255,255,.9);
+
+.price-input:focus-within {
+
+    background: #ffffff;
+
+    border-color: #333333;
+
+    box-shadow:
+        0 0 0 3px rgba(0,0,0,.10);
 }
 
 
@@ -1101,7 +1219,6 @@
     flex: 1;
 
     width: 100%;
-
     height: 100%;
 
     border: 0;
@@ -1114,9 +1231,9 @@
 
     font-size: 17px;
 
-    font-weight: 700;
+    font-weight: 900;
 
-    color: #202838;
+    color: #000000;
 
     text-align: right;
 }
@@ -1131,21 +1248,22 @@
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
-    border-right: 1px solid #e0e4ea;
+    border-right: 1px solid #999999;
 
-    color: #737b89;
+    color: #000000;
 
-    font-weight: 700;
+    background: #dedede;
+
+    font-weight: 900;
 
     font-size: 14px;
 }
 
 
 /* =========================================================
-   POLICY CARD
+   POLICY CARDS
 ========================================================= */
 
 .policy-card {
@@ -1157,6 +1275,9 @@
 
 
 .policy-form {
+
+    position: relative;
+    z-index: 2;
 
     display: flex;
 
@@ -1176,9 +1297,9 @@
 
     font-size: 14px;
 
-    font-weight: 700;
+    font-weight: 900;
 
-    color: #4e5767;
+    color: #000000;
 }
 
 
@@ -1190,51 +1311,49 @@
 
     resize: vertical;
 
-    border: 1px solid #e0e4ea;
+    border: 1px solid #999999;
 
     outline: none;
 
-    border-radius: 16px;
+    border-radius: 13px;
 
-    padding: 15px;
+    padding: 14px;
 
-    background: #f5f7fa;
+    background: #ffffff;
 
-    color: #202838;
+    color: #000000;
 
     font-family: inherit;
 
     font-size: 14px;
 
+    font-weight: 600;
+
     line-height: 1.9;
 
     box-shadow:
+        inset 0 1px 3px rgba(0,0,0,.06);
 
-        inset 4px 4px 8px rgba(0,0,0,.06),
-
-        inset -3px -3px 7px rgba(255,255,255,.9);
-
-    transition: .25s ease;
+    transition: .2s ease;
 }
 
 
 .policy-textarea:focus {
 
-    border-color: #93b4f5;
+    border-color: #333333;
 
     background: #ffffff;
 
     box-shadow:
-
-        0 0 0 3px rgba(37,99,235,.08),
-
-        inset 3px 3px 7px rgba(0,0,0,.04);
+        0 0 0 3px rgba(0,0,0,.10);
 }
 
 
-.policy-save-button {
+.policy-textarea::placeholder {
 
-    margin-top: 15px !important;
+    color: #555555;
+
+    opacity: 1;
 }
 
 
@@ -1244,69 +1363,94 @@
 
 .settings-save-area {
 
-    margin-top: 35px;
+    position: relative;
+
+    margin-top: 28px;
 
     padding: 25px;
 
-    border-radius: 24px;
+    border-radius: 18px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #eef2f7
-    );
+    background: #f8f8f8;
 
-    border: 1px solid rgba(255,255,255,.9);
+    border: 1px solid #bcbcbc;
 
     box-shadow:
-
-        12px 12px 28px rgba(0,0,0,.10),
-
-        -8px -8px 18px rgba(255,255,255,.95);
+        0 9px 24px rgba(0,0,0,.13);
 
     text-align: center;
+
+    overflow: hidden;
+}
+
+
+.settings-save-area::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background: #555555;
 }
 
 
 .settings-save-area p {
 
+    position: relative;
+    z-index: 2;
+
     margin: 0 0 15px;
 
-    color: #70798a;
+    color: #111111;
 
     font-size: 14px;
+
+    font-weight: 700;
+
+    line-height: 1.8;
 }
 
 
 .settings-save-button {
 
+    position: relative;
+    z-index: 2;
+
     min-width: 280px;
 
-    border: 0;
+    border: 1px solid #222222;
 
-    border-radius: 15px;
+    border-radius: 12px;
 
     padding: 14px 25px;
 
+    font-family: inherit;
+
     font-size: 16px;
 
-    font-weight: 800;
+    font-weight: 900;
 
     color: #ffffff;
 
-    background: linear-gradient(
-        145deg,
-        #2563eb,
-        #1d4ed8
-    );
+    background:
+        linear-gradient(
+            135deg,
+            #333333,
+            #111111
+        );
 
     box-shadow:
-
-        7px 10px 20px rgba(37,99,235,.25),
-
-        inset 0 1px 0 rgba(255,255,255,.25);
+        0 8px 18px rgba(0,0,0,.28);
 
     transition: .25s ease;
+
+    cursor: pointer;
 }
 
 
@@ -1314,14 +1458,26 @@
 
     transform: translateY(-3px);
 
-    box-shadow:
+    background:
+        linear-gradient(
+            135deg,
+            #222222,
+            #000000
+        );
 
-        10px 15px 25px rgba(37,99,235,.30);
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.35);
+}
+
+
+.settings-save-button:active {
+
+    transform: translateY(-1px);
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE - 1200
 ========================================================= */
 
 @media (max-width: 1200px) {
@@ -1333,6 +1489,10 @@
     }
 }
 
+
+/* =========================================================
+   RESPONSIVE - 768
+========================================================= */
 
 @media (max-width: 768px) {
 
@@ -1347,6 +1507,8 @@
         flex-wrap: wrap;
 
         padding: 16px;
+
+        margin-bottom: 18px;
     }
 
 
@@ -1354,19 +1516,31 @@
 
         width: 100%;
 
-        margin-right: 56px;
+        margin-right: 63px;
+
+        margin-top: -4px;
     }
 
 
     .settings-header {
 
-        padding: 25px;
+        padding: 24px;
+
+        margin-bottom: 20px;
+
+        border-radius: 17px;
     }
 
 
     .settings-header h1 {
 
         font-size: 24px;
+    }
+
+
+    .settings-header p {
+
+        font-size: 13px;
     }
 
 
@@ -1380,14 +1554,9 @@
 
         grid-template-columns: 1fr;
 
-        gap: 20px;
+        gap: 18px;
     }
 
-
-    /*
-     * على الجوال لا نريد Scrollbar
-     * للكروت، بل نسمح للكرت بالنمو.
-     */
 
     .settings-card,
     .announcement-card,
@@ -1404,7 +1573,17 @@
 
     .settings-card {
 
-        padding: 25px;
+        padding: 24px;
+
+        border-radius: 17px;
+    }
+
+
+    .settings-save-area {
+
+        margin-top: 20px;
+
+        padding: 20px;
     }
 
 
@@ -1417,6 +1596,10 @@
 }
 
 
+/* =========================================================
+   RESPONSIVE - 480
+========================================================= */
+
 @media (max-width: 480px) {
 
     .settings-page {
@@ -1425,11 +1608,42 @@
     }
 
 
+    .store-top-bar {
+
+        padding: 14px;
+
+        border-radius: 14px;
+    }
+
+
+    .store-top-bar i {
+
+        width: 42px;
+        height: 42px;
+
+        min-width: 42px;
+    }
+
+
+    .store-top-bar strong {
+
+        font-size: 16px;
+    }
+
+
+    .store-top-bar span {
+
+        margin-right: 56px;
+
+        font-size: 12px;
+    }
+
+
     .settings-header {
 
         padding: 20px;
 
-        border-radius: 20px;
+        border-radius: 16px;
     }
 
 
@@ -1439,17 +1653,23 @@
     }
 
 
+    .settings-header h1 i {
+
+        font-size: 20px;
+    }
+
+
     .settings-header p {
 
-        font-size: 13px;
+        font-size: 12px;
     }
 
 
     .settings-card {
 
-        padding: 22px;
+        padding: 21px;
 
-        border-radius: 20px;
+        border-radius: 16px;
     }
 
 
@@ -1461,6 +1681,22 @@
         min-width: 62px;
 
         font-size: 24px;
+
+        margin-bottom: 17px;
+    }
+
+
+    .card-title {
+
+        font-size: 19px;
+    }
+
+
+    .settings-card p {
+
+        font-size: 13px;
+
+        line-height: 1.8;
     }
 
 
@@ -1498,10 +1734,10 @@
 
     .social-input-icon {
 
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
 
-        min-width: 40px;
+        min-width: 38px;
     }
 
 
@@ -1509,15 +1745,22 @@
 
         font-size: 13px;
     }
+
+
+    .settings-save-area p {
+
+        font-size: 12px;
+    }
 }
 
 </style>
-
 {% endblock %}
+
 
 {% block content %}
 
 <div class="container-fluid settings-page">
+
 
 <!-- =====================================================
      TOP BAR
@@ -1525,19 +1768,18 @@
 
 <div class="store-top-bar">
 
+    <i class="fa-solid fa-truck-fast"></i>
 
-<i class="fa-solid fa-truck-fast"></i>
+    <strong>
+        إعدادات المتجر
+    </strong>
 
-<strong>
-    إعدادات المتجر
-</strong>
-
-<span>
-    تحكم كامل في إعدادات متجرك الإلكتروني
-</span>
-
+    <span>
+        تحكم كامل في إعدادات متجرك الإلكتروني
+    </span>
 
 </div>
+
 
 <!-- =====================================================
      HEADER
@@ -1545,48 +1787,47 @@
 
 <div class="settings-header">
 
+    <div>
 
-<div>
+        <div class="breadcrumb-nav">
 
-    <div class="breadcrumb-nav">
+            <a href="#">
+                لوحة التحكم
+            </a>
 
-        <a href="#">
-            لوحة التحكم
-        </a>
+            <i class="fa-solid fa-angle-left"></i>
 
-        <i class="fa-solid fa-angle-left"></i>
+            <span>
+                إعدادات المتجر
+            </span>
 
-        <span>
+        </div>
+
+
+        <h1>
+
+            <i class="fa-solid fa-gear"></i>
+
             إعدادات المتجر
-        </span>
+
+        </h1>
+
+
+        <p>
+            إدارة إعدادات المتجر والدفع والشحن والسياسات وعنوان المتجر
+        </p>
 
     </div>
 
 
-    <h1>
+    <div class="header-icon">
 
-        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-store"></i>
 
-        إعدادات المتجر
-
-    </h1>
-
-
-    <p>
-        إدارة إعدادات المتجر والدفع والشحن والسياسات وعنوان المتجر
-    </p>
+    </div>
 
 </div>
 
-
-<div class="header-icon">
-
-    <i class="fa-solid fa-store"></i>
-
-</div>
-
-
-</div>
 
 <!-- =====================================================
      SETTINGS FORM
@@ -1594,7 +1835,6 @@
 
 <form method="POST"
       action="{% url 'ecommerce:dashboard_settings' store_slug=store.slug %}">
-
 
 {% csrf_token %}
 
@@ -1612,140 +1852,139 @@
 
 <div class="premium-card settings-card announcement-card">
 
+    <div class="settings-card-icon shipping-icon">
 
-<div class="settings-card-icon shipping-icon">
+        <i class="fa-solid fa-bullhorn"></i>
 
-    <i class="fa-solid fa-bullhorn"></i>
-
-</div>
-
-
-<div class="card-title">
-
-    الشريط العلوي
-
-</div>
+    </div>
 
 
-<p>
+    <div class="card-title">
 
-    أضف الرسائل التي تظهر أعلى المتجر.
-    سيتم عرض الرسائل النشطة تلقائيًا بشكل متحرك.
+        الشريط العلوي
 
-</p>
-
-
-<div
-    id="announcementContainer"
-    class="announcement-form"
->
-
-    {% for announcement in announcements %}
-
-        <div class="announcement-row">
-
-            <input
-                type="text"
-                name="announcement_text"
-                value="{{ announcement.text }}"
-                class="announcement-input"
-                placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
-                maxlength="255"
-            >
+    </div>
 
 
-            <label class="announcement-check">
+    <p>
+
+        أضف الرسائل التي تظهر أعلى المتجر.
+        سيتم عرض الرسائل النشطة تلقائيًا بشكل متحرك.
+
+    </p>
+
+
+    <div
+        id="announcementContainer"
+        class="announcement-form"
+    >
+
+        {% for announcement in announcements %}
+
+            <div class="announcement-row">
 
                 <input
-                    type="checkbox"
-                    name="announcement_active"
-                    value="{{ forloop.counter0 }}"
-                    {% if announcement.is_active %}
+                    type="text"
+                    name="announcement_text"
+                    value="{{ announcement.text }}"
+                    class="announcement-input"
+                    placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
+                    maxlength="255"
+                >
+
+
+                <label class="announcement-check">
+
+                    <input
+                        type="checkbox"
+                        name="announcement_active"
+                        value="{{ forloop.counter0 }}"
+                        {% if announcement.is_active %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <span>
+                        نشط
+                    </span>
+
+                </label>
+
+
+                <button
+                    type="button"
+                    class="announcement-delete"
+                    onclick="removeAnnouncement(this)"
+                    title="حذف"
+                >
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </div>
+
+        {% empty %}
+
+            <div class="announcement-row">
+
+                <input
+                    type="text"
+                    name="announcement_text"
+                    class="announcement-input"
+                    placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
+                    maxlength="255"
+                >
+
+
+                <label class="announcement-check">
+
+                    <input
+                        type="checkbox"
+                        name="announcement_active"
+                        value="0"
                         checked
-                    {% endif %}
+                    >
+
+                    <span>
+                        نشط
+                    </span>
+
+                </label>
+
+
+                <button
+                    type="button"
+                    class="announcement-delete"
+                    onclick="removeAnnouncement(this)"
+                    title="حذف"
                 >
 
-                <span>
-                    نشط
-                </span>
+                    <i class="fa-solid fa-trash"></i>
 
-            </label>
+                </button>
 
+            </div>
 
-            <button
-                type="button"
-                class="announcement-delete"
-                onclick="removeAnnouncement(this)"
-                title="حذف"
-            >
+        {% endfor %}
 
-                <i class="fa-solid fa-trash"></i>
-
-            </button>
-
-        </div>
-
-    {% empty %}
-
-        <div class="announcement-row">
-
-            <input
-                type="text"
-                name="announcement_text"
-                class="announcement-input"
-                placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
-                maxlength="255"
-            >
+    </div>
 
 
-            <label class="announcement-check">
+    <button
+        type="button"
+        class="announcement-add-button"
+        onclick="addAnnouncement()"
+    >
 
-                <input
-                    type="checkbox"
-                    name="announcement_active"
-                    value="0"
-                    checked
-                >
+        <i class="fa-solid fa-plus"></i>
 
-                <span>
-                    نشط
-                </span>
+        إضافة إعلان آخر
 
-            </label>
-
-
-            <button
-                type="button"
-                class="announcement-delete"
-                onclick="removeAnnouncement(this)"
-                title="حذف"
-            >
-
-                <i class="fa-solid fa-trash"></i>
-
-            </button>
-
-        </div>
-
-    {% endfor %}
+    </button>
 
 </div>
 
-
-<button
-    type="button"
-    class="announcement-add-button"
-    onclick="addAnnouncement()"
->
-
-    <i class="fa-solid fa-plus"></i>
-
-    إضافة إعلان آخر
-
-</button>
-
-
-</div>
 
 <!-- =================================================
      التواصل الاجتماعي
@@ -1753,146 +1992,146 @@
 
 <div class="premium-card settings-card social-card">
 
+    <div class="settings-card-icon privacy-icon">
 
-<div class="settings-card-icon privacy-icon">
+        <i class="fa-solid fa-share-nodes"></i>
 
-    <i class="fa-solid fa-share-nodes"></i>
+    </div>
+
+
+    <div class="card-title">
+
+        تابعنا
+
+    </div>
+
+
+    <p>
+
+        أضف روابط حسابات متجرك على شبكات التواصل الاجتماعي
+        التي ستظهر للعملاء أسفل المتجر.
+
+    </p>
+
+
+    <div class="social-form">
+
+
+        <!-- Facebook -->
+
+        <div class="social-input-group">
+
+            <div class="social-input-icon facebook">
+
+                <i class="fa-brands fa-facebook-f"></i>
+
+            </div>
+
+            <input
+                type="url"
+                name="facebook_url"
+                class="social-input"
+                value="{{ store.facebook_url|default:'' }}"
+                placeholder="رابط Facebook"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- Instagram -->
+
+        <div class="social-input-group">
+
+            <div class="social-input-icon instagram">
+
+                <i class="fa-brands fa-instagram"></i>
+
+            </div>
+
+            <input
+                type="url"
+                name="instagram_url"
+                class="social-input"
+                value="{{ store.instagram_url|default:'' }}"
+                placeholder="رابط Instagram"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- X -->
+
+        <div class="social-input-group">
+
+            <div class="social-input-icon twitter">
+
+                <i class="fa-brands fa-x-twitter"></i>
+
+            </div>
+
+            <input
+                type="url"
+                name="twitter_url"
+                class="social-input"
+                value="{{ store.twitter_url|default:'' }}"
+                placeholder="رابط X"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- WhatsApp -->
+
+        <div class="social-input-group">
+
+            <div class="social-input-icon whatsapp">
+
+                <i class="fa-brands fa-whatsapp"></i>
+
+            </div>
+
+            <input
+                type="url"
+                name="whatsapp_url"
+                class="social-input"
+                value="{{ store.whatsapp_url|default:'' }}"
+                placeholder="رابط WhatsApp"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- YouTube -->
+
+        <div class="social-input-group">
+
+            <div class="social-input-icon youtube">
+
+                <i class="fa-brands fa-youtube"></i>
+
+            </div>
+
+            <input
+                type="url"
+                name="youtube_url"
+                class="social-input"
+                value="{{ store.youtube_url|default:'' }}"
+                placeholder="رابط YouTube"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+    </div>
+
 
 </div>
 
-
-<div class="card-title">
-
-    تابعنا
-
-</div>
-
-
-<p>
-
-    أضف روابط حسابات متجرك على شبكات التواصل الاجتماعي
-    التي ستظهر للعملاء أسفل المتجر.
-
-</p>
-
-
-<div class="social-form">
-
-
-    <!-- Facebook -->
-
-    <div class="social-input-group">
-
-        <div class="social-input-icon facebook">
-
-            <i class="fa-brands fa-facebook-f"></i>
-
-        </div>
-
-        <input
-            type="url"
-            name="facebook_url"
-            class="social-input"
-            value="{{ store.facebook_url|default:'' }}"
-            placeholder="رابط Facebook"
-            autocomplete="off"
-        >
-
-    </div>
-
-
-    <!-- Instagram -->
-
-    <div class="social-input-group">
-
-        <div class="social-input-icon instagram">
-
-            <i class="fa-brands fa-instagram"></i>
-
-        </div>
-
-        <input
-            type="url"
-            name="instagram_url"
-            class="social-input"
-            value="{{ store.instagram_url|default:'' }}"
-            placeholder="رابط Instagram"
-            autocomplete="off"
-        >
-
-    </div>
-
-
-    <!-- X -->
-
-    <div class="social-input-group">
-
-        <div class="social-input-icon twitter">
-
-            <i class="fa-brands fa-x-twitter"></i>
-
-        </div>
-
-        <input
-            type="url"
-            name="twitter_url"
-            class="social-input"
-            value="{{ store.twitter_url|default:'' }}"
-            placeholder="رابط X"
-            autocomplete="off"
-        >
-
-    </div>
-
-
-    <!-- WhatsApp -->
-
-    <div class="social-input-group">
-
-        <div class="social-input-icon whatsapp">
-
-            <i class="fa-brands fa-whatsapp"></i>
-
-        </div>
-
-        <input
-            type="url"
-            name="whatsapp_url"
-            class="social-input"
-            value="{{ store.whatsapp_url|default:'' }}"
-            placeholder="رابط WhatsApp"
-            autocomplete="off"
-        >
-
-    </div>
-
-
-    <!-- YouTube -->
-
-    <div class="social-input-group">
-
-        <div class="social-input-icon youtube">
-
-            <i class="fa-brands fa-youtube"></i>
-
-        </div>
-
-        <input
-            type="url"
-            name="youtube_url"
-            class="social-input"
-            value="{{ store.youtube_url|default:'' }}"
-            placeholder="رابط YouTube"
-            autocomplete="off"
-        >
-
-    </div>
-
-
-</div>
-
-
-</div>
 
 <!-- =================================================
      عنوان المتجر
@@ -1900,41 +2139,40 @@
 
 <div class="premium-card settings-card settings-box">
 
+    <div class="settings-card-icon address-icon">
 
-<div class="settings-card-icon address-icon">
+        <i class="fa-solid fa-location-dot"></i>
 
-    <i class="fa-solid fa-location-dot"></i>
-
-</div>
-
-
-<div class="card-title">
-
-    عنوان المتجر
-
-</div>
+    </div>
 
 
-<p>
+    <div class="card-title">
 
-    إدارة عنوان المتجر والموقع الذي يظهر للعملاء.
+        عنوان المتجر
 
-</p>
+    </div>
 
 
-<a
-    href="{% url 'ecommerce:store_address' store_slug=store.slug %}"
-    class="btn btn-primary"
->
+    <p>
 
-    <i class="fa-solid fa-arrow-left"></i>
+        إدارة عنوان المتجر والموقع الذي يظهر للعملاء.
 
-    فتح الإعدادات
+    </p>
 
-</a>
 
+    <a
+        href="{% url 'ecommerce:store_address' store_slug=store.slug %}"
+        class="btn btn-primary"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        فتح الإعدادات
+
+    </a>
 
 </div>
+
 
 <!-- =================================================
      طرق الدفع
@@ -1942,41 +2180,40 @@
 
 <div class="premium-card settings-card settings-box">
 
+    <div class="settings-card-icon payment-icon">
 
-<div class="settings-card-icon payment-icon">
+        <i class="fa-solid fa-credit-card"></i>
 
-    <i class="fa-solid fa-credit-card"></i>
-
-</div>
-
-
-<div class="card-title">
-
-    طرق الدفع
-
-</div>
+    </div>
 
 
-<p>
+    <div class="card-title">
 
-    إدارة وسائل الدفع التي تظهر للعملاء أثناء إتمام الطلب.
+        طرق الدفع
 
-</p>
+    </div>
 
 
-<a
-    href="{% url 'ecommerce:payment_methods' store_slug=store.slug %}"
-    class="btn btn-success"
->
+    <p>
 
-    <i class="fa-solid fa-arrow-left"></i>
+        إدارة وسائل الدفع التي تظهر للعملاء أثناء إتمام الطلب.
 
-    فتح الإعدادات
+    </p>
 
-</a>
 
+    <a
+        href="{% url 'ecommerce:payment_methods' store_slug=store.slug %}"
+        class="btn btn-success"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        فتح الإعدادات
+
+    </a>
 
 </div>
+
 
 <!-- =================================================
      سعر التوصيل
@@ -1984,62 +2221,61 @@
 
 <div class="premium-card settings-card settings-box shipping-card">
 
+    <div class="settings-card-icon shipping-icon">
 
-<div class="settings-card-icon shipping-icon">
+        <i class="fa-solid fa-truck-fast"></i>
 
-    <i class="fa-solid fa-truck-fast"></i>
-
-</div>
-
-
-<div class="card-title">
-
-    سعر التوصيل
-
-</div>
+    </div>
 
 
-<p>
-
-    تحديد رسوم التوصيل التي يدفعها العميل عند إتمام الطلب.
-
-</p>
-
-
-<div class="shipping-input-group">
-
-    <label for="shipping_cost">
+    <div class="card-title">
 
         سعر التوصيل
 
-    </label>
+    </div>
 
 
-    <div class="price-input">
+    <p>
 
-        <input
-            type="number"
-            id="shipping_cost"
-            name="shipping_cost"
-            value="{{ shipping_cost_display }}"
-            min="0"
-            step="0.01"
-            required
-            autocomplete="off"
-        >
+        تحديد رسوم التوصيل التي يدفعها العميل عند إتمام الطلب.
 
-        <span>
+    </p>
 
-            ر.س
 
-        </span>
+    <div class="shipping-input-group">
+
+        <label for="shipping_cost">
+
+            سعر التوصيل
+
+        </label>
+
+
+        <div class="price-input">
+
+            <input
+                type="number"
+                id="shipping_cost"
+                name="shipping_cost"
+                value="{{ shipping_cost_display }}"
+                min="0"
+                step="0.01"
+                required
+                autocomplete="off"
+            >
+
+            <span>
+
+                ر.س
+
+            </span>
+
+        </div>
 
     </div>
 
 </div>
 
-
-</div>
 
 <!-- =================================================
      السياسات
@@ -2290,6 +2526,7 @@
 
 </div>
 
+
 <script>
 
 /* ==========================================================
@@ -2360,11 +2597,6 @@ function addAnnouncement() {
     container.appendChild(row);
 
 
-    /*
-     * ننتقل تلقائيًا لآخر إعلان
-     * حتى يظهر للمستخدم مباشرة.
-     */
-
     container.scrollTop =
         container.scrollHeight;
 }
@@ -2387,10 +2619,6 @@ function removeAnnouncement(button) {
 
     }
 
-
-    /*
-     * إعادة ترتيب قيم checkbox
-     */
 
     const rows =
         document.querySelectorAll(

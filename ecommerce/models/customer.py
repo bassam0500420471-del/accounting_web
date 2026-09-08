@@ -271,3 +271,56 @@ class Wishlist(models.Model):
     def __str__(self):
 
         return str(self.product)
+# =====================================================
+# الحساب المحاسبي لعميل المتجر
+# =====================================================
+
+class StoreCustomerAccount(models.Model):
+    """
+    ربط عميل المتجر بحسابه المحاسبي داخل شركة محددة.
+
+    نفس المستخدم يمكن أن يكون عميلاً في أكثر من شركة،
+    ولكل شركة حساب محاسبي مستقل.
+    """
+
+    customer = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="store_customer_accounts",
+        verbose_name="العميل",
+    )
+
+    company = models.ForeignKey(
+        "accounts.Company",
+        on_delete=models.CASCADE,
+        related_name="store_customer_accounts",
+        verbose_name="الشركة",
+    )
+
+    account = models.OneToOneField(
+        "accounting.Account",
+        on_delete=models.PROTECT,
+        related_name="store_customer_account",
+        verbose_name="الحساب المحاسبي",
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "customer",
+                    "company",
+                ],
+                name="unique_store_customer_account_per_company",
+            )
+        ]
+
+        verbose_name = "حساب عميل متجر"
+        verbose_name_plural = "حسابات عملاء المتجر"
+
+    def __str__(self):
+        return f"{self.customer} - {self.company}"

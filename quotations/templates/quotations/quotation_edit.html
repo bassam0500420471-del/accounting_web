@@ -55,7 +55,6 @@
     width:260px;
     font-size:17px;
 }
-
 </style>
 
 
@@ -184,6 +183,8 @@
 
 
 </div>
+
+
 <div class="text-end mb-3">
 
 <button type="button"
@@ -209,7 +210,11 @@
 <th>الكمية</th>
 <th>السعر</th>
 <th>الخصم</th>
+
+{% if has_tax_number %}
 <th>الضريبة %</th>
+{% endif %}
+
 <th>الإجمالي</th>
 <th>حذف</th>
 
@@ -302,6 +307,8 @@
 
 
 
+{% if has_tax_number %}
+
 <td style="width:8%;">
 
 <input type="number"
@@ -311,6 +318,8 @@
        class="form-control row-tax">
 
 </td>
+
+{% endif %}
 
 
 
@@ -370,10 +379,14 @@
 
 
 
-
+<!-- ==========================================================
+     المجاميع
+=========================================================== -->
 
 <div class="mt-4">
 
+
+{% if has_tax_number %}
 
 <div class="row mb-3">
 
@@ -393,12 +406,20 @@
 
 </div>
 
+{% endif %}
+
 
 
 <div class="row mb-3">
 
 <label class="col-md-3 text-end fw-bold">
+
+{% if has_tax_number %}
 الإجمالي بعد الخصم:
+{% else %}
+الإجمالي:
+{% endif %}
+
 </label>
 
 <div class="col-md-4">
@@ -415,6 +436,7 @@
 
 
 
+{% if has_tax_number %}
 
 <div class="row mb-3">
 
@@ -436,7 +458,6 @@
 
 
 
-
 <div class="row mb-4">
 
 <label class="col-md-3 text-end fw-bold">
@@ -454,6 +475,8 @@
 </div>
 
 </div>
+
+{% endif %}
 
 
 
@@ -481,51 +504,51 @@
 
 </div>
 
+
 <script>
 
+/* ==========================================================
+   حالة الضريبة
+   المصدر الوحيد:
+   Company.vat_no
+========================================================== */
+
+const HAS_TAX_NUMBER =
+    {% if has_tax_number %}true{% else %}false{% endif %};
+
+
 let rowCount = {{ items|length }};
+
 
 
 document.addEventListener("DOMContentLoaded", function() {
 
     setupCustomerDropdown();
 
-document.querySelectorAll("#items_table .item-row").forEach(row => {
 
-    let rowId = row.getAttribute("id").replace("row_","");
+    document.querySelectorAll("#items_table .item-row").forEach(row => {
 
-
-    let qty = row.querySelector(
-        `input[name="row_${rowId}_qty"]`
-    );
-
-    let price = row.querySelector(
-        `input[name="row_${rowId}_price"]`
-    );
-
-    let tax = row.querySelector(
-        `input[name="row_${rowId}_tax"]`
-    );
+        let rowId = row.getAttribute("id").replace("row_","");
 
 
+        setupProductDropdown(rowId);
 
+        bindRowEvents(rowId);
 
-    setupProductDropdown(rowId);
+        calculateRow(rowId);
 
-    bindRowEvents(rowId);
+    });
 
-    calculateRow(rowId);
-
-});
 
     calculateAll();
 
 });
 
 
-// ===============================
+
+// ==========================================================
 // العملاء
-// ===============================
+// ==========================================================
 
 function setupCustomerDropdown() {
 
@@ -536,12 +559,16 @@ function setupCustomerDropdown() {
 
 
     searchInput.addEventListener("focus", function() {
+
         fetchCustomers(this.value);
+
     });
 
 
     searchInput.addEventListener("input", function() {
+
         fetchCustomers(this.value);
+
     });
 
 
@@ -559,7 +586,9 @@ function setupCustomerDropdown() {
 
     function fetchCustomers(query) {
 
-        fetch(`/quotations/api/search-customer/?q=${encodeURIComponent(query)}`)
+        fetch(
+            `/quotations/api/search-customer/?q=${encodeURIComponent(query)}`
+        )
 
         .then(res => res.json())
 
@@ -572,7 +601,6 @@ function setupCustomerDropdown() {
 
                 data.forEach(cust => {
 
-
                     let item = document.createElement("div");
 
                     item.className = "dropdown-item";
@@ -584,7 +612,8 @@ function setupCustomerDropdown() {
 
                         searchInput.value = cust.name;
 
-                        document.getElementById("customer_id").value = cust.id;
+                        document.getElementById("customer_id").value =
+                            cust.id;
 
                         listDiv.style.display = "none";
 
@@ -592,7 +621,6 @@ function setupCustomerDropdown() {
 
 
                     listDiv.appendChild(item);
-
 
                 });
 
@@ -606,7 +634,6 @@ function setupCustomerDropdown() {
 
             }
 
-
         });
 
     }
@@ -615,12 +642,11 @@ function setupCustomerDropdown() {
 
 
 
-// ===============================
+// ==========================================================
 // المنتجات
-// ===============================
+// ==========================================================
 
 function setupProductDropdown(rowId) {
-
 
     const input = document.querySelector(
         `input[name="row_${rowId}_product"]`
@@ -672,19 +698,18 @@ function setupProductDropdown(rowId) {
 
     function fetchProducts(query){
 
-
-        fetch(`/quotations/api/search-product/?q=${encodeURIComponent(query)}`)
+        fetch(
+            `/quotations/api/search-product/?q=${encodeURIComponent(query)}`
+        )
 
         .then(res=>res.json())
 
         .then(data=>{
 
-
             listDiv.innerHTML="";
 
 
             data.forEach(prod=>{
-
 
                 let item=document.createElement("div");
 
@@ -693,15 +718,11 @@ function setupProductDropdown(rowId) {
                 item.innerText=prod.name;
 
 
-
                 item.onclick=function(){
-
 
                     input.value=prod.name;
 
-
                     hiddenInput.value=prod.id;
-
 
 
                     let priceInput=document.querySelector(
@@ -712,9 +733,9 @@ function setupProductDropdown(rowId) {
                     if(priceInput){
 
                         priceInput.value =
-                        prod.price ||
-                        prod.sale_price ||
-                        0;
+                            prod.price ||
+                            prod.sale_price ||
+                            0;
 
                     }
 
@@ -724,12 +745,10 @@ function setupProductDropdown(rowId) {
 
                     calculateRow(rowId);
 
-
                 };
 
 
                 listDiv.appendChild(item);
-
 
             });
 
@@ -745,23 +764,19 @@ function setupProductDropdown(rowId) {
 
             }
 
-
         });
 
-
     }
-
 
 }
 
 
 
-// ===============================
+// ==========================================================
 // ربط الحسابات
-// ===============================
+// ==========================================================
 
 function bindRowEvents(rowId){
-
 
     const row=document.getElementById(`row_${rowId}`);
 
@@ -769,12 +784,10 @@ function bindRowEvents(rowId){
     if(!row) return;
 
 
-
     row.querySelectorAll(
         ".row-qty,.row-price,.row-discount,.row-tax"
     )
     .forEach(input=>{
-
 
         input.addEventListener("input",function(){
 
@@ -782,17 +795,15 @@ function bindRowEvents(rowId){
 
         });
 
-
     });
-
 
 }
 
 
 
-// ===============================
+// ==========================================================
 // حساب السطر
-// ===============================
+// ==========================================================
 
 function calculateRow(rowId){
 
@@ -800,53 +811,93 @@ function calculateRow(rowId){
         `input[name="row_${rowId}_qty"]`
     );
 
+
     let priceInput = document.querySelector(
         `input[name="row_${rowId}_price"]`
     );
+
 
     let discountInput = document.querySelector(
         `input[name="row_${rowId}_discount"]`
     );
 
+
     let taxInput = document.querySelector(
         `input[name="row_${rowId}_tax"]`
     );
+
 
     let totalInput = document.querySelector(
         `input[name="row_${rowId}_total"]`
     );
 
 
-    if(!qtyInput || !priceInput || !taxInput || !totalInput){
+    if(!qtyInput || !priceInput || !discountInput || !totalInput){
+
         return;
+
     }
 
 
+
     let qty = parseFloat(
-        qtyInput.value.replace(",", ".")
+        String(qtyInput.value).replace(",", ".")
     ) || 0;
 
 
     let price = parseFloat(
-        priceInput.value.replace(",", ".")
+        String(priceInput.value).replace(",", ".")
     ) || 0;
 
 
     let discount = parseFloat(
-        discountInput.value.replace(",", ".")
+        String(discountInput.value).replace(",", ".")
     ) || 0;
 
 
-    let tax = parseFloat(
-        taxInput.value.replace(",", ".")
-    ) || 0;
+
+    /*
+     * إذا لا يوجد رقم ضريبي:
+     * الضريبة = صفر مهما كانت قيمة قديمة في قاعدة البيانات.
+     */
+
+    let tax = 0;
+
+
+    if(HAS_TAX_NUMBER && taxInput){
+
+        tax = parseFloat(
+            String(taxInput.value).replace(",", ".")
+        ) || 0;
+
+    }
 
 
 
     let subtotal = (qty * price) - discount;
 
 
-    let taxAmount = subtotal * tax / 100;
+    /*
+     * منع الناتج السالب
+     */
+
+    if(subtotal < 0){
+
+        subtotal = 0;
+
+    }
+
+
+
+    let taxAmount = 0;
+
+
+    if(HAS_TAX_NUMBER){
+
+        taxAmount = subtotal * tax / 100;
+
+    }
+
 
 
     let total = subtotal + taxAmount;
@@ -860,121 +911,229 @@ function calculateRow(rowId){
 }
 
 
-// ===============================
+
+// ==========================================================
 // الإجماليات
-// ===============================
+// ==========================================================
 
 function calculateAll(){
 
+    let before = 0;
 
-    let before=0;
-    let discount=0;
-    let tax=0;
-    let final=0;
+    let discount = 0;
+
+    let tax = 0;
+
+    let final = 0;
 
 
 
     document.querySelectorAll(
         "#items_table .item-row"
     )
-    .forEach(row=>{
+    .forEach(row => {
+
+        let id = row.id.replace("row_","");
 
 
-        let id=row.id.replace("row_","");
+        let qtyInput = document.querySelector(
+            `input[name="row_${id}_qty"]`
+        );
+
+
+        let priceInput = document.querySelector(
+            `input[name="row_${id}_price"]`
+        );
+
+
+        let discountInput = document.querySelector(
+            `input[name="row_${id}_discount"]`
+        );
+
+
+        if(!qtyInput || !priceInput || !discountInput){
+
+            return;
+
+        }
+
 
 
         let qty =
-        parseFloat(
-        document.querySelector(
-        `input[name="row_${id}_qty"]`
-        ).value
-        )||0;
+            parseFloat(
+                String(qtyInput.value).replace(",", ".")
+            ) || 0;
 
 
 
         let price =
-        parseFloat(
-        document.querySelector(
-        `input[name="row_${id}_price"]`
-        ).value
-        )||0;
+            parseFloat(
+                String(priceInput.value).replace(",", ".")
+            ) || 0;
 
 
 
         let disc =
-        parseFloat(
-        document.querySelector(
-        `input[name="row_${id}_discount"]`
-        ).value
-        )||0;
+            parseFloat(
+                String(discountInput.value).replace(",", ".")
+            ) || 0;
 
 
 
-        let taxRate =
-        parseFloat(
-        document.querySelector(
-        `input[name="row_${id}_tax"]`
-        ).value
-        )||0;
+        let taxRate = 0;
+
+
+        if(HAS_TAX_NUMBER){
+
+            let taxInput = document.querySelector(
+                `input[name="row_${id}_tax"]`
+            );
+
+
+            if(taxInput){
+
+                taxRate =
+                    parseFloat(
+                        String(taxInput.value).replace(",", ".")
+                    ) || 0;
+
+            }
+
+        }
 
 
 
-        let subtotal=qty*price;
+        let subtotal = qty * price;
 
 
-        let after=subtotal-disc;
+        let after = subtotal - disc;
 
 
-        let taxValue=after*taxRate/100;
+        if(after < 0){
+
+            after = 0;
+
+        }
 
 
-        before+=subtotal;
 
-        discount+=disc;
+        let taxValue = 0;
 
-        tax+=taxValue;
 
-        final+=after+taxValue;
+        if(HAS_TAX_NUMBER){
 
+            taxValue = after * taxRate / 100;
+
+        }
+
+
+
+        before += subtotal;
+
+        discount += disc;
+
+        tax += taxValue;
+
+        final += after + taxValue;
 
     });
 
 
 
-    document.getElementById("total_before").value =
-    before.toFixed(2);
+    /*
+     * الإجمالي بعد الخصم موجود دائماً.
+     *
+     * إذا لا توجد ضريبة فهو الإجمالي النهائي.
+     */
+
+    const totalAfterDiscount =
+        document.getElementById("total_after_discount");
 
 
-    document.getElementById("total_after_discount").value =
-    (before-discount).toFixed(2);
+    if(totalAfterDiscount){
+
+        totalAfterDiscount.value =
+            (before - discount < 0
+                ? 0
+                : before - discount
+            ).toFixed(2);
+
+    }
 
 
-    document.getElementById("total_tax").value =
-    tax.toFixed(2);
+
+    /*
+     * حقول الضريبة تظهر فقط إذا يوجد رقم ضريبي.
+     */
+
+    if(HAS_TAX_NUMBER){
+
+        const totalBefore =
+            document.getElementById("total_before");
 
 
-    document.getElementById("final_total").value =
-    final.toFixed(2);
+        const totalTax =
+            document.getElementById("total_tax");
 
+
+        const finalTotal =
+            document.getElementById("final_total");
+
+
+
+        if(totalBefore){
+
+            totalBefore.value =
+                before.toFixed(2);
+
+        }
+
+
+        if(totalTax){
+
+            totalTax.value =
+                tax.toFixed(2);
+
+        }
+
+
+        if(finalTotal){
+
+            finalTotal.value =
+                final.toFixed(2);
+
+        }
+
+    }
 
 }
 
 
 
-// ===============================
+// ==========================================================
 // إضافة صف
-// ===============================
+// ==========================================================
 
 function addRow(){
 
     rowCount++;
 
-    const table = document.getElementById("items_table");
 
-    const tr = document.createElement("tr");
+    const table =
+        document.getElementById("items_table");
 
-    tr.id = `row_${rowCount}`;
-    tr.className = "item-row";
+
+    const tr =
+        document.createElement("tr");
+
+
+    tr.id =
+        `row_${rowCount}`;
+
+
+    tr.className =
+        "item-row";
+
 
 
     tr.innerHTML = `
@@ -1032,6 +1191,8 @@ class="form-control row-discount">
 </td>
 
 
+{% if has_tax_number %}
+
 <td style="width:8%;">
 <input type="number"
 name="row_${rowCount}_tax"
@@ -1039,6 +1200,8 @@ value="15"
 step="any"
 class="form-control row-tax">
 </td>
+
+{% endif %}
 
 
 <td style="width:12%;">
@@ -1051,6 +1214,7 @@ class="form-control row-total">
 
 
 <td>
+
 <button type="button"
 class="btn btn-danger"
 onclick="deleteRow(${rowCount})">
@@ -1058,15 +1222,21 @@ onclick="deleteRow(${rowCount})">
 حذف
 
 </button>
+
 </td>
 
 `;
 
 
+
     table.appendChild(tr);
 
 
-    document.getElementById("total_rows").value = rowCount;
+
+    document.getElementById(
+        "total_rows"
+    ).value = rowCount;
+
 
 
     setupProductDropdown(rowCount);
@@ -1078,22 +1248,33 @@ onclick="deleteRow(${rowCount})">
 }
 
 
-// ===============================
+
+// ==========================================================
 // حذف صف
-// ===============================
+// ==========================================================
 
 function deleteRow(rowId){
 
-    let rows=document.querySelectorAll(
-        "#items_table .item-row"
-    );
+    let rows =
+        document.querySelectorAll(
+            "#items_table .item-row"
+        );
+
 
 
     if(rows.length > 1){
 
-        document.getElementById(
-            `row_${rowId}`
-        ).remove();
+        const row =
+            document.getElementById(
+                `row_${rowId}`
+            );
+
+
+        if(row){
+
+            row.remove();
+
+        }
 
 
         renumberRows();
@@ -1104,7 +1285,9 @@ function deleteRow(rowId){
 
     }else{
 
-        alert("يجب أن يحتوي المستند على صنف واحد على الأقل");
+        alert(
+            "يجب أن يحتوي المستند على صنف واحد على الأقل"
+        );
 
     }
 
@@ -1112,32 +1295,42 @@ function deleteRow(rowId){
 
 
 
+// ==========================================================
+// إعادة ترقيم الصفوف
+// ==========================================================
+
 function renumberRows(){
 
-    let rows = document.querySelectorAll(
-        "#items_table .item-row"
-    );
+    let rows =
+        document.querySelectorAll(
+            "#items_table .item-row"
+        );
 
 
     rowCount = 0;
+
 
 
     rows.forEach(row => {
 
         rowCount++;
 
-        row.id = `row_${rowCount}`;
+
+        row.id =
+            `row_${rowCount}`;
 
 
-        row.querySelectorAll("input").forEach(input=>{
+
+        row.querySelectorAll("input")
+        .forEach(input=>{
 
             if(input.name){
 
                 input.name =
-                input.name.replace(
-                    /row_\d+/,
-                    `row_${rowCount}`
-                );
+                    input.name.replace(
+                        /row_\d+/,
+                        `row_${rowCount}`
+                    );
 
             }
 
@@ -1145,30 +1338,34 @@ function renumberRows(){
             if(input.id){
 
                 input.id =
-                input.id.replace(
-                    /row_\d+/,
-                    `row_${rowCount}`
-                );
+                    input.id.replace(
+                        /row_\d+/,
+                        `row_${rowCount}`
+                    );
 
             }
 
         });
 
 
+
         let dropdown =
-        row.querySelector(".dropdown-list");
+            row.querySelector(
+                ".dropdown-list"
+            );
 
 
         if(dropdown){
 
             dropdown.id =
-            `dropdown_${rowCount}`;
+                `dropdown_${rowCount}`;
 
         }
 
 
+
         let btn =
-        row.querySelector("button");
+            row.querySelector("button");
 
 
         if(btn){
@@ -1180,8 +1377,8 @@ function renumberRows(){
 
         }
 
-
     });
+
 
 
     document.getElementById(
@@ -1191,4 +1388,5 @@ function renumberRows(){
 }
 
 </script>
+
 {% endblock %}

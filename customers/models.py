@@ -164,7 +164,76 @@ class Customer(models.Model):
         related_name="customers",
         verbose_name="حساب العميل"
     )
+    @property
+    def generated_address_en(self):
+        """
+        توليد العنوان الإنجليزي تلقائياً من العنوان العربي.
+        لا يتم حفظ أي بيانات جديدة في قاعدة البيانات.
+        """
 
+        address = (self.address or "").strip()
+
+        if not address:
+            return ""
+
+        # كلمات وعناوين شائعة
+        replacements = {
+            "المملكة العربية السعودية": "Kingdom of Saudi Arabia",
+            "السعودية": "Saudi Arabia",
+
+            "الرياض": "Riyadh",
+            "جدة": "Jeddah",
+            "مكة": "Makkah",
+            "مكة المكرمة": "Makkah",
+            "المدينة المنورة": "Madinah",
+            "المدينة": "Madinah",
+            "الدمام": "Dammam",
+            "الخبر": "Al Khobar",
+            "الظهران": "Dhahran",
+            "الطائف": "Taif",
+            "تبوك": "Tabuk",
+            "أبها": "Abha",
+            "خميس مشيط": "Khamis Mushait",
+            "بريدة": "Buraidah",
+            "حائل": "Hail",
+            "نجران": "Najran",
+            "جازان": "Jazan",
+            "ينبع": "Yanbu",
+
+            "حي": "District",
+            "الحي": "District",
+
+            "شارع": "Street",
+            "الشارع": "Street",
+
+            "طريق": "Road",
+            "الطريق": "Road",
+
+            "مبنى": "Building",
+            "المبنى": "Building",
+
+            "رقم المبنى": "Building No.",
+
+            "الرمز البريدي": "Postal Code",
+            "صندوق بريد": "P.O. Box",
+
+            "المنطقة": "Region",
+            "المنطقة الشرقية": "Eastern Region",
+            "منطقة مكة المكرمة": "Makkah Region",
+            "منطقة الرياض": "Riyadh Region",
+        }
+
+        result = address
+
+        # استبدال الكلمات العربية المعروفة
+        for arabic, english in sorted(
+            replacements.items(),
+            key=lambda x: len(x[0]),
+            reverse=True
+        ):
+            result = result.replace(arabic, english)
+
+        return result
     class Meta:
         verbose_name = "عميل"
         verbose_name_plural = "العملاء"

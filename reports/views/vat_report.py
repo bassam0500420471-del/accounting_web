@@ -13,6 +13,7 @@ from purchase.models import PurchaseInvoice, PurchaseReturn
 from accounting.models import JournalLine, Account
 from pos.models import InvoiceItem as PosInvoiceItem
 
+
 def money(value):
     if value is None:
         return Decimal("0.00")
@@ -20,6 +21,7 @@ def money(value):
     return Decimal(value).quantize(
         Decimal("0.01")
     )
+
 
 def _has_field(model, field_name):
     try:
@@ -29,10 +31,8 @@ def _has_field(model, field_name):
         return False
 
 
-
 def _get_request_company(request):
     return getattr(request, "company", None)
-
 
 
 def vat_report(request):
@@ -42,12 +42,10 @@ def vat_report(request):
     date_from = request.GET.get("date_from")
     date_to = request.GET.get("date_to")
 
-
     context = {
         "date_from": date_from,
         "date_to": date_to,
     }
-
 
     if not date_from or not date_to:
         return render(
@@ -55,7 +53,6 @@ def vat_report(request):
             "reports/vat_report.html",
             context
         )
-
 
     # ==========================================
     # QuerySets
@@ -75,38 +72,31 @@ def vat_report(request):
 
     journal_lines = JournalLine.objects.all()
 
-
-
     # ==========================================
     # عزل الشركة
     # ==========================================
 
     if company:
 
-
         if _has_field(SalesInvoice, "company"):
             sales_invoices = sales_invoices.filter(
                 company=company
             )
-
 
         if _has_field(ReturnInvoice, "company"):
             sales_returns = sales_returns.filter(
                 company=company
             )
 
-
         if _has_field(PurchaseInvoice, "company"):
             purchase_invoices = purchase_invoices.filter(
                 company=company
             )
 
-
         if _has_field(PurchaseReturn, "company"):
             purchase_returns = purchase_returns.filter(
                 company=company
             )
-
 
         # POS
         if _has_field(PosInvoiceItem, "invoice"):
@@ -119,22 +109,17 @@ def vat_report(request):
                 .model
             )
 
-
             if _has_field(invoice_model, "company"):
 
                 pos_items = pos_items.filter(
                     invoice__company=company
                 )
 
-
-
         if _has_field(Account, "company"):
 
             vat_accounts = vat_accounts.filter(
                 company=company
             )
-
-
 
         if _has_field(JournalLine, "company"):
 
@@ -152,19 +137,15 @@ def vat_report(request):
                 .model
             )
 
-
             if _has_field(account_model, "company"):
 
                 journal_lines = journal_lines.filter(
                     account__company=company
                 )
 
-
-
     # ==========================================
-    # (1) المبيعات
+    # (1) المبيعات العادية
     # ==========================================
-
 
     sales_qs = sales_invoices.filter(
         date_invoice__range=(
@@ -172,7 +153,6 @@ def vat_report(request):
             date_to
         )
     )
-
 
     sales_before_tax = (
         sales_qs
@@ -182,8 +162,6 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
-
     sales_vat = (
         sales_qs
         .aggregate(
@@ -192,12 +170,9 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
-
     # ==========================================
     # POS
     # ==========================================
-
 
     pos_qs = pos_items.filter(
         invoice__created_at__date__range=(
@@ -205,8 +180,6 @@ def vat_report(request):
             date_to
         )
     )
-
-
 
     pos_before_tax = (
         pos_qs
@@ -219,7 +192,6 @@ def vat_report(request):
                         F("price")
                         *
                         F("quantity")
-
                     )
                     -
                     (
@@ -243,8 +215,6 @@ def vat_report(request):
         )["total"]
         or Decimal("0.00")
     )
-
-
 
     pos_vat = (
         pos_qs
@@ -287,6 +257,7 @@ def vat_report(request):
         )["total"]
         or Decimal("0.00")
     )
+
     # ==========================================
     # مرتجعات المبيعات
     # ==========================================
@@ -298,7 +269,6 @@ def vat_report(request):
         )
     )
 
-
     sales_return_before_tax = (
         sales_returns_qs
         .aggregate(
@@ -306,7 +276,6 @@ def vat_report(request):
         )["total"]
         or Decimal("0.00")
     )
-
 
     sales_return_vat = (
         sales_returns_qs
@@ -316,10 +285,12 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
-
     # ==========================================
-    # ضريبة المبيعات من القيود
+    # ضريبة المبيعات من القيود العادية
+    #
+    # مهم:
+    # store_order منفصل حتى لا يتم احتساب
+    # ضريبة طلبات المتجر مرتين.
     # ==========================================
 
     sales_manual_vat = (
@@ -347,26 +318,113 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
+    # ==========================================
+    # طلبات المتجر
+    #
+    # نقرأها من القيود المحاسبية الموجودة.
+    #
+    # لا ننشئ SalesInvoice.
+    # لا نقرأ Order مباشرة.
+    # ==========================================
 
+    store_order_journal_lines = journal_lines.filter(
+        entry__date__range=(
+            date_from,
+            date_to
+        ),
+        entry__source_type="store_order",
+    )
 
-    # صافي ضريبة المبيعات
+    # ==========================================
+    # مبيعات طلبات المتجر قبل الضريبة
+    #
+    # نأخذ الدائن من حسابات الإيرادات فقط.
+    #
+    # مثال القيد 206:
+    #
+    # المبيعات      520 دائن
+    # الضريبة        75 دائن
+    #
+    # إذن مبيعات المتجر قبل الضريبة = 520
+    # ==========================================
 
-    net_sales_vat = (
+    store_order_before_tax = (
+        store_order_journal_lines
+        .filter(
+            account__account_type="REVENUE",
+            account__is_group=False,
+            credit__gt=0,
+        )
+        .aggregate(
+            total=Sum("credit")
+        )["total"]
+        or Decimal("0.00")
+    )
+
+    # ==========================================
+    # ضريبة طلبات المتجر
+    #
+    # نأخذ الدائن من حساب الضريبة.
+    # ==========================================
+
+    store_order_vat = (
+        store_order_journal_lines
+        .filter(
+            account__in=vat_accounts,
+            credit__gt=0,
+        )
+        .aggregate(
+            total=Sum("credit")
+        )["total"]
+        or Decimal("0.00")
+    )
+
+    # ==========================================
+    # إجمالي المبيعات قبل الضريبة
+    #
+    # العادية + POS + المتجر
+    # ==========================================
+
+    total_sales_before_tax = (
+        sales_before_tax
+        +
+        pos_before_tax
+        +
+        store_order_before_tax
+    )
+
+    # ==========================================
+    # إجمالي ضريبة المبيعات
+    #
+    # العادية + POS + المتجر
+    # ==========================================
+
+    total_sales_vat = (
         sales_vat
         +
         pos_vat
+        +
+        store_order_vat
+    )
+
+    # ==========================================
+    # صافي ضريبة المبيعات
+    #
+    # لا نضيف store_order هنا مرة أخرى
+    # لأنه موجود أصلًا داخل total_sales_vat.
+    # ==========================================
+
+    net_sales_vat = (
+        total_sales_vat
         -
         sales_return_vat
         +
         sales_manual_vat
     )
 
-
-
     # ==========================================
     # (2) المشتريات
     # ==========================================
-
 
     purchase_qs = purchase_invoices.filter(
         date_invoice__range=(
@@ -374,7 +432,6 @@ def vat_report(request):
             date_to
         )
     )
-
 
     purchase_before_tax = (
         purchase_qs
@@ -384,7 +441,6 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
     purchase_vat = (
         purchase_qs
         .aggregate(
@@ -393,9 +449,9 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
-
+    # ==========================================
     # مرتجعات المشتريات
+    # ==========================================
 
     purchase_returns_qs = purchase_returns.filter(
         return_date__range=(
@@ -403,7 +459,6 @@ def vat_report(request):
             date_to
         )
     )
-
 
     purchase_return_before_tax = (
         purchase_returns_qs
@@ -413,7 +468,6 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
     purchase_return_vat = (
         purchase_returns_qs
         .aggregate(
@@ -422,9 +476,9 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
-
-    # ضريبة مشتريات من القيود
+    # ==========================================
+    # ضريبة المشتريات من القيود
+    # ==========================================
 
     purchase_manual_vat = (
         journal_lines.filter(
@@ -451,8 +505,6 @@ def vat_report(request):
         or Decimal("0.00")
     )
 
-
-
     net_purchase_vat = (
         purchase_vat
         -
@@ -461,12 +513,9 @@ def vat_report(request):
         purchase_manual_vat
     )
 
-
-
     # ==========================================
     # ملخص الفترة
     # ==========================================
-
 
     vat_period = (
         net_sales_vat
@@ -474,7 +523,9 @@ def vat_report(request):
         net_purchase_vat
     )
 
-
+    # ==========================================
+    # الرصيد المرحل
+    # ==========================================
 
     carried = (
         journal_lines
@@ -488,29 +539,51 @@ def vat_report(request):
         )
     )
 
-
     carried_vat = (
         (carried["credit"] or Decimal("0.00"))
         -
         (carried["debit"] or Decimal("0.00"))
     )
 
-
-
     # ==========================================
     # إرسال البيانات للقالب
     # ==========================================
 
-
     context.update({
 
+        # ======================================
         # المبيعات
+        # ======================================
 
-        "sales_before_tax": money(sales_before_tax),
-        "sales_vat": money(sales_vat),
+        "sales_before_tax":
+            money(total_sales_before_tax),
 
-        "pos_before_tax": money(pos_before_tax),
-        "pos_vat": money(pos_vat),
+        "sales_vat":
+            money(total_sales_vat),
+
+        # ======================================
+        # تفاصيل طلبات المتجر
+        # ======================================
+
+        "store_order_before_tax":
+            money(store_order_before_tax),
+
+        "store_order_vat":
+            money(store_order_vat),
+
+        # ======================================
+        # POS
+        # ======================================
+
+        "pos_before_tax":
+            money(pos_before_tax),
+
+        "pos_vat":
+            money(pos_vat),
+
+        # ======================================
+        # مرتجعات المبيعات
+        # ======================================
 
         "sales_return_before_tax":
             money(sales_return_before_tax),
@@ -518,14 +591,19 @@ def vat_report(request):
         "sales_return_vat":
             money(sales_return_vat),
 
+        # ======================================
+        # القيود العادية
+        # ======================================
+
         "sales_manual_vat":
             money(sales_manual_vat),
 
         "net_sales_vat":
             money(net_sales_vat),
 
-
+        # ======================================
         # المشتريات
+        # ======================================
 
         "purchase_before_tax":
             money(purchase_before_tax),
@@ -545,8 +623,9 @@ def vat_report(request):
         "net_purchase_vat":
             money(net_purchase_vat),
 
-
+        # ======================================
         # الملخص
+        # ======================================
 
         "vat_period":
             money(vat_period),
@@ -555,7 +634,6 @@ def vat_report(request):
             money(carried_vat),
 
     })
-
 
     return render(
         request,

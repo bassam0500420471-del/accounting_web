@@ -118,36 +118,167 @@ def stock_adjust(request):
 def stock_ledger(request):
 
     if not getattr(request, "company", None):
+
         moves = StockMovement.objects.none()
         q = (request.GET.get("q") or "").strip()
-        return render(request, "products/stock_ledger.html", {
-            "moves": moves,
-            "q": q,
-        })
 
-    q = (request.GET.get("q") or "").strip()
-    moves = StockMovement.objects.select_related("product", "reason").filter(company=request.company).order_by("id")
-
-    if q:
-        moves = moves.filter(
-            Q(product__name__icontains=q) |
-            Q(note__icontains=q) |
-            Q(reason__name__icontains=q)
+        return render(
+            request,
+            "products/stock_ledger.html",
+            {
+                "moves": moves,
+                "q": q,
+            }
         )
 
+    q = (request.GET.get("q") or "").strip()
+
+    # ==========================================
+    # جلب جميع حركات الشركة من الأقدم إلى الأحدث
+    # ==========================================
+
+    all_moves = list(
+        StockMovement.objects.select_related(
+            "product",
+            "reason"
+        ).filter(
+            company=request.company
+        ).order_by("id")
+    )
+
+    # ==========================================
+    # تجهيز الرصيد الحالي لكل منتج
+    # من Product.current_stock
+    # ==========================================
+
+    current_stocks = {
+        product.id: product.current_stock
+        for product in Product.objects.filter(
+            company=request.company
+        )
+    }
+
+    # ==========================================
+    # حساب المخزون بعد كل حركة
+    #
+    # نبدأ من:
+    #
+    # الرصيد الحالي - مجموع كل الحركات
+    #
+    # وهذا يعطينا الرصيد قبل أول حركة مسجلة.
+    # ==========================================
+
+    totals = {}
+
+    for move in all_moves:
+
+        totals[move.product_id] = (
+            totals.get(
+                move.product_id,
+                Decimal("0")
+            )
+            + move.qty_delta
+        )
+
+    # ==========================================
+    # الرصيد قبل أول حركة
+    # ==========================================
+
+    opening_stocks = {}
+
+    for product_id, current_stock in current_stocks.items():
+
+        total_movement = totals.get(
+            product_id,
+            Decimal("0")
+        )
+
+        opening_stocks[product_id] = (
+            current_stock - total_movement
+        )
+
+    # ==========================================
+    # حساب Stock After لكل حركة
+    # ==========================================
+
     cumulative = {}
-    for m in moves:
-        pid = m.product_id
-        prev = cumulative.get(pid, 0)
-        m.stock_after = prev + m.qty_delta
-        cumulative[pid] = m.stock_after
-        m.qty_abs = abs(m.qty_delta)
 
-    return render(request, "products/stock_ledger.html", {
-        "moves": moves[:500],
-        "q": q,
-    })
+    for move in all_moves:
 
+        product_id = move.product_id
+
+        previous_stock = cumulative.get(
+            product_id,
+            opening_stocks.get(
+                product_id,
+                Decimal("0")
+            )
+        )
+
+        move.stock_after = (
+            previous_stock + move.qty_delta
+        )
+
+        cumulative[product_id] = move.stock_after
+
+        move.qty_abs = abs(
+            move.qty_delta
+        )
+
+    # ==========================================
+    # البحث
+    # ==========================================
+
+    if q:
+
+        filtered_moves = []
+
+        q_lower = q.lower()
+
+        for move in all_moves:
+
+            product_name = (
+                move.product.get_name()
+                if move.product
+                else ""
+            )
+
+            note = move.note or ""
+
+            reason_name = (
+                move.reason.name
+                if move.reason
+                else ""
+            )
+
+            ref_no = move.ref_no or ""
+
+            if (
+                q_lower in str(product_name).lower()
+                or q_lower in str(note).lower()
+                or q_lower in str(reason_name).lower()
+                or q_lower in str(ref_no).lower()
+            ):
+                filtered_moves.append(move)
+
+        all_moves = filtered_moves
+
+    # ==========================================
+    # عرض الأحدث أولاً
+    # ==========================================
+
+    moves = list(
+        reversed(all_moves[-500:])
+    )
+
+    return render(
+        request,
+        "products/stock_ledger.html",
+        {
+            "moves": moves,
+            "q": q,
+        }
+    )
 
 # ======================================
 # 3) ورقة الجرد

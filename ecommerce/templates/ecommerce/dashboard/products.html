@@ -1,39 +1,34 @@
 {% extends "layout/base.html" %}
 
+{% block sidebar %}
+{% endblock sidebar %}
+
 {% block title %}
 إدارة منتجات المتجر
 {% endblock %}
-
 
 {% block content %}
 
 <style>
 /* ==========================================================
-   أسعار العرض
+   الصفحة بدون القائمة الجانبية
    ========================================================== */
 
-.old-price {
-    color: #888;
-    text-decoration: line-through;
-    font-size: 13px;
-    margin-bottom: 3px;
+.content-wrapper {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.offer-price {
-    color: #dc3545;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 3px;
-}
-
-.discount-percentage {
-    display: inline-block;
-    background: #dc3545;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: bold;
+.page-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 /* ==========================================================
    الصفحة
@@ -44,6 +39,10 @@
     padding: 25px;
     background: #eeeeee;
     min-height: calc(100vh - 100px);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 
@@ -68,6 +67,11 @@
 
     box-shadow:
         0 8px 25px rgba(0,0,0,.15);
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .products-header h2 {
@@ -88,14 +92,28 @@
 .special-sections {
     display: grid;
 
+    /*
+       minmax(0, 1fr) مهم جداً
+       حتى لا يسمح الاسم الطويل بتوسيع العمود
+    */
     grid-template-columns:
-        repeat(3, 1fr);
+        repeat(3, minmax(0, 1fr));
 
     gap: 20px;
 
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     margin-bottom: 30px;
+
+    box-sizing: border-box;
 }
 
+
+/* ==========================================================
+   كرت القسم الخاص
+   ========================================================== */
 
 .special-section {
     background: white;
@@ -108,8 +126,24 @@
         0 8px 25px rgba(0,0,0,.08);
 
     min-height: 180px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    /*
+       يمنع المحتوى الطويل من إجبار الكرت
+       على التمدد خارج مكانه
+    */
+    overflow: hidden;
 }
 
+
+/* ==========================================================
+   رأس القسم الخاص
+   ========================================================== */
 
 .special-section-header {
     display: flex;
@@ -118,7 +152,15 @@
 
     justify-content: space-between;
 
+    gap: 10px;
+
     margin-bottom: 15px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -128,13 +170,27 @@
     font-size: 19px;
 
     font-weight: bold;
+
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 
+/* ==========================================================
+   زر إضافة منتج
+   ========================================================== */
+
 .special-add-btn {
     width: 42px;
-
     height: 42px;
+
+    min-width: 42px;
+    max-width: 42px;
+
+    flex-shrink: 0;
 
     border-radius: 12px;
 
@@ -157,53 +213,145 @@
 }
 
 
-.special-products {
-    display: flex;
+/* ==========================================================
+   قائمة المنتجات الخاصة
+   ========================================================== */
 
-    flex-wrap: wrap;
+.special-products {
+    display: grid;
+
+    /*
+       كل منتج يأخذ مساحة مناسبة
+       والاسم الطويل ينزل داخل الكرت
+    */
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(
+                min(100%, 150px),
+                1fr
+            )
+        );
 
     gap: 10px;
-}
 
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 
-.special-empty {
-    color: #999;
+    box-sizing: border-box;
 
-    font-size: 14px;
-
-    padding: 15px 0;
+    align-items: start;
 }
 
 
 /* ==========================================================
-   كرت المنتج الصغير
+   كرت المنتج داخل القسم الخاص
    ========================================================== */
 
 .special-product {
     position: relative;
 
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
     background: #f5f5f5;
 
     border-radius: 12px;
 
-    padding: 8px 35px 8px 10px;
-
-    min-width: 120px;
+    /*
+       مساحة إضافية لزر X
+    */
+    padding:
+        9px
+        35px
+        9px
+        10px;
 
     font-size: 13px;
+
+    line-height: 1.7;
+
+    height: auto;
+
+    min-height: 42px;
+
+    /*
+       أهم الخصائص لمنع الاسم الطويل
+       من الخروج أو توسيع الكرت
+    */
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+
+    overflow: hidden;
 }
 
+
+/* ==========================================================
+   اسم المنتج داخل القسم الخاص
+   ========================================================== */
+
+.special-product-name {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    margin: 0;
+    padding: 0;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    line-height: 1.7;
+
+    text-align: right;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere !important;
+
+    word-break: break-word !important;
+
+    /*
+       لا يوجد حد لعدد الأسطر
+    */
+    height: auto;
+
+    max-height: none;
+
+    overflow: visible;
+}
+
+
+/* ==========================================================
+   زر حذف المنتج
+   ========================================================== */
 
 .remove-special-product {
     position: absolute;
 
     right: 6px;
-
     top: 6px;
 
     width: 22px;
-
     height: 22px;
+
+    min-width: 22px;
+    max-width: 22px;
+
+    padding: 0;
+    margin: 0;
 
     border-radius: 50%;
 
@@ -215,7 +363,80 @@
 
     font-size: 13px;
 
+    line-height: 22px;
+
     cursor: pointer;
+
+    z-index: 5;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* ==========================================================
+   رسالة عدم وجود منتجات
+   ========================================================== */
+
+.special-empty {
+    color: #999;
+
+    font-size: 14px;
+
+    padding: 15px 0;
+
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
+}
+
+
+/* ==========================================================
+   أسعار العرض
+   ========================================================== */
+
+.old-price {
+    color: #888;
+
+    text-decoration: line-through;
+
+    font-size: 13px;
+
+    margin-bottom: 3px;
+}
+
+
+.offer-price {
+    color: #dc3545;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin-bottom: 3px;
+}
+
+
+.discount-percentage {
+    display: inline-block;
+
+    background: #dc3545;
+
+    color: white;
+
+    padding: 3px 8px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: bold;
 }
 
 
@@ -229,6 +450,10 @@
     flex-direction: column;
 
     gap: 18px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 
@@ -245,6 +470,12 @@
 
     box-shadow:
         0 8px 25px rgba(0,0,0,.08);
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -259,6 +490,8 @@
 
     justify-content: space-between;
 
+    gap: 15px;
+
     padding: 20px 25px;
 
     background: linear-gradient(
@@ -268,6 +501,10 @@
     );
 
     border-bottom: 1px solid #ddd;
+
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -277,6 +514,8 @@
     align-items: center;
 
     gap: 12px;
+
+    min-width: 0;
 }
 
 
@@ -286,6 +525,11 @@
     font-size: 19px;
 
     font-weight: bold;
+
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 
@@ -299,6 +543,8 @@
     padding: 4px 10px;
 
     font-size: 12px;
+
+    white-space: nowrap;
 }
 
 
@@ -314,6 +560,8 @@
     height: 28px;
 
     display: inline-block;
+
+    flex-shrink: 0;
 }
 
 
@@ -385,9 +633,18 @@
     display: grid;
 
     grid-template-columns:
-        repeat(auto-fill, minmax(210px, 1fr));
+        repeat(
+            auto-fill,
+            minmax(210px, 1fr)
+        );
 
     gap: 18px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -407,6 +664,12 @@
     padding: 15px;
 
     transition: .25s;
+
+    min-width: 0;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
 }
 
 
@@ -417,6 +680,10 @@
         0 10px 25px rgba(0,0,0,.10);
 }
 
+
+/* ==========================================================
+   صورة المنتج
+   ========================================================== */
 
 .product-image {
     width: 100%;
@@ -455,40 +722,38 @@
 }
 
 
+/* ==========================================================
+   اسم المنتج
+   ========================================================== */
+
 .product-name {
     font-weight: bold;
+
     font-size: 15px;
-    margin-bottom: 6px;
 
-    /* إخفاء النص الزائد */
-    white-space: nowrap;
+    margin-bottom: 8px;
+
+    white-space: normal;
+
     overflow: hidden;
-    text-overflow: ellipsis;
 
-    /* ارتفاع ثابت للكرت */
-    height: 22px;
+    line-height: 1.5;
 
-    /* منع الاسم من كسر تصميم الكرت */
-    display: block;
+    min-height: 22px;
+
+    max-height: 67px;
+
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+
+    -webkit-line-clamp: 3;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
 
     cursor: help;
-}
-
-.product-price {
-    color: #198754;
-
-    font-weight: bold;
-
-    margin-bottom: 10px;
-}
-
-
-.product-controls {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
 }
 
 
@@ -530,6 +795,8 @@
     justify-content: center;
 
     padding: 20px;
+
+    box-sizing: border-box;
 }
 
 
@@ -553,6 +820,10 @@
 
     box-shadow:
         0 20px 60px rgba(0,0,0,.25);
+
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -565,7 +836,11 @@
 
     justify-content: space-between;
 
+    gap: 15px;
+
     border-bottom: 1px solid #ddd;
+
+    min-width: 0;
 }
 
 
@@ -573,6 +848,10 @@
     margin: 0;
 
     font-weight: bold;
+
+    min-width: 0;
+
+    overflow-wrap: anywhere;
 }
 
 
@@ -580,6 +859,8 @@
     width: 38px;
 
     height: 38px;
+
+    min-width: 38px;
 
     border-radius: 50%;
 
@@ -599,6 +880,10 @@
     overflow-y: auto;
 
     max-height: 65vh;
+
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -610,7 +895,10 @@
     display: grid;
 
     grid-template-columns:
-        repeat(auto-fill, minmax(180px, 1fr));
+        repeat(
+            auto-fill,
+            minmax(180px, 1fr)
+        );
 
     gap: 15px;
 }
@@ -630,6 +918,14 @@
     cursor: pointer;
 
     transition: .2s;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
 }
 
 
@@ -650,11 +946,20 @@
     display: grid;
 
     grid-template-columns:
-        repeat(auto-fill, minmax(190px, 1fr));
+        repeat(
+            auto-fill,
+            minmax(190px, 1fr)
+        );
 
     gap: 15px;
+
+    min-width: 0;
 }
 
+
+/* ==========================================================
+   كرت المنتج داخل النافذة
+   ========================================================== */
 
 .selector-product-card {
     position: relative;
@@ -670,6 +975,14 @@
     cursor: pointer;
 
     transition: .2s;
+
+    min-width: 0;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
 }
 
 
@@ -728,6 +1041,14 @@
     margin-bottom: 5px;
 
     min-height: 38px;
+
+    min-width: 0;
+
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+
+    word-break: break-word;
 }
 
 
@@ -767,9 +1088,11 @@
 }
 
 
-.selector-product-card.selected .selector-product-check {
+.selector-product-card.selected
+.selector-product-check {
     background: #198754;
 }
+
 
 /* ==========================================================
    زر حفظ
@@ -799,6 +1122,8 @@
     cursor: pointer;
 
     transition: .2s;
+
+    box-sizing: border-box;
 }
 
 
@@ -856,6 +1181,19 @@
    Responsive
    ========================================================== */
 
+@media (max-width: 1100px) {
+
+    .special-sections {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+}
+
+
 @media (max-width: 900px) {
 
     .special-sections {
@@ -871,6 +1209,26 @@
         padding: 12px;
     }
 
+    .special-section {
+        padding: 15px;
+    }
+
+    .special-products {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(110px, 1fr)
+            );
+    }
+
+    .special-product {
+        min-width: 0;
+
+        width: 100%;
+
+        max-width: 100%;
+    }
+
     .category-products {
         grid-template-columns: 1fr;
     }
@@ -879,6 +1237,23 @@
         grid-template-columns: 1fr;
     }
 
+    .modal-categories {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* ==========================================================
+   منع أي عنصر داخلي من توسيع الصفحة
+   ========================================================== */
+
+.special-sections *,
+.special-section *,
+.special-products *,
+.special-product * {
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 </style>
@@ -951,7 +1326,9 @@
                             ×
                         </button>
 
-                        {{ item.product.get_name }}
+                        <div class="special-product-name">
+                            {{ item.product.get_name }}
+                        </div>
 
                     </div>
 
@@ -1010,7 +1387,9 @@
                             ×
                         </button>
 
-                        {{ item.product.get_name }}
+                        <div class="special-product-name">
+                            {{ item.product.get_name }}
+                        </div>
 
                     </div>
 
@@ -1069,7 +1448,9 @@
                             ×
                         </button>
 
-                        {{ item.product.get_name }}
+                        <div class="special-product-name">
+                            {{ item.product.get_name }}
+                        </div>
 
                     </div>
 
@@ -1102,7 +1483,6 @@
 
 
             <div class="category-card">
-
 
                 <!-- ==========================================
                      رأس التصنيف
@@ -1201,46 +1581,55 @@
 
                             <!-- اسم المنتج -->
 
-<div
-    class="product-name"
-    title="{{ item_product.product.get_name }}"
->
-    {{ item_product.product.get_name }}
-</div>
+                            <div
+                                class="product-name"
+                                title="{{ item_product.product.get_name }}"
+                            >
+                                {{ item_product.product.get_name }}
+                            </div>
 
-<!-- ==================================================
-     أسعار المنتج والعرض
-     ================================================== -->
 
-<div class="product-price">
+                            <!-- ==================================================
+                                 أسعار المنتج والعرض
+                                 ================================================== -->
 
-    {% if item_product.is_offer and item_product.offer_price %}
+                            <div class="product-price">
 
-        <!-- السعر الأصلي -->
-        <div class="old-price">
-            {{ item_product.product.sale_price }} ريال
-        </div>
+                                {% if item_product.is_offer and item_product.offer_price %}
 
-        <!-- سعر العرض -->
-        <div class="offer-price">
-            {{ item_product.offer_price }} ريال
-        </div>
+                                    <!-- السعر الأصلي -->
 
-        <!-- نسبة الخصم -->
-        {% if item_product.discount_percentage %}
-            <div class="discount-percentage">
-                خصم {{ item_product.discount_percentage }}%
-            </div>
-        {% endif %}
+                                    <div class="old-price">
+                                        {{ item_product.product.sale_price }} ريال
+                                    </div>
 
-    {% else %}
+                                    <!-- سعر العرض -->
 
-        <!-- السعر العادي -->
-        {{ item_product.product.sale_price }} ريال
+                                    <div class="offer-price">
+                                        {{ item_product.offer_price }} ريال
+                                    </div>
 
-    {% endif %}
+                                    <!-- نسبة الخصم -->
 
-</div>
+                                    {% if item_product.discount_percentage %}
+
+                                        <div class="discount-percentage">
+                                            خصم {{ item_product.discount_percentage }}%
+                                        </div>
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                    <!-- السعر العادي -->
+
+                                    {{ item_product.product.sale_price }} ريال
+
+                                {% endif %}
+
+                            </div>
+
+
                             <!-- التحكم -->
 
                             <div class="product-controls">
@@ -1368,12 +1757,13 @@
                         </div>
 
 
-<div
-    class="product-name"
-    title="{{ item_product.product.get_name }}"
->
-    {{ item_product.product.get_name }}
-</div>
+                        <div
+                            class="product-name"
+                            title="{{ item_product.product.get_name }}"
+                        >
+                            {{ item_product.product.get_name }}
+                        </div>
+
 
                         <div class="product-price">
 
@@ -1770,11 +2160,12 @@ function loadCategoryProducts(
     `;
 
 
-fetch(
-    `/store/${storeSlug}/dashboard/products/category/${categoryId}/?section=${encodeURIComponent(
-        currentSpecialSection
-    )}`
-)
+    fetch(
+        `/store/${storeSlug}/dashboard/products/category/${categoryId}/?section=${encodeURIComponent(
+            currentSpecialSection
+        )}`
+    )
+
     .then(response => {
 
         if (!response.ok) {
@@ -2282,7 +2673,10 @@ function backToCategories() {
 
 function escapeHTML(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
         return "";
 
@@ -2333,18 +2727,22 @@ document.querySelectorAll(
                         ".product-card"
                     );
 
+
                 /* ==========================================
                    تعطيل مؤقت أثناء الحفظ
                    ========================================== */
 
                 toggle.disabled = true;
 
+
                 fetch(
                     `/store/${storeSlug}/dashboard/products/toggle/`,
                     {
+
                         method: "POST",
 
                         headers: {
+
                             "X-CSRFToken":
                                 getCSRFToken(),
 
@@ -2353,6 +2751,7 @@ document.querySelectorAll(
 
                             "X-Requested-With":
                                 "XMLHttpRequest",
+
                         },
 
                         body:
@@ -2367,6 +2766,7 @@ document.querySelectorAll(
                             encodeURIComponent(
                                 isVisible
                             ),
+
                     }
                 )
 
@@ -2402,6 +2802,7 @@ document.querySelectorAll(
 
                         }
 
+
                         /* ==================================
                            تحديث شكل الكرت
                            ================================== */
@@ -2435,12 +2836,14 @@ document.querySelectorAll(
                             error
                         );
 
+
                         /* ==============================
                            إرجاع السويتش
                            ============================== */
 
                         toggle.checked =
                             oldValue;
+
 
                         alert(
                             error.message
@@ -2465,6 +2868,7 @@ document.querySelectorAll(
 
     }
 );
+
 
 /* ==========================================================
    سويتش التصنيف
@@ -2495,18 +2899,22 @@ document.querySelectorAll(
                         ".category-card"
                     );
 
+
                 /* ==========================================
                    تعطيل مؤقت أثناء الحفظ
                    ========================================== */
 
                 toggle.disabled = true;
 
+
                 fetch(
                     `/store/${storeSlug}/dashboard/products/category-toggle/`,
                     {
+
                         method: "POST",
 
                         headers: {
+
                             "X-CSRFToken":
                                 getCSRFToken(),
 
@@ -2515,6 +2923,7 @@ document.querySelectorAll(
 
                             "X-Requested-With":
                                 "XMLHttpRequest",
+
                         },
 
                         body:
@@ -2529,6 +2938,7 @@ document.querySelectorAll(
                             encodeURIComponent(
                                 isVisible
                             ),
+
                     }
                 )
 
@@ -2563,6 +2973,7 @@ document.querySelectorAll(
                             );
 
                         }
+
 
                         /* ==================================
                            شكل التصنيف
@@ -2601,12 +3012,14 @@ document.querySelectorAll(
                             error
                         );
 
+
                         /* ==============================
                            إرجاع السويتش
                            ============================== */
 
                         toggle.checked =
                             oldValue;
+
 
                         alert(
                             error.message
@@ -2631,6 +3044,7 @@ document.querySelectorAll(
 
     }
 );
+
 
 /* ==========================================================
    إزالة منتج من قسم خاص

@@ -7,7 +7,7 @@ from django.db.models.functions import Coalesce
 from sales.models import SalesItem
 from purchase.models import PurchaseItem
 from pos.models import InvoiceItem as PosInvoiceItem
-
+from ecommerce.models import Order
 
 def _has_field(model, field_name: str) -> bool:
     try:
@@ -429,7 +429,129 @@ tax_value=Coalesce(
 
     purchase_data = list(purchase_data)
 
+    # =========================================================
+    # طلبات المتجر الإلكتروني حسب نسبة الضريبة
+    # =========================================================
 
+    store_orders = Order.objects.filter(
+        status="delivered"
+    )
+
+    if company:
+        store_orders = store_orders.filter(
+            store__company=company
+        )
+
+    # فلترة التاريخ حسب تاريخ إنشاء الطلب
+    if date_from and date_to:
+
+        store_orders = store_orders.filter(
+            created_at__date__range=(
+                date_from,
+                date_to
+            )
+        )
+
+    else:
+
+        if date_from:
+            store_orders = store_orders.filter(
+                created_at__date__gte=date_from
+            )
+
+        if date_to:
+            store_orders = store_orders.filter(
+                created_at__date__lte=date_to
+            )
+
+
+    # ---------------------------------------------------------
+    # تجميع طلبات المتجر حسب نسبة الضريبة
+    # ---------------------------------------------------------
+
+    store_data = {}
+
+    for order in store_orders:
+
+        tax_value = Decimal(order.tax or 0)
+
+        # إذا توجد ضريبة نعتبرها 15%
+        if tax_value > 0:
+
+            tax_rate = Decimal("15.00")
+
+            # القيمة الخاضعة للضريبة
+            before_tax = (
+                tax_value / tax_rate * Decimal("100.00")
+            )
+
+        else:
+
+            tax_rate = Decimal("0.00")
+
+            # الطلبات غير المسجلة ضريبياً
+            before_tax = (
+                Decimal(order.subtotal or 0)
+                - Decimal(order.discount or 0)
+            )
+
+        if tax_rate not in store_data:
+
+            store_data[tax_rate] = {
+                "tax": tax_rate,
+                "before_tax": Decimal("0.00"),
+                "tax_value": Decimal("0.00"),
+                "after_tax": Decimal("0.00"),
+            }
+
+        store_data[tax_rate]["before_tax"] += before_tax
+        store_data[tax_rate]["tax_value"] += tax_value
+        store_data[tax_rate]["after_tax"] += (
+            before_tax + tax_value
+        )
+
+
+    store_data = list(store_data.values())
+
+
+    # ---------------------------------------------------------
+    # دمج طلبات المتجر مع المبيعات العادية
+    # ---------------------------------------------------------
+
+    for store_row in store_data:
+
+        existing_row = next(
+            (
+                row
+                for row in sales_data
+                if Decimal(str(row["tax"])) ==
+                   Decimal(str(store_row["tax"]))
+            ),
+            None
+        )
+
+        if existing_row:
+
+            existing_row["before_tax"] += (
+                store_row["before_tax"]
+            )
+
+            existing_row["tax_value"] += (
+                store_row["tax_value"]
+            )
+
+            existing_row["after_tax"] += (
+                store_row["after_tax"]
+            )
+
+        else:
+
+            sales_data.append(store_row)
+
+
+    sales_data.sort(
+        key=lambda row: Decimal(str(row["tax"]))
+    )
 
     # =========================================================
     # الإجماليات

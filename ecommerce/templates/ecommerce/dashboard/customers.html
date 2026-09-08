@@ -447,7 +447,7 @@
 
                                     <span class="total-spent">
 
-                                        {{ customer.total_spent|default:"0.00" }}
+                                        {{ customer.total_spent|default:0|floatformat:2 }}
 
                                     </span>
 

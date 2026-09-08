@@ -759,51 +759,52 @@ body {
                         >
 
 
-                        <!-- الحساب -->
+<!-- =================================================
+     طريقة الدفع
+================================================= -->
 
-                        <tr>
+<tr>
 
-                            <th>
+    <th>
 
-                                <label for="cashAccount">
+        <label for="paymentMethod">
 
-                                    {% trans "Cash / Bank Account" %}
+            طريقة الدفع
 
-                                </label>
+        </label>
 
-                            </th>
+    </th>
 
-                            <td>
+    <td>
 
-                                <select
-                                    name="cash_account"
-                                    id="cashAccount"
-                                    class="form-select"
-                                    required
-                                >
+        <select
+            name="payment_method"
+            id="paymentMethod"
+            class="form-select"
+            required
+        >
 
-                                    <option value="">
+            <option value="">
 
-                                        {% trans "-- Select Account --" %}
+                -- اختر طريقة الدفع --
 
-                                    </option>
+            </option>
 
-                                    {% for a in cash_accounts %}
+            {% for method in payment_methods %}
 
-                                        <option value="{{ a.id }}">
+                <option value="{{ method.id }}">
 
-                                            {{ a.code }} - {{ a.name }}
+                    {{ method.name }}
 
-                                        </option>
+                </option>
 
-                                    {% endfor %}
+            {% endfor %}
 
-                                </select>
+        </select>
 
-                            </td>
+    </td>
 
-                        </tr>
-
+</tr>
 
                         <!-- المبلغ -->
 

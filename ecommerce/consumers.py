@@ -8,6 +8,10 @@ from ecommerce.models import Store
 
 class StoreNotificationConsumer(AsyncWebsocketConsumer):
 
+    # ==========================================================
+    # اتصال WebSocket
+    # ==========================================================
+
     async def connect(self):
 
         print("========================================")
@@ -19,11 +23,11 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
         print("USER:", user)
         print(
             "AUTHENTICATED:",
-            getattr(user, "is_authenticated", None)
+            getattr(user, "is_authenticated", None),
         )
         print(
             "USERNAME:",
-            getattr(user, "username", None)
+            getattr(user, "username", None),
         )
 
         if not user or user.is_anonymous:
@@ -65,7 +69,7 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
             return
 
         # ======================================================
-        # إعداد مجموعة الإشعارات
+        # حفظ بيانات المتجر
         # ======================================================
 
         self.store = store
@@ -76,11 +80,11 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
 
         print(
             "STEP 2: STORE GROUP:",
-            self.store_group_name
+            self.store_group_name,
         )
 
         # ======================================================
-        # الانضمام إلى مجموعة المتجر
+        # Redis / Channels
         # ======================================================
 
         try:
@@ -95,10 +99,11 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
             print("========================================")
-            print("WEBSOCKET CONNECTED SUCCESSFULLY")
+            print("WEBSOCKET ACCEPTED")
             print("USER:", user.username)
             print("STORE:", store.id)
             print("GROUP:", self.store_group_name)
+            print("CHANNEL:", self.channel_name)
             print("========================================")
 
         except Exception as e:
@@ -111,9 +116,47 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
 
             await self.close()
 
+    # ==========================================================
+    # استقبال رسائل من المتصفح
+    # ==========================================================
+
+    async def receive(self, text_data=None, bytes_data=None):
+
+        print("========================================")
+        print("WEBSOCKET RECEIVE")
+        print("TEXT:", text_data)
+        print("BYTES:", bytes_data)
+        print("========================================")
+
+        if text_data:
+
+            try:
+
+                data = json.loads(text_data)
+
+                # ------------------------------------------------
+                # Ping من المتصفح
+                # ------------------------------------------------
+
+                if data.get("type") == "ping":
+
+                    await self.send(
+                        text_data=json.dumps(
+                            {
+                                "type": "pong"
+                            },
+                            ensure_ascii=False,
+                        )
+                    )
+
+                    print("PING -> PONG")
+
+            except json.JSONDecodeError:
+
+                print("INVALID JSON")
 
     # ==========================================================
-    # جلب المتجر المرتبط بالشركة
+    # جلب متجر المستخدم
     # ==========================================================
 
     @database_sync_to_async
@@ -128,9 +171,11 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
             print("COMPANY:", company)
             print("COMPANY ID:", company.id)
 
-            store = Store.objects.filter(
-                company=company
-            ).first()
+            store = (
+                Store.objects
+                .filter(company=company)
+                .first()
+            )
 
             return store
 
@@ -144,41 +189,16 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
 
             return None
 
-
-    # ==========================================================
-    # قطع الاتصال
-    # ==========================================================
-
-    async def disconnect(self, close_code):
-
-        if hasattr(self, "store_group_name"):
-
-            try:
-
-                await self.channel_layer.group_discard(
-                    self.store_group_name,
-                    self.channel_name,
-                )
-
-            except Exception as e:
-
-                print(
-                    "WEBSOCKET GROUP DISCARD ERROR:",
-                    type(e).__name__,
-                    str(e),
-                )
-
-        print(
-            "WEBSOCKET DISCONNECTED:",
-            close_code,
-        )
-
-
     # ==========================================================
     # استقبال إشعار طلب جديد
     # ==========================================================
 
     async def new_order(self, event):
+
+        print("========================================")
+        print("NEW ORDER EVENT")
+        print("EVENT:", event)
+        print("========================================")
 
         await self.send(
             text_data=json.dumps(
@@ -191,13 +211,13 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
                     "title":
                         event.get(
                             "title",
-                            "طلب جديد 🛒"
+                            "طلب جديد 🛒",
                         ),
 
                     "message":
                         event.get(
                             "message",
-                            "تم استلام طلب جديد"
+                            "تم استلام طلب جديد",
                         ),
 
                     "order_id":
@@ -210,3 +230,33 @@ class StoreNotificationConsumer(AsyncWebsocketConsumer):
                 ensure_ascii=False,
             )
         )
+
+    # ==========================================================
+    # قطع الاتصال
+    # ==========================================================
+
+    async def disconnect(self, close_code):
+
+        print("========================================")
+        print("WEBSOCKET DISCONNECT")
+        print("CLOSE CODE:", close_code)
+        print("========================================")
+
+        if hasattr(self, "store_group_name"):
+
+            try:
+
+                await self.channel_layer.group_discard(
+                    self.store_group_name,
+                    self.channel_name,
+                )
+
+                print("GROUP DISCARD OK")
+
+            except Exception as e:
+
+                print(
+                    "WEBSOCKET GROUP DISCARD ERROR:",
+                    type(e).__name__,
+                    str(e),
+                )

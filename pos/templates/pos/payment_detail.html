@@ -6,16 +6,16 @@
 {% trans "Invoice Payment" %}
 {% endblock %}
 
+
 {% block content %}
 
 <h4 class="mb-3">
     {% trans "Pay Invoice No." %} {{ invoice.invoice_no }}
 </h4>
 
+
 <!-- ========================================= -->
-
 <!-- نموذج السداد -->
-
 <!-- ========================================= -->
 
 <form method="post" id="payment_form">
@@ -34,8 +34,15 @@
         </th>
 
         <td>
-                {{ invoice.total|floatformat:2 }}
 
+            <input
+                type="text"
+                class="form-control"
+                value="{{ invoice_total|floatformat:2 }}"
+                readonly
+                dir="ltr"
+                style="text-align: right;"
+            >
 
         </td>
     </tr>
@@ -52,17 +59,19 @@
 
         <td>
 
-        <input
-            type="text"
-            name="paid_amount"
-            id="paid_amount"
-            class="form-control"
-            inputmode="decimal"
-            dir="ltr"
-            style="text-align: right;"
-            value="{{ invoice.total|floatformat:2 }}"
-            required
-        >
+            <input
+                type="text"
+                name="paid_amount"
+                id="paid_amount"
+                class="form-control"
+                inputmode="decimal"
+                dir="ltr"
+                style="text-align: right;"
+                value="{{ paid_amount|floatformat:2 }}"
+                autocomplete="off"
+                required
+            >
+
         </td>
     </tr>
 
@@ -82,8 +91,10 @@
                 type="text"
                 id="remaining"
                 class="form-control"
-                value="0.00"
+                value="{{ remaining|floatformat:2 }}"
                 readonly
+                dir="ltr"
+                style="text-align: right;"
             >
 
         </td>
@@ -107,7 +118,6 @@
                 id="payment_method"
                 required
             >
-
 
                 {% for method in payment_methods %}
 
@@ -140,10 +150,9 @@
 
 </form>
 
+
 <!-- ========================================= -->
-
 <!-- إضافة طريقة دفع -->
-
 <!-- ========================================= -->
 
 <div
@@ -152,74 +161,76 @@
     tabindex="-1"
 >
 
-<div class="modal-dialog">
+    <div class="modal-dialog">
 
-    <div class="modal-content">
+        <div class="modal-content">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h5 class="modal-title">
-                إضافة طريقة دفع
-            </h5>
+                <h5 class="modal-title">
+                    إضافة طريقة دفع
+                </h5>
 
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-            ></button>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                ></button>
 
-        </div>
-
-
-        <div class="modal-body">
-
-            <label>
-                اسم طريقة الدفع
-            </label>
-
-            <input
-                type="text"
-                id="payment-method-name"
-                class="form-control"
-            >
+            </div>
 
 
-            <br>
+            <div class="modal-body">
+
+                <label>
+                    اسم طريقة الدفع
+                </label>
+
+                <input
+                    type="text"
+                    id="payment-method-name"
+                    class="form-control"
+                >
 
 
-            <label>
-                الحساب الرئيسي
-            </label>
-
-            <select
-                id="payment-main-account"
-                class="form-select"
-            >
-
-                {% for account in payment_parent_accounts %}
-
-                    <option value="{{ account.id }}">
-                        {{ account.display_name }}
-                    </option>
-
-                {% endfor %}
-
-            </select>
-
-        </div>
+                <br>
 
 
-        <div class="modal-footer">
+                <label>
+                    الحساب الرئيسي
+                </label>
 
-            <button
-                type="button"
-                class="btn btn-primary"
-                id="save-payment-method"
-            >
+                <select
+                    id="payment-main-account"
+                    class="form-select"
+                >
 
-                حفظ
+                    {% for account in payment_parent_accounts %}
 
-            </button>
+                        <option value="{{ account.id }}">
+                            {{ account.display_name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="save-payment-method"
+                >
+
+                    حفظ
+
+                </button>
+
+            </div>
 
         </div>
 
@@ -227,103 +238,193 @@
 
 </div>
 
-</div>
 
 <!-- ========================================= -->
-
 <!-- حساب المتبقي تلقائيًا -->
-
 <!-- ========================================= -->
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const paidInput = document.getElementById("paid_amount");
     const remainingInput = document.getElementById("remaining");
 
-    const total = parseFloat("{{ invoice.total }}") || 0;
 
-    paidInput.value = total.toFixed(2);
+    /*
+     * =========================================
+     * إجمالي الفاتورة
+     * =========================================
+     *
+     * مثال:
+     *
+     * 811.90
+     */
+    const invoiceTotalValue = "{{ invoice_total|floatformat:2 }}";
 
-    function calculateRemaining() {
-
-        const paid = parseFloat(paidInput.value) || 0;
-
-        let remaining = total - paid;
-
-        if (remaining < 0) {
-            remaining = 0;
-        }
-
-        remainingInput.value = remaining.toFixed(2);
-    }
-
-    calculateRemaining();
-
-    paidInput.addEventListener("input", calculateRemaining);
-
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const paidInput = document.getElementById("paid_amount");
-    const remainingInput = document.getElementById("remaining");
-
-    const total = parseFloat("{{ invoice.total }}") || 0;
-
-    paidInput.value = total.toFixed(2);
-
-    function calculateRemaining() {
-
-        const paid = parseFloat(paidInput.value) || 0;
-
-        let remaining = total - paid;
-
-        if (remaining < 0) {
-            remaining = 0;
-        }
-
-        remainingInput.value = remaining.toFixed(2);
-    }
-
-    calculateRemaining();
-
-    paidInput.addEventListener("input", calculateRemaining);
-
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const paidAmountInput = document.getElementById("paid_amount");
-    const remainingInput = document.getElementById("remaining");
-
-    const invoiceTotal = parseFloat(
-        "{{ invoice.total|floatformat:2 }}"
+    const invoiceTotal = Number(
+        invoiceTotalValue
+            .replace(",", ".")
+            .trim()
     ) || 0;
 
-    function updateRemaining() {
 
-        const paidAmount = parseFloat(
-            paidAmountInput.value
-        ) || 0;
+    /*
+     * =========================================
+     * المدفوع سابقًا
+     * =========================================
+     *
+     * هذا هو مجموع جميع الدفعات
+     * التي تمت على الفاتورة قبل الدفعة الحالية.
+     *
+     * مثال:
+     *
+     * إجمالي الفاتورة = 811.90
+     * المدفوع سابقًا = 11.90
+     *
+     * المتاح للسداد الآن = 800.00
+     */
+    const previousPaidValue = "{{ total_paid|floatformat:2 }}";
 
-        const remaining = invoiceTotal - paidAmount;
+    const previousPaid = Number(
+        previousPaidValue
+            .replace(",", ".")
+            .trim()
+    ) || 0;
 
-        remainingInput.value = remaining.toFixed(2);
 
-        remainingInput.style.direction = "ltr";
-        remainingInput.style.textAlign = "right";
+    /*
+     * =========================================
+     * تحويل المبلغ الحالي إلى رقم عشري
+     * =========================================
+     */
+    function getPaidAmount() {
+
+        let value = paidInput.value
+            .replace(",", ".")
+            .trim();
+
+        if (value === "") {
+            return 0;
+        }
+
+        const number = Number(value);
+
+        if (!Number.isFinite(number)) {
+            return 0;
+        }
+
+        return number;
     }
 
-    paidAmountInput.addEventListener(
+
+    /*
+     * =========================================
+     * حساب المتبقي
+     * =========================================
+     *
+     * المتبقي الحقيقي =
+     *
+     * إجمالي الفاتورة
+     * - المدفوع سابقًا
+     * - الدفعة الحالية
+     *
+     * مثال:
+     *
+     * إجمالي الفاتورة = 811.90
+     * المدفوع سابقًا = 11.90
+     *
+     * إذا كانت الدفعة الحالية 800:
+     *
+     * 811.90 - 11.90 - 800 = 0.00
+     *
+     * إذا كانت الدفعة الحالية 700:
+     *
+     * 811.90 - 11.90 - 700 = 100.00
+     *
+     * إذا كانت الدفعة الحالية 900:
+     *
+     * 811.90 - 11.90 - 900 = -100.00
+     *
+     * يسمح بعرض السالب أثناء الكتابة
+     * حتى يعرف المستخدم أنه تجاوز المبلغ المتبقي.
+     *
+     * لكن الحفظ نفسه يتم منعه في views.py.
+     */
+    function updateRemaining() {
+
+        const currentPaid = getPaidAmount();
+
+        let remaining =
+            invoiceTotal
+            - previousPaid
+            - currentPaid;
+
+
+        /*
+         * =========================================
+         * التقريب إلى منزلتين عشريتين
+         * =========================================
+         */
+        remaining = Math.round(
+            (remaining + Number.EPSILON) * 100
+        ) / 100;
+
+
+        /*
+         * =========================================
+         * عرض المتبقي
+         * =========================================
+         *
+         * لا نقوم بمنع القيمة السالبة هنا.
+         */
+        remainingInput.value =
+            remaining.toFixed(2);
+
+
+        /*
+         * =========================================
+         * اتجاه الأرقام
+         * =========================================
+         */
+        remainingInput.style.direction = "ltr";
+        remainingInput.style.textAlign = "right";
+
+    }
+
+
+    /*
+     * =========================================
+     * عند الكتابة في حقل المدفوع
+     * =========================================
+     */
+    paidInput.addEventListener(
         "input",
         updateRemaining
     );
 
+
+    /*
+     * =========================================
+     * الحساب عند فتح الصفحة
+     * =========================================
+     *
+     * مثال:
+     *
+     * invoiceTotal = 811.90
+     * previousPaid = 11.90
+     * paidAmount = 800.00
+     *
+     * النتيجة:
+     *
+     * remaining = 0.00
+     */
     updateRemaining();
 
 });
+
 </script>
+
+
 {% endblock %}
+

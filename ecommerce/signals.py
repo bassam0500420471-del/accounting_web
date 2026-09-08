@@ -1,7 +1,18 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
+# ==========================================================
+# النظام القديم للإشعارات و WebSocket
+# معطل مؤقتًا — سيتم استبداله بخدمة بشر
+# ==========================================================
+
+# from asgiref.sync import async_to_sync
+# from channels.layers import get_channel_layer
+
+
 from accounts.models import Company
+
 
 from .models import (
     Store,
@@ -10,9 +21,26 @@ from .models import (
     PaymentMethod,
 )
 
+
 from ecommerce.models.orders import Order
-from ecommerce.models.notifications import StoreNotification
-from notifications.models import Notification
+
+
+# ==========================================================
+# النظام القديم لإشعارات التاجر
+# معطل مؤقتًا — سيتم استبداله بخدمة بشر
+# ==========================================================
+
+# from ecommerce.models.notifications import StoreNotification
+
+
+# ==========================================================
+# نظام إشعارات العميل
+# هذا النظام مختلف عن StoreNotification
+# ويظل فعالًا
+# ==========================================================
+
+# from notifications.models import Notification
+
 
 
 
@@ -26,9 +54,13 @@ def create_company_store(sender, instance, created, **kwargs):
     if created:
 
         store = Store.objects.create(
+
             company=instance,
+
             name=f"متجر {instance.name}",
+
             slug=f"store-{instance.id}"
+
         )
 
 
@@ -44,12 +76,17 @@ def create_store_defaults(sender, instance, created, **kwargs):
     if created:
 
         StoreTheme.objects.get_or_create(
+
             store=instance
+
         )
 
         StoreSetting.objects.get_or_create(
+
             store=instance
+
         )
+
 
 
 
@@ -107,56 +144,122 @@ def create_default_payment_methods(sender, instance, created, **kwargs):
 
 
 
+
 # ==========================================================
 # إشعار مدير المتجر بطلب جديد
+#
+# النظام القديم معطل مؤقتًا
+# سيتم استبداله لاحقًا بخدمة بشر
+#
+# الكود القديم محفوظ كما هو للرجوع إليه مستقبلًا
 # ==========================================================
 
 @receiver(post_save, sender=Order)
 def create_store_order_notification(sender, instance, created, **kwargs):
 
-    if created:
+    return
 
-        StoreNotification.objects.create(
+    # ------------------------------------------------------
+    # النظام القديم — معطل
+    # ------------------------------------------------------
 
-            store=instance.store,
+    # if created:
+    #
+    #     notification = StoreNotification.objects.create(
+    #
+    #         store=instance.store,
+    #
+    #         user=getattr(
+    #             instance.store,
+    #             "owner",
+    #             None
+    #         ),
+    #
+    #         order=instance,
+    #
+    #         title="طلب جديد 🛒",
+    #
+    #         message=(
+    #             f"تم استلام طلب جديد رقم "
+    #             f"{instance.order_no}"
+    #         ),
+    #
+    #         notification_type="order"
+    #
+    #     )
+    #
+    #
+    #     channel_layer = get_channel_layer()
+    #
+    #     if channel_layer is not None:
+    #
+    #         async_to_sync(
+    #             channel_layer.group_send
+    #         )(
+    #
+    #             f"store_notifications_{instance.store.id}",
+    #
+    #             {
+    #                 "type": "new_order",
+    #
+    #                 "notification_id": str(
+    #                     notification.id
+    #                 ),
+    #
+    #                 "title": notification.title,
+    #
+    #                 "message": notification.message,
+    #
+    #                 "order_id": str(
+    #                     instance.id
+    #                 ),
+    #
+    #                 "order_no": instance.order_no,
+    #
+    #             },
+    #
+    #         )
 
-            user=getattr(
-                instance.store,
-                "owner",
-                None
-            ),
-
-            order=instance,
-
-            title="طلب جديد 🛒",
-
-            message=f"تم استلام طلب جديد رقم {instance.order_no}",
-
-            notification_type="order"
-
-        )
 
 
 
 # ==========================================================
-# إشعار العميل
+# النظام القديم لإشعارات الطلب
+#
+# معطل مؤقتًا — سيتم استبداله بخدمة بشر
+#
+# الكود محفوظ بالكامل للرجوع إليه لاحقًا
 # ==========================================================
 
 @receiver(post_save, sender=Order)
-def create_customer_order_notification(sender, instance, created, **kwargs):
+def create_customer_order_notification(
+    sender,
+    instance,
+    created,
+    **kwargs
+):
 
-    if created:
+    return
 
-        Notification.objects.create(
+    # ------------------------------------------------------
+    # النظام القديم — محفوظ ومعطل
+    # ------------------------------------------------------
 
-            store=instance.store,
-
-            order=instance,
-
-            title="طلب جديد",
-
-            message=f"تم استلام طلب جديد رقم {instance.order_no}",
-
-            notification_type="order"
-
-        )
+    # if created:
+    #
+    #     Notification.objects.create(
+    #
+    #         store=instance.store,
+    #
+    #         order=instance,
+    #
+    #         title="طلب جديد",
+    #
+    #         message=(
+    #             f"تم استلام الطلب رقم "
+    #             f"{instance.order_no}"
+    #         ),
+    #
+    #         notification_type="order"
+    #
+    #     )

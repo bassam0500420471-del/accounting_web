@@ -1,7 +1,8 @@
 from decimal import Decimal
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Max
 from accounting.models import JournalEntry, JournalLine, Account
-
+from django.db import transaction
+from ecommerce.models.customer import StoreCustomerAccount
 # ==================================================
 # 🔄 دالة مساعدة لتوليد رقم قيد فريد وآمن
 # ==================================================
@@ -522,3 +523,458 @@ def _validate_journal_balance(entry):
     if debit != credit:
         entry.delete()
         raise ValueError(f"❌ القيد غير متوازن (الفرق = {debit - credit})")
+# ==================================================
+# 🟣 قيد فاتورة طلب المتجر الإلكتروني
+# ==================================================
+@transaction.atomic
+def create_store_order_journal(order):
+    """
+    إنشاء قيد محاسبي لطلب المتجر الإلكتروني.
+
+    عند تسليم الطلب:
+
+        مدين  : حساب العميل = إجمالي الطلب
+        دائن  : المبيعات     = صافي المنتجات + الشحن
+        دائن  : ضريبة القيمة المضافة = الضريبة
+
+    لا يتم هنا خصم المخزون.
+    ولا يتم هنا إنشاء SalesInvoice.
+
+    الدالة تضمن وجود:
+        1000 - الأصول
+        1100 - العملاء
+
+    ثم تنشئ حساب العميل الفرعي تلقائيًا.
+    """
+
+    # --------------------------------------------------
+    # 1️⃣ الشركة
+    # --------------------------------------------------
+
+    company = order.store.company
+
+    if not company:
+        raise ValueError(
+            "❌ المتجر غير مرتبط بشركة"
+        )
+
+    # --------------------------------------------------
+    # 2️⃣ منع تكرار القيد
+    # --------------------------------------------------
+
+    existing_entry = JournalEntry.objects.filter(
+        company=company,
+        source_type="store_order",
+        source_id=order.id
+    ).first()
+
+    if existing_entry:
+        return existing_entry
+
+    # --------------------------------------------------
+    # 3️⃣ التحقق من العميل
+    # --------------------------------------------------
+
+    customer = order.customer
+
+    if not customer:
+        raise ValueError(
+            "❌ طلب المتجر لا يحتوي على عميل"
+        )
+
+    # --------------------------------------------------
+    # 4️⃣ التأكد من وجود حساب الأصول الرئيسي 1000
+    # --------------------------------------------------
+
+    assets_group = Account.objects.filter(
+        company=company,
+        code="1000"
+    ).first()
+
+    if not assets_group:
+
+        assets_group = Account.objects.create(
+            company=company,
+            code="1000",
+            name="الأصول",
+            account_type="ASSET",
+            nature="DEBIT",
+            is_group=True,
+            is_active=True,
+        )
+
+    # --------------------------------------------------
+    # 5️⃣ التأكد من وجود حساب العملاء الرئيسي 1100
+    # --------------------------------------------------
+
+    customers_group = Account.objects.filter(
+        company=company,
+        code="1100"
+    ).first()
+
+    if not customers_group:
+
+        customers_group = Account.objects.create(
+            company=company,
+            code="1100",
+            name="العملاء",
+            account_type="ASSET",
+            nature="DEBIT",
+            parent=assets_group,
+            is_group=True,
+            is_active=True,
+        )
+
+    else:
+
+        # إذا كان موجودًا لكن بدون الأب الصحيح
+        # نربطه تحت 1000 فقط إذا كان ذلك آمنًا.
+        if customers_group.parent_id != assets_group.id:
+
+            customers_group.parent = assets_group
+            customers_group.save(
+                update_fields=["parent"]
+            )
+
+    # --------------------------------------------------
+    # 6️⃣ جلب حساب العميل إن كان موجودًا
+    # --------------------------------------------------
+
+    store_customer_account = (
+        StoreCustomerAccount.objects
+        .select_related("account")
+        .filter(
+            customer=customer,
+            company=company
+        )
+        .first()
+    )
+
+    if store_customer_account:
+
+        customer_account = (
+            store_customer_account.account
+        )
+
+        if not customer_account:
+            raise ValueError(
+                "❌ ربط حساب عميل المتجر موجود "
+                "ولكن الحساب المحاسبي غير موجود"
+            )
+
+    else:
+
+        # --------------------------------------------------
+        # 7️⃣ توليد رقم حساب العميل التالي
+        # --------------------------------------------------
+
+        child_accounts = Account.objects.filter(
+            company=company,
+            parent=customers_group
+        ).values_list(
+            "code",
+            flat=True
+        )
+
+        next_customer_code = 1101
+
+        for code in child_accounts:
+
+            try:
+
+                numeric_code = int(code)
+
+                if numeric_code >= next_customer_code:
+                    next_customer_code = (
+                        numeric_code + 1
+                    )
+
+            except (TypeError, ValueError):
+                continue
+
+        # --------------------------------------------------
+        # 8️⃣ اسم العميل
+        # --------------------------------------------------
+
+        customer_name = (
+            customer.get_full_name()
+            or customer.username
+            or f"عميل {customer.id}"
+        )
+
+        # --------------------------------------------------
+        # 9️⃣ إنشاء الحساب المحاسبي للعميل
+        # --------------------------------------------------
+
+        customer_account = Account.objects.create(
+            company=company,
+            code=str(next_customer_code),
+            name=f"عميل متجر - {customer_name}",
+            account_type="ASSET",
+            nature="DEBIT",
+            parent=customers_group,
+            is_group=False,
+            is_active=True,
+        )
+
+        # --------------------------------------------------
+        # 🔟 ربط العميل بالحساب
+        # --------------------------------------------------
+
+        StoreCustomerAccount.objects.create(
+            customer=customer,
+            company=company,
+            account=customer_account,
+        )
+
+    # --------------------------------------------------
+    # 1️⃣1️⃣ حساب مبالغ الطلب
+    # --------------------------------------------------
+
+    subtotal = (
+        getattr(
+            order,
+            "subtotal",
+            Decimal("0.00")
+        )
+        or Decimal("0.00")
+    )
+
+    discount = (
+        getattr(
+            order,
+            "discount",
+            Decimal("0.00")
+        )
+        or Decimal("0.00")
+    )
+
+    shipping_cost = (
+        getattr(
+            order,
+            "shipping_cost",
+            Decimal("0.00")
+        )
+        or Decimal("0.00")
+    )
+
+    tax_value = (
+        getattr(
+            order,
+            "tax",
+            Decimal("0.00")
+        )
+        or Decimal("0.00")
+    )
+
+    total = (
+        getattr(
+            order,
+            "total",
+            Decimal("0.00")
+        )
+        or Decimal("0.00")
+    )
+
+    subtotal = Decimal(str(subtotal))
+    discount = Decimal(str(discount))
+    shipping_cost = Decimal(str(shipping_cost))
+    tax_value = Decimal(str(tax_value))
+    total = Decimal(str(total))
+
+    # --------------------------------------------------
+    # 1️⃣2️⃣ صافي المنتجات
+    # --------------------------------------------------
+
+    net_products = subtotal - discount
+
+    if net_products < 0:
+        net_products = Decimal("0.00")
+
+    # --------------------------------------------------
+    # 1️⃣3️⃣ الإيراد
+    # --------------------------------------------------
+
+    revenue_amount = (
+        net_products + shipping_cost
+    )
+
+    # --------------------------------------------------
+    # 1️⃣4️⃣ التأكد من إجمالي الطلب
+    # --------------------------------------------------
+
+    calculated_total = (
+        revenue_amount + tax_value
+    )
+
+    difference = (
+        total - calculated_total
+    )
+
+    if abs(difference) > Decimal("0.01"):
+
+        raise ValueError(
+            "❌ إجمالي طلب المتجر غير متطابق "
+            "مع تفاصيله "
+            f"(الفرق = {difference})"
+        )
+
+    if total <= 0:
+
+        raise ValueError(
+            "❌ إجمالي طلب المتجر يجب أن يكون "
+            "أكبر من صفر"
+        )
+
+    # --------------------------------------------------
+    # 1️⃣5️⃣ حساب المبيعات
+    # --------------------------------------------------
+
+    revenue_account = Account.objects.filter(
+        company=company,
+        code="5100",
+        account_type="REVENUE",
+        is_group=False,
+        is_active=True,
+    ).first()
+
+    if not revenue_account:
+
+        revenue_account = Account.objects.filter(
+            company=company,
+            account_type="REVENUE",
+            is_group=False,
+            is_active=True,
+        ).first()
+
+    if not revenue_account:
+
+        raise ValueError(
+            "❌ لم يتم تعريف حساب المبيعات "
+            "في شجرة الحسابات"
+        )
+
+    # --------------------------------------------------
+    # 1️⃣6️⃣ حساب ضريبة القيمة المضافة
+    # --------------------------------------------------
+
+    vat_account = None
+
+    if tax_value > 0:
+
+        vat_account = Account.objects.filter(
+            company=company,
+            code="2301",
+            account_type="LIABILITY",
+            is_group=False,
+            is_active=True,
+        ).first()
+
+        if not vat_account:
+
+            vat_account = Account.objects.filter(
+                company=company,
+                name__icontains="ضريبة",
+                is_group=False,
+                is_active=True,
+            ).first()
+
+        if not vat_account:
+
+            raise ValueError(
+                "❌ لم يتم تعريف حساب ضريبة "
+                "القيمة المضافة"
+            )
+
+    # --------------------------------------------------
+    # 1️⃣7️⃣ إنشاء رقم القيد
+    # --------------------------------------------------
+
+    next_entry_no = (
+        _get_next_global_entry_no()
+    )
+
+    # --------------------------------------------------
+    # 1️⃣8️⃣ إنشاء القيد
+    # --------------------------------------------------
+
+    entry = JournalEntry.objects.create(
+        company=company,
+        entry_no=next_entry_no,
+        date=order.created_at.date(),
+        description=(
+            f"قيد فاتورة طلب متجر رقم "
+            f"{order.order_no}"
+        ),
+        source_type="store_order",
+        source_id=order.id,
+        posted=True,
+    )
+
+    # --------------------------------------------------
+    # 1️⃣9️⃣ إنشاء سطور القيد
+    # --------------------------------------------------
+
+    try:
+
+        # ==============================================
+        # العميل - مدين
+        # ==============================================
+
+        JournalLine.objects.create(
+            entry=entry,
+            account=customer_account,
+            debit=total,
+            credit=Decimal("0.00"),
+            description=(
+                f"فاتورة متجر رقم "
+                f"{order.order_no}"
+            ),
+        )
+
+        # ==============================================
+        # المبيعات - دائن
+        # ==============================================
+
+        if revenue_amount > 0:
+
+            JournalLine.objects.create(
+                entry=entry,
+                account=revenue_account,
+                debit=Decimal("0.00"),
+                credit=revenue_amount,
+                description=(
+                    f"إيرادات طلب متجر رقم "
+                    f"{order.order_no}"
+                ),
+            )
+
+        # ==============================================
+        # ضريبة القيمة المضافة - دائن
+        # ==============================================
+
+        if tax_value > 0:
+
+            JournalLine.objects.create(
+                entry=entry,
+                account=vat_account,
+                debit=Decimal("0.00"),
+                credit=tax_value,
+                description=(
+                    f"ضريبة طلب متجر رقم "
+                    f"{order.order_no}"
+                ),
+            )
+
+        # ==============================================
+        # التأكد من توازن القيد
+        # ==============================================
+
+        _validate_journal_balance(entry)
+
+    except Exception:
+
+        entry.delete()
+        raise
+
+    return entry

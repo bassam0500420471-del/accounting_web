@@ -40,7 +40,12 @@ class CompanyInfo(models.Model):
 
     notes = models.TextField(blank=True, null=True, verbose_name="ملاحظات إضافية")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاريخ التحديث")
-
+    @property
+    def is_tax_registered(self):
+        return bool(
+            self.tax_number and
+            self.tax_number.strip()
+        )
     class Meta:
         verbose_name = "معلومات الشركة"
         verbose_name_plural = "معلومات الشركات"

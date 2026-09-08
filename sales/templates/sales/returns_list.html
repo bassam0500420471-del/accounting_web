@@ -372,40 +372,6 @@
                                 </li>
 
 
-                                <!-- PDF -->
-
-                                <li>
-
-                                    {% if r.original_invoice %}
-
-                                        <a
-                                            class="dropdown-item"
-                                            href="/sales/invoices/{{ r.original_invoice.id }}/pdf/"
-                                        >
-
-                                            <i class="fa-solid fa-file-pdf"></i>
-
-                                            {% trans "Download PDF" %}
-
-                                        </a>
-
-                                    {% elif r.pos_invoice %}
-
-                                        <a
-                                            class="dropdown-item"
-                                            href="/sales/invoices/{{ r.pos_invoice.id }}/pdf/"
-                                        >
-
-                                            <i class="fa-solid fa-file-pdf"></i>
-
-                                            {% trans "Download PDF" %}
-
-                                        </a>
-
-                                    {% endif %}
-
-                                </li>
-
 
                             </ul>
 

@@ -20,6 +20,25 @@ def create_default_accounts(company):
 
     accounts["assets"] = assets
 
+    # ==========================
+    # العملاء
+    # ==========================
+
+    customers = Account.objects.create(
+        company=company,
+        code="1100",
+        name="العملاء",
+        account_type="ASSET",
+        nature="DEBIT",
+        parent=assets,
+        is_group=True,
+    )
+
+    accounts["customers"] = customers
+
+    # ==========================
+    # المخزون
+    # ==========================
 
     inventory = Account.objects.create(
         company=company,
@@ -31,7 +50,6 @@ def create_default_accounts(company):
     )
 
     accounts["inventory"] = inventory
-
 
     # ==========================
     # الخصوم
@@ -46,6 +64,7 @@ def create_default_accounts(company):
         is_group=True,
     )
 
+    accounts["liabilities"] = liabilities
 
     suppliers = Account.objects.create(
         company=company,
@@ -57,7 +76,6 @@ def create_default_accounts(company):
     )
 
     accounts["suppliers"] = suppliers
-
 
     # ==========================
     # الضرائب
@@ -72,6 +90,7 @@ def create_default_accounts(company):
         is_group=True,
     )
 
+    accounts["taxes"] = taxes
 
     vat = Account.objects.create(
         company=company,
@@ -83,20 +102,21 @@ def create_default_accounts(company):
     )
 
     accounts["vat"] = vat
-# ==========================
-# حقوق الملكية
-# ==========================
 
-equity = Account.objects.create(
-    company=company,
-    code="3000",
-    name="حقوق الملكية",
-    account_type="EQUITY",
-    nature="CREDIT",
-    is_group=True,
-)
+    # ==========================
+    # حقوق الملكية
+    # ==========================
 
-accounts["equity"] = equity
+    equity = Account.objects.create(
+        company=company,
+        code="3000",
+        name="حقوق الملكية",
+        account_type="EQUITY",
+        nature="CREDIT",
+        is_group=True,
+    )
+
+    accounts["equity"] = equity
 
     # ==========================
     # المصروفات
@@ -111,6 +131,7 @@ accounts["equity"] = equity
         is_group=True,
     )
 
+    accounts["expenses"] = expenses
 
     purchases = Account.objects.create(
         company=company,
@@ -122,7 +143,6 @@ accounts["equity"] = equity
     )
 
     accounts["purchases"] = purchases
-
 
     # ==========================
     # الإيرادات
@@ -137,6 +157,7 @@ accounts["equity"] = equity
         is_group=True,
     )
 
+    accounts["revenues"] = revenues
 
     sales = Account.objects.create(
         company=company,
@@ -148,6 +169,5 @@ accounts["equity"] = equity
     )
 
     accounts["sales"] = sales
-
 
     return accounts

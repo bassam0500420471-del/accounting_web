@@ -5,7 +5,7 @@ from django.db.models import Sum
 from django.http import JsonResponse, HttpResponse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
-
+from decimal import Decimal, ROUND_HALF_UP
 from .models import Customer
 from sales.models import SalesInvoice
 from accounting.models import Account
@@ -54,10 +54,20 @@ def customers_list(request):
             sum=Sum("total_after_tax")
         )["sum"] or 0
 
-        total_payments = 0
-        c.balance = total_invoices - total_payments
-        c.balance_abs = abs(c.balance)
+        total_payments = Decimal("0.00")
 
+        c.balance = (
+            Decimal(str(total_invoices or 0))
+            - total_payments
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        c.balance_abs = abs(c.balance).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
         if c.balance > 0:
             c.state = "مدين"
         elif c.balance < 0:

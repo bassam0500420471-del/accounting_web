@@ -11,372 +11,451 @@
 
 {% endblock %}
 
-
 {% block content %}
 
 <div class="container py-5">
 
-    <div class="row g-4">
+<div class="row g-4">
 
 
-        <!-- =====================================================
-             ملخص الطلب
-        ====================================================== -->
+    <!-- =====================================================
+         ملخص الطلب
+    ====================================================== -->
 
-        <div class="col-lg-5">
+    <div class="col-lg-5">
 
-            <div class="card shadow-sm">
+        <div class="card shadow-sm">
 
-                <div class="card-header">
-                    🛒 ملخص الطلب
+            <div class="card-header">
+                🛒 ملخص الطلب
+            </div>
+
+
+            <div class="card-body">
+
+
+                {% for item in items %}
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span>
+                        {{ item.product.name }} × {{ item.quantity }}
+                    </span>
+
+
+                    <strong>
+                        {{ item.subtotal|floatformat:"2" }} ر.س
+                    </strong>
+
                 </div>
 
 
-                <div class="card-body">
+                {% empty %}
+
+                <p>
+                    السلة فارغة
+                </p>
 
 
-                    {% for item in items %}
-
-                    <div class="d-flex justify-content-between mb-3">
-
-                        <span>
-                            {{ item.product.name }} × {{ item.quantity }}
-                        </span>
+                {% endfor %}
 
 
-                        <strong>
-                            {{ item.subtotal|floatformat:"2" }} ر.س
-                        </strong>
-
-                    </div>
+                <hr>
 
 
-                    {% empty %}
+                <!-- =================================================
+                     الإجمالي قبل الضريبة
+                ================================================== -->
 
-                    <p>
-                        السلة فارغة
-                    </p>
+                <div class="d-flex justify-content-between mb-2">
 
+                    <span>
+                        الإجمالي قبل الضريبة
+                    </span>
 
-                    {% endfor %}
-
-
-                    <hr>
-
-
-                    <h5 class="text-end">
-                        الإجمالي:
+                    <strong>
                         {{ total|floatformat:"2" }} ر.س
-                    </h5>
-
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =====================================================
-             طرق الدفع
-        ====================================================== -->
-
-        <div class="col-lg-7">
-
-
-            <div class="card shadow-sm">
-
-
-                <div class="card-header">
-
-                    💳 اختر طريقة الدفع
+                    </strong>
 
                 </div>
 
 
+                <!-- =================================================
+                     الشحن
+                ================================================== -->
 
-                <div class="card-body">
+                {% if shipping_cost %}
 
+                <div class="d-flex justify-content-between mb-2">
 
-                    <!-- =====================================================
-                         بيانات المستلم وعنوان الشحن
-                    ====================================================== -->
+                    <span>
+                        الشحن
+                    </span>
 
-                    <div class="card shadow-sm mb-4">
-
-                        <div class="card-header">
-                            📦 بيانات المستلم والشحن
-                        </div>
-
-                        <div class="card-body">
-
-                            {% if shipping_address %}
-
-                                <div class="mb-3">
-                                    <strong>👤 اسم المستلم:</strong>
-                                    {{ shipping_address.full_name }}
-                                </div>
-
-                                <div class="mb-3">
-                                    <strong>📱 رقم الجوال:</strong>
-                                    {{ shipping_address.phone }}
-                                </div>
-
-                                <div class="mb-3">
-                                    <strong>📍 العنوان:</strong>
-                                    {{ shipping_address.address }}
-                                </div>
-
-                                {% if shipping_address.district %}
-
-                                <div class="mb-3">
-                                    <strong>🏘️ الحي:</strong>
-                                    {{ shipping_address.district }}
-                                </div>
-
-                                {% endif %}
-
-
-                                {% if shipping_address.city %}
-
-                                <div class="mb-3">
-                                    <strong>🏙️ المدينة:</strong>
-                                    {{ shipping_address.city }}
-                                </div>
-
-                                {% endif %}
-
-
-                                {% if shipping_address.postal_code %}
-
-                                <div class="mb-3">
-                                    <strong>📮 الرمز البريدي:</strong>
-                                    {{ shipping_address.postal_code }}
-                                </div>
-
-                                {% endif %}
-
-
-                                <a
-                                    href="{% url 'ecommerce:account_edit' store.slug %}"
-                                    class="btn btn-outline-dark"
-                                >
-                                    ✏️ تعديل بيانات الشحن
-                                </a>
-
-                            {% else %}
-
-                                <div class="alert alert-warning">
-                                    ⚠️ لا يوجد عنوان شحن محفوظ.
-                                </div>
-
-                                <a
-                                    href="{% url 'ecommerce:account_edit' store.slug %}"
-                                    class="btn btn-primary"
-                                >
-                                    إضافة عنوان الشحن
-                                </a>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
+                    <strong>
+                        {{ shipping_cost|floatformat:"2" }} ر.س
+                    </strong>
 
                 </div>
 
-            </div>
+                {% endif %}
 
 
-            <!-- =====================================================
-                 نموذج الدفع
-            ====================================================== -->
+                <!-- =================================================
+                     الضريبة
+                     تظهر فقط عند وجود Company.vat_no
+                ================================================== -->
 
-            <form
-                id="checkoutForm"
-                method="POST"
-                enctype="multipart/form-data"
-                action="{% url 'ecommerce:checkout' store.slug %}"
-            >
+                {% if has_tax_number %}
 
-                {% csrf_token %}
+                <div class="d-flex justify-content-between mb-2">
 
+                    <span>
+                        قيمة الضريبة ({{ tax_rate|floatformat:"0" }}%)
+                    </span>
 
-                <!-- =====================================================
-                     طرق الدفع
-                ====================================================== -->
+                    <strong>
+                        {{ tax|floatformat:"2" }} ر.س
+                    </strong>
 
-                <div class="payment-options mb-4">
+                </div>
 
-
-                    {% for method in payment_methods %}
+                {% endif %}
 
 
-                        {% if method.payment_type == "bank" or method.payment_type == "cash" %}
+                <hr>
 
 
-                            <label
-                                class="payment-box d-block mb-2 p-2 border rounded"
-                                style="cursor:pointer;"
-                            >
+                <!-- =================================================
+                     الإجمالي بعد الضريبة / الإجمالي النهائي
+                ================================================== -->
 
+                <div class="d-flex justify-content-between">
 
-                                <input
-                                    type="radio"
-                                    data-type="{{ method.payment_type }}"
-                                    name="payment_method"
-                                    value="{{ method.id }}"
-                                    {% if forloop.first %}checked{% endif %}
-                                    class="form-check-input me-2"
-                                >
+                    <h5 class="mb-0">
 
+                        {% if has_tax_number %}
 
-                                {{ method.name }}
+                            الإجمالي بعد الضريبة
 
+                        {% else %}
 
-                            </label>
-
+                            الإجمالي النهائي
 
                         {% endif %}
 
-
-                    {% endfor %}
-
-
-                </div>
-
-
-
-                <!-- =====================================================
-                     بطاقة ميسر
-                ====================================================== -->
-
-                <div
-                    id="cardSection"
-                    style="display:none; margin-top:20px;"
-                >
-
-                    <h5>
-                        بيانات البطاقة
                     </h5>
 
 
-                    <div class="mysr-form"></div>
+                    <h5 class="mb-0">
+
+                        {{ final_total|floatformat:"2" }} ر.س
+
+                    </h5>
 
                 </div>
 
 
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         طرق الدفع
+    ====================================================== -->
+
+    <div class="col-lg-7">
+
+
+        <div class="card shadow-sm">
+
+
+            <div class="card-header">
+
+                💳 اختر طريقة الدفع
+
+            </div>
+
+
+
+            <div class="card-body">
+
 
                 <!-- =====================================================
-                     قسم التحويل البنكي
+                     بيانات المستلم وعنوان الشحن
                 ====================================================== -->
 
-                <div
-                    id="bankSection"
-                    style="display:none; margin-top:20px;"
-                >
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-header">
+                        📦 بيانات المستلم والشحن
+                    </div>
+
+                    <div class="card-body">
+
+                        {% if shipping_address %}
+
+                            <div class="mb-3">
+                                <strong>👤 اسم المستلم:</strong>
+                                {{ shipping_address.full_name }}
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>📱 رقم الجوال:</strong>
+                                {{ shipping_address.phone }}
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>📍 العنوان:</strong>
+                                {{ shipping_address.address }}
+                            </div>
+
+                            {% if shipping_address.district %}
+
+                            <div class="mb-3">
+                                <strong>🏘️ الحي:</strong>
+                                {{ shipping_address.district }}
+                            </div>
+
+                            {% endif %}
 
 
-                    <div class="alert alert-info">
+                            {% if shipping_address.city %}
+
+                            <div class="mb-3">
+                                <strong>🏙️ المدينة:</strong>
+                                {{ shipping_address.city }}
+                            </div>
+
+                            {% endif %}
 
 
-                        <h5>
-                            🏦 بيانات التحويل البنكي
-                        </h5>
+                            {% if shipping_address.postal_code %}
+
+                            <div class="mb-3">
+                                <strong>📮 الرمز البريدي:</strong>
+                                {{ shipping_address.postal_code }}
+                            </div>
+
+                            {% endif %}
 
 
-                        <p>
+                            <a
+                                href="{% url 'ecommerce:account_edit' store.slug %}"
+                                class="btn btn-outline-dark"
+                            >
+                                ✏️ تعديل بيانات الشحن
+                            </a>
 
-                            <strong>
-                                البنك:
-                            </strong>
+                        {% else %}
 
-                            {{ bank_method.bank_name }}
+                            <div class="alert alert-warning">
+                                ⚠️ لا يوجد عنوان شحن محفوظ.
+                            </div>
 
-                        </p>
+                            <a
+                                href="{% url 'ecommerce:account_edit' store.slug %}"
+                                class="btn btn-primary"
+                            >
+                                إضافة عنوان الشحن
+                            </a>
 
-
-                        <p>
-
-                            <strong>
-                                اسم الحساب:
-                            </strong>
-
-                            {{ bank_method.account_name }}
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>
-                                رقم الحساب:
-                            </strong>
-
-                            {{ bank_method.account_number }}
-
-                        </p>
-
-
-                        <p>
-
-                            <strong>
-                                الآيبان:
-                            </strong>
-
-                            {{ bank_method.iban }}
-
-                        </p>
-
+                        {% endif %}
 
                     </div>
 
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             نموذج الدفع
+        ====================================================== -->
+
+        <form
+            id="checkoutForm"
+            method="POST"
+            enctype="multipart/form-data"
+            action="{% url 'ecommerce:checkout' store.slug %}"
+        >
+
+            {% csrf_token %}
+
+
+            <!-- =====================================================
+                 طرق الدفع
+            ====================================================== -->
+
+            <div class="payment-options mb-4">
+
+
+                {% for method in payment_methods %}
+
+
+                    {% if method.payment_type == "bank" or method.payment_type == "cash" %}
+
+
+                        <label
+                            class="payment-box d-block mb-2 p-2 border rounded"
+                            style="cursor:pointer;"
+                        >
+
+
+                            <input
+                                type="radio"
+                                data-type="{{ method.payment_type }}"
+                                name="payment_method"
+                                value="{{ method.id }}"
+                                {% if forloop.first %}checked{% endif %}
+                                class="form-check-input me-2"
+                            >
+
+
+                            {{ method.name }}
+
+
+                        </label>
+
+
+                    {% endif %}
+
+
+                {% endfor %}
+
+
+            </div>
 
 
 
-                    <label class="form-label">
+            <!-- =====================================================
+                 بطاقة ميسر
+            ====================================================== -->
 
-                        صورة التحويل البنكي
+            <div
+                id="cardSection"
+                style="display:none; margin-top:20px;"
+            >
 
-                    </label>
+                <h5>
+                    بيانات البطاقة
+                </h5>
+
+
+                <div class="mysr-form"></div>
+
+            </div>
 
 
 
-                    <input
-                        type="file"
-                        name="bank_receipt"
-                        class="form-control"
-                        accept="image/*"
-                    >
+            <!-- =====================================================
+                 قسم التحويل البنكي
+            ====================================================== -->
+
+            <div
+                id="bankSection"
+                style="display:none; margin-top:20px;"
+            >
+
+
+                <div class="alert alert-info">
+
+
+                    <h5>
+                        🏦 بيانات التحويل البنكي
+                    </h5>
+
+
+                    <p>
+
+                        <strong>
+                            البنك:
+                        </strong>
+
+                        {{ bank_method.bank_name }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            اسم الحساب:
+                        </strong>
+
+                        {{ bank_method.account_name }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            رقم الحساب:
+                        </strong>
+
+                        {{ bank_method.account_number }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>
+                            الآيبان:
+                        </strong>
+
+                        {{ bank_method.iban }}
+
+                    </p>
 
 
                 </div>
 
 
+                <label class="form-label">
+
+                    صورة التحويل البنكي
+
+                </label>
 
 
-                <!-- =====================================================
-                     زر التأكيد
-                ====================================================== -->
-
-                <button
-                    class="btn btn-primary w-100 mt-4"
-                    type="button"
-                    id="submitBtn"
-                    style="display:none;"
+                <input
+                    type="file"
+                    name="bank_receipt"
+                    class="form-control"
+                    accept="image/*"
                 >
 
-                    تأكيد الدفع
 
-                </button>
-
-
-            </form>
+            </div>
 
 
-        </div>
+
+            <!-- =====================================================
+                 زر التأكيد
+            ====================================================== -->
+
+            <button
+                class="btn btn-primary w-100 mt-4"
+                type="button"
+                id="submitBtn"
+                style="display:none;"
+            >
+
+                تأكيد الدفع
+
+            </button>
+
+
+        </form>
 
 
     </div>
@@ -384,9 +463,9 @@
 
 </div>
 
+</div>
+
 {% endblock %}
-
-
 
 {% block extra_js %}
 
@@ -395,6 +474,55 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* =====================================================
+       بيانات الضريبة القادمة من السيرفر
+    ====================================================== */
+
+    const HAS_TAX_NUMBER =
+        {% if has_tax_number %}true{% else %}false{% endif %};
+
+
+    const TAX_RATE =
+        Number(
+            "{{ tax_rate|default:'15' }}"
+        );
+
+
+    /*
+     * المبلغ النهائي القادم من السيرفر.
+     *
+     * يشمل:
+     *
+     * المنتجات
+     * + الشحن
+     * + الضريبة عند وجود VAT
+     */
+
+    const FINAL_TOTAL =
+        Number(
+            "{{ final_total|default:total|floatformat:'2' }}"
+            .replace(/,/g, "")
+        );
+
+
+    console.log(
+        "HAS TAX NUMBER:",
+        HAS_TAX_NUMBER
+    );
+
+
+    console.log(
+        "TAX RATE:",
+        TAX_RATE
+    );
+
+
+    console.log(
+        "FINAL TOTAL:",
+        FINAL_TOTAL
+    );
 
 
     const cardSection =
@@ -422,7 +550,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     let selectedKey = "";
-
 
 
     /* =====================================================
@@ -558,7 +685,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-
         let gateway =
             (
                 selected.dataset.gateway || ""
@@ -567,19 +693,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .toLowerCase();
 
 
-
         let paymentType =
             selected.dataset.type;
-
 
 
         let key =
             selected.dataset.key;
 
 
-
         selectedKey = key;
-
 
 
         console.log(
@@ -627,7 +749,6 @@ document.addEventListener("DOMContentLoaded", function () {
             ).innerHTML = "";
 
 
-
             Moyasar.init({
 
                 element:
@@ -635,16 +756,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 /*
-                 * القيمة المستخدمة للدفع تبقى رقمية.
-                 * floatformat هنا للتأكد من منزلتين فقط
-                 * قبل التحويل إلى هللة.
+                 * المبلغ النهائي:
+                 *
+                 * المنتجات
+                 * + الشحن
+                 * + الضريبة
                  */
 
                 amount:
                     Math.round(
-                        Number(
-                            "{{ total|floatformat:'2' }}".replace(/,/g, "")
-                        ) * 100
+                        FINAL_TOTAL * 100
                     ),
 
 

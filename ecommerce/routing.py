@@ -1,13 +1,33 @@
-from django.urls import re_path
+# ==========================================================
+# WebSocket Routing
+#
+# النظام القديم للإشعارات معطل مؤقتًا
+# سيتم استبداله بخدمة بشر
+#
+# الكود محفوظ بالكامل للرجوع إليه لاحقًا
+# ==========================================================
 
-from .consumers import StoreNotificationConsumer
+
+# ==========================================================
+# النظام القديم — معطل
+# ==========================================================
+
+# from django.urls import re_path
+# from .consumers import StoreNotificationConsumer
 
 
-websocket_urlpatterns = [
+# websocket_urlpatterns = [
+#
+#     re_path(
+#         r"^ws/store/notifications/$",
+#         StoreNotificationConsumer.as_asgi(),
+#     ),
+#
+# ]
 
-    re_path(
-        r"^ws/store/notifications/$",
-        StoreNotificationConsumer.as_asgi(),
-    ),
 
-]
+# ==========================================================
+# لا توجد مسارات WebSocket فعالة حاليًا
+# ==========================================================
+
+websocket_urlpatterns = []

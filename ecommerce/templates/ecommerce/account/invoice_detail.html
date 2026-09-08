@@ -2,1345 +2,787 @@
 {% load static %}
 
 {% block title %}
-    تفاصيل الفاتورة
+تفاصيل الفاتورة
 {% endblock %}
 
 {% block content %}
 
 <style>
 
-/* ==========================================================
-   INVOICE DETAIL PAGE
-   3D MODERN DESIGN
-   ========================================================== */
-
-.invoice-detail-page {
-
-    direction: rtl;
-
-    background:
-        linear-gradient(
-            135deg,
-            #eeeeee 0%,
-            #dcdcdc 50%,
-            #f7f7f7 100%
-        );
-
-    min-height: calc(100vh - 80px);
-
-    padding: 35px 15px;
-
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-
-/* ==========================================================
-   CONTAINER
-   ========================================================== */
-
-.invoice-container {
-
-    width: 100%;
-
-    max-width: 1000px;
-
-    margin: 0 auto;
-}
-
-
-/* ==========================================================
-   MAIN CARD
-   ========================================================== */
-
-.invoice-card {
-
-    background: #ffffff;
-
-    border-radius: 22px;
-
-    overflow: hidden;
-
-    border: 1px solid rgba(255,255,255,0.8);
-
-    box-shadow:
-        0 4px 8px rgba(0,0,0,0.08),
-        0 12px 25px rgba(0,0,0,0.12),
-        0 25px 50px rgba(0,0,0,0.08);
-
-    transform: translateY(0);
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-
-/* ==========================================================
-   3D HOVER
-   ========================================================== */
-
-.invoice-card:hover {
-
-    transform: translateY(-3px);
-
-    box-shadow:
-        0 6px 12px rgba(0,0,0,0.10),
-        0 18px 35px rgba(0,0,0,0.14),
-        0 30px 60px rgba(0,0,0,0.10);
-}
-
-
-/* ==========================================================
-   HEADER
-   ========================================================== */
-
-.invoice-header {
-
-    position: relative;
-
-    padding: 28px 30px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #f1f1f1
-        );
-
-    border-bottom: 1px solid #e5e5e5;
-
-    box-shadow:
-        inset 0 -3px 0 rgba(0,0,0,0.03);
-}
-
-
-.invoice-header::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-    right: 0;
-    left: 0;
-
-    height: 5px;
-
-    background: linear-gradient(
-        90deg,
-        #222,
-        #666,
-        #222
-    );
-}
-
-
-/* ==========================================================
-   TITLE
-   ========================================================== */
-
-.invoice-title {
-
-    font-size: 26px;
-
-    font-weight: bold;
-
-    color: #222;
-
-    margin-bottom: 8px;
-
-    text-shadow:
-        1px 1px 0 #ffffff,
-        2px 2px 3px rgba(0,0,0,0.08);
-}
-
-
-.invoice-number {
-
-    color: #777;
-
-    font-size: 14px;
-
-    font-weight: 500;
-}
-
-
-/* ==========================================================
-   INVOICE INFO
-   ========================================================== */
-
-.invoice-info {
-
-    display: grid;
-
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 18px;
-
-    padding: 28px 30px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fafafa,
-            #f3f3f3
-        );
-}
-
-
-/* ==========================================================
-   INFO BOX 3D
-   ========================================================== */
-
-.info-box {
-
-    position: relative;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #eeeeee
-        );
-
-    border: 1px solid #e1e1e1;
-
-    border-radius: 15px;
-
-    padding: 17px 18px;
-
-    box-shadow:
-        3px 3px 7px rgba(0,0,0,0.10),
-        -3px -3px 7px rgba(255,255,255,0.9);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-
-.info-box:hover {
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        5px 7px 14px rgba(0,0,0,0.12),
-        -3px -3px 8px rgba(255,255,255,0.9);
-}
-
-
-.info-label {
-
-    color: #888;
-
-    font-size: 13px;
-
-    margin-bottom: 7px;
-}
-
-
-.info-value {
-
-    color: #222;
-
-    font-size: 15px;
-
-    font-weight: bold;
-}
-
-
-/* ==========================================================
-   STATUS
-   ========================================================== */
-
-.status {
-
-    display: inline-block;
-
-    padding: 7px 15px;
-
-    border-radius: 20px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #e5e5e5
-        );
-
-    border: 1px solid #d7d7d7;
-
-    box-shadow:
-        2px 3px 6px rgba(0,0,0,0.10),
-        inset 1px 1px 2px rgba(255,255,255,0.9);
-
-    font-size: 13px;
-}
-
-
-/* ==========================================================
-   TABLE AREA
-   ========================================================== */
-
-.table-wrapper {
-
-    padding: 0 30px 30px;
-
-    overflow-x: auto;
-
-    background: #ffffff;
-}
-
-
-/* ==========================================================
-   TABLE
-   ========================================================== */
-
-.invoice-table {
-
-    width: 100%;
-
-    border-collapse: separate;
-
-    border-spacing: 0;
-
-    min-width: 650px;
-
-    overflow: hidden;
-
-    border-radius: 14px;
-
-    border: 1px solid #dddddd;
-
-    box-shadow:
-        4px 6px 14px rgba(0,0,0,0.08);
-}
-
-
-/* ==========================================================
-   TABLE HEADER
-   ========================================================== */
-
-.invoice-table th {
-
-    background:
-        linear-gradient(
-            145deg,
-            #eeeeee,
-            #dcdcdc
-        );
-
-    color: #333;
-
-    padding: 15px 10px;
-
-    font-size: 14px;
-
-    text-align: center;
-
-    white-space: nowrap;
-
-    border-bottom: 2px solid #cfcfcf;
-
-    text-shadow:
-        1px 1px 0 #ffffff;
-}
-
-
-/* ==========================================================
-   TABLE CELLS
-   ========================================================== */
-
-.invoice-table td {
-
-    padding: 14px 10px;
-
-    border-bottom: 1px solid #eeeeee;
-
-    text-align: center;
-
-    color: #444;
-
-    font-size: 14px;
-
-    background: #ffffff;
-}
-
-
-/* ==========================================================
-   LAST ROW
-   ========================================================== */
-
-.invoice-table tbody tr:last-child td {
-
-    border-bottom: none;
-}
-
-
-/* ==========================================================
-   ROW HOVER
-   ========================================================== */
-
-.invoice-table tbody tr {
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-
-.invoice-table tbody tr:hover td {
-
-    background: #f7f7f7;
-}
-
-
-/* ==========================================================
-   PRODUCT
-   ========================================================== */
-
-.product-name {
-
-    text-align: right !important;
-
-    font-weight: bold;
-
-    color: #222;
-}
-
-
-.product-name small {
-
-    color: #888;
-
-    font-size: 12px;
-}
-
-
-/* ==========================================================
-   TOTALS SECTION
-   ========================================================== */
-
-.totals {
-
-    padding: 0 30px 30px;
-
-    background: #ffffff;
-}
-
-
-/* ==========================================================
-   TOTALS BOX 3D
-   ========================================================== */
-
-.totals-box {
-
-    width: 100%;
-
-    max-width: 430px;
-
-    margin-right: auto;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #eeeeee
-        );
-
-    border: 1px solid #dddddd;
-
-    border-radius: 17px;
-
-    padding: 20px;
-
-    box-shadow:
-        5px 7px 16px rgba(0,0,0,0.10),
-        -4px -4px 10px rgba(255,255,255,0.9);
-}
-
-
-/* ==========================================================
-   TOTAL ROW
-   ========================================================== */
-
-.total-row {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    padding: 9px 0;
-
-    font-size: 15px;
-
-    color: #555;
-}
-
-
-.total-row strong {
-
-    color: #222;
-
-    font-weight: bold;
-}
-
-
-/* ==========================================================
-   FINAL TOTAL
-   ========================================================== */
-
-.total-row.final {
-
-    border-top: 2px solid #d5d5d5;
-
-    margin-top: 10px;
-
-    padding-top: 16px;
-
-    font-size: 20px;
-
-    font-weight: bold;
-
-    color: #222;
-
-    text-shadow:
-        1px 1px 0 #ffffff;
-}
-
-
-/* ==========================================================
-   ACTIONS
-   ========================================================== */
-
-.actions {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 0 30px 32px;
-
-    background: #ffffff;
-}
-
-
-/* ==========================================================
-   BUTTON
-   ========================================================== */
-
-.btn {
-
-    border: none;
-
-    border-radius: 12px;
-
-    padding: 12px 25px;
-
-    font-family: Tahoma, Arial, sans-serif;
-
-    font-size: 14px;
-
-    cursor: pointer;
-
-    text-decoration: none;
-
-    display: inline-block;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-
-.btn:hover {
-
-    transform: translateY(-2px);
-}
-
-
-/* ==========================================================
-   PRINT BUTTON
-   ========================================================== */
-
-.btn-print {
-
-    background:
-        linear-gradient(
-            145deg,
-            #333333,
-            #111111
-        );
-
-    color: #ffffff;
-
-    box-shadow:
-        4px 5px 10px rgba(0,0,0,0.25);
-}
-
-
-.btn-print:hover {
-
-    box-shadow:
-        5px 8px 15px rgba(0,0,0,0.30);
-}
-
-
-/* ==========================================================
-   BACK BUTTON
-   ========================================================== */
-
-.btn-back {
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #e5e5e5
-        );
-
-    color: #222;
-
-    border: 1px solid #d5d5d5;
-
-    box-shadow:
-        3px 4px 8px rgba(0,0,0,0.10);
-}
-
-
-.btn-back:hover {
-
-    box-shadow:
-        4px 6px 12px rgba(0,0,0,0.14);
-}
-
-
-/* ==========================================================
-   MOBILE
-   ========================================================== */
-
-@media (max-width: 700px) {
-
-    .invoice-detail-page {
-
-        padding: 15px 8px;
+    /* =========================================================
+       صفحة تفاصيل الفاتورة
+    ========================================================= */
+
+    .invoice-page {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+        direction: rtl;
     }
-
 
     .invoice-card {
-
-        border-radius: 15px;
+        background: #fff;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.08);
     }
 
+
+    /* =========================================================
+       رأس الفاتورة
+    ========================================================= */
 
     .invoice-header {
-
-        padding: 23px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
     }
-
 
     .invoice-title {
-
-        font-size: 21px;
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
     }
-
 
     .invoice-number {
-
-        font-size: 13px;
+        color: #666;
+        font-size: 14px;
+        margin-top: 8px;
     }
 
+
+    /* =========================================================
+       معلومات الفاتورة
+    ========================================================= */
 
     .invoice-info {
-
-        grid-template-columns: 1fr;
-
-        gap: 12px;
-
-        padding: 18px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
     }
-
 
     .info-box {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+    }
 
-        padding: 14px;
+    .info-label {
+        display: block;
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #222;
     }
 
 
-    .table-wrapper {
+    /* =========================================================
+       جدول المنتجات
+    ========================================================= */
 
-        padding: 0 10px 20px;
-
+    .invoice-table-wrapper {
         overflow-x: auto;
+        margin-bottom: 25px;
     }
-
 
     .invoice-table {
-
-        min-width: 600px;
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
     }
-
 
     .invoice-table th {
-
-        padding: 12px 8px;
-
-        font-size: 13px;
+        background: #f5f5f5;
+        padding: 13px 10px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
     }
-
 
     .invoice-table td {
-
-        padding: 12px 8px;
-
-        font-size: 13px;
-    }
-
-
-    .totals {
-
-        padding: 0 15px 20px;
-    }
-
-
-    .totals-box {
-
-        max-width: none;
-
-        padding: 17px;
-    }
-
-
-    .actions {
-
-        flex-direction: column;
-
-        padding: 0 15px 25px;
-    }
-
-
-    .btn {
-
-        width: 100%;
-
+        padding: 13px 10px;
         text-align: center;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
     }
 
-}
+    .product-name {
+        text-align: right !important;
+        font-weight: 600;
+    }
 
-
-/* ==========================================================
-   PRINT
-   ========================================================== */
-
-@media print {
-
-    @page {
-
-        size: A4;
-
-        margin: 8mm;
+    .tax-value {
+        font-weight: 600;
     }
 
 
-    html,
-    body {
+    /* =========================================================
+       الإجماليات
+    ========================================================= */
 
-        width: 100% !important;
+    .invoice-totals {
+        max-width: 450px;
+        margin-right: auto;
+        margin-left: 0;
+    }
 
-        height: auto !important;
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 15px;
+    }
 
-        min-height: 0 !important;
+    .total-row span {
+        color: #555;
+    }
 
-        margin: 0 !important;
+    .total-row strong {
+        font-weight: 700;
+    }
 
-        padding: 0 !important;
-
-        background: #ffffff !important;
+    .total-row.final {
+        margin-top: 10px;
+        padding-top: 15px;
+        border-top: 2px solid #222;
+        border-bottom: none;
+        font-size: 19px;
     }
 
 
-    /* إخفاء كل شيء في الصفحة */
+    /* =========================================================
+       أزرار الفاتورة
+    ========================================================= */
 
-    body * {
+    .invoice-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
 
-        visibility: hidden !important;
+    .invoice-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 11px 22px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .invoice-btn.print {
+        background: #222;
+        color: #fff;
+    }
+
+    .invoice-btn.back {
+        background: #eee;
+        color: #222;
     }
 
 
-    /* إظهار الفاتورة فقط */
+    /* =========================================================
+       الموبايل
+    ========================================================= */
 
-    .invoice-detail-page,
-    .invoice-detail-page * {
+    @media (max-width: 700px) {
 
-        visibility: visible !important;
+        .invoice-page {
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        .invoice-card {
+            padding: 18px;
+            border-radius: 14px;
+        }
+
+        .invoice-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .invoice-title {
+            font-size: 23px;
+        }
+
+        .invoice-info {
+            grid-template-columns: 1fr;
+        }
+
+        .invoice-totals {
+            max-width: 100%;
+        }
+
     }
 
 
-    /* جعل الفاتورة هي العنصر الوحيد في الطباعة */
+    /* =========================================================
+       الطباعة
+    ========================================================= */
 
-    .invoice-detail-page {
+    @media print {
 
-        position: absolute !important;
+        body {
+            background: #fff !important;
+        }
 
-        top: 0 !important;
+        .invoice-page {
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
 
-        right: 0 !important;
+        .invoice-card {
+            box-shadow: none;
+            border-radius: 0;
+            padding: 0;
+        }
 
-        left: 0 !important;
+        .invoice-actions {
+            display: none !important;
+        }
 
-        width: 100% !important;
+        .invoice-table-wrapper {
+            overflow: visible;
+        }
 
-        min-height: 0 !important;
+        .invoice-table {
+            min-width: 0;
+        }
 
-        height: auto !important;
-
-        margin: 0 !important;
-
-        padding: 0 !important;
-
-        background: #ffffff !important;
     }
-
-
-    .invoice-container {
-
-        width: 100% !important;
-
-        max-width: none !important;
-
-        margin: 0 !important;
-
-        padding: 0 !important;
-
-        height: auto !important;
-
-        min-height: 0 !important;
-    }
-
-
-    .invoice-card {
-
-        position: static !important;
-
-        width: 100% !important;
-
-        max-width: none !important;
-
-        height: auto !important;
-
-        min-height: 0 !important;
-
-        margin: 0 !important;
-
-        padding: 0 !important;
-
-        background: #ffffff !important;
-
-        border-radius: 0 !important;
-
-        box-shadow: none !important;
-
-        overflow: visible !important;
-
-        transform: none !important;
-    }
-
-
-    /* إخفاء الأزرار */
-
-    .actions {
-
-        display: none !important;
-    }
-
-
-    /* إزالة تأثيرات الشاشة */
-
-    .invoice-header {
-
-        background: #ffffff !important;
-
-        box-shadow: none !important;
-    }
-
-
-    .invoice-info {
-
-        background: #ffffff !important;
-    }
-
-
-    .info-box {
-
-        background: #ffffff !important;
-
-        box-shadow: none !important;
-
-        transform: none !important;
-    }
-
-
-    .table-wrapper {
-
-        overflow: visible !important;
-
-        background: #ffffff !important;
-    }
-
-
-    .invoice-table {
-
-        width: 100% !important;
-
-        min-width: 0 !important;
-
-        box-shadow: none !important;
-    }
-
-
-    .invoice-table th {
-
-        background: #eeeeee !important;
-    }
-
-
-    .totals {
-
-        background: #ffffff !important;
-    }
-
-
-    .totals-box {
-
-        box-shadow: none !important;
-
-        background: #ffffff !important;
-    }
-
-
-    /* منع تقطيع الأقسام */
-
-    .invoice-header,
-    .invoice-info,
-    .table-wrapper,
-    .totals {
-
-        break-inside: avoid !important;
-
-        page-break-inside: avoid !important;
-    }
-
-
-    .invoice-table tr {
-
-        break-inside: avoid !important;
-
-        page-break-inside: avoid !important;
-    }
-
-}
 
 </style>
 
+<div class="invoice-page">
 
-<div class="invoice-detail-page">
-
-    <div class="invoice-container">
-
-        <div class="invoice-card">
+<div class="invoice-card">
 
 
-            <!-- ==================================================
-                 رأس الفاتورة
-                 ================================================== -->
+    <!-- =====================================================
+         رأس الفاتورة
+    ====================================================== -->
 
-            <div class="invoice-header">
+    <div class="invoice-header">
 
-                <div class="invoice-title">
-                    تفاصيل الفاتورة
-                </div>
+        <div>
 
-                <div class="invoice-number">
+            <h1 class="invoice-title">
+                تفاصيل الفاتورة
+            </h1>
 
-                    رقم الطلب:
+            <div class="invoice-number">
 
-                    #{{ order.order_no|default:order.id }}
-
-                </div>
+                رقم الفاتورة:
+                #{{ order.order_no }}
 
             </div>
-
-
-            <!-- ==================================================
-                 بيانات الفاتورة
-                 ================================================== -->
-
-            <div class="invoice-info">
-
-
-                <div class="info-box">
-
-                    <div class="info-label">
-                        العميل
-                    </div>
-
-                    <div class="info-value">
-
-                        {{ order.customer.get_full_name|default:order.customer.username }}
-
-                    </div>
-
-                </div>
-
-
-                <div class="info-box">
-
-                    <div class="info-label">
-                        رقم الطلب
-                    </div>
-
-                    <div class="info-value">
-
-                        #{{ order.order_no|default:order.id }}
-
-                    </div>
-
-                </div>
-
-
-                <div class="info-box">
-
-                    <div class="info-label">
-                        تاريخ الطلب
-                    </div>
-
-                    <div class="info-value">
-
-                        {% if order.created_at %}
-
-                            {{ order.created_at|date:"Y-m-d H:i" }}
-
-                        {% elif order.created %}
-
-                            {{ order.created|date:"Y-m-d H:i" }}
-
-                        {% else %}
-
-                            -
-
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-
-                <div class="info-box">
-
-                    <div class="info-label">
-                        حالة الطلب
-                    </div>
-
-                    <div class="info-value">
-
-                        <span class="status">
-
-                            {{ order.get_status_display|default:order.status }}
-
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                {% if order.payment_method %}
-
-                <div class="info-box">
-
-                    <div class="info-label">
-                        طريقة الدفع
-                    </div>
-
-                    <div class="info-value">
-
-                        {{ order.payment_method }}
-
-                    </div>
-
-                </div>
-
-                {% endif %}
-
-
-            </div>
-
-
-            <!-- ==================================================
-                 المنتجات
-                 ================================================== -->
-
-            <div class="table-wrapper">
-
-                <table class="invoice-table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                #
-                            </th>
-
-                            <th>
-                                المنتج
-                            </th>
-
-                            <th>
-                                الكمية
-                            </th>
-
-                            <th>
-                                سعر الوحدة
-                            </th>
-
-                            <th>
-                                الإجمالي
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        {% for item in order.items.all %}
-
-                        <tr>
-
-                            <td>
-
-                                {{ forloop.counter }}
-
-                            </td>
-
-
-                            <td class="product-name">
-
-                                {% if item.product %}
-
-                                    {{ item.product.name }}
-
-                                {% else %}
-
-                                    منتج
-
-                                {% endif %}
-
-
-                                {% if item.variant %}
-
-                                    <br>
-
-                                    <small>
-
-                                        {{ item.variant }}
-
-                                    </small>
-
-                                {% endif %}
-
-                            </td>
-
-
-                            <td>
-
-                                {{ item.quantity }}
-
-                            </td>
-
-
-                            <td>
-
-                                {{ item.price|default:"0" }}
-
-                            </td>
-
-
-                            <td>
-
-                                {{ item.total|default:"0" }}
-
-                            </td>
-
-                        </tr>
-
-
-                        {% empty %}
-
-                        <tr>
-
-                            <td colspan="5">
-
-                                لا توجد منتجات في هذه الفاتورة
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <!-- ==================================================
-                 الإجماليات
-                 ================================================== -->
-
-            <div class="totals">
-
-                <div class="totals-box">
-
-
-                    <div class="total-row">
-
-                        <span>
-                            الإجمالي الفرعي
-                        </span>
-
-                        <strong>
-
-                            {{ order.subtotal|default:order.total }}
-
-                        </strong>
-
-                    </div>
-
-
-                    {% if order.discount %}
-
-                    <div class="total-row">
-
-                        <span>
-                            الخصم
-                        </span>
-
-                        <strong>
-
-                            {{ order.discount }}
-
-                        </strong>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    {% if order.shipping_cost %}
-
-                    <div class="total-row">
-
-                        <span>
-                            الشحن
-                        </span>
-
-                        <strong>
-
-                            {{ order.shipping_cost }}
-
-                        </strong>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    {% if order.tax %}
-
-                    <div class="total-row">
-
-                        <span>
-                            الضريبة
-                        </span>
-
-                        <strong>
-
-                            {{ order.tax }}
-
-                        </strong>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    <div class="total-row final">
-
-                        <span>
-                            الإجمالي النهائي
-                        </span>
-
-                        <strong>
-
-                            {{ order.total }}
-
-                        </strong>
-
-                    </div>
-
-
-                </div>
-
-            </div>
-
-
-            <!-- ==================================================
-                 الأزرار
-                 ================================================== -->
-
-            <div class="actions">
-
-
-                <button
-                    type="button"
-                    class="btn btn-print"
-                    onclick="window.print()"
-                >
-
-                    طباعة الفاتورة
-
-                </button>
-
-
-                <button
-                    type="button"
-                    class="btn btn-back"
-                    onclick="history.back()"
-                >
-
-                    العودة
-
-                </button>
-
-
-            </div>
-
 
         </div>
 
     </div>
+
+
+    <!-- =====================================================
+         معلومات الفاتورة
+    ====================================================== -->
+
+    <div class="invoice-info">
+
+
+        <!-- العميل -->
+
+        <div class="info-box">
+
+            <span class="info-label">
+                العميل
+            </span>
+
+            <div class="info-value">
+
+                {{ order.customer }}
+
+            </div>
+
+        </div>
+
+
+        <!-- رقم الفاتورة -->
+
+        <div class="info-box">
+
+            <span class="info-label">
+                رقم الفاتورة
+            </span>
+
+            <div class="info-value">
+
+                #{{ order.order_no }}
+
+            </div>
+
+        </div>
+
+
+        <!-- التاريخ -->
+
+        <div class="info-box">
+
+            <span class="info-label">
+                تاريخ الطلب
+            </span>
+
+            <div class="info-value">
+
+                {{ order.created_at|date:"Y-m-d H:i" }}
+
+            </div>
+
+        </div>
+
+
+        <!-- الحالة -->
+
+        <div class="info-box">
+
+            <span class="info-label">
+                الحالة
+            </span>
+
+            <div class="info-value">
+
+                {{ order.get_status_display }}
+
+            </div>
+
+        </div>
+
+
+        <!-- طريقة الدفع -->
+
+        {% if order.payment_method %}
+
+            <div class="info-box">
+
+                <span class="info-label">
+                    طريقة الدفع
+                </span>
+
+                <div class="info-value">
+
+                    {{ order.payment_method }}
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =====================================================
+         جدول المنتجات
+    ====================================================== -->
+
+    <div class="invoice-table-wrapper">
+
+        <table class="invoice-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        المنتج
+                    </th>
+
+                    <th>
+                        الكمية
+                    </th>
+
+                    <th>
+                        سعر الوحدة
+                    </th>
+
+
+                    {% if has_tax_number %}
+
+                        <th>
+                            قبل الضريبة
+                        </th>
+
+                        <th>
+                            الضريبة
+                        </th>
+
+                        <th>
+                            بعد الضريبة
+                        </th>
+
+                    {% else %}
+
+                        <th>
+                            الإجمالي
+                        </th>
+
+                    {% endif %}
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for row in invoice_items %}
+
+                    <tr>
+
+
+                        <!-- الرقم -->
+
+                        <td>
+
+                            {{ forloop.counter }}
+
+                        </td>
+
+
+                        <!-- المنتج -->
+
+                        <td class="product-name">
+
+                            {% if row.item.product %}
+
+                                {{ row.item.product.name }}
+
+                            {% else %}
+
+                                منتج
+
+                            {% endif %}
+
+
+                            {% if row.item.variant %}
+
+                                <br>
+
+                                <small>
+                                    {{ row.item.variant }}
+                                </small>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- الكمية -->
+
+                        <td>
+
+                            {{ row.quantity }}
+
+                        </td>
+
+
+                        <!-- سعر الوحدة -->
+
+                        <td>
+
+                            {{ row.unit_price|floatformat:2 }}
+
+                        </td>
+
+
+                        {% if has_tax_number %}
+
+                            <!-- =============================================
+                                 قبل الضريبة
+                            ============================================== -->
+
+                            <td>
+
+                                {{ row.before_tax|floatformat:2 }}
+
+                            </td>
+
+
+                            <!-- =============================================
+                                 الضريبة
+                                 15%
+                            ============================================== -->
+
+                            <td class="tax-value">
+
+                                {{ row.tax|floatformat:2 }}
+
+                            </td>
+
+
+                            <!-- =============================================
+                                 بعد الضريبة
+                            ============================================== -->
+
+                            <td>
+
+                                {{ row.after_tax|floatformat:2 }}
+
+                            </td>
+
+
+                        {% else %}
+
+                            <!-- بدون ضريبة -->
+
+                            <td>
+
+                                {{ row.before_tax|floatformat:2 }}
+
+                            </td>
+
+                        {% endif %}
+
+
+                    </tr>
+
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="{% if has_tax_number %}7{% else %}5{% endif %}"
+                        >
+
+                            لا توجد منتجات في هذه الفاتورة
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =====================================================
+         الإجماليات
+    ====================================================== -->
+
+    <div class="invoice-totals">
+
+
+        <!-- =================================================
+             الإجمالي قبل الخصم
+        ================================================== -->
+
+        <div class="total-row">
+
+            <span>
+                الإجمالي قبل الخصم
+            </span>
+
+            <strong>
+
+                {{ invoice_subtotal|floatformat:2 }}
+
+            </strong>
+
+        </div>
+
+
+        <!-- =================================================
+             الخصم
+        ================================================== -->
+
+        {% if invoice_discount > 0 %}
+
+            <div class="total-row">
+
+                <span>
+                    الخصم
+                </span>
+
+                <strong>
+
+                    {{ invoice_discount|floatformat:2 }}
+
+                </strong>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             الإجمالي بعد الخصم
+        ================================================== -->
+
+        <div class="total-row">
+
+            <span>
+                الإجمالي بعد الخصم
+            </span>
+
+            <strong>
+
+                {{ invoice_subtotal_after_discount|floatformat:2 }}
+
+            </strong>
+
+        </div>
+
+
+        <!-- =================================================
+             الشحن
+        ================================================== -->
+
+        {% if invoice_shipping > 0 %}
+
+            <div class="total-row">
+
+                <span>
+                    الشحن
+                </span>
+
+                <strong>
+
+                    {{ invoice_shipping|floatformat:2 }}
+
+                </strong>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             الضريبة
+             تظهر فقط عند وجود Company.vat_no
+        ================================================== -->
+
+        {% if has_tax_number %}
+
+            <div class="total-row">
+
+                <span>
+                    قيمة الضريبة (15%)
+                </span>
+
+                <strong>
+
+                    {{ invoice_tax|floatformat:2 }}
+
+                </strong>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             الإجمالي النهائي
+        ================================================== -->
+
+        <div class="total-row final">
+
+            <span>
+
+                {% if has_tax_number %}
+
+                    الإجمالي بعد الضريبة
+
+                {% else %}
+
+                    الإجمالي النهائي
+
+                {% endif %}
+
+            </span>
+
+            <strong>
+
+                {% if has_tax_number %}
+
+                    {{ invoice_total_after_tax|floatformat:2 }}
+
+                {% else %}
+
+                    {{ invoice_total_before_tax|floatformat:2 }}
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         أزرار الفاتورة
+    ====================================================== -->
+
+    <div class="invoice-actions">
+
+
+        <button
+            type="button"
+            class="invoice-btn print"
+            onclick="window.print()"
+        >
+
+            🖨️ طباعة الفاتورة
+
+        </button>
+
+
+        <a
+            href="{% url 'ecommerce:customer_invoices' store.slug %}"
+            class="invoice-btn back"
+        >
+
+            ← العودة إلى الفواتير
+
+        </a>
+
+
+    </div>
+
+
+</div>
 
 </div>
 

@@ -1,48 +1,28 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
 }
 
-body{
-    margin:0;
-    padding:0;
-    background:#fff;
-    font-family:Arial,sans-serif;
-}
-
-@media print{
-
-    @page{
-        size:80mm auto;
-        margin:0;
-    }
-
 html,
 body{
     margin:0;
     padding:0;
+    background:#fff;
 }
 
-    body{
-        background:#fff;
-        padding:0;
-    }
-
-.receipt{
-    width:78mm;
-    max-width:78mm;
-    margin:0 !important;
-    padding:5px;
-    box-shadow:none;
-}
-
+body{
+    font-family:Arial,sans-serif;
+    color:#000;
 }
 
 .receipt{
@@ -51,7 +31,6 @@ body{
     background:#fff;
     margin:auto;
     padding:8px;
-    box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 
 .center{
@@ -67,10 +46,11 @@ body{
 .company-name{
     font-size:18px;
     font-weight:bold;
+    margin-bottom:4px;
 }
 
 .small{
-    font-size:12px;
+    font-size:11px;
 }
 
 hr{
@@ -81,7 +61,8 @@ hr{
 
 .info div{
     margin:3px 0;
-    font-size:12px;
+    font-size:11px;
+    line-height:1.4;
 }
 
 table{
@@ -93,13 +74,20 @@ table{
 th,
 td{
     border:1px solid #000;
-    padding:3px;
-    font-size:10px;
+    padding:3px 2px;
+    font-size:9px;
     text-align:center;
+    vertical-align:middle;
 }
 
 th{
     background:#eee;
+    font-weight:bold;
+}
+
+.product-name{
+    text-align:right;
+    word-break:break-word;
 }
 
 .totals{
@@ -109,25 +97,64 @@ th{
 .total-row{
     display:flex;
     justify-content:space-between;
+    align-items:center;
     margin:4px 0;
-    font-size:12px;
+    font-size:11px;
+}
+
+.total-row span:last-child{
+    font-weight:bold;
 }
 
 .final{
     border-top:2px solid #000;
     padding-top:5px;
+    margin-top:6px;
     font-weight:bold;
+    font-size:13px;
 }
 
 .qr{
     text-align:center;
-    margin-top:15px;
+    margin-top:12px;
 }
 
 .qr img{
-    width:120px;
-    height:120px;
+    width:110px;
+    height:110px;
 }
+
+.thanks{
+    text-align:center;
+    margin-top:8px;
+    font-size:11px;
+}
+
+@media print{
+
+    @page{
+        size:80mm auto;
+        margin:0;
+    }
+
+    html,
+    body{
+        width:80mm;
+        margin:0;
+        padding:0;
+        background:#fff;
+    }
+
+    .receipt{
+        width:78mm;
+        max-width:78mm;
+        margin:0 !important;
+        padding:5px;
+        box-shadow:none;
+    }
+
+}
+
 </style>
 
 </head>
@@ -136,142 +163,372 @@ th{
 
 <div class="receipt">
 
+<!-- ================================================== -->
+<!-- الشركة -->
+<!-- ================================================== -->
+
 <div class="center">
 
-{% if invoice.company.logo %}
-<img src="{{ invoice.company.logo.url }}" class="logo">
-{% endif %}
+    {% if invoice.company.logo %}
+        <img
+            src="{{ invoice.company.logo.url }}"
+            class="logo"
+        >
+    {% endif %}
 
-<div class="company-name">
-{{ invoice.company.name }}
+    <div class="company-name">
+        {{ invoice.company.name }}
+    </div>
+
+    {% if has_tax_number %}
+        <div class="small">
+            الرقم الضريبي :
+            {{ invoice.company.vat_no }}
+        </div>
+    {% endif %}
+
 </div>
 
-<div class="small">
-الرقم الضريبي : {{ invoice.company.vat_no }}
-</div>
-
-</div>
 
 <hr>
+
+
+<!-- ================================================== -->
+<!-- بيانات الفاتورة -->
+<!-- ================================================== -->
 
 <div class="info">
 
-<div>
-<strong>رقم الفاتورة :</strong>
-{{ invoice.invoice_no|default:invoice.id }}
+    <div>
+        <strong>رقم الفاتورة :</strong>
+        {{ invoice.invoice_no|default:invoice.id }}
+    </div>
+
+    <div>
+        <strong>التاريخ :</strong>
+        {{ invoice.created_at|date:"Y-m-d H:i" }}
+    </div>
+
+    <div>
+        <strong>منشئ الفاتورة :</strong>
+        {{ invoice.created_by.username|default:"-" }}
+    </div>
+
+
+    {% if invoice.customer %}
+
+        <div>
+            <strong>العميل :</strong>
+            {{ invoice.customer.name }}
+        </div>
+
+        {% if invoice.customer.vat_no %}
+            <div>
+                <strong>الرقم الضريبي للعميل :</strong>
+                {{ invoice.customer.vat_no }}
+            </div>
+        {% elif invoice.customer.tax_number %}
+            <div>
+                <strong>الرقم الضريبي للعميل :</strong>
+                {{ invoice.customer.tax_number }}
+            </div>
+        {% endif %}
+
+    {% else %}
+
+        <div>
+            <strong>العميل :</strong>
+            عميل نقدي
+        </div>
+
+    {% endif %}
+
 </div>
 
-<div>
-<strong>التاريخ :</strong>
-{{ invoice.created_at|date:"Y-m-d H:i" }}
-</div>
-
-<div>
-<strong>منشئ الفاتورة :</strong>
-{{ invoice.created_by.username }}
-</div>
-
-{% if invoice.customer %}
-
-
-<div>
-<strong>العميل :</strong>
-{{ invoice.customer.name }}
-</div>
-
-<div>
-<strong>الرقم الضريبي :</strong>
-{{ invoice.customer.vat_no|default:invoice.customer.tax_number|default:"-" }}
-</div>
-
-{% else %}
-
-<div>
-<strong>العميل :</strong>
-عميل نقدي
-</div>
-
-{% endif %}
-
-</div>
 
 <hr>
+
+
+<!-- ================================================== -->
+<!-- تفاصيل الأصناف -->
+<!-- ================================================== -->
 
 <table>
 
-<thead>
+    <thead>
 
-<tr>
-<th>الصنف</th>
-<th>ك</th>
-<th>السعر</th>
-<th>خصم</th>
-<th>ض%</th>
-<th>الإجمالي</th>
-</tr>
+        <tr>
 
-</thead>
+            <th>الصنف</th>
 
-<tbody>
+            <th>ك</th>
 
-{% for item in invoice.items.all %}
+            <th>السعر</th>
 
-<tr>
+            <th>خصم</th>
 
-<td>{{ item.product.name }}</td>
+            {% if has_tax_number %}
+                <th>ض%</th>
+                <th>الضريبة</th>
+            {% endif %}
 
-<td>{{ item.quantity }}</td>
+            <th>الإجمالي</th>
 
-<td>{{ item.price|floatformat:2 }}</td>
+        </tr>
 
-<td>{{ item.discount|floatformat:2 }}</td>
+    </thead>
 
-<td>{{ item.tax|floatformat:2 }}</td>
 
-<td>{{ item.invoice_line_total|default:item.price|floatformat:2 }}</td>
+    <tbody>
 
-</tr>
+        {% if print_items %}
 
-{% endfor %}
+            {% for item in print_items %}
 
-</tbody>
+                <tr>
+
+                    <td class="product-name">
+                        {{ item.product_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.price|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.discount|floatformat:2 }}
+                    </td>
+
+                    {% if has_tax_number %}
+
+                        <td>
+                            {{ item.tax_rate|floatformat:2 }}
+                        </td>
+
+                        <td>
+                            {{ item.tax|floatformat:2 }}
+                        </td>
+
+                    {% endif %}
+
+                    <td>
+                        {{ item.total|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            {% for item in items %}
+
+                <tr>
+
+                    <td class="product-name">
+                        {{ item.product.name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.price|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.discount|floatformat:2 }}
+                    </td>
+
+                    {% if has_tax_number %}
+
+                        <td>
+                            {{ item.tax|floatformat:2 }}
+                        </td>
+
+                        <td>
+                            -
+                        </td>
+
+                    {% endif %}
+
+                    <td>
+                        {{ item.price|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="{% if has_tax_number %}7{% else %}5{% endif %}"
+                    >
+                        لا توجد أصناف
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        {% endif %}
+
+    </tbody>
 
 </table>
 
+
+<!-- ================================================== -->
+<!-- الإجماليات -->
+<!-- ================================================== -->
+
 <div class="totals">
 
-<div class="total-row">
-<span>المجموع</span>
-<span>{{ subtotal|floatformat:2 }}</span>
+
+    {% if subtotal %}
+
+        <div class="total-row">
+
+            <span>
+                المجموع قبل الخصم
+            </span>
+
+            <span>
+                {{ subtotal|floatformat:2 }}
+            </span>
+
+        </div>
+
+    {% endif %}
+
+
+    {% if discount_total %}
+
+        <div class="total-row">
+
+            <span>
+                الخصم
+            </span>
+
+            <span>
+                {{ discount_total|floatformat:2 }}
+            </span>
+
+        </div>
+
+    {% endif %}
+
+
+    {% if has_tax_number %}
+
+        <div class="total-row">
+
+            <span>
+                قبل الضريبة
+            </span>
+
+            <span>
+                {{ subtotal_before_tax|floatformat:2 }}
+            </span>
+
+        </div>
+
+
+        <div class="total-row">
+
+            <span>
+                قيمة الضريبة
+            </span>
+
+            <span>
+                {{ tax_amount|floatformat:2 }}
+            </span>
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="total-row final">
+
+        <span>
+            الإجمالي
+        </span>
+
+        <span>
+            {{ grand_total|floatformat:2 }}
+        </span>
+
+    </div>
+
+
+    <div class="total-row">
+
+        <span>
+            المدفوع
+        </span>
+
+        <span>
+            {{ total_paid|floatformat:2 }}
+        </span>
+
+    </div>
+
+
+    <div class="total-row">
+
+        <span>
+            المتبقي
+        </span>
+
+        <span>
+            {{ remaining|floatformat:2 }}
+        </span>
+
+    </div>
+
+
 </div>
 
 
-<div class="total-row">
-<span>المدفوع</span>
-<span>{{ invoice.paid_amount|floatformat:2 }}</span>
-</div>
+<!-- ================================================== -->
+<!-- QR -->
+<!-- ================================================== -->
 
-<div class="total-row final">
-<span>المتبقي</span>
-<span>{{ invoice.remaining_amount|floatformat:2 }}</span>
-</div>
+{% if has_tax_number and qr_code %}
 
-</div>
+    <div class="qr">
+
+        <img
+            src="{{ qr_code }}"
+            alt="QR Code"
+        >
+
+    </div>
+
+{% endif %}
 
 <hr>
 
 
-<div class="small">
-شكراً لتعاملكم معنا
+<div class="thanks">
+    شكراً لتعاملكم معنا
 </div>
+
 
 </div>
 
-</div>
+{% if print_mode %}
 
 <script>
 
-window.onload=function(){
+window.onload = function(){
 
     window.print();
 
@@ -279,5 +536,8 @@ window.onload=function(){
 
 </script>
 
+{% endif %}
+
 </body>
+
 </html>

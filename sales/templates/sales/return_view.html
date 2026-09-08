@@ -35,6 +35,66 @@ body {
 
 
 /* =========================================================
+   شريط الإجراءات
+   مهم: !important لأن القالب الأب يخفيه
+========================================================= */
+
+.top-action-bar {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    margin-bottom: 15px !important;
+    box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+
+/* =========================================================
+   زر الطباعة
+========================================================= */
+
+.print-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    border: none !important;
+
+    background: #1e293b !important;
+    color: #ffffff !important;
+
+    padding: 10px 22px !important;
+
+    border-radius: 6px !important;
+
+    font-size: 14px !important;
+    font-weight: bold !important;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    transition: all 0.2s ease;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.10);
+
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.print-btn:hover {
+    background: #0f172a !important;
+    transform: translateY(-1px);
+}
+
+.print-btn:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
    ورقة إشعار الدائن
 ========================================================= */
 
@@ -132,8 +192,8 @@ body {
 }
 
 .items-table th {
-    background-color: #1e293b;
-    color: #ffffff;
+    background-color: #1e293b !important;
+    color: #ffffff !important;
     padding: 8px 6px;
     font-size: 14px;
     font-weight: bold;
@@ -242,7 +302,21 @@ body {
 
 @media print {
 
-    .top-action-bar,
+    /* -----------------------------------------
+       إخفاء زر الطباعة
+    ----------------------------------------- */
+
+    .top-action-bar {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+
+
+    /* -----------------------------------------
+       إخفاء عناصر التحكم
+    ----------------------------------------- */
+
     .payments-box,
     #paymentModal,
     .sidebar,
@@ -253,9 +327,21 @@ body {
         visibility: hidden !important;
     }
 
+
+    /* -----------------------------------------
+       خلفية بيضاء
+    ----------------------------------------- */
+
     body {
-        background: #fff !important;
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
+
+
+    /* -----------------------------------------
+       الحاوية
+    ----------------------------------------- */
 
     .page-container {
         max-width: 100% !important;
@@ -264,510 +350,718 @@ body {
         margin: 0 !important;
     }
 
+
+    /* -----------------------------------------
+       ورقة الإشعار
+    ----------------------------------------- */
+
     .invoice-paper {
         width: 100% !important;
+        max-width: 100% !important;
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
         border: none !important;
+        border-radius: 0 !important;
     }
+
+}
+
+
+/* =========================================================
+   الشاشات الصغيرة
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .page-container {
+        padding: 0 10px;
+    }
+
+    .top-action-bar {
+        justify-content: flex-start !important;
+    }
+
+    .print-btn {
+        padding: 9px 18px !important;
+        font-size: 13px !important;
+    }
+
+}
+
+
+/* =========================================================
+   زر الطباعة - ضمان الظهور على الشاشة
+========================================================= */
+
+@media screen {
+
+    .top-action-bar {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .top-action-bar .print-btn {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
 }
 
 </style>
 
-
 <div class="page-container">
 
-    <div class="invoice-paper">
+
+<!-- =========================================================
+     شريط الإجراءات
+     يظهر على الشاشة فقط
+========================================================= -->
+
+<div class="top-action-bar">
+
+    <button
+        type="button"
+        class="print-btn"
+        onclick="window.print();"
+    >
+        🖨️ طباعة
+    </button>
+
+</div>
 
 
-        <!-- =================================================
-             رأس الشركة
-        ================================================= -->
+<!-- =========================================================
+     ورقة إشعار الدائن
+========================================================= -->
 
-        <div class="header-top-row">
+<div class="invoice-paper">
 
-            <div class="company-name-ar">
-                {{ company.name|default:"" }}
-            </div>
 
-            <div class="header-logo">
+    <!-- =================================================
+         رأس الشركة
+    ================================================= -->
 
-                {% if company and company.logo %}
+    <div class="header-top-row">
 
-                    <img
-                        src="{{ company.logo.url }}"
-                        alt="Company Logo"
-                    >
+        <div class="company-name-ar">
 
-                {% else %}
-
-                    <div>
-                        {{ company.name|default:"نظام محاسبك" }}
-                    </div>
-
-                {% endif %}
-
-            </div>
-
-            <div class="company-name-en">
-
-                {% if company %}
-
-                    {{ company.name_en|default:company.name }}
-
-                {% endif %}
-
-            </div>
+            {{ company.name|default:"" }}
 
         </div>
 
 
-        <!-- =================================================
-             العنوان
-        ================================================= -->
+        <div class="header-logo">
 
-        <div class="invoice-main-title">
+            {% if company and company.logo %}
 
-            إشعار دائن - Credit Note
-
-        </div>
-
-
-        <!-- =================================================
-             بيانات إشعار الدائن
-        ================================================= -->
-
-        <table class="meta-data-table">
-
-            <tr>
-
-                <td style="text-align:right; width:50%;">
-
-                    <strong>اسم العميل:</strong>
-
-                    {{ return_invoice.customer.commercial_name|default:return_invoice.customer.name }}
-
-                </td>
-
-                <td style="text-align:left; width:50%; font-family:Arial;">
-
-                    <strong>Customer Name:</strong>
-
-                    {{ return_invoice.customer.name_en|default:"-" }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td style="text-align:right;">
-
-                    <strong>رقم المرتجع:</strong>
-
-                    {{ return_invoice.return_no }}
-
-                </td>
-
-                <td style="text-align:left; font-family:Arial;">
-
-                    <strong>Return No:</strong>
-
-                    {{ return_invoice.return_no }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td style="text-align:right;">
-
-                    <strong>تاريخ المرتجع:</strong>
-
-                    {{ return_invoice.date_return|date:"Y-m-d" }}
-
-                </td>
-
-                <td style="text-align:left; font-family:Arial;">
-
-                    <strong>Return Date:</strong>
-
-                    {{ return_invoice.date_return|date:"d/m/Y" }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td style="text-align:right;">
-
-                    <strong>الفاتورة الأصلية:</strong>
-
-                    {{ original_invoice.invoice_no|default:"-" }}
-
-                </td>
-
-                <td style="text-align:left; font-family:Arial;">
-
-                    <strong>Original Invoice:</strong>
-
-                    {{ original_invoice.invoice_no|default:"-" }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td style="text-align:right;">
-
-                    <strong>الرقم الضريبي للعميل:</strong>
-
-                    {{ return_invoice.customer.tax_number|default:"-" }}
-
-                </td>
-
-                <td style="text-align:left; font-family:Arial;">
-
-                    <strong>Customer VAT No.:</strong>
-
-                    {{ return_invoice.customer.tax_number|default:"-" }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td style="text-align:right;">
-
-                    <strong>الرقم الضريبي:</strong>
-
-                    {{ company.vat_no|default:"-" }}
-
-                </td>
-
-                <td style="text-align:left; font-family:Arial;">
-
-                    <strong>VAT No:</strong>
-
-                    {{ company.vat_no|default:"-" }}
-
-                </td>
-
-            </tr>
-
-        </table>
-
-
-        <!-- =================================================
-             جدول الأصناف
-        ================================================= -->
-
-        <table class="items-table">
-
-            <thead>
-
-                <tr>
-
-                    <th style="width:5%;">
-                        #
-                    </th>
-
-                    <th style="width:12%;">
-                        الرمز
-                        <br>
-                        Code
-                    </th>
-
-                    <th style="width:28%;">
-                        اسم الصنف
-                        <br>
-                        Item Name
-                    </th>
-
-                    <th style="width:10%;">
-                        الكمية
-                        <br>
-                        Quantity
-                    </th>
-
-                    <th style="width:11%;">
-                        السعر
-                        <br>
-                        Price
-                    </th>
-
-                    <th style="width:10%;">
-                        الإجمالي
-                        <br>
-                        Subtotal
-                    </th>
-
-                    <th style="width:10%;">
-                        الخصم
-                        <br>
-                        Discount
-                    </th>
-
-                    <th style="width:9%;">
-                        الضريبة
-                        <br>
-                        VAT
-                    </th>
-
-                    <th style="width:12%;">
-                        الإجمالي
-                        <br>
-                        Total
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                {% for item in items %}
-
-                <tr>
-
-                    <td>
-                        {{ forloop.counter }}
-                    </td>
-
-                    <td>
-                        {{ item.product.sku|default:"-" }}
-                    </td>
-
-                    <td style="text-align:right; font-weight:bold;">
-
-                        {{ item.product.name }}
-
-                    </td>
-
-                    <td>
-                        {{ item.qty_return|default:"0" }}
-                    </td>
-
-                    <td>
-                        {{ item.price|floatformat:2 }}
-                    </td>
-
-                    <td>
-
-                        {% if item.subtotal %}
-                            {{ item.subtotal|floatformat:2 }}
-                        {% else %}
-                            {{ item.qty_return|default:"0"|floatformat:2 }}
-                        {% endif %}
-
-                    </td>
-
-                    <td>
-                        {{ item.discount|default:"0.00"|floatformat:2 }}
-                    </td>
-
-                    <td>
-                        {{ item.tax_value|default:"0.00"|floatformat:2 }}
-                    </td>
-
-                    <td style="font-weight:bold;">
-
-                        {{ item.total|default:"0.00"|floatformat:2 }}
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-
-        <!-- =================================================
-             الإجماليات
-        ================================================= -->
-
-        <table class="totals-table">
-
-            <tr>
-
-                <td class="totals-text-ar">
-                    إجمالي الاصناف
-                </td>
-
-                <td class="totals-text-en">
-                    Total Quantity
-                </td>
-
-                <td class="totals-value">
-
-                    {{ total_qty|default:items.count }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td class="totals-text-ar">
-                    المبلغ الإجمالي (غير شامل الضريبة)
-                </td>
-
-                <td class="totals-text-en">
-                    Total Excluding VAT
-                </td>
-
-                <td class="totals-value">
-
-                    {{ return_invoice.total_before_tax|default:"0.00" }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td class="totals-text-ar">
-                    الخصم
-                </td>
-
-                <td class="totals-text-en">
-                    Discount
-                </td>
-
-                <td class="totals-value">
-
-                    {{ return_invoice.total_discount|default:"0.00"|floatformat:2 }}
-
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td class="totals-text-ar">
-                    ضريبة القيمة المضافة
-                </td>
-
-                <td class="totals-text-en">
-                    Total VAT
-                </td>
-
-                <td class="totals-value">
-
-                    {{ return_invoice.tax_value|default:"0.00" }}
-
-                </td>
-
-            </tr>
-
-
-            <tr style="font-weight:bold; background-color:#f8fafc;">
-
-                <td
-                    class="totals-text-ar"
-                    style="font-size:16px;"
-                >
-                    الصافي
-                </td>
-
-                <td
-                    class="totals-text-en"
-                    style="font-size:16px;"
-                >
-                    Total Including VAT
-                </td>
-
-                <td
-                    class="totals-value"
-                    style="font-size:16px;"
+                <img
+                    src="{{ company.logo.url }}"
+                    alt="Company Logo"
                 >
 
-                    {{ return_invoice.total_after_tax|default:"0.00" }}
+            {% else %}
 
-                </td>
+                <div>
 
-            </tr>
+                    {{ company.name|default:"نظام محاسبك" }}
 
-        </table>
+                </div>
 
-
-        <!-- =================================================
-             المبلغ المستحق للعميل
-        ================================================= -->
-
-        <div class="amount-text-box">
-
-            <strong>
-                المبلغ المستحق للعميل:
-            </strong>
-
-            {{ return_invoice.total_after_tax|default:"0.00" }}
-
-            ريال
+            {% endif %}
 
         </div>
 
 
-        <!-- =================================================
-             QR + رسالة الشكر
-        ================================================= -->
+        <div class="company-name-en">
 
-        <div class="invoice-footer">
+            {% if company %}
 
-            <div class="invoice-qr">
+                {{ company.name_en|default:company.name }}
 
-                {% if qr_code %}
-
-                    <img
-                        src="{{ qr_code }}"
-                        alt="ZATCA QR"
-                    >
-
-                {% else %}
-
-                    <span style="font-size:10px;">
-                        لا يوجد QR
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-
-            <div class="invoice-note">
-
-                <strong>
-                    شكراً لتعاملكم معنا
-                </strong>
-
-                <br>
-
-                Thank you for your business
-
-            </div>
+            {% endif %}
 
         </div>
-
 
     </div>
+
+
+    <!-- =================================================
+         العنوان
+    ================================================= -->
+
+    <div class="invoice-main-title">
+
+        إشعار دائن - Credit Note
+
+    </div>
+
+
+    <!-- =================================================
+         بيانات إشعار الدائن
+    ================================================= -->
+
+    <table class="meta-data-table">
+
+        <tr>
+
+            <td style="text-align:right; width:50%;">
+
+                <strong>اسم العميل:</strong>
+
+                {{ return_invoice.customer.commercial_name|default:return_invoice.customer.name }}
+
+            </td>
+
+
+            <td style="text-align:left; width:50%; font-family:Arial;">
+
+                <strong>Customer Name:</strong>
+
+                {{ return_invoice.customer.name_en|default:"-" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td style="text-align:right;">
+
+                <strong>رقم المرتجع:</strong>
+
+                {{ return_invoice.return_no }}
+
+            </td>
+
+
+            <td style="text-align:left; font-family:Arial;">
+
+                <strong>Return No:</strong>
+
+                {{ return_invoice.return_no }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td style="text-align:right;">
+
+                <strong>تاريخ المرتجع:</strong>
+
+                {{ return_invoice.date_return|date:"Y-m-d" }}
+
+            </td>
+
+
+            <td style="text-align:left; font-family:Arial;">
+
+                <strong>Return Date:</strong>
+
+                {{ return_invoice.date_return|date:"d/m/Y" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td style="text-align:right;">
+
+                <strong>الفاتورة الأصلية:</strong>
+
+                {{ original_invoice_number|default:"-" }}
+
+            </td>
+
+
+            <td style="text-align:left; font-family:Arial;">
+
+                <strong>Original Invoice:</strong>
+
+                {{ original_invoice_number|default:"-" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td style="text-align:right;">
+
+                <strong>الرقم الضريبي للعميل:</strong>
+
+                {{ return_invoice.customer.tax_number|default:"-" }}
+
+            </td>
+
+
+            <td style="text-align:left; font-family:Arial;">
+
+                <strong>Customer VAT No.:</strong>
+
+                {{ return_invoice.customer.tax_number|default:"-" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td style="text-align:right;">
+
+                <strong>الرقم الضريبي:</strong>
+
+                {{ company.vat_no|default:"-" }}
+
+            </td>
+
+
+            <td style="text-align:left; font-family:Arial;">
+
+                <strong>VAT No:</strong>
+
+                {{ company.vat_no|default:"-" }}
+
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <!-- =================================================
+         جدول الأصناف
+    ================================================= -->
+
+    <table class="items-table">
+
+        <thead>
+
+            <tr>
+
+                <th style="width:5%;">
+
+                    #
+
+                </th>
+
+
+                <th style="width:12%;">
+
+                    الرمز
+
+                    <br>
+
+                    Code
+
+                </th>
+
+
+                <th style="width:28%;">
+
+                    اسم الصنف
+
+                    <br>
+
+                    Item Name
+
+                </th>
+
+
+                <th style="width:10%;">
+
+                    الكمية
+
+                    <br>
+
+                    Quantity
+
+                </th>
+
+
+                <th style="width:11%;">
+
+                    السعر
+
+                    <br>
+
+                    Price
+
+                </th>
+
+
+                <th style="width:10%;">
+
+                    الإجمالي
+
+                    <br>
+
+                    Subtotal
+
+                </th>
+
+
+                <th style="width:10%;">
+
+                    الخصم
+
+                    <br>
+
+                    Discount
+
+                </th>
+
+
+                <th style="width:9%;">
+
+                    الضريبة
+
+                    <br>
+
+                    VAT
+
+                </th>
+
+
+                <th style="width:12%;">
+
+                    الإجمالي
+
+                    <br>
+
+                    Total
+
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for item in items %}
+
+            <tr>
+
+                <td>
+
+                    {{ forloop.counter }}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.product.sku|default:"-" }}
+
+                </td>
+
+
+                <td style="text-align:right; font-weight:bold;">
+
+                    {{ item.product.name }}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.qty_return|default:"0" }}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.price|floatformat:2 }}
+
+                </td>
+
+
+                <td>
+
+                    {% if item.subtotal %}
+
+                        {{ item.subtotal|floatformat:2 }}
+
+                    {% else %}
+
+                        {{ item.qty_return|default:"0"|floatformat:2 }}
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.discount|default:"0.00"|floatformat:2 }}
+
+                </td>
+
+
+                <td>
+
+                    {{ item.tax_value|default:"0.00"|floatformat:2 }}
+
+                </td>
+
+
+                <td style="font-weight:bold;">
+
+                    {{ item.total|default:"0.00"|floatformat:2 }}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- =================================================
+         الإجماليات
+    ================================================= -->
+
+    <table class="totals-table">
+
+        <tr>
+
+            <td class="totals-text-ar">
+
+                إجمالي الاصناف
+
+            </td>
+
+
+            <td class="totals-text-en">
+
+                Total Quantity
+
+            </td>
+
+
+            <td class="totals-value">
+
+                {{ total_qty|default:items.count }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="totals-text-ar">
+
+                المبلغ الإجمالي (غير شامل الضريبة)
+
+            </td>
+
+
+            <td class="totals-text-en">
+
+                Total Excluding VAT
+
+            </td>
+
+
+            <td class="totals-value">
+
+                {{ return_invoice.total_before_tax|default:"0.00"|floatformat:2 }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="totals-text-ar">
+
+                الخصم
+
+            </td>
+
+
+            <td class="totals-text-en">
+
+                Discount
+
+            </td>
+
+
+            <td class="totals-value">
+
+                {{ return_invoice.total_discount|default:"0.00"|floatformat:2 }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="totals-text-ar">
+
+                ضريبة القيمة المضافة
+
+            </td>
+
+
+            <td class="totals-text-en">
+
+                Total VAT
+
+            </td>
+
+
+            <td class="totals-value">
+
+                {{ return_invoice.tax_value|default:"0.00"|floatformat:2 }}
+
+            </td>
+
+        </tr>
+
+
+        <tr style="font-weight:bold; background-color:#f8fafc;">
+
+            <td
+                class="totals-text-ar"
+                style="font-size:16px;"
+            >
+
+                الصافي
+
+            </td>
+
+
+            <td
+                class="totals-text-en"
+                style="font-size:16px;"
+            >
+
+                Total Including VAT
+
+            </td>
+
+
+            <td
+                class="totals-value"
+                style="font-size:16px;"
+            >
+
+                {{ return_invoice.total_after_tax|default:"0.00"|floatformat:2 }}
+
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <!-- =================================================
+         المبلغ المستحق للعميل
+    ================================================= -->
+
+    <div class="amount-text-box">
+
+        <strong>
+
+            المبلغ المستحق للعميل:
+
+        </strong>
+
+        {{ return_invoice.total_after_tax|default:"0.00"|floatformat:2 }}
+
+        ريال
+
+    </div>
+
+
+    <!-- =================================================
+         QR + رسالة الشكر
+    ================================================= -->
+
+    <div class="invoice-footer">
+
+
+        <div class="invoice-qr">
+
+            {% if qr_code %}
+
+                <img
+                    src="{{ qr_code }}"
+                    alt="ZATCA QR"
+                >
+
+            {% else %}
+
+                <span style="font-size:10px;">
+
+                    لا يوجد QR
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="invoice-note">
+
+            <strong>
+
+                شكراً لتعاملكم معنا
+
+            </strong>
+
+            <br>
+
+            Thank you for your business
+
+        </div>
+
+    </div>
+
+
+</div>
+
 
 </div>
 
 {% endblock %}
+
+
+**الآن المهم:** لا تحتاج تعدّل `invoice_base_a4.html` لكي يظهر الزر؛ استخدمت في القالب الحالي:
+
+.top-action-bar {
+    display: flex !important;
+}
+
+للتغلب على `display:none !important` الموجود في القالب الأب.
+
+وعند الطباعة يتم عكسه:
+
+@media print {
+    .top-action-bar {
+        display: none !important;
+    }
+}
+
+إذا بعد وضع هذا القالب **ما زال الزر لا يظهر**، فهنا أحتاج صورة للصفحة الحالية لأن المشكلة ستكون من عنصر آخر في القالب الأب أو من CSS خارجي.

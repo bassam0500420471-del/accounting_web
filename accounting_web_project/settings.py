@@ -16,6 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(BASE_DIR / '.env')
 
+OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 # ============================================================
 # ============================================================
 # SECURITY
@@ -116,7 +117,7 @@ INSTALLED_APPS = [
 
     # HR
     'hr',
-
+   'ai',
     'django_extensions',
     "ecommerce",
 'notifications',
@@ -262,6 +263,10 @@ FORMS_URLFIELD_ASSUME_HTTPS = True
 # DJANGO CHANNELS
 # ============================================================
 
+# ============================================================
+# DJANGO CHANNELS / REDIS
+# ============================================================
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -269,9 +274,14 @@ CHANNEL_LAYERS = {
             "hosts": [
                 os.environ.get(
                     "REDIS_URL",
-                    "redis://127.0.0.1:6379/0"
+                    "redis://127.0.0.1:6379/0",
                 )
             ],
         },
     },
 }
+
+PUSHER_APP_ID = "2192026"
+PUSHER_KEY = "cf410a9104b6fc303505"
+PUSHER_SECRET = "390c661a52222791afe9"
+PUSHER_CLUSTER = "eu"

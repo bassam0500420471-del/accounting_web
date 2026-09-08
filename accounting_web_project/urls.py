@@ -187,8 +187,13 @@ path(
         include("hr.urls", namespace="hr")
     ),
 
-]
+    # AI Assistant
+    path(
+        "ai/",
+        include("ai.urls")
+    ),
 
+]
 
 if settings.DEBUG:
 

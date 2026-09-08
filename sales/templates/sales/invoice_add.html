@@ -2,8 +2,10 @@
 {% load static %}
 {% load i18n %}
 
-{% block content %}
+{% block sidebar %}
+{% endblock sidebar %}
 
+{% block content %}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -298,6 +300,7 @@ body{
 
 }
 
+
 /* =========================================================
    الجدول
 ========================================================= */
@@ -480,11 +483,13 @@ body{
 
 }
 
+
 /* =========================================================
    قائمة المنتجات - فتح لأعلى
 ========================================================= */
 
 .item-row .dropdown-box .dropdown-list{
+
     position:absolute !important;
 
     top:auto !important;
@@ -498,7 +503,10 @@ body{
     overflow-y:auto !important;
 
     z-index:9999999 !important;
+
 }
+
+
 /* =========================================================
    عناصر قائمة البحث
 ========================================================= */
@@ -1028,9 +1036,15 @@ body{
                                 {% trans "Discount" %}
                             </th>
 
-                            <th>
-                                {% trans "Tax %" %}
-                            </th>
+
+                            {% if has_tax_number %}
+
+                                <th>
+                                    {% trans "Tax %" %}
+                                </th>
+
+                            {% endif %}
+
 
                             <th>
                                 {% trans "Total" %}
@@ -1171,17 +1185,30 @@ body{
                             </td>
 
 
-                            <td>
+                            {% if has_tax_number %}
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        name="row_1_tax"
+                                        value="15"
+                                        step="any"
+                                        class="form-control tax-input"
+                                    >
+
+                                </td>
+
+                            {% else %}
 
                                 <input
-                                    type="number"
+                                    type="hidden"
                                     name="row_1_tax"
-                                    value="15"
-                                    step="any"
-                                    class="form-control tax-input"
+                                    value="0"
+                                    class="tax-input"
                                 >
 
-                            </td>
+                            {% endif %}
 
 
                             <td>
@@ -1276,92 +1303,137 @@ body{
         <div class="totals-box mt-4">
 
 
-            <div class="row mb-3 align-items-center">
+            {% if has_tax_number %}
 
-                <label class="col-md-3 total-label">
+                <div class="row mb-3 align-items-center">
 
-                    {% trans "Total Before Tax:" %}
+                    <label class="col-md-3 total-label">
 
-                </label>
+                        {% trans "Total Before Tax:" %}
 
-                <div class="col-md-4">
+                    </label>
 
-                    <input
-                        type="number"
-                        id="total_before"
-                        class="form-control total-input"
-                        readonly
-                    >
+                    <div class="col-md-4">
 
-                </div>
+                        <input
+                            type="number"
+                            id="total_before"
+                            class="form-control total-input"
+                            readonly
+                        >
 
-            </div>
-
-
-            <div class="row mb-3 align-items-center">
-
-                <label class="col-md-3 total-label">
-
-                    {% trans "Total After Discount:" %}
-
-                </label>
-
-                <div class="col-md-4">
-
-                    <input
-                        type="number"
-                        id="total_after_discount"
-                        class="form-control total-input"
-                        readonly
-                    >
+                    </div>
 
                 </div>
 
-            </div>
 
+                <div class="row mb-3 align-items-center">
 
-            <div class="row mb-3 align-items-center">
+                    <label class="col-md-3 total-label">
 
-                <label class="col-md-3 total-label">
+                        {% trans "Total After Discount:" %}
 
-                    {% trans "Total Tax:" %}
+                    </label>
 
-                </label>
+                    <div class="col-md-4">
 
-                <div class="col-md-4">
+                        <input
+                            type="number"
+                            id="total_after_discount"
+                            class="form-control total-input"
+                            readonly
+                        >
 
-                    <input
-                        type="number"
-                        id="total_tax"
-                        class="form-control total-input"
-                        readonly
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div class="row mb-0 align-items-center">
-
-                <label class="col-md-3 total-label">
-
-                    {% trans "Total After Tax:" %}
-
-                </label>
-
-                <div class="col-md-4">
-
-                    <input
-                        type="number"
-                        id="final_total"
-                        class="form-control total-input"
-                        readonly
-                    >
+                    </div>
 
                 </div>
 
-            </div>
+
+                <div class="row mb-3 align-items-center">
+
+                    <label class="col-md-3 total-label">
+
+                        {% trans "Total Tax:" %}
+
+                    </label>
+
+                    <div class="col-md-4">
+
+                        <input
+                            type="number"
+                            id="total_tax"
+                            class="form-control total-input"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mb-0 align-items-center">
+
+                    <label class="col-md-3 total-label">
+
+                        {% trans "Total After Tax:" %}
+
+                    </label>
+
+                    <div class="col-md-4">
+
+                        <input
+                            type="number"
+                            id="final_total"
+                            class="form-control total-input"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <div class="row mb-0 align-items-center">
+
+                    <label class="col-md-3 total-label">
+
+                        {% trans "الاجمالى:" %}
+
+                    </label>
+
+                    <div class="col-md-4">
+
+                        <input
+                            type="number"
+                            id="final_total"
+                            class="form-control total-input"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+                <input
+                    type="hidden"
+                    id="total_before"
+                    value="0"
+                >
+
+                <input
+                    type="hidden"
+                    id="total_after_discount"
+                    value="0"
+                >
+
+                <input
+                    type="hidden"
+                    id="total_tax"
+                    value="0"
+                >
+
+            {% endif %}
 
 
         </div>
@@ -1394,6 +1466,14 @@ body{
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
+
+
+    // =========================================================
+    // حالة التسجيل الضريبي
+    // =========================================================
+
+    const HAS_TAX_NUMBER =
+        {% if has_tax_number %}true{% else %}false{% endif %};
 
 
     // =========================================================
@@ -1589,10 +1669,18 @@ document.addEventListener("DOMContentLoaded", function () {
             qty * price;
 
 
-        row.querySelector(
-            ".subtotal-input"
-        ).value =
-            subtotal.toFixed(2);
+        const subtotalInput =
+            row.querySelector(
+                ".subtotal-input"
+            );
+
+
+        if (subtotalInput) {
+
+            subtotalInput.value =
+                subtotal.toFixed(2);
+
+        }
 
 
         const discountVal =
@@ -1629,32 +1717,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         const beforeTax =
-            subtotal - discount;
-
-
-        const taxRate =
-            toNum(
-                row.querySelector(
-                    ".tax-input"
-                )?.value
+            Math.max(
+                0,
+                subtotal - discount
             );
 
 
-        const tax =
-            (
-                beforeTax *
-                taxRate
-            ) / 100.0;
+        // =====================================================
+        // الضريبة
+        // =====================================================
+
+        let taxRate = 0;
+
+        let tax = 0;
+
+
+        if (HAS_TAX_NUMBER) {
+
+            taxRate =
+                toNum(
+                    row.querySelector(
+                        ".tax-input"
+                    )?.value
+                );
+
+
+            tax =
+                (
+                    beforeTax *
+                    taxRate
+                ) / 100.0;
+
+        }
 
 
         const afterTax =
             beforeTax + tax;
 
 
-        row.querySelector(
-            ".row-total"
-        ).value =
-            afterTax.toFixed(2);
+        const rowTotal =
+            row.querySelector(
+                ".row-total"
+            );
+
+
+        if (rowTotal) {
+
+            rowTotal.value =
+                afterTax.toFixed(2);
+
+        }
 
 
         return {
@@ -1725,31 +1837,65 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        document.getElementById(
-            "total_before"
-        ).value =
-            sumBefore.toFixed(2);
+        const totalBefore =
+            document.getElementById(
+                "total_before"
+            );
 
 
-        document.getElementById(
-            "total_tax"
-        ).value =
-            sumTax.toFixed(2);
+        const totalAfterDiscount =
+            document.getElementById(
+                "total_after_discount"
+            );
 
 
-        document.getElementById(
-            "final_total"
-        ).value =
-            sumAfter.toFixed(2);
+        const totalTax =
+            document.getElementById(
+                "total_tax"
+            );
 
 
-        document.getElementById(
-            "total_after_discount"
-        ).value =
-            (
-                sumBefore -
-                sumDisc
-            ).toFixed(2);
+        const finalTotal =
+            document.getElementById(
+                "final_total"
+            );
+
+
+        if (totalBefore) {
+
+            totalBefore.value =
+                sumBefore.toFixed(2);
+
+        }
+
+
+        if (totalAfterDiscount) {
+
+            totalAfterDiscount.value =
+                (
+                    sumBefore -
+                    sumDisc
+                ).toFixed(2);
+
+        }
+
+
+        if (totalTax) {
+
+            totalTax.value =
+                HAS_TAX_NUMBER
+                    ? sumTax.toFixed(2)
+                    : "0.00";
+
+        }
+
+
+        if (finalTotal) {
+
+            finalTotal.value =
+                sumAfter.toFixed(2);
+
+        }
 
     }
 
@@ -1761,17 +1907,28 @@ document.addEventListener("DOMContentLoaded", function () {
     function bindCalcListeners(row) {
 
 
+        let selectors =
+            ".qty-input, " +
+            ".price-input, " +
+            ".discount-input, " +
+            ".discount-type-select";
+
+
+        if (HAS_TAX_NUMBER) {
+
+            selectors +=
+                ", .tax-input";
+
+        }
+
+
         ["input", "change"]
             .forEach(evt => {
 
 
                 row
                     .querySelectorAll(
-                        ".qty-input, " +
-                        ".price-input, " +
-                        ".discount-input, " +
-                        ".tax-input, " +
-                        ".discount-type-select"
+                        selectors
                     )
                     .forEach(el => {
 
@@ -1791,529 +1948,496 @@ document.addEventListener("DOMContentLoaded", function () {
     // الإكمال التلقائي
     // =========================================================
 
-// =========================================================
-// الإكمال التلقائي
-// =========================================================
-
-function bindAutocomplete(
-    input,
-    list,
-    hidden,
-    url,
-    onPicked
-) {
-
-    const isProduct =
-        input.classList.contains("product-input");
+    function bindAutocomplete(
+        input,
+        list,
+        hidden,
+        url,
+        onPicked
+    ) {
 
 
-    function getLabel(obj) {
-
-        return (
-            obj.name ||
-            obj.commercial_name ||
-            obj.text ||
-            obj.title ||
-            ""
-        ).toString();
-
-    }
+        const isProduct =
+            input.classList.contains(
+                "product-input"
+            );
 
 
-    // =====================================================
-    // إرجاع القائمة إلى مكانها الأصلي
-    // =====================================================
+        function getLabel(obj) {
 
-    function restoreList() {
+            return (
+                obj.name ||
+                obj.commercial_name ||
+                obj.text ||
+                obj.title ||
+                ""
+            ).toString();
 
-        if (
-            list.dataset.portal === "1"
-        ) {
-
-            const parent =
-                list._originalParent;
-
-            const nextSibling =
-                list._originalNextSibling;
+        }
 
 
-            if (parent) {
+        // =====================================================
+        // إرجاع القائمة إلى مكانها الأصلي
+        // =====================================================
 
-                if (
-                    nextSibling &&
-                    nextSibling.parentNode === parent
-                ) {
+        function restoreList() {
 
-                    parent.insertBefore(
-                        list,
-                        nextSibling
-                    );
+            if (
+                list.dataset.portal === "1"
+            ) {
 
-                } else {
+                const parent =
+                    list._originalParent;
 
-                    parent.appendChild(
-                        list
-                    );
+                const nextSibling =
+                    list._originalNextSibling;
+
+
+                if (parent) {
+
+                    if (
+                        nextSibling &&
+                        nextSibling.parentNode === parent
+                    ) {
+
+                        parent.insertBefore(
+                            list,
+                            nextSibling
+                        );
+
+                    } else {
+
+                        parent.appendChild(
+                            list
+                        );
+
+                    }
 
                 }
+
+
+                list.style.position = "";
+                list.style.top = "";
+                list.style.left = "";
+                list.style.right = "";
+                list.style.bottom = "";
+                list.style.width = "";
+                list.style.zIndex = "";
+
+                list.dataset.portal = "0";
+
+            }
+
+        }
+
+
+        // =====================================================
+        // وضع قائمة المنتج فوق الحقل بشكل ثابت
+        // =====================================================
+
+        function positionProductList() {
+
+            if (!isProduct)
+                return;
+
+
+            const rect =
+                input.getBoundingClientRect();
+
+
+            const gap = 5;
+
+
+            const listHeight =
+                Math.min(
+                    220,
+                    Math.max(
+                        80,
+                        list.scrollHeight
+                    )
+                );
+
+
+            if (
+                list.dataset.portal !== "1"
+            ) {
+
+                list._originalParent =
+                    list.parentNode;
+
+                list._originalNextSibling =
+                    list.nextSibling;
+
+
+                document.body.appendChild(
+                    list
+                );
+
+                list.dataset.portal = "1";
 
             }
 
 
-            list.style.position = "";
-            list.style.top = "";
-            list.style.left = "";
-            list.style.right = "";
-            list.style.bottom = "";
-            list.style.width = "";
-            list.style.zIndex = "";
-
-            list.dataset.portal = "0";
-
-        }
-
-    }
+            const width =
+                rect.width;
 
 
-    // =====================================================
-    // وضع قائمة المنتج فوق الحقل بشكل ثابت
-    // =====================================================
-
-    function positionProductList() {
-
-        if (!isProduct)
-            return;
+            let top =
+                rect.top -
+                listHeight -
+                gap;
 
 
-        const rect =
-            input.getBoundingClientRect();
+            if (top < 5) {
+
+                top = 5;
+
+            }
 
 
-        const gap = 5;
+            const maxTop =
+                window.innerHeight -
+                listHeight -
+                5;
 
 
-        const listHeight =
-            Math.min(
-                220,
-                Math.max(
-                    80,
-                    list.scrollHeight
-                )
-            );
+            if (
+                top > maxTop
+            ) {
+
+                top =
+                    Math.max(
+                        5,
+                        maxTop
+                    );
+
+            }
 
 
-        /*
-         * ننقل القائمة إلى body
-         * حتى لا يتم قصها بواسطة الجدول
-         */
+            list.style.position =
+                "fixed";
 
-        if (
-            list.dataset.portal !== "1"
-        ) {
+            list.style.top =
+                top + "px";
 
-            list._originalParent =
-                list.parentNode;
+            list.style.left =
+                rect.left + "px";
 
-            list._originalNextSibling =
-                list.nextSibling;
+            list.style.right =
+                "auto";
 
+            list.style.bottom =
+                "auto";
 
-            document.body.appendChild(
-                list
-            );
+            list.style.width =
+                width + "px";
 
-            list.dataset.portal = "1";
+            list.style.maxHeight =
+                "220px";
 
-        }
+            list.style.overflowY =
+                "auto";
 
-
-        /*
-         * عرض القائمة نفس عرض حقل المنتج
-         */
-
-        const width =
-            rect.width;
-
-
-        /*
-         * نضعها فوق الحقل
-         */
-
-        let top =
-            rect.top -
-            listHeight -
-            gap;
-
-
-        /*
-         * إذا كانت أعلى الصفحة
-         * نجعلها تبدأ من أعلى الشاشة
-         * بدلاً من قصها
-         */
-
-        if (top < 5) {
-
-            top = 5;
+            list.style.zIndex =
+                "2147483647";
 
         }
 
 
-        /*
-         * التأكد أنها لا تتجاوز أسفل الشاشة
-         */
+        // =====================================================
+        // عرض النتائج
+        // =====================================================
 
-        const maxTop =
-            window.innerHeight -
-            listHeight -
-            5;
+        function render(data) {
 
+            list.innerHTML = "";
 
-        if (
-            top > maxTop
-        ) {
+            list.style.display =
+                "block";
 
-            top =
-                Math.max(
-                    5,
-                    maxTop
-                );
 
-        }
-
-
-        list.style.position =
-            "fixed";
-
-        list.style.top =
-            top + "px";
-
-        list.style.left =
-            rect.left + "px";
-
-        list.style.right =
-            "auto";
-
-        list.style.bottom =
-            "auto";
-
-        list.style.width =
-            width + "px";
-
-        list.style.maxHeight =
-            "220px";
-
-        list.style.overflowY =
-            "auto";
-
-        list.style.zIndex =
-            "2147483647";
-
-    }
-
-
-    // =====================================================
-    // عرض النتائج
-    // =====================================================
-
-    function render(data) {
-
-        list.innerHTML = "";
-
-        list.style.display =
-            "block";
-
-
-        if (
-            !data ||
-            !data.length
-        ) {
-
-            list.innerHTML =
-
-                `<div class="dropdown-item text-muted">
-                    ${NO_RESULTS_FOUND_TEXT}
-                </div>`;
-
-        } else {
-
-            data.forEach(
-                obj => {
-
-                    const label =
-                        getLabel(obj);
-
-
-                    const d =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    d.className =
-                        "dropdown-item";
-
-
-                    d.textContent =
-                        label || "—";
-
-
-                    d.onclick =
-                        () => {
-
-                            input.value =
-                                label;
-
-                            hidden.value =
-                                obj.id;
-
-
-                            list.style.display =
-                                "none";
-
-
-                            if (
-                                typeof onPicked ===
-                                "function"
-                            ) {
-
-                                onPicked(obj);
-
-                            }
-
-
-                            /*
-                             * إعادة القائمة
-                             * إلى مكانها الأصلي
-                             */
-
-                            if (isProduct) {
-
-                                restoreList();
-
-                            }
-
-                        };
-
-
-                    list.appendChild(d);
-
-                }
-            );
-
-        }
-
-
-        /*
-         * القائمة يجب أن تظهر كاملة
-         * للمنتجات
-         */
-
-        if (isProduct) {
-
-            positionProductList();
-
-        }
-
-    }
-
-
-    // =====================================================
-    // تحميل البيانات
-    // =====================================================
-
-    function load(q) {
-
-        fetch(
-            url +
-            "?q=" +
-            encodeURIComponent(
-                q || ""
-            )
-        )
-
-        .then(
-            r => r.json()
-        )
-
-        .then(
-            render
-        )
-
-        .catch(
-            () => {
+            if (
+                !data ||
+                !data.length
+            ) {
 
                 list.innerHTML =
 
-                    `<div class="dropdown-item text-danger">
-                        ${FAILED_TO_LOAD_DATA_TEXT}
+                    `<div class="dropdown-item text-muted">
+                        ${NO_RESULTS_FOUND_TEXT}
                     </div>`;
 
+            } else {
 
-                list.style.display =
-                    "block";
+                data.forEach(
+                    obj => {
 
-
-                if (isProduct) {
-
-                    positionProductList();
-
-                }
-
-            }
-        );
-
-    }
+                        const label =
+                            getLabel(obj);
 
 
-    let timer = null;
+                        const d =
+                            document.createElement(
+                                "div"
+                            );
 
 
-    // =====================================================
-    // فتح القائمة
-    // =====================================================
-
-    input.addEventListener(
-        "focus",
-        () => {
-
-            load("");
-
-        }
-    );
+                        d.className =
+                            "dropdown-item";
 
 
-    input.addEventListener(
-        "click",
-        () => {
-
-            load(
-                input.value
-            );
-
-        }
-    );
+                        d.textContent =
+                            label || "—";
 
 
-    // =====================================================
-    // البحث أثناء الكتابة
-    // =====================================================
+                        d.onclick =
+                            () => {
 
-    input.addEventListener(
-        "keyup",
-        () => {
+                                input.value =
+                                    label;
 
-            clearTimeout(
-                timer
-            );
+                                hidden.value =
+                                    obj.id;
 
 
-            timer =
-                setTimeout(
-                    () => {
+                                list.style.display =
+                                    "none";
 
-                        load(
-                            input.value
-                        );
 
-                    },
-                    200
+                                if (
+                                    typeof onPicked ===
+                                    "function"
+                                ) {
+
+                                    onPicked(obj);
+
+                                }
+
+
+                                if (isProduct) {
+
+                                    restoreList();
+
+                                }
+
+                            };
+
+
+                        list.appendChild(d);
+
+                    }
                 );
 
-        }
-    );
-
-
-    // =====================================================
-    // إغلاق القائمة عند الضغط خارجها
-    // =====================================================
-
-    document.addEventListener(
-        "click",
-        (e) => {
-
-            if (
-                e.target === input ||
-                list.contains(e.target)
-            ) {
-
-                return;
-
             }
-
-
-            const box =
-                input.closest(
-                    ".dropdown-box"
-                );
-
-
-            if (
-                box &&
-                box.contains(e.target)
-            ) {
-
-                return;
-
-            }
-
-
-            list.style.display =
-                "none";
 
 
             if (isProduct) {
 
-                restoreList();
+                positionProductList();
 
             }
 
         }
-    );
 
 
-    // =====================================================
-    // تحريك القائمة مع الصفحة
-    // =====================================================
+        // =====================================================
+        // تحميل البيانات
+        // =====================================================
 
-    if (isProduct) {
+        function load(q) {
 
-        window.addEventListener(
-            "scroll",
-            () => {
+            fetch(
+                url +
+                "?q=" +
+                encodeURIComponent(
+                    q || ""
+                )
+            )
 
-                if (
-                    list.style.display ===
-                    "block"
-                ) {
+            .then(
+                r => r.json()
+            )
 
-                    positionProductList();
+            .then(
+                render
+            )
+
+            .catch(
+                () => {
+
+                    list.innerHTML =
+
+                        `<div class="dropdown-item text-danger">
+                            ${FAILED_TO_LOAD_DATA_TEXT}
+                        </div>`;
+
+
+                    list.style.display =
+                        "block";
+
+
+                    if (isProduct) {
+
+                        positionProductList();
+
+                    }
 
                 }
+            );
 
-            },
-            true
+        }
+
+
+        let timer = null;
+
+
+        // =====================================================
+        // فتح القائمة
+        // =====================================================
+
+        input.addEventListener(
+            "focus",
+            () => {
+
+                load("");
+
+            }
         );
 
 
-        window.addEventListener(
-            "resize",
+        input.addEventListener(
+            "click",
             () => {
 
+                load(
+                    input.value
+                );
+
+            }
+        );
+
+
+        // =====================================================
+        // البحث أثناء الكتابة
+        // =====================================================
+
+        input.addEventListener(
+            "keyup",
+            () => {
+
+                clearTimeout(
+                    timer
+                );
+
+
+                timer =
+                    setTimeout(
+                        () => {
+
+                            load(
+                                input.value
+                            );
+
+                        },
+                        200
+                    );
+
+            }
+        );
+
+
+        // =====================================================
+        // إغلاق القائمة عند الضغط خارجها
+        // =====================================================
+
+        document.addEventListener(
+            "click",
+            (e) => {
+
                 if (
-                    list.style.display ===
-                    "block"
+                    e.target === input ||
+                    list.contains(e.target)
                 ) {
 
-                    positionProductList();
+                    return;
+
+                }
+
+
+                const box =
+                    input.closest(
+                        ".dropdown-box"
+                    );
+
+
+                if (
+                    box &&
+                    box.contains(e.target)
+                ) {
+
+                    return;
+
+                }
+
+
+                list.style.display =
+                    "none";
+
+
+                if (isProduct) {
+
+                    restoreList();
 
                 }
 
             }
         );
 
+
+        // =====================================================
+        // تحريك القائمة مع الصفحة
+        // =====================================================
+
+        if (isProduct) {
+
+            window.addEventListener(
+                "scroll",
+                () => {
+
+                    if (
+                        list.style.display ===
+                        "block"
+                    ) {
+
+                        positionProductList();
+
+                    }
+
+                },
+                true
+            );
+
+
+            window.addEventListener(
+                "resize",
+                () => {
+
+                    if (
+                        list.style.display ===
+                        "block"
+                    ) {
+
+                        positionProductList();
+
+                    }
+
+                }
+            );
+
+        }
+
     }
 
-}
 
     // =========================================================
     // البحث عن العملاء
@@ -2638,17 +2762,40 @@ function bindAutocomplete(
                 </td>
 
 
-                <td>
+                ${
+                    HAS_TAX_NUMBER
+
+                    ?
+
+                    `
+
+                    <td>
+
+                        <input
+                            type="number"
+                            name="row_${next}_tax"
+                            value="15"
+                            step="any"
+                            class="form-control tax-input"
+                        >
+
+                    </td>
+
+                    `
+
+                    :
+
+                    `
 
                     <input
-                        type="number"
+                        type="hidden"
                         name="row_${next}_tax"
-                        value="15"
-                        step="any"
-                        class="form-control tax-input"
+                        value="0"
+                        class="tax-input"
                     >
 
-                </td>
+                    `
+                }
 
 
                 <td>

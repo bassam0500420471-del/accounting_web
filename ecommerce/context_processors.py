@@ -5,6 +5,9 @@ from products.models import Category
 from .models import CartItem
 
 
+# ==========================================================
+# الحصول على المتجر الحالي
+# ==========================================================
 
 def get_user_store(request):
 
@@ -38,6 +41,11 @@ def get_user_store(request):
 
 
 
+
+# ==========================================================
+# بيانات المتجر العامة
+# ==========================================================
+
 def store_context(request):
     """
     يضيف بيانات المتجر الحالية إلى جميع القوالب.
@@ -48,19 +56,31 @@ def store_context(request):
     if not store:
         return {}
 
+
     return {
 
         "store": store,
 
-        "store_theme": getattr(store, "theme", None),
+        "store_theme": getattr(
+            store,
+            "theme",
+            None
+        ),
 
-        "store_settings": getattr(store, "settings", None),
+        "store_settings": getattr(
+            store,
+            "settings",
+            None
+        ),
 
     }
 
 
 
 
+# ==========================================================
+# بيانات القائمة الرئيسية
+# ==========================================================
 
 def navigation_context(request):
     """
@@ -97,16 +117,26 @@ def navigation_context(request):
 
 
 
+# ==========================================================
+# عدد عناصر السلة
+# ==========================================================
 
 def cart_count(request):
 
     print("========== CART DEBUG ==========")
 
-    print("USER:", request.user)
+    print(
+        "USER:",
+        request.user
+    )
 
     print(
         "STORE FROM REQUEST:",
-        getattr(request, "store", None)
+        getattr(
+            request,
+            "store",
+            None
+        )
     )
 
 
@@ -116,8 +146,10 @@ def cart_count(request):
     store = get_user_store(request)
 
 
-    print("FINAL STORE:", store)
-
+    print(
+        "FINAL STORE:",
+        store
+    )
 
 
     if request.user.is_authenticated and store:
@@ -136,10 +168,15 @@ def cart_count(request):
             "ITEMS:",
             list(
                 items.values(
+
                     "id",
+
                     "cart_id",
+
                     "quantity",
+
                     "product_id"
+
                 )
             )
         )
@@ -152,10 +189,14 @@ def cart_count(request):
         )["total"] or 0
 
 
+    print(
+        "COUNT:",
+        count
+    )
 
-    print("COUNT:", count)
-
-    print("================================")
+    print(
+        "================================"
+    )
 
 
     return {
@@ -164,36 +205,89 @@ def cart_count(request):
 
     }
 
+
+
+
+# ==========================================================
+# النظام القديم للإشعارات
+#
+# معطل مؤقتًا
+# سيتم استبداله بخدمة بشر
+#
+# مهم:
+# الكود القديم محفوظ بالكامل أدناه
+# ويمكن إعادة تفعيله لاحقًا.
+# ==========================================================
+
 def notification_context(request):
 
-    print("========== NOTIFICATION DEBUG ==========")
-    print("USER:", request.user)
+    # ------------------------------------------------------
+    # تعطيل النظام القديم
+    # ------------------------------------------------------
+    return {}
 
-    if not request.user.is_authenticated:
-        return {}
 
-    store = get_user_store(request)
+    # ======================================================
+    # الكود القديم — محفوظ للرجوع إليه لاحقًا
+    # ======================================================
 
-    print("STORE:", store)
-
-    if not store:
-        return {}
-
-    from .models.notifications import StoreNotification
-
-    notifications = StoreNotification.objects.filter(
-        store=store,
-        is_read=False
-    ).order_by("-id")
-
-    # أضف هذه الأسطر هنا
-    print("COUNT:", notifications.count())
-
-    for n in notifications:
-        print(n.id, n.title)
-
-    return {
-        "notifications": notifications[:5],
-        "notifications_count": notifications.count(),
-    }
-
+    # print("========== NOTIFICATION DEBUG ==========")
+    #
+    # print(
+    #     "USER:",
+    #     request.user
+    # )
+    #
+    #
+    # if not request.user.is_authenticated:
+    #     return {}
+    #
+    #
+    # store = get_user_store(request)
+    #
+    #
+    # print(
+    #     "STORE:",
+    #     store
+    # )
+    #
+    #
+    # if not store:
+    #     return {}
+    #
+    #
+    # from .models.notifications import StoreNotification
+    #
+    #
+    # notifications = StoreNotification.objects.filter(
+    #
+    #     store=store,
+    #
+    #     is_read=False
+    #
+    # ).order_by(
+    #     "-id"
+    # )
+    #
+    #
+    # print(
+    #     "COUNT:",
+    #     notifications.count()
+    # )
+    #
+    #
+    # for n in notifications:
+    #
+    #     print(
+    #         n.id,
+    #         n.title
+    #     )
+    #
+    #
+    # return {
+    #
+    #     "notifications": notifications[:5],
+    #
+    #     "notifications_count": notifications.count(),
+    #
+    # }

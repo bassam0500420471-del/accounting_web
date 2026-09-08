@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db import transaction
 from django.views.decorators.http import require_POST
 from django.db.models.functions import (
     TruncDate,
@@ -1498,16 +1499,19 @@ def order_detail(
     )
 
     # ======================================================
-    # تعليم إشعار الطلب كمقروء
+    # النظام القديم لإشعارات التاجر
+    #
+    # معطل مؤقتًا — سيتم استبداله بخدمة بشر
+    # الكود محفوظ للرجوع إليه لاحقًا
     # ======================================================
 
-    StoreNotification.objects.filter(
-        store=store,
-        order=order,
-        is_read=False,
-    ).update(
-        is_read=True
-    )
+    # StoreNotification.objects.filter(
+    #     store=store,
+    #     order=order,
+    #     is_read=False,
+    # ).update(
+    #     is_read=True
+    # )
 
     return render(
         request,
@@ -1556,41 +1560,286 @@ def order_update(
         )
 
     # ======================================================
-    # تحديث الحالة
+    # حفظ الحالة القديمة
     # ======================================================
 
-    order.status = status
-
-    order.save(
-        update_fields=[
-            "status"
-        ]
-    )
+    old_status = order.status
 
     # ======================================================
-    # إشعار العميل
+    # كل عمليات التسليم داخل Transaction واحدة
+    #
+    # إذا فشل:
+    # - القيد المحاسبي
+    # - خصم المخزون
+    #
+    # يتم التراجع عن كل العملية.
     # ======================================================
 
     try:
 
-        Notification.objects.create(
-            store=store,
-            customer=order.customer,
-            order=order,
-            title="تحديث حالة الطلب",
-            message=(
-                f"تم تحديث حالة طلبك رقم "
-                f"{order.order_no} إلى "
-                f"{order.get_status_display()}"
+        with transaction.atomic():
+
+            # ==================================================
+            # تحديث الحالة
+            # ==================================================
+
+            order.status = status
+
+            order.save(
+                update_fields=[
+                    "status"
+                ]
             )
-        )
+
+            # ==================================================
+            # عند تسليم الطلب
+            # ==================================================
+
+            if status == "delivered":
+
+                # ==================================================
+                # 1) إنشاء القيد المحاسبي
+                #
+                # الدالة نفسها تحتوي على حماية تمنع
+                # إنشاء قيد مكرر لنفس الطلب.
+                # ==================================================
+
+                from accounting.services.journal_service import (
+                    create_store_order_journal,
+                )
+
+                journal_entry = (
+                    create_store_order_journal(
+                        order
+                    )
+                )
+
+                print(
+                    "STORE ORDER JOURNAL:",
+                    getattr(
+                        journal_entry,
+                        "id",
+                        None
+                    )
+                )
+
+                # ==================================================
+                # 2) خصم المخزون
+                # ==================================================
+
+                from products.services_stock import (
+                    apply_stock_movement,
+                )
+
+                from products.models import (
+                    StockMovement,
+                )
+
+                # --------------------------------------------------
+                # جلب عناصر الطلب
+                # --------------------------------------------------
+
+                order_items = (
+                    order.items
+                    .select_related(
+                        "product"
+                    )
+                    .all()
+                )
+
+                for item in order_items:
+
+                    product = item.product
+
+                    # ------------------------------------------------
+                    # حماية
+                    # ------------------------------------------------
+
+                    if not product:
+                        continue
+
+                    # ------------------------------------------------
+                    # الخدمات لا تخصم من المخزون
+                    # ------------------------------------------------
+
+                    if product.type == "service":
+
+                        print(
+                            "STORE ORDER STOCK SKIP SERVICE:",
+                            product.id,
+                            product.name
+                        )
+
+                        continue
+
+                    # ------------------------------------------------
+                    # الكمية
+                    # ------------------------------------------------
+
+                    quantity = Decimal(
+                        str(
+                            item.quantity or 0
+                        )
+                    )
+
+                    if quantity <= Decimal("0.00"):
+
+                        continue
+
+                    # =================================================
+                    # منع خصم نفس OrderItem أكثر من مرة
+                    #
+                    # نستخدم:
+                    # ref_app   = ecommerce
+                    # ref_model = OrderItem
+                    # ref_id    = item.id
+                    # =================================================
+
+                    already_moved = (
+                        StockMovement.objects
+                        .filter(
+                            company=product.company,
+                            product=product,
+                            move_type="SALE",
+                            ref_app="ecommerce",
+                            ref_model="OrderItem",
+                            ref_id=item.id,
+                        )
+                        .exists()
+                    )
+
+                    if already_moved:
+
+                        print(
+                            "STORE ORDER STOCK ALREADY DEDUCTED:",
+                            "ORDER:",
+                            order.order_no,
+                            "ORDER ITEM:",
+                            item.id,
+                            "PRODUCT:",
+                            product.id
+                        )
+
+                        continue
+
+                    # =================================================
+                    # خصم المخزون
+                    #
+                    # موجب = زيادة
+                    # سالب = خصم
+                    #
+                    # لا يوجد أي فحص للمخزون.
+                    #
+                    # 10 → 7
+                    # 0  → -3
+                    # -2 → -5
+                    # =================================================
+
+                    apply_stock_movement(
+
+                        product=product,
+
+                        qty_delta=(
+                            -quantity
+                        ),
+
+                        move_type="SALE",
+
+                        ref_app="ecommerce",
+
+                        ref_model="OrderItem",
+
+                        ref_id=item.id,
+
+                        ref_no=order.order_no,
+
+                        note=(
+                            f"خصم مخزون "
+                            f"طلب المتجر "
+                            f"{order.order_no}"
+                        ),
+
+                        user=request.user,
+                    )
+
+                    print(
+                        "STORE ORDER STOCK DEDUCTED:",
+                        "ORDER:",
+                        order.order_no,
+                        "ORDER ITEM:",
+                        item.id,
+                        "PRODUCT:",
+                        product.id,
+                        "QTY:",
+                        quantity
+                    )
 
     except Exception as e:
 
         print(
-            "NOTIFICATION ERROR:",
+            "STORE ORDER DELIVERY ERROR:",
             e
         )
+
+        # ==================================================
+        # مهم:
+        # لأن العملية داخل transaction.atomic()
+        # فإن:
+        #
+        # - حالة الطلب
+        # - القيد المحاسبي
+        # - حركات المخزون
+        #
+        # كلها ترجع كما كانت عند حدوث خطأ.
+        # ==================================================
+
+        order.status = old_status
+
+        # لا نحتاج حفظ الحالة هنا غالباً لأن Transaction
+        # سيعمل Rollback، لكن نعيدها للكائن في الذاكرة أيضاً.
+
+        return JsonResponse(
+            {
+                "success": False,
+                "message": (
+                    "تعذر تسليم الطلب وإتمام "
+                    "العمليات المحاسبية والمخزنية."
+                ),
+                "error": str(e),
+            },
+            status=500
+        )
+
+    # ======================================================
+    # النظام القديم لإشعار العميل — معطل
+    #
+    # سيتم استبداله لاحقاً بخدمة الإشعارات.
+    # ======================================================
+
+    # try:
+    #
+    #     Notification.objects.create(
+    #         store=store,
+    #         customer=order.customer,
+    #         order=order,
+    #         title="تحديث حالة الطلب",
+    #         message=(
+    #             f"تم تحديث حالة طلبك رقم "
+    #             f"{order.order_no} إلى "
+    #             f"{order.get_status_display()}"
+    #         )
+    #     )
+    #
+    # except Exception as e:
+    #
+    #     print(
+    #         "NOTIFICATION ERROR:",
+    #         e
+    #     )
+
+    # ======================================================
+    # النتيجة
+    # ======================================================
 
     return JsonResponse(
         {
@@ -1600,40 +1849,28 @@ def order_update(
             "message": "تم تحديث حالة الطلب"
         }
     )
-
-
-# ==========================================================
-# حذف الطلب
-# ==========================================================
-
 @login_required
-def order_delete(
-    request,
-    store_slug,
-    pk
-):
+@require_POST
+def order_delete(request, store_slug, pk):
+    store = get_object_or_404(Store, slug=store_slug)
+    order = get_object_or_404(Order, id=pk, store=store)
 
-    store = get_object_or_404(
-        Store,
-        slug=store_slug
-    )
+    order_no = order.order_no
 
-    order = get_object_or_404(
-        Order,
-        id=pk,
-        store=store,
-    )
-
-    if request.method == "POST":
-
+    try:
         order.delete()
 
-    return redirect(
-        "ecommerce:dashboard_orders",
-        store_slug=store.slug
-    )
+        return JsonResponse({
+            "success": True,
+            "message": f"تم حذف الطلب رقم {order_no} بنجاح",
+        })
 
-
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": "تعذر حذف الطلب",
+            "error": str(e),
+        }, status=500)
 # ==========================================================
 # العملاء
 # ==========================================================
@@ -1695,7 +1932,6 @@ def dashboard_customers(
             "customers": customers,
         }
     )
-
 # ==========================================================
 # تقرير المبيعات
 # ==========================================================
@@ -5948,13 +6184,49 @@ def customer_invoice_detail(
     order_id,
 ):
 
+    from decimal import Decimal, ROUND_HALF_UP
+
+    # ======================================================
+    # المتجر
+    # ======================================================
+
     store = get_object_or_404(
         Store,
         slug=store_slug,
     )
 
     # ======================================================
-    # لا يمكن فتح الفاتورة إلا بعد التسليم
+    # الشركة المرتبطة بالمتجر
+    # ======================================================
+
+    company = getattr(
+        store,
+        "company",
+        None,
+    )
+
+    # ======================================================
+    # الرقم الضريبي
+    #
+    # المصدر الوحيد:
+    # Company.vat_no
+    # ======================================================
+
+    vat_no = getattr(
+        company,
+        "vat_no",
+        None,
+    )
+
+    has_tax_number = bool(
+        vat_no
+        and str(vat_no).strip()
+    )
+
+    # ======================================================
+    # الطلب
+    #
+    # الفاتورة تظهر فقط بعد التسليم
     # ======================================================
 
     order = get_object_or_404(
@@ -5974,11 +6246,238 @@ def customer_invoice_detail(
         status="delivered",
     )
 
+    # ======================================================
+    # نسبة الضريبة
+    #
+    # 15%
+    # ======================================================
+
+    TAX_RATE = Decimal("15")
+
+    # ======================================================
+    # تجهيز المنتجات
+    # ======================================================
+
+    invoice_items = []
+
+    invoice_subtotal = Decimal("0.00")
+
+    for item in order.items.all():
+
+        quantity = Decimal(
+            str(item.quantity or 0)
+        )
+
+        unit_price = Decimal(
+            str(item.price or 0)
+        )
+
+        # ==================================================
+        # إجمالي المنتج قبل الضريبة
+        # ==================================================
+
+        line_before_tax = (
+            quantity * unit_price
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP,
+        )
+
+        # ==================================================
+        # ضريبة المنتج
+        # ==================================================
+
+        if has_tax_number:
+
+            line_tax = (
+                line_before_tax
+                * TAX_RATE
+                / Decimal("100")
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP,
+            )
+
+        else:
+
+            line_tax = Decimal("0.00")
+
+        # ==================================================
+        # إجمالي المنتج بعد الضريبة
+        # ==================================================
+
+        line_after_tax = (
+            line_before_tax
+            + line_tax
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP,
+        )
+
+        invoice_subtotal += line_before_tax
+
+        invoice_items.append(
+            {
+                "item": item,
+                "quantity": quantity,
+                "unit_price": unit_price,
+                "before_tax": line_before_tax,
+                "tax": line_tax,
+                "after_tax": line_after_tax,
+            }
+        )
+
+    # ======================================================
+    # الخصم
+    # ======================================================
+
+    invoice_discount = Decimal(
+        str(order.discount or 0)
+    ).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP,
+    )
+
+    # ======================================================
+    # الإجمالي بعد الخصم وقبل الضريبة
+    # ======================================================
+
+    invoice_subtotal_after_discount = (
+        invoice_subtotal
+        - invoice_discount
+    )
+
+    if invoice_subtotal_after_discount < 0:
+
+        invoice_subtotal_after_discount = (
+            Decimal("0.00")
+        )
+
+    # ======================================================
+    # الشحن
+    # ======================================================
+
+    invoice_shipping = Decimal(
+        str(order.shipping_cost or 0)
+    ).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP,
+    )
+
+    # ======================================================
+    # الإجمالي قبل الضريبة
+    #
+    # المنتجات بعد الخصم + الشحن
+    # ======================================================
+
+    invoice_total_before_tax = (
+        invoice_subtotal_after_discount
+        + invoice_shipping
+    ).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP,
+    )
+
+    # ======================================================
+    # الضريبة
+    #
+    # إذا كان هناك رقم ضريبي:
+    # 15%
+    #
+    # وإذا لم يوجد:
+    # صفر
+    # ======================================================
+
+    if has_tax_number:
+
+        invoice_tax = (
+            invoice_total_before_tax
+            * TAX_RATE
+            / Decimal("100")
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP,
+        )
+
+    else:
+
+        invoice_tax = Decimal("0.00")
+
+    # ======================================================
+    # الإجمالي بعد الضريبة
+    # ======================================================
+
+    invoice_total_after_tax = (
+        invoice_total_before_tax
+        + invoice_tax
+    ).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP,
+    )
+
+    # ======================================================
+    # إرسال البيانات للقالب
+    # ======================================================
+
     return render(
         request,
         "ecommerce/account/invoice_detail.html",
         {
             "store": store,
+
             "order": order,
+
+            # ----------------------------------------------
+            # حالة الضريبة
+            # ----------------------------------------------
+
+            "has_tax_number": has_tax_number,
+
+            # ----------------------------------------------
+            # نسبة الضريبة
+            # ----------------------------------------------
+
+            "tax_rate": TAX_RATE,
+
+            # ----------------------------------------------
+            # المنتجات
+            # ----------------------------------------------
+
+            "invoice_items": invoice_items,
+
+            # ----------------------------------------------
+            # الإجماليات
+            # ----------------------------------------------
+
+            "invoice_subtotal": invoice_subtotal,
+
+            "invoice_discount": invoice_discount,
+
+            "invoice_subtotal_after_discount":
+                invoice_subtotal_after_discount,
+
+            "invoice_shipping":
+                invoice_shipping,
+
+            # ----------------------------------------------
+            # الضريبة
+            # ----------------------------------------------
+
+            "invoice_tax":
+                invoice_tax,
+
+            # ----------------------------------------------
+            # الإجمالي قبل الضريبة
+            # ----------------------------------------------
+
+            "invoice_total_before_tax":
+                invoice_total_before_tax,
+
+            # ----------------------------------------------
+            # الإجمالي بعد الضريبة
+            # ----------------------------------------------
+
+            "invoice_total_after_tax":
+                invoice_total_after_tax,
         },
     )

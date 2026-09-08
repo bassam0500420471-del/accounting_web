@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from django.db import transaction
 
@@ -8,7 +8,7 @@ from ecommerce.models import (
     OrderItem,
 )
 
-from ecommerce.models.notifications import StoreNotification
+
 
 
 class CheckoutService:
@@ -16,6 +16,7 @@ class CheckoutService:
     مسؤول عن تحويل سلة التسوق إلى طلب.
     """
 
+    TAX_RATE = Decimal("0.15")
 
     def __init__(
         self,
@@ -25,14 +26,39 @@ class CheckoutService:
         payment_method=None,
         note="",
     ):
-
         self.customer = customer
         self.store = store
         self.shipping_address = shipping_address
         self.payment_method = payment_method
         self.note = note
 
+    # =====================================================
+    # التحقق من وجود الرقم الضريبي
+    # المصدر الوحيد:
+    # Company.vat_no
+    # =====================================================
 
+    def _has_tax_number(self):
+
+        company = getattr(
+            self.store,
+            "company",
+            None
+        )
+
+        vat_no = getattr(
+            company,
+            "vat_no",
+            None
+        )
+
+        return bool(
+            vat_no and str(vat_no).strip()
+        )
+
+    # =====================================================
+    # معالجة الطلب
+    # =====================================================
 
     @transaction.atomic
     def process(self):
@@ -44,18 +70,15 @@ class CheckoutService:
             "items"
         ).first()
 
-
         if not cart:
 
             raise ValueError(
                 "السلة غير موجودة."
             )
 
-
         items = list(
             cart.items.all()
         )
-
 
         if not items:
 
@@ -63,28 +86,109 @@ class CheckoutService:
                 "السلة فارغة."
             )
 
+        # =================================================
+        # حساب إجمالي المنتجات
+        # =================================================
 
-        # ==========================
-        # حساب الإجمالي
-        # ==========================
-
-        subtotal = Decimal("0")
-
+        subtotal = Decimal("0.00")
 
         for item in items:
 
-            subtotal += item.subtotal()
+            subtotal += Decimal(
+                str(item.subtotal())
+            )
 
+        subtotal = subtotal.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
 
+        # =================================================
+        # تكلفة الشحن
+        # =================================================
 
-        # ==========================
+        shipping_cost = getattr(
+            self.store,
+            "shipping_cost",
+            Decimal("0.00")
+        )
+
+        if shipping_cost is None:
+            shipping_cost = Decimal("0.00")
+
+        shipping_cost = Decimal(
+            str(shipping_cost)
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # =================================================
+        # الخصم
+        # =================================================
+
+        discount = Decimal("0.00")
+
+        # =================================================
+        # المبلغ قبل الضريبة
+        # =================================================
+
+        taxable_amount = (
+            subtotal
+            - discount
+        )
+
+        if taxable_amount < 0:
+
+            taxable_amount = Decimal("0.00")
+
+        taxable_amount = taxable_amount.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # =================================================
+        # الضريبة
+        #
+        # تعتمد فقط على Company.vat_no
+        # =================================================
+
+        has_tax_number = self._has_tax_number()
+
+        if has_tax_number:
+
+            tax = (
+                taxable_amount
+                * self.TAX_RATE
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP
+            )
+
+        else:
+
+            tax = Decimal("0.00")
+
+        # =================================================
+        # الإجمالي النهائي
+        # =================================================
+
+        final_total = (
+            taxable_amount
+            + tax
+            + shipping_cost
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # =================================================
         # إنشاء رقم الطلب
-        # ==========================
+        # =================================================
 
         last_order = Order.objects.order_by(
             "-id"
         ).first()
-
 
         if last_order and last_order.order_no:
 
@@ -97,7 +201,7 @@ class CheckoutService:
                     )
                 ) + 1
 
-            except:
+            except (ValueError, TypeError):
 
                 number = last_order.id + 1
 
@@ -105,15 +209,24 @@ class CheckoutService:
 
             number = 1
 
-
-
         order_no = f"ORD-{number:06d}"
 
+        # =================================================
+        # حالة الدفع
+        # =================================================
 
+        payment_status = "unpaid"
 
-        # ==========================
+        if (
+            self.payment_method
+            and self.payment_method.payment_type == "bank"
+        ):
+
+            payment_status = "bank_transfer"
+
+        # =================================================
         # إنشاء الطلب
-        # ==========================
+        # =================================================
 
         order = Order.objects.create(
 
@@ -129,31 +242,45 @@ class CheckoutService:
 
             note=self.note,
 
+            # ---------------------------------------------
+            # المنتجات قبل الخصم والضريبة
+            # ---------------------------------------------
+
             subtotal=subtotal,
 
-            total=subtotal,
+            # ---------------------------------------------
+            # الخصم
+            # ---------------------------------------------
+
+            discount=discount,
+
+            # ---------------------------------------------
+            # الشحن
+            # ---------------------------------------------
+
+            shipping_cost=shipping_cost,
+
+            # ---------------------------------------------
+            # الضريبة
+            # ---------------------------------------------
+
+            tax=tax,
+
+            # ---------------------------------------------
+            # الإجمالي النهائي
+            # ---------------------------------------------
+
+            total=final_total,
 
             status="pending",
 
-            payment_status=(
-
-                "bank_transfer"
-
-                if self.payment_method
-
-                and self.payment_method.payment_type == "bank"
-
-                else "unpaid"
-
-            ),
+            payment_status=payment_status,
 
         )
 
-
-
-        # ==========================
-        # نسخ المنتجات
-        # ==========================
+        # =================================================
+        # نسخ المنتجات إلى الطلب
+        # =================================================
 
         for item in items:
 
@@ -172,26 +299,5 @@ class CheckoutService:
                 total=item.subtotal(),
 
             )
-
-
-
-        # ==========================
-        # إشعار المتجر
-        # ==========================
-
-        StoreNotification.objects.create(
-
-            store=self.store,
-
-            order=order,
-
-            title="طلب جديد 🛒",
-
-            message=f"تم استلام طلب جديد رقم {order.order_no}",
-
-            notification_type="order",
-
-        )
-
 
         return order

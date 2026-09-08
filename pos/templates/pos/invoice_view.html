@@ -1,137 +1,473 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-<style>
-        body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: #fff;
-}
 
-@media print {
-    @page {
-        size: 80mm auto;
-        margin: 0;
+<html dir="rtl" lang="ar">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+    فاتورة POS - {{ invoice.invoice_no }}
+</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
     }
 
     body {
-        width: 80mm;
         margin: 0;
         padding: 0;
+        font-family: Arial, Tahoma, sans-serif;
         background: #fff;
+        color: #000;
     }
 
     .receipt {
         width: 80mm;
-        margin: 0;
-        padding: 5px;
+        max-width: 80mm;
+        background: #fff;
+        padding: 10px;
+        margin: auto;
         box-sizing: border-box;
-        box-shadow: none;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     }
-}
 
-        .receipt { width: 80mm; background: #fff; padding: 15px; margin: auto; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-        .center { text-align: center; }
-        .logo { max-width: 80px; margin-bottom: 10px; }
-        .info { margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 10px; }
-        
-        /* التنسيق الجديد للجدول المسطر */
-        table { 
-            width: 100%; 
-            border-collapse: collapse; /* دمج الحدود */
-            margin: 10px 0; 
+    .center {
+        text-align: center;
+    }
+
+    .logo {
+        display: block;
+        max-width: 80px;
+        max-height: 80px;
+        margin: 0 auto 8px auto;
+        object-fit: contain;
+    }
+
+    .company-name {
+        margin: 5px 0;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .tax-number {
+        margin: 4px 0;
+        font-size: 10px;
+    }
+
+    .info {
+        margin: 12px 0;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 8px;
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .info-row {
+        margin: 2px 0;
+    }
+
+    .payment-box {
+        margin-top: 8px;
+        border-top: 1px dotted #000;
+        border-bottom: 1px dotted #000;
+        padding: 6px 0;
+        line-height: 1.6;
+    }
+
+    .customer-box {
+        margin-top: 8px;
+        border-top: 1px dotted #000;
+        padding-top: 6px;
+        line-height: 1.7;
+    }
+
+    /* ================================================= */
+    /* جدول الأصناف */
+    /* ================================================= */
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0;
+        table-layout: fixed;
+    }
+
+    th,
+    td {
+        border: 1px solid #000;
+        padding: 3px 2px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 9px;
+        line-height: 1.3;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    /* بدون ضريبة */
+
+    table.no-tax th:nth-child(1),
+    table.no-tax td:nth-child(1) {
+        width: 42%;
+    }
+
+    table.no-tax th:nth-child(2),
+    table.no-tax td:nth-child(2) {
+        width: 16%;
+    }
+
+    table.no-tax th:nth-child(3),
+    table.no-tax td:nth-child(3) {
+        width: 20%;
+    }
+
+    table.no-tax th:nth-child(4),
+    table.no-tax td:nth-child(4) {
+        width: 22%;
+    }
+
+    /* مع الضريبة */
+
+    table.with-tax th:nth-child(1),
+    table.with-tax td:nth-child(1) {
+        width: 25%;
+    }
+
+    table.with-tax th:nth-child(2),
+    table.with-tax td:nth-child(2) {
+        width: 11%;
+    }
+
+    table.with-tax th:nth-child(3),
+    table.with-tax td:nth-child(3) {
+        width: 14%;
+    }
+
+    table.with-tax th:nth-child(4),
+    table.with-tax td:nth-child(4) {
+        width: 18%;
+    }
+
+    table.with-tax th:nth-child(5),
+    table.with-tax td:nth-child(5) {
+        width: 14%;
+    }
+
+    table.with-tax th:nth-child(6),
+    table.with-tax td:nth-child(6) {
+        width: 18%;
+    }
+
+    /* ================================================= */
+    /* المجاميع */
+    /* ================================================= */
+
+    .totals {
+        margin-top: 10px;
+        padding: 8px 5px 0 5px;
+        border-top: 2px solid #000;
+        font-weight: bold;
+        font-size: 10px;
+    }
+
+    .total-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 4px 0;
+        line-height: 1.4;
+    }
+
+    .total-row span:first-child {
+        text-align: right;
+    }
+
+    .total-row span:last-child {
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .total-row.final {
+        border-top: 1px solid #000;
+        margin-top: 3px;
+        padding-top: 6px;
+        font-size: 12px;
+    }
+
+    .remaining-row {
+        border-top: 1px solid #000;
+        margin-top: 3px;
+        padding-top: 6px;
+        font-size: 11px;
+    }
+
+    /* ================================================= */
+    /* رسالة النهاية */
+    /* ================================================= */
+
+    .thank-you {
+        text-align: center;
+        font-size: 11px;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    /* ================================================= */
+    /* QR */
+    /* ================================================= */
+
+    .qr-section {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .qr-section img {
+        max-width: 120px;
+        max-height: 120px;
+    }
+
+    /* ================================================= */
+    /* الطباعة */
+    /* ================================================= */
+
+    @media print {
+
+        @page {
+            size: 80mm auto;
+            margin: 0;
         }
-        th, td { 
-            border: 1px solid #000; /* إضافة حدود سوداء */
-            padding: 4px; 
-            text-align: center; 
-            font-size: 11px; /* تصغير الخط قليلاً ليناسب الأعمدة الستة */
+
+        html,
+        body {
+            width: 80mm;
+            min-width: 80mm;
+            max-width: 80mm;
+            margin: 0;
+            padding: 0;
+            background: #fff;
         }
-        th {
-            background-color: #f2f2f2; /* تلوين رأس الجدول */
+
+        .receipt {
+            width: 80mm;
+            max-width: 80mm;
+            margin: 0;
+            padding: 5px;
+            box-shadow: none;
         }
-        
-        .totals { border-top: 2px solid #000; margin-top: 10px; padding-top: 5px; font-weight: bold; }
-        .qr-section { margin-top: 20px; text-align: center; }
-    </style>
+
+        th,
+        td {
+            font-size: 8.5px;
+            padding: 2.5px 2px;
+        }
+
+        .company-name {
+            font-size: 16px;
+        }
+
+        .info {
+            font-size: 9px;
+        }
+
+        .totals {
+            font-size: 9px;
+        }
+
+        .total-row.final {
+            font-size: 11px;
+        }
+
+        .thank-you {
+            font-size: 10px;
+        }
+    }
+
+</style>
+
+
 </head>
+
 <body>
 
 <div class="receipt">
-    <div class="center">
-        {% if invoice.company.logo %}
-            <img src="{{ invoice.company.logo.url }}" class="logo">
-        {% endif %}
-        <h2>{{ invoice.company.name }}</h2>
-        <p>الرقم الضريبي: {{ invoice.company.vat_no }}</p>
+
+
+<!-- ================================================= -->
+<!-- بيانات الشركة -->
+<!-- ================================================= -->
+
+<div class="center">
+
+    {% if invoice.company.logo %}
+
+        <img
+            src="{{ invoice.company.logo.url }}"
+            class="logo"
+            alt="شعار الشركة"
+        >
+
+    {% endif %}
+
+
+    <div class="company-name">
+        {{ invoice.company.name }}
     </div>
+
+
+    {% if has_tax_number %}
+
+        <div class="tax-number">
+
+            الرقم الضريبي:
+
+            {{ invoice.company.vat_no }}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- بيانات الفاتورة -->
+<!-- ================================================= -->
 
 <div class="center info">
 
-    <div>
-        <strong>رقم الفاتورة:</strong>
-        POS-{{ invoice.invoice_no }}
+    <div class="info-row">
+
+        <strong>
+            رقم الفاتورة:
+        </strong>
+
+        {% if invoice.invoice_no|stringformat:"s"|slice:":4" == "POS-" %}
+            {{ invoice.invoice_no }}
+        {% else %}
+            POS-{{ invoice.invoice_no }}
+        {% endif %}
+
     </div>
 
-<div>
-    <strong>التاريخ:</strong>
-    {{ invoice.created_at|date:"Y-m-d H:i" }}
-</div>
 
-<div>
-    <strong>منشئ الفاتورة:</strong>
-    {{ invoice.created_by }}
-</div>
-<!-- طريقة الدفع -->
-<div style="
-    margin-top: 8px;
-    border-top: 1px dotted #000;
-    border-bottom: 1px dotted #000;
-    padding: 6px 0;
-">
+    <div class="info-row">
 
-    <strong>طريقة الدفع:</strong>
+        <strong>
+            التاريخ:
+        </strong>
 
-    {% for payment in invoice.payments.all %}
+        {{ invoice.created_at|date:"Y-m-d H:i" }}
 
-        {% if payment.method %}
-            {{ payment.method.name }}
-        {% else %}
-            غير محددة
-        {% endif %}
+    </div>
 
-        {% if not forloop.last %}
-            ،
-        {% endif %}
 
-    {% empty %}
+    <div class="info-row">
 
-        لا توجد دفعة مسجلة
+        <strong>
+            منشئ الفاتورة:
+        </strong>
 
-    {% endfor %}
+        {{ invoice.created_by }}
 
-</div>
-    <div style="margin-top: 10px; border-top: 1px dotted #000; padding-top: 5px;">
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- طريقة الدفع -->
+    <!-- ================================================= -->
+
+    <div class="payment-box">
+
+        <strong>
+            طريقة الدفع:
+        </strong>
+
+        {% for payment in invoice.payments.all %}
+
+            {% if payment.method %}
+                {{ payment.method.name }}
+            {% else %}
+                غير محددة
+            {% endif %}
+
+            {% if not forloop.last %}
+                ،
+            {% endif %}
+
+        {% empty %}
+
+            لا توجد دفعة مسجلة
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- العميل -->
+    <!-- ================================================= -->
+
+    <div class="customer-box">
 
         {% if invoice.customer %}
 
             <div>
-                <strong>العميل:</strong>
+
+                <strong>
+                    العميل:
+                </strong>
+
                 {{ invoice.customer.name }}
+
             </div>
-            
-            <div>
-                <strong>الرقم الضريبي:</strong>
-                {{ invoice.customer.vat_no|default:invoice.customer.tax_number|default:"غير متوفر" }}
-            </div>
-            
+
+
+            {% if has_tax_number %}
+
+                <div>
+
+                    <strong>
+                        الرقم الضريبي:
+                    </strong>
+
+                    {% if invoice.customer.vat_no %}
+
+                        {{ invoice.customer.vat_no }}
+
+                    {% elif invoice.customer.tax_number %}
+
+                        {{ invoice.customer.tax_number }}
+
+                    {% else %}
+
+                        غير متوفر
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
         {% else %}
 
             <div>
-                <strong>العميل:</strong>
+
+                <strong>
+                    العميل:
+                </strong>
+
                 عميل نقدي
+
             </div>
 
         {% endif %}
@@ -140,53 +476,292 @@
 
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>البند</th>
-            <th>كمية</th>
-            <th>سعر</th>
-            <th>المجموع</th>
-        </tr>
-    </thead>
-    <tbody>
-{% for item in items %}
-<tr>
-    <td>{{ item.product.name }}</td>
-    <td>{{ item.quantity }}</td>
-    <td>{{ item.price|floatformat:2 }}</td>
-    <td>{{ item.total|floatformat:2 }}</td>
-</tr>
-{% endfor %}
-    </tbody>
-</table>
 
-<div class="totals" style="text-align: right; padding: 10px; border-top: 2px solid #000;">
-    <div style="display: flex; justify-content: space-between;">
-        <span>المجموع:</span> <span>{{ subtotal|floatformat:2 }}</span>
+<!-- ================================================= -->
+<!-- جدول الأصناف -->
+<!-- ================================================= -->
+
+{% if has_tax_number %}
+
+    <table class="with-tax">
+
+        <thead>
+
+            <tr>
+
+                <th>البند</th>
+
+                <th>الكمية</th>
+
+                <th>السعر</th>
+
+                <th>قبل الضريبة</th>
+
+                <th>الضريبة</th>
+
+                <th>الإجمالي</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for item in print_items %}
+
+                <tr>
+
+                    <td>
+                        {{ item.product_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.price|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.before_tax|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.tax|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.total|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td colspan="6">
+                        لا توجد أصناف
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+{% else %}
+
+    <table class="no-tax">
+
+        <thead>
+
+            <tr>
+
+                <th>البند</th>
+
+                <th>الكمية</th>
+
+                <th>السعر</th>
+
+                <th>الإجمالي</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for item in print_items %}
+
+                <tr>
+
+                    <td>
+                        {{ item.product_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.price|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ item.total|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+
+                    <td colspan="4">
+                        لا توجد أصناف
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+{% endif %}
+
+
+<!-- ================================================= -->
+<!-- المجاميع -->
+<!-- ================================================= -->
+
+<div class="totals">
+
+    {% if has_tax_number %}
+
+        <div class="total-row">
+
+            <span>
+                الإجمالي قبل الضريبة:
+            </span>
+
+            <span>
+                {{ subtotal_before_tax|default:"0.00"|floatformat:2 }}
+                ر.س
+            </span>
+
+        </div>
+
+
+        <div class="total-row">
+
+            <span>
+                قيمة الضريبة:
+            </span>
+
+            <span>
+                {{ tax_amount|default:"0.00"|floatformat:2 }}
+                ر.س
+            </span>
+
+        </div>
+
+
+        <div class="total-row final">
+
+            <span>
+                الإجمالي بعد الضريبة:
+            </span>
+
+            <span>
+                {{ grand_total|default:"0.00"|floatformat:2 }}
+                ر.س
+            </span>
+
+        </div>
+
+    {% else %}
+
+        <div class="total-row final">
+
+            <span>
+                الإجمالي:
+            </span>
+
+            <span>
+                {{ grand_total|default:"0.00"|floatformat:2 }}
+                ر.س
+            </span>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- المدفوع -->
+    <!-- ================================================= -->
+
+    <div class="total-row">
+
+        <span>
+            المدفوع:
+        </span>
+
+        <span>
+            {{ total_paid|default:"0.00"|floatformat:2 }}
+            ر.س
+        </span>
+
     </div>
-    <div style="display: flex; justify-content: space-between;">
-        <span>المدفوع:</span> <span>{{ invoice.paid_amount|floatformat:2 }}</span>
+
+
+    <!-- ================================================= -->
+    <!-- الرصيد -->
+    <!-- ================================================= -->
+
+    <div class="total-row remaining-row">
+
+        <span>
+            الرصيد المستحق:
+        </span>
+
+        <span>
+            {{ remaining|default:"0.00"|floatformat:2 }}
+            ر.س
+        </span>
+
     </div>
-    <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px solid #000;">
-        <span>الرصيد المستحق:</span> <span>{{ invoice.remaining_amount|floatformat:2 }}</span>
-    </div>
+
 </div>
 
-<p style="
-    text-align: center;
-    font-size: 11px;
-    font-weight: 700;
-    margin-top: 8px;
-    margin-bottom: 5px;
-    color: #000;
-">
+
+<!-- ================================================= -->
+<!-- QR Code -->
+<!-- ================================================= -->
+
+{% if has_tax_number and qr_code %}
+
+    <div class="qr-section">
+
+        {% if qr_code.url %}
+
+            <img
+                src="{{ qr_code.url }}"
+                alt="QR Code"
+            >
+
+        {% else %}
+
+            <img
+                src="{{ qr_code }}"
+                alt="QR Code"
+            >
+
+        {% endif %}
+
+    </div>
+
+{% endif %}
+
+<!-- ================================================= -->
+<!-- رسالة النهاية -->
+<!-- ================================================= -->
+
+<p class="thank-you">
     شكراً لزيارتكم
 </p>
-</div>
 
 </div>
-
 
 </body>
+
 </html>
