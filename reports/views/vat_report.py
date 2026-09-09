@@ -556,10 +556,18 @@ def vat_report(request):
         # ======================================
 
         "sales_before_tax":
-            money(total_sales_before_tax),
+            money(
+                sales_before_tax
+                +
+                store_order_before_tax
+            ),
 
         "sales_vat":
-            money(total_sales_vat),
+            money(
+                sales_vat
+                +
+                store_order_vat
+            ),
 
         # ======================================
         # تفاصيل طلبات المتجر
