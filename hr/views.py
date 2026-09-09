@@ -3523,7 +3523,13 @@ def evaluation_fill_manager(request, eval_id, target_id):
     # هل المستخدم هو المدير الرئيسي / Superuser؟
     # =====================================================
 
-    is_main_manager = request.user.is_superuser
+    is_main_manager = (
+    request.user.is_superuser
+    or (
+        hasattr(request.user, "profile")
+        and request.user.profile.role == "owner"
+    )
+)
 
     # =====================================================
     # جلب الموظف المرتبط باليوزر
