@@ -5,20 +5,12 @@
 {% trans "Leave Management" %}
 {% endblock %}
 
-
 {% block content %}
 
 <style>
 
 /* =========================================================
    صفحة إدارة الإجازات
-   نفس تصميم جدول شفتات الموظفين
-   3D + رمادي متدرج + كرت أبيض + رأس جدول متصل
-   ========================================================= */
-
-
-/* =========================================================
-   الخلفية العامة
    ========================================================= */
 
 body {
@@ -31,6 +23,7 @@ body {
    ========================================================= */
 
 .leave-management-page {
+
     background: linear-gradient(
         135deg,
         #f8f8f8,
@@ -121,7 +114,7 @@ body {
     border-radius: 18px;
 
     box-shadow:
-        0 5px 18px rgba(0,0,0,.05);
+        0 5px 18px rgba(0, 0, 0, .05);
 }
 
 
@@ -141,13 +134,12 @@ body {
 
     border-spacing: 0;
 
-    background: #fff;
+    background: #ffffff;
 }
 
 
 /* =========================================================
    رأس الجدول
-   تدرج واحد متصل على كامل الرأس
    ========================================================= */
 
 .hr-table thead {
@@ -159,15 +151,9 @@ body {
         #888 100%
     ) !important;
 
-    color: #fff !important;
+    color: #ffffff !important;
 }
 
-
-/*
-   مهم جدًا:
-   الـ th شفاف حتى يظهر التدرج الواحد
-   الموجود على thead كاملًا.
-*/
 
 .hr-table thead tr {
 
@@ -179,7 +165,7 @@ body {
 
     background: transparent !important;
 
-    color: #fff !important;
+    color: #ffffff !important;
 
     padding: 16px 10px;
 
@@ -251,7 +237,7 @@ body {
 
 
 /* =========================================================
-   خلايا الجسم
+   خلايا جسم الجدول
    ========================================================= */
 
 .hr-table tbody td {
@@ -262,11 +248,11 @@ body {
 
     vertical-align: middle;
 
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #eeeeee;
 
     color: #444 !important;
 
-    background: #fff;
+    background: #ffffff;
 
     overflow: hidden;
 
@@ -368,7 +354,9 @@ body {
 }
 
 
-/* Pending */
+/* =========================================================
+   Pending
+   ========================================================= */
 
 .status-pending {
 
@@ -379,11 +367,13 @@ body {
     border: 1px solid #d5d5d5;
 
     box-shadow:
-        inset 0 1px 2px rgba(0,0,0,.05);
+        inset 0 1px 2px rgba(0, 0, 0, .05);
 }
 
 
-/* Approved */
+/* =========================================================
+   Approved
+   ========================================================= */
 
 .status-approved {
 
@@ -394,11 +384,13 @@ body {
     border: 1px solid #cfcfcf;
 
     box-shadow:
-        inset 0 1px 2px rgba(0,0,0,.05);
+        inset 0 1px 2px rgba(0, 0, 0, .05);
 }
 
 
-/* Rejected */
+/* =========================================================
+   Rejected
+   ========================================================= */
 
 .status-rejected {
 
@@ -409,7 +401,7 @@ body {
     border: 1px solid #c4c4c4;
 
     box-shadow:
-        inset 0 1px 2px rgba(0,0,0,.05);
+        inset 0 1px 2px rgba(0, 0, 0, .05);
 }
 
 
@@ -439,7 +431,7 @@ body {
         #666
     );
 
-    color: #fff;
+    color: #ffffff;
 
     border: none;
 
@@ -456,8 +448,8 @@ body {
     font-weight: 700;
 
     box-shadow:
-        3px 3px 8px rgba(0,0,0,.18),
-        inset 0 1px 0 rgba(255,255,255,.12);
+        3px 3px 8px rgba(0, 0, 0, .18),
+        inset 0 1px 0 rgba(255, 255, 255, .12);
 
     transition: .25s;
 }
@@ -471,7 +463,7 @@ body {
         #555
     );
 
-    color: #fff;
+    color: #ffffff;
 
     transform: translateY(-1px);
 }
@@ -542,6 +534,20 @@ body {
 
 
 /* =========================================================
+   النص الخاص بانتظار الموافقة
+   ========================================================= */
+
+.waiting-text {
+
+    color: #888;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
    تجاوب الشاشات
    ========================================================= */
 
@@ -584,7 +590,7 @@ body {
 
 
 /* =========================================================
-   التأكيد النهائي على أن الرأس تدرج واحد
+   التأكيد النهائي على تدرج رأس الجدول
    ========================================================= */
 
 .hr-table thead,
@@ -604,178 +610,189 @@ body {
 
     background: transparent !important;
 
-    color: #fff !important;
+    color: #ffffff !important;
 
     border: 0 !important;
 }
 
 </style>
 
-
 <!-- =========================================================
-     الصفحة
+     الصفحة الرئيسية
      ========================================================= -->
 
 <div class="container-fluid mt-4 leave-management-page">
 
+<!-- =====================================================
+     الكرت الرئيسي
+     ===================================================== -->
 
-    <!-- =====================================================
-         الكرت الرئيسي
-         ===================================================== -->
-
-    <div class="hr-page-card">
-
-
-        <!-- =================================================
-             رأس الصفحة
-             ================================================= -->
-
-        <div class="hr-page-header">
-
-            <div>
-
-                <h3>
-
-                    <i class="fa-solid fa-calendar-days"></i>
-
-                    {% trans "Leave Management" %}
-
-                </h3>
+<div class="hr-page-card">
 
 
-                <p>
+    <!-- =================================================
+         رأس الصفحة
+         ================================================= -->
 
-                    {% trans "Manage employee leave requests and approvals" %}
+    <div class="hr-page-header">
 
-                </p>
+        <div>
 
-            </div>
+            <h3>
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                {% trans "Leave Management" %}
+
+            </h3>
+
+
+            <p>
+
+                {% trans "Manage employee leave requests and approvals" %}
+
+            </p>
 
         </div>
 
-
-        <!-- =================================================
-             الجدول
-             ================================================= -->
-
-        <div class="hr-table-box">
-
-            <table class="hr-table">
+    </div>
 
 
-                <!-- =========================================
-                     رأس الجدول
-                     ========================================= -->
+    <!-- =================================================
+         صندوق الجدول
+         ================================================= -->
 
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            {% trans "Employee" %}
-                        </th>
+    <div class="hr-table-box">
 
 
-                        <th>
-                            {% trans "Leave Type" %}
-                        </th>
+        <table class="hr-table">
 
 
-                        <th>
-                            {% trans "From" %}
-                        </th>
+            <!-- =========================================
+                 رأس الجدول
+                 ========================================= -->
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        {% trans "Employee" %}
+                    </th>
 
 
-                        <th>
-                            {% trans "To" %}
-                        </th>
+                    <th>
+                        {% trans "Leave Type" %}
+                    </th>
 
 
-                        <th>
-                            {% trans "Reason" %}
-                        </th>
+                    <th>
+                        {% trans "From" %}
+                    </th>
 
 
-                        <th>
-                            {% trans "Status" %}
-                        </th>
+                    <th>
+                        {% trans "To" %}
+                    </th>
 
 
-                        <th>
-                            {% trans "Action" %}
-                        </th>
-
-                    </tr>
-
-                </thead>
+                    <th>
+                        {% trans "Reason" %}
+                    </th>
 
 
-                <!-- =========================================
-                     جسم الجدول
-                     ========================================= -->
-
-                <tbody>
+                    <th>
+                        {% trans "Status" %}
+                    </th>
 
 
-                    {% for leave in leaves %}
+                    <th>
+                        {% trans "Action" %}
+                    </th>
 
-                    <tr>
+                </tr>
 
-
-                        <!-- الموظف -->
-
-                        <td class="employee-name">
-
-                            <strong>
-
-                                {{ leave.employee }}
-
-                            </strong>
-
-                        </td>
+            </thead>
 
 
-                        <!-- نوع الإجازة -->
+            <!-- =========================================
+                 جسم الجدول
+                 ========================================= -->
 
-                        <td class="leave-type">
-
-                            {{ leave.get_leave_type_display }}
-
-                        </td>
+            <tbody>
 
 
-                        <!-- من -->
+                {% for leave in leaves %}
 
-                        <td class="leave-date">
-
-                            {{ leave.start_date }}
-
-                        </td>
+                <tr>
 
 
-                        <!-- إلى -->
+                    <!-- =================================
+                         الموظف
+                         ================================= -->
 
-                        <td class="leave-date">
+                    <td class="employee-name">
 
-                            {{ leave.end_date }}
+                        <strong>
 
-                        </td>
+                            {{ leave.employee }}
 
+                        </strong>
 
-                        <!-- السبب -->
-
-                        <td class="leave-reason">
-
-                            {{ leave.reason|default:"-" }}
-
-                        </td>
+                    </td>
 
 
-                        <!-- الحالة -->
+                    <!-- =================================
+                         نوع الإجازة
+                         ================================= -->
 
-                        <td>
+                    <td class="leave-type">
 
-                            {% if leave.status == 'pending' %}
+                        {{ leave.get_leave_type_display }}
+
+                    </td>
+
+
+                    <!-- =================================
+                         تاريخ البداية
+                         ================================= -->
+
+                    <td class="leave-date">
+
+                        {{ leave.start_date }}
+
+                    </td>
+
+
+                    <!-- =================================
+                         تاريخ النهاية
+                         ================================= -->
+
+                    <td class="leave-date">
+
+                        {{ leave.end_date }}
+
+                    </td>
+
+
+                    <!-- =================================
+                         السبب
+                         ================================= -->
+
+                    <td class="leave-reason">
+
+                        {{ leave.reason|default:"-" }}
+
+                    </td>
+
+
+                    <!-- =================================
+                         الحالة
+                         ================================= -->
+
+                    <td>
+
+                        {% if leave.status == 'pending' %}
 
                             <span class="leave-status status-pending">
 
@@ -784,7 +801,7 @@ body {
                             </span>
 
 
-                            {% elif leave.status == 'approved' %}
+                        {% elif leave.status == 'approved' %}
 
                             <span class="leave-status status-approved">
 
@@ -793,7 +810,7 @@ body {
                             </span>
 
 
-                            {% else %}
+                        {% elif leave.status == 'rejected' %}
 
                             <span class="leave-status status-rejected">
 
@@ -801,93 +818,127 @@ body {
 
                             </span>
 
-                            {% endif %}
 
-                        </td>
+                        {% else %}
 
+                            <span class="text-muted">
 
-<!-- الإجراءات -->
+                                —
 
-<td>
+                            </span>
 
-    {% if leave.status == 'pending' %}
+                        {% endif %}
 
-        {% if user.is_superuser %}
-
-            <div class="leave-actions">
-
-                <a
-                    href="{% url 'hr:approve_leave' leave.id %}"
-                    class="hr-action approve-action"
-                >
-                    <i class="fa-solid fa-check"></i>
-                    {% trans "Approve" %}
-                </a>
-
-                <a
-                    href="{% url 'hr:reject_leave' leave.id %}"
-                    class="hr-action reject-action"
-                >
-                    <i class="fa-solid fa-xmark"></i>
-                    {% trans "Reject" %}
-                </a>
-
-            </div>
-
-        {% else %}
-
-            <span class="text-muted">
-                {% trans "Waiting for admin approval" %}
-            </span>
-
-        {% endif %}
-
-    {% else %}
-
-        <span class="text-muted">
-            —
-        </span>
-
-    {% endif %}
-
-</td>
-
-                    </tr>
+                    </td>
 
 
-                    {% empty %}
+                    <!-- =================================
+                         الإجراءات
+                         ================================= -->
+
+                    <td>
+
+                        {% if leave.status == 'pending' %}
+
+                            <div class="leave-actions">
+
+                                {% if can_approve_leaves %}
+
+                                    <!-- زر الموافقة -->
+
+                                    <a
+                                        href="{% url 'hr:approve_leave' leave.id %}"
+                                        class="hr-action approve-action"
+                                    >
+
+                                        <i class="fa-solid fa-check"></i>
+
+                                        {% trans "موافقة" %}
+
+                                    </a>
+
+                                {% endif %}
 
 
-                    <!-- =====================================
-                         لا توجد إجازات
-                         ===================================== -->
+                                {% if can_reject_leaves %}
 
-                    <tr class="empty-row">
+                                    <!-- زر الرفض -->
 
-                        <td colspan="7">
+                                    <a
+                                        href="{% url 'hr:reject_leave' leave.id %}"
+                                        class="hr-action reject-action"
+                                    >
 
-                            <i class="fa-solid fa-calendar-xmark me-2"></i>
+                                        <i class="fa-solid fa-xmark"></i>
 
-                            {% trans "No leaves found" %}
+                                        {% trans "رفض" %}
 
-                        </td>
+                                    </a>
 
-                    </tr>
-
-
-                    {% endfor %}
+                                {% endif %}
 
 
-                </tbody>
+                                {% if not can_approve_leaves and not can_reject_leaves %}
 
-            </table>
+                                    <span class="waiting-text">
 
-        </div>
+                                        {% trans "Waiting for admin approval" %}
 
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                        {% else %}
+
+                            <span class="text-muted">
+
+                                —
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                </tr>
+
+
+                {% empty %}
+
+                <!-- =====================================
+                     لا توجد بيانات
+                     ===================================== -->
+
+                <tr class="empty-row">
+
+                    <td colspan="7">
+
+                        <i class="fa-solid fa-calendar-xmark me-2"></i>
+
+                        {% trans "No leaves found" %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
 
     </div>
 
+
 </div>
 
+
+</div>
 
 {% endblock %}

@@ -313,12 +313,22 @@ def index(request):
     )
 
     # ==============================
-    # بيانات المشتريات (بدون عزل حالياً لأن الموديلات ما فيها company)
+    # بيانات المشتريات (مع عزل الشركة)
     # ==============================
-    purchase_invoices = PurchaseInvoice.objects.all()
-    top_purchases = purchase_invoices.order_by('-total_after_tax')[:5]
-    daily_purchases_payment = purchase_invoices.filter(date_invoice=today)
+    if company:
+        purchase_invoices = PurchaseInvoice.objects.filter(
+            supplier__company=company
+        )
+    else:
+        purchase_invoices = PurchaseInvoice.objects.all()
 
+    top_purchases = purchase_invoices.order_by(
+        "-total_after_tax"
+    )[:5]
+
+    daily_purchases_payment = purchase_invoices.filter(
+        date_invoice=today
+    )
     # ==============================
     # ✅ بيانات المنتجات (عزل بالشركة)
     # ==============================

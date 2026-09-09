@@ -367,6 +367,9 @@ def __init__(self, *args, **kwargs):
 # ==========================
 # نموذج الإجازات
 # ==========================
+# ==========================
+# نموذج الإجازات
+# ==========================
 class LeaveForm(forms.ModelForm):
     LEAVE_TYPES = [
         ("annual", _("Annual Leave")),
@@ -378,42 +381,63 @@ class LeaveForm(forms.ModelForm):
     leave_type = forms.ChoiceField(
         choices=[("", _("Select Leave Type"))] + LEAVE_TYPES,
         label=_("Leave Type"),
-        widget=forms.Select(attrs={"class": "form-control"})
+        widget=forms.Select(
+            attrs={"class": "form-control"}
+        )
     )
 
     start_date = forms.DateField(
         label=_("Start Date"),
-        widget=forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+        widget=forms.DateInput(
+            attrs={
+                "class": "form-control",
+                "type": "date"
+            }
+        ),
         initial=timezone.now().date()
     )
 
     end_date = forms.DateField(
         label=_("End Date"),
-        widget=forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+        widget=forms.DateInput(
+            attrs={
+                "class": "form-control",
+                "type": "date"
+            }
+        ),
         initial=timezone.now().date()
     )
 
     class Meta:
         model = Leave
-        fields = ["employee", "leave_type", "start_date", "end_date", "reason", "status"]
+        fields = [
+            "employee",
+            "leave_type",
+            "start_date",
+            "end_date",
+            "reason",
+        ]
+
         labels = {
             "employee": _("Employee"),
             "leave_type": _("Leave Type"),
             "start_date": _("From Date"),
             "end_date": _("To Date"),
             "reason": _("Reason"),
-            "status": _("Status"),
-        }
-        widgets = {
-            "employee": forms.Select(attrs={"class": "form-control"}),
-            "reason": forms.Textarea(attrs={
-                "class": "form-control",
-                "rows": 3,
-                "placeholder": _("Write the leave reason here")
-            }),
-            "status": forms.Select(attrs={"class": "form-control"}),
         }
 
+        widgets = {
+            "employee": forms.Select(
+                attrs={"class": "form-control"}
+            ),
+            "reason": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": _("Write the leave reason here")
+                }
+            ),
+        }
 
 # ==========================
 # نموذج التقييم

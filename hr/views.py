@@ -7,6 +7,7 @@ from django.db.models import Count, Avg, Max
 from django.contrib import messages
 from django.conf import settings
 from django.db import transaction
+from .models import HRPermission
 from django.utils.formats import date_format
 from accounts.models import Branch as AccountBranch
 from django.utils.translation import gettext as _
@@ -628,25 +629,54 @@ def add_shift(request):
 
 @login_required
 @hr_permission_required("attendance_edit")
-def delete_shift(request, shift_id):
+def shifts_view(request):
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    shift = get_object_or_404(Shift, company=company, id=shift_id)
+    _ensure_default_shifts(company)
+
+    shifts = Shift.objects.filter(
+        company=company
+    ).order_by("shift_order", "id")
+
+    return render(
+        request,
+        "hr/shifts_list.html",
+        {
+            "shifts": shifts,
+        }
+    )
+@login_required
+@hr_permission_required("attendance_edit")
+def delete_shift(request, shift_id):
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    shift = get_object_or_404(
+        Shift,
+        company=company,
+        id=shift_id
+    )
 
     if (shift.shift_name or "").strip() == "عطلة":
-        messages.error(request, "❌ لا يمكن حذف شفت عطلة لأنه شفت افتراضي للنظام.")
+        messages.error(
+            request,
+            "❌ لا يمكن حذف شفت عطلة لأنه شفت افتراضي للنظام."
+        )
         return redirect("hr:shifts")
 
     shift.delete()
+
+    messages.success(
+        request,
+        "✅ تم حذف الشفت بنجاح."
+    )
+
     return redirect("hr:shifts")
-
-from django.shortcuts import render
-
-def shifts_view(request):
-    shifts = Shift.objects.all()
-    return render(request, "hr/shifts_list.html", {"shifts": shifts})
 # ==========================
 # جدول الموظفين
 # ==========================
@@ -800,12 +830,47 @@ def edit_shift(request, shift_id):
 @hr_permission_required("leaves_view")
 def leaves_list(request):
     company = _company_required(request)
+
     if not company:
         return redirect("accounts:login")
 
-    leaves = Leave.objects.filter(company=company).select_related("employee").order_by("-created_at")
-    return render(request, "hr/leaves_list.html", {"leaves": leaves})
+    leaves = (
+        Leave.objects
+        .filter(company=company)
+        .select_related("employee")
+        .order_by("-created_at")
+    )
 
+    # صلاحيات الموافقة والرفض
+    can_approve_leaves = False
+    can_reject_leaves = False
+
+    if request.user.is_superuser:
+        can_approve_leaves = True
+        can_reject_leaves = True
+
+    else:
+        try:
+            hr_perm = HRPermission.objects.get(
+                user=request.user,
+                company=company
+            )
+
+            can_approve_leaves = hr_perm.leaves_approve
+            can_reject_leaves = hr_perm.leaves_reject
+
+        except HRPermission.DoesNotExist:
+            pass
+
+    return render(
+        request,
+        "hr/leaves_list.html",
+        {
+            "leaves": leaves,
+            "can_approve_leaves": can_approve_leaves,
+            "can_reject_leaves": can_reject_leaves,
+        }
+    )
 
 @login_required
 @hr_permission_required("leaves_add")
@@ -816,8 +881,11 @@ def add_leave(request):
 
     message = None
     employee = _get_logged_employee(request, company)
+
     if request.user.is_authenticated and not employee:
-        message = _("Employee is not linked to the user account or not in the same company.")
+        message = _(
+            "Employee is not linked to the user account or not in the same company."
+        )
 
     if request.method == "POST":
         form = LeaveForm(request.POST)
@@ -825,29 +893,59 @@ def add_leave(request):
 
         if form.is_valid():
             leave = form.save(commit=False)
+
+            # =========================================
+            # ربط الإجازة بالشركة الحالية
+            # =========================================
             if hasattr(leave, "company_id"):
                 leave.company = company
 
+            # =========================================
+            # تحديد الموظف
+            # =========================================
             if employee:
                 leave.employee = employee
             else:
                 if leave.employee_id:
-                    if not Employee.objects.filter(company=company, id=leave.employee_id).exists():
-                        messages.error(request, "❌ الموظف غير تابع لشركتك.")
+                    if not Employee.objects.filter(
+                        company=company,
+                        id=leave.employee_id
+                    ).exists():
+                        messages.error(
+                            request,
+                            "❌ الموظف غير تابع لشركتك."
+                        )
                         return redirect("hr:add_leave")
 
+            # =========================================
+            # كل طلب إجازة جديد يبدأ قيد الانتظار
+            # =========================================
+            leave.status = "pending"
+
+            # =========================================
+            # حفظ الطلب
+            # =========================================
             leave.save()
+
             return redirect("hr:leaves")
+
     else:
         initial_data = {}
+
         if employee:
             initial_data["employee"] = employee.id
 
         form = LeaveForm(initial=initial_data)
         _limit_leave_form_choices(form, company)
 
-    return render(request, "hr/add_leave.html", {"form": form, "message": message})
-
+    return render(
+        request,
+        "hr/add_leave.html",
+        {
+            "form": form,
+            "message": message,
+        }
+    )
 
 @login_required
 @hr_permission_required("leaves_approve")
@@ -857,13 +955,6 @@ def approve_leave(request, leave_id):
     if not company:
         return redirect("accounts:login")
 
-    if (
-        not request.user.is_superuser
-        or not hasattr(request.user, "profile")
-        or request.user.profile.company_id != company.id
-    ):
-        return HttpResponseForbidden("غير مصرح لك بالموافقة.")
-
     leave = get_object_or_404(
         Leave,
         company=company,
@@ -871,19 +962,15 @@ def approve_leave(request, leave_id):
     )
 
     leave.status = "approved"
-    leave.save()
+    leave.save(update_fields=["status"])
 
     return redirect("hr:leaves")
+
 
 @login_required
 @hr_permission_required("leaves_reject")
 def reject_leave(request, leave_id):
 
-    # =========================================
-    # Admin فقط
-    # =========================================
-    if not request.user.is_superuser:
-        return HttpResponseForbidden("غير مصرح لك برفض طلبات الإجازات.")
 
     company = _company_required(request)
 
@@ -2997,7 +3084,7 @@ def evaluation_fill_peer(request, eval_id, target_id):
     if not evaluator_emp:
         messages.error(
             request,
-            "المستخدم غير مرتبط بموظف داخل نفس الشركة."
+            "المقييم لا يستطيع تقييم بصفة زميل"
         )
 
         return redirect(
@@ -3432,12 +3519,27 @@ def evaluation_fill_manager(request, eval_id, target_id):
     if not company:
         return redirect("accounts:login")
 
+    # =====================================================
+    # هل المستخدم هو المدير الرئيسي / Superuser؟
+    # =====================================================
+
+    is_main_manager = request.user.is_superuser
+
+    # =====================================================
+    # جلب الموظف المرتبط باليوزر
+    # للمدير الرئيسي قد لا يوجد Employee وهذا مسموح
+    # =====================================================
+
     evaluator_emp = _get_logged_employee(
         request,
         company
     )
 
-    if not evaluator_emp:
+    # =====================================================
+    # الموظف العادي/مدير القسم يجب أن يكون مرتبطاً بموظف
+    # =====================================================
+
+    if not evaluator_emp and not is_main_manager:
 
         messages.error(
             request,
@@ -3448,11 +3550,19 @@ def evaluation_fill_manager(request, eval_id, target_id):
             "hr:evaluations"
         )
 
+    # =====================================================
+    # التقييم
+    # =====================================================
+
     evaluation = get_object_or_404(
         Evaluation,
         company=company,
         id=eval_id
     )
+
+    # =====================================================
+    # الهدف
+    # =====================================================
 
     target = get_object_or_404(
         EvaluationTarget,
@@ -3462,7 +3572,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
     )
 
     # =====================================================
-    # التأكد من وجود موظف
+    # التأكد من وجود موظف للهدف
     # =====================================================
 
     if not target.employee:
@@ -3479,47 +3589,30 @@ def evaluation_fill_manager(request, eval_id, target_id):
         )
 
     # =====================================================
-    # التأكد أن المستخدم مدير للقسم
+    # صلاحيات المدير الرئيسي
+    # =====================================================
+    # المدير الرئيسي يستطيع تقييم أي موظف داخل الشركة
+    # ولا يحتاج أن يكون Employee أو Supervisor
     # =====================================================
 
-    is_department_manager = Employee.objects.filter(
-        company=company,
-        active=True,
-        department_id=evaluator_emp.department_id,
-        supervisor_id=evaluator_emp.id
-    ).exists()
+    if not is_main_manager:
 
-    if not is_department_manager:
+        # =================================================
+        # التأكد أن المستخدم مدير للقسم
+        # =================================================
 
-        messages.error(
-            request,
-            "لا يوجد لديك صلاحية مدير."
-        )
+        is_department_manager = Employee.objects.filter(
+            company=company,
+            active=True,
+            department_id=evaluator_emp.department_id,
+            supervisor_id=evaluator_emp.id
+        ).exists()
 
-        return redirect(
-            f"{reverse('hr:evaluation_record_start')}?"
-            f"evaluation={evaluation.id}"
-            f"&role=manager"
-            f"&employee={target.employee_id}"
-        )
-
-    # =====================================================
-    # التأكد أن الموظف من نفس القسم
-    # =====================================================
-
-    if (
-        evaluator_emp.department_id
-        and target.employee.department_id
-    ):
-
-        if (
-            evaluator_emp.department_id
-            != target.employee.department_id
-        ):
+        if not is_department_manager:
 
             messages.error(
                 request,
-                "غير مسموح تقييم موظف خارج قسمك كمدير."
+                "لا يوجد لديك صلاحية مدير."
             )
 
             return redirect(
@@ -3528,6 +3621,32 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 f"&role=manager"
                 f"&employee={target.employee_id}"
             )
+
+        # =================================================
+        # التأكد أن الموظف من نفس القسم
+        # =================================================
+
+        if (
+            evaluator_emp.department_id
+            and target.employee.department_id
+        ):
+
+            if (
+                evaluator_emp.department_id
+                != target.employee.department_id
+            ):
+
+                messages.error(
+                    request,
+                    "غير مسموح تقييم موظف خارج قسمك كمدير."
+                )
+
+                return redirect(
+                    f"{reverse('hr:evaluation_record_start')}?"
+                    f"evaluation={evaluation.id}"
+                    f"&role=manager"
+                    f"&employee={target.employee_id}"
+                )
 
     # =====================================================
     # معايير التقييم
@@ -3542,12 +3661,32 @@ def evaluation_fill_manager(request, eval_id, target_id):
     # الدرجات المحفوظة مسبقاً
     # =====================================================
 
-    saved_scores = EvaluationScore.objects.filter(
-        company=company,
-        target=target,
-        evaluator=evaluator_emp,
-        role="manager"
-    )
+    if evaluator_emp:
+
+        saved_scores = EvaluationScore.objects.filter(
+            company=company,
+            target=target,
+            evaluator=evaluator_emp,
+            role="manager"
+        )
+
+    else:
+
+        # =================================================
+        # المدير الرئيسي ليس مرتبطاً بـ Employee
+        # لذلك evaluator = NULL
+        # =================================================
+
+        saved_scores = EvaluationScore.objects.filter(
+            company=company,
+            target=target,
+            evaluator__isnull=True,
+            role="manager"
+        )
+
+    # =====================================================
+    # الدرجات الحالية
+    # =====================================================
 
     existing_scores = {
         score.criteria_id: score.value
@@ -3555,7 +3694,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
     }
 
     # =====================================================
-    # الملاحظات المحفوظة مسبقاً
+    # الملاحظات الحالية
     # =====================================================
 
     existing_notes = {
@@ -3564,7 +3703,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
     }
 
     # =====================================================
-    # المرفقات المحفوظة مسبقاً
+    # المرفقات الحالية
     # =====================================================
 
     existing_attachments = {}
@@ -3579,7 +3718,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
         )
 
     # =====================================================
-    # الحفظ
+    # حفظ التقييم
     # =====================================================
 
     if request.method == "POST":
@@ -3610,7 +3749,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 v = 0
 
             # =================================================
-            # التأكد من الدرجة
+            # حصر الدرجة بين 0 و100
             # =================================================
 
             if v < 0:
@@ -3632,34 +3771,53 @@ def evaluation_fill_manager(request, eval_id, target_id):
             ).strip()
 
             # =================================================
-            # حفظ الدرجة والملاحظات
+            # البحث عن التقييم الموجود
             # =================================================
 
-            score, created = (
-                EvaluationScore.objects.update_or_create(
+            score = (
+                EvaluationScore.objects.filter(
+                    company=company,
+                    target=target,
+                    criteria=c,
+                    evaluator=evaluator_emp,
+                    role="manager"
+                ).first()
+            )
+
+            # =================================================
+            # إذا لم يكن موجوداً ننشئه
+            # =================================================
+
+            if score:
+
+                score.value = v
+                score.notes = notes
+                score.save(
+                    update_fields=[
+                        "value",
+                        "notes"
+                    ]
+                )
+
+            else:
+
+                score = EvaluationScore.objects.create(
                     company=company,
                     target=target,
                     criteria=c,
                     evaluator=evaluator_emp,
                     role="manager",
-                    defaults={
-                        "value": v,
-                        "notes": notes,
-                    }
+                    value=v,
+                    notes=notes
                 )
-            )
 
             # =================================================
-            # المرفقات
+            # المرفقات الجديدة
             # =================================================
 
             attachments = request.FILES.getlist(
                 f"attachment_{c.id}"
             )
-
-            # =================================================
-            # حفظ جميع المرفقات
-            # =================================================
 
             for attachment in attachments:
 
@@ -3682,7 +3840,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
         )
 
     # =====================================================
-    # عرض الصفحة
+    # عرض صفحة التقييم
     # =====================================================
 
     return render(
@@ -3698,6 +3856,7 @@ def evaluation_fill_manager(request, eval_id, target_id):
             "role_label": "تقييم مدير",
         }
     )
+
 
 @login_required
 @hr_permission_required("add_evaluationtype")
@@ -4128,24 +4287,16 @@ def evaluation_record_start(request):
                 f"&role={role}"
             )
 
-        target, created = (
-            EvaluationTarget.objects.get_or_create(
-                company=company,
-                evaluation=evaluation,
-                employee=employee,
-                defaults={
-                    "department": (
-                        employee.department
-                        if hasattr(
-                            employee,
-                            "department"
-                        )
-                        else None
-                    )
-                }
+        target = EvaluationTarget.objects.create(
+            company=company,
+            evaluation=evaluation,
+            employee=employee,
+            department=(
+                employee.department
+                if hasattr(employee, "department")
+                else None
             )
         )
-
         if role not in [
             "peer",
             "manager"

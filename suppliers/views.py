@@ -84,12 +84,13 @@ def supplier_view(request, supplier_id):
 @login_required
 def supplier_add(request):
     company = _get_company(request)
+
     if not company:
         return redirect("/suppliers/")
 
     if request.method == "POST":
         supplier = Supplier.objects.create(
-            company=company,  # ✅ العزل
+            company=company,
             commercial_name=request.POST.get("commercial_name"),
             phone=request.POST.get("phone"),
             address=request.POST.get("address"),
@@ -97,12 +98,31 @@ def supplier_add(request):
             tax_number=request.POST.get("tax_number"),
         )
 
+        # =========================================
+        # الحساب الأب للموردين - حسب الشركة
+        # =========================================
         parent_account, created = Account.objects.get_or_create(
+            company=company,
             code="20000101",
-            defaults={"name": "الموردين", "is_active": True, "parent": None}
+            defaults={
+                "name": "الموردين",
+                "is_active": True,
+                "parent": None,
+            }
         )
 
-        last_child = Account.objects.filter(parent=parent_account).order_by("-code").first()
+        # =========================================
+        # آخر حساب فرعي للموردين - حسب الشركة
+        # =========================================
+        last_child = (
+            Account.objects
+            .filter(
+                company=company,
+                parent=parent_account
+            )
+            .order_by("-code")
+            .first()
+        )
 
         if last_child and str(last_child.code).isdigit():
             new_code = int(last_child.code) + 1
@@ -112,25 +132,33 @@ def supplier_add(request):
             except Exception:
                 new_code = 20000101001
 
+        # =========================================
+        # إنشاء حساب المورد
+        # =========================================
         account = Account.objects.create(
+            company=company,
             code=str(new_code),
             name=f"مورد - {supplier.commercial_name}",
             parent=parent_account,
-            is_active=True
+            is_active=True,
         )
 
+        # ربط الحساب بالمورد
         supplier.account = account
         supplier.save()
 
         messages.success(request, "تم إضافة المورد بنجاح")
+
         next_url = request.GET.get("next")
+
         if next_url:
-            return redirect(f"{next_url}?supplier_id={supplier.id}")
+            return redirect(
+                f"{next_url}?supplier_id={supplier.id}"
+            )
 
         return redirect("suppliers_list")
 
     return render(request, "suppliers/supplier_add.html")
-
 
 # ===========================
 # ➕ إضافة مورد من فاتورة مشتريات
