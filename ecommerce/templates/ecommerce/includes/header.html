@@ -12,27 +12,11 @@
 
 <div class="announcement-slider">
 
-    {% for announcement in store.announcements.all %}
-
-        {% if announcement.is_active %}
-
-            <div class="announcement-item {% if forloop.first %}active{% endif %}">
-                📢 {{ announcement.text }}
-            </div>
-
-        {% endif %}
-
-    {% empty %}
-
-        <div class="announcement-item active">
-            🚚 شحن سريع إلى جميع المناطق
-        </div>
-
-    {% endfor %}
-
-</div>
+    <div class="announcement-item active">
+        🚚 شحن سريع إلى جميع المناطق
     </div>
 
+</div>
 
     <!-- ======================================================
          STORE HEADER
