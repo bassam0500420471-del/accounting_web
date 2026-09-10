@@ -2167,6 +2167,10 @@ def pos_invoice_print(
 
     company = _get_company(request)
 
+    has_tax_number = _has_tax_number(
+        company
+    )
+
     invoice = get_object_or_404(
 
         Invoice.objects.select_related(
@@ -2185,7 +2189,12 @@ def pos_invoice_print(
         .all()
     )
 
-    subtotal = Decimal(
+    # -----------------------------------------------------
+    # تجهيز أصناف الفاتورة للطباعة
+    # -----------------------------------------------------
+    print_items = []
+
+    subtotal_before_tax = Decimal(
         "0.00"
     )
 
@@ -2223,28 +2232,121 @@ def pos_invoice_print(
             discount * quantity
         )
 
-        after_discount = (
+        before_tax = (
             line_total
             - discount_value
         )
 
-        tax_value = (
-            after_discount
-            * tax
-            / Decimal("100")
+        if before_tax < Decimal("0.00"):
+
+            before_tax = Decimal(
+                "0.00"
+            )
+
+        # -------------------------------------------------
+        # الضريبة تعمل فقط إذا كان للشركة رقم ضريبي
+        # -------------------------------------------------
+        if has_tax_number:
+
+            tax_value = (
+                before_tax
+                * tax
+                / Decimal("100")
+            )
+
+        else:
+
+            tax_value = Decimal(
+                "0.00"
+            )
+
+        item_total = (
+            before_tax
+            + tax_value
         )
 
-        subtotal += line_total
+        # -------------------------------------------------
+        # تقريب القيم
+        # -------------------------------------------------
+        quantity = quantity.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        price = price.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        before_tax = before_tax.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        discount_value = discount_value.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        tax_value = tax_value.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        item_total = item_total.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # -------------------------------------------------
+        # إضافة الصنف للقالب
+        # -------------------------------------------------
+        print_items.append(
+            {
+                "product_name":
+                    (
+                        item.product.name
+                        if item.product
+                        else "صنف"
+                    ),
+
+                "quantity":
+                    quantity,
+
+                "price":
+                    price,
+
+                "before_tax":
+                    before_tax,
+
+                "tax":
+                    tax_value,
+
+                "total":
+                    item_total,
+            }
+        )
+
+        subtotal_before_tax += (
+            before_tax
+        )
 
         discount_total += (
             discount_value
         )
 
-        tax_amount += tax_value
+        tax_amount += (
+            tax_value
+        )
 
-    subtotal = subtotal.quantize(
-        Decimal("0.01"),
-        rounding=ROUND_HALF_UP
+    # -----------------------------------------------------
+    # تقريب المجاميع
+    # -----------------------------------------------------
+    subtotal_before_tax = (
+        subtotal_before_tax.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
     )
 
     discount_total = (
@@ -2259,6 +2361,18 @@ def pos_invoice_print(
             Decimal("0.01"),
             rounding=ROUND_HALF_UP
         )
+    )
+
+    # -----------------------------------------------------
+    # إجمالي الفاتورة المحفوظ
+    # -----------------------------------------------------
+    grand_total = Decimal(
+        str(
+            invoice.total or 0
+        )
+    ).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP
     )
 
     # -----------------------------------------------------
@@ -2283,13 +2397,16 @@ def pos_invoice_print(
     )
 
     # -----------------------------------------------------
-    # QR
+    # QR Code
     # -----------------------------------------------------
     qr_code = _generate_invoice_qr(
         invoice,
         tax_amount
     )
 
+    # -----------------------------------------------------
+    # إرسال البيانات للقالب
+    # -----------------------------------------------------
     return render(
         request,
         "pos/invoice_print.html",
@@ -2300,14 +2417,26 @@ def pos_invoice_print(
             "items":
                 items,
 
+            "print_items":
+                print_items,
+
+            "has_tax_number":
+                has_tax_number,
+
             "subtotal":
-                subtotal,
+                subtotal_before_tax,
+
+            "subtotal_before_tax":
+                subtotal_before_tax,
 
             "discount_total":
                 discount_total,
 
             "tax_amount":
                 tax_amount,
+
+            "grand_total":
+                grand_total,
 
             "total_paid":
                 total_paid,
