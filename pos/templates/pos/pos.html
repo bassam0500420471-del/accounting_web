@@ -577,7 +577,7 @@ main,
    MOBILE
    ========================================================= */
 
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
 
     .pos-layout {
         flex-direction: column;
@@ -1030,17 +1030,7 @@ let activeProductCategory = null;
 let allProductsShown = false;
 
 let activeInvoiceNameElement = null;
-/* =========================================================
-   TAX STATUS
-   ========================================================= */
 
-const HAS_TAX_NUMBER =
-    {% if has_tax_number %}true{% else %}false{% endif %};
-
-console.log(
-    "POS TAX STATUS:",
-    HAS_TAX_NUMBER ? "REGISTERED" : "NOT REGISTERED"
-);
 
 /* =========================================================
    SAFE STORAGE
@@ -1400,45 +1390,31 @@ function createInvoice(
 
                 <thead>
 
-<thead>
+                    <tr>
 
-<tr>
+                        <th>
+                            {% trans "Item" %}
+                        </th>
 
-    <th>
-        {% trans "Item" %}
-    </th>
+                        <th>
+                            الكمية
+                        </th>
 
-    <th>
-        الكمية
-    </th>
+                        <th>
+                            {% trans "Price" %}
+                        </th>
 
-    <th>
-        {% trans "Price" %}
-    </th>
+                        <th>
+                            {% trans "Total" %}
+                        </th>
 
-    {% if has_tax_number %}
+                        <th>
+                            X
+                        </th>
 
-    <th>
-        قبل الضريبة
-    </th>
+                    </tr>
 
-    <th>
-        الضريبة
-    </th>
-
-    {% endif %}
-
-    <th>
-        الإجمالي
-    </th>
-
-    <th>
-        X
-    </th>
-
-</tr>
-
-</thead>
+                </thead>
 
 
                 <tbody class="invoice-body"></tbody>
@@ -1448,97 +1424,32 @@ function createInvoice(
         </div>
 
 
-<div class="invoice-total-box">
+        <div class="invoice-total-box">
 
-    {% if has_tax_number %}
+            <div class="invoice-total-row">
 
-    <div class="invoice-total-row">
+                <span class="invoice-total-label">
+                    {% trans "Total" %}
+                </span>
 
-        <span class="invoice-total-label">
-            الإجمالي قبل الضريبة
-        </span>
+                <span class="invoice-total-value">
 
-        <span class="invoice-total-value">
+                    <span class="grand-total-text">
+                        0.00
+                    </span>
 
-            <span class="subtotal-before-tax-text">
-                0.00
-            </span>
+                    {% trans "SAR" %}
 
-            {% trans "SAR" %}
+                </span>
 
-        </span>
+                <span
+                    class="invoice-total-empty"
+                ></span>
 
-        <span class="invoice-total-empty"></span>
+            </div>
 
-    </div>
+        </div>
 
-
-    <div class="invoice-total-row">
-
-        <span class="invoice-total-label">
-            قيمة الضريبة
-        </span>
-
-        <span class="invoice-total-value">
-
-            <span class="tax-total-text">
-                0.00
-            </span>
-
-            {% trans "SAR" %}
-
-        </span>
-
-        <span class="invoice-total-empty"></span>
-
-    </div>
-
-
-    <div class="invoice-total-row">
-
-        <span class="invoice-total-label">
-            الإجمالي بعد الضريبة
-        </span>
-
-        <span class="invoice-total-value">
-
-            <span class="grand-total-text">
-                0.00
-            </span>
-
-            {% trans "SAR" %}
-
-        </span>
-
-        <span class="invoice-total-empty"></span>
-
-    </div>
-
-    {% else %}
-
-    <div class="invoice-total-row">
-
-        <span class="invoice-total-label">
-            الإجمالي
-        </span>
-
-        <span class="invoice-total-value">
-
-            <span class="grand-total-text">
-                0.00
-            </span>
-
-            {% trans "SAR" %}
-
-        </span>
-
-        <span class="invoice-total-empty"></span>
-
-    </div>
-
-    {% endif %}
-
-</div>
 
         <button
             type="button"
@@ -2094,7 +2005,9 @@ function addProductToInvoice(product){
 
     const stock =
         parseFloat(
-            product.dataset.stock
+            String(
+                product.dataset.stock
+            ).replace(",", ".")
         ) || 0;
 
 
@@ -2104,7 +2017,9 @@ function addProductToInvoice(product){
 
     const price =
         parseFloat(
-            product.dataset.price
+            String(
+                product.dataset.price
+            ).replace(",", ".")
         ) || 0;
 
 
@@ -2156,6 +2071,16 @@ function addProductToInvoice(product){
             price:
                 price,
 
+            /*
+             * استخدام كمية المخزون الفعلية
+             * مع الحفاظ على الكسور العشرية.
+             *
+             * مثال:
+             * 3.50 → 3.50
+             * 2.25 → 2.25
+             * 1.00 → 1.00
+             */
+
             qty:
                 1,
 
@@ -2165,8 +2090,9 @@ function addProductToInvoice(product){
             discount_type:
                 "percent",
 
-tax:
-    HAS_TAX_NUMBER ? 15 : 0,
+            tax:
+                0,
+
             allowNegative:
                 allowNegative
 
@@ -2178,8 +2104,12 @@ tax:
             inv.items[pid];
 
 
+        const newQty =
+            Number(item.qty || 0) + 1;
+
+
         if(
-            item.qty + 1 > stock &&
+            newQty > stock &&
             !item.allowNegative
         ){
 
@@ -2204,7 +2134,8 @@ tax:
         }
 
 
-        item.qty++;
+        item.qty =
+            newQty;
 
     }
 
@@ -2214,7 +2145,6 @@ tax:
     );
 
 }
-
 
 /* =========================================================
    RENDER INVOICE
@@ -2254,16 +2184,9 @@ function renderInvoice(id){
         "";
 
 
-let subtotalBeforeTax =
-    0;
+    let total =
+        0;
 
-
-let taxTotal =
-    0;
-
-
-let total =
-    0;
 
     for(
         let pid in inv.items
@@ -2300,33 +2223,14 @@ let total =
         }
 
 
-const lineBeforeTax =
-    subtotal -
-    discountAmount;
+        const lineTotal =
+            subtotal -
+            discountAmount;
 
-let taxRate = 0;
-let taxAmount = 0;
 
-if (HAS_TAX_NUMBER) {
+        total +=
+            lineTotal;
 
-    taxRate =
-        Number(item.tax) || 0;
-
-    taxAmount =
-        lineBeforeTax *
-        taxRate /
-        100;
-
-}
-
-const lineTotal =
-    lineBeforeTax +
-    taxAmount;
-
-subtotalBeforeTax += lineBeforeTax;
-taxTotal += taxAmount;
-
-total += lineTotal;
 
         tbody.innerHTML += `
 
@@ -2376,27 +2280,15 @@ total += lineTotal;
                 </td>
 
 
-<td>
-    ${Number(item.price).toFixed(2)}
-</td>
+                <td>
+                    ${Number(item.price).toFixed(2)}
+                </td>
 
-${
-    HAS_TAX_NUMBER
-    ? `
-        <td>
-            ${lineBeforeTax.toFixed(2)}
-        </td>
 
-        <td>
-            ${taxAmount.toFixed(2)}
-        </td>
-    `
-    : ""
-}
+                <td>
+                    ${lineTotal.toFixed(2)}
+                </td>
 
-<td>
-    ${lineTotal.toFixed(2)}
-</td>
 
                 <td>
 
@@ -2419,32 +2311,7 @@ ${
 
     inv.total =
         total;
-const subtotalBeforeTaxText =
-    document.querySelector(
-        `.invoice-content[data-id="${id}"] .subtotal-before-tax-text`
-    );
 
-
-if(subtotalBeforeTaxText){
-
-    subtotalBeforeTaxText.innerText =
-        subtotalBeforeTax.toFixed(2);
-
-}
-
-
-const taxTotalText =
-    document.querySelector(
-        `.invoice-content[data-id="${id}"] .tax-total-text`
-    );
-
-
-if(taxTotalText){
-
-    taxTotalText.innerText =
-        taxTotal.toFixed(2);
-
-}
 
     const grandTotalText =
         document.querySelector(
@@ -2611,10 +2478,9 @@ function saveInvoice(id){
             discount_type:
                 inv.items[pid].discount_type,
 
-tax:
-    HAS_TAX_NUMBER
-        ? (Number(inv.items[pid].tax) || 0)
-        : 0
+            tax:
+                inv.items[pid].tax
+
         });
 
     }
