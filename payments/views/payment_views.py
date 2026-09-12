@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from django.core.exceptions import PermissionDenied
-
+from pos.models import PaymentMethod
 from payments.models import PaymentVoucher
 from payments.services.payment_journal_service import post_payment_voucher
 from suppliers.models import Supplier
@@ -56,17 +56,17 @@ def payment_create(request):
     # طرق الدفع
     # طريقة الدفع مرتبطة بالحساب تلقائياً
     # ==================================================
-    from payments.models import PaymentMethod
+    
 
     payment_methods = (
         PaymentMethod.objects
         .filter(
-            company=company,
-            active=True
+            company=company
         )
         .select_related("account")
         .order_by("name")
     )
+
     if request.method == "POST":
 
         party_type = (
