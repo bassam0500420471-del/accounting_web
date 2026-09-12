@@ -10,13 +10,16 @@
 
     <div class="top-announcement-bar">
 
-<div class="announcement-slider">
+        <div class="announcement-slider">
 
-    <div class="announcement-item active">
-        🚚 شحن سريع إلى جميع المناطق
-    </div>
+            <div class="announcement-item active">
+                🚚 شحن سريع إلى جميع المناطق
+            </div>
 
-</div>
+        </div>
+
+    </div> <!-- إغلاق top-announcement-bar -->
+
 
     <!-- ======================================================
          STORE HEADER
@@ -159,8 +162,7 @@
 
     </header>
 
-</div>
-
+</div> <!-- إغلاق store-fixed-header -->
 
 
 <style>
@@ -194,24 +196,22 @@
     width: 100%;
 
     height: 64px;
-
     min-height: 64px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     overflow: hidden;
 
     background: #111827;
-
     color: #ffffff;
 
     position: relative;
 
 }
+
 
 /* ==========================================================
    منطقة السلايدر
@@ -222,13 +222,11 @@
     position: relative;
 
     width: 100%;
-
     height: 100%;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
 }
@@ -255,9 +253,7 @@
     transform: translateY(12px);
 
     transition:
-
         opacity .5s ease,
-
         transform .5s ease;
 
     pointer-events: none;
@@ -285,9 +281,7 @@
     position: relative !important;
 
     top: auto !important;
-
     left: auto !important;
-
     right: auto !important;
 
     width: 100% !important;
@@ -329,7 +323,6 @@ body {
     .top-announcement-bar {
 
         height: 46px;
-
         min-height: 46px;
 
     }
@@ -354,7 +347,6 @@ body {
     .top-announcement-bar {
 
         height: 44px;
-
         min-height: 44px;
 
     }
@@ -368,7 +360,6 @@ body {
 }
 
 </style>
-
 
 
 <script>
@@ -386,7 +377,9 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     if (!announcements.length) {
+
         return;
+
     }
 
     let current = 0;

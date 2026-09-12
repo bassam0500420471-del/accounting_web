@@ -34,59 +34,188 @@ def _get_company(request):
 def payment_create(request):
     company = _get_company(request)
 
-    suppliers = Supplier.objects.filter(company=company).order_by("commercial_name")
-    customers = Customer.objects.filter(company=company).order_by("name")
-    cost_centers = CostCenter.objects.filter(company=company, is_active=True).order_by("name")
-    cash_accounts = Account.objects.filter(company=company, is_active=True).order_by("code")
-    other_accounts = Account.objects.filter(company=company, is_active=True).order_by("code")
+    suppliers = Supplier.objects.filter(
+        company=company
+    ).order_by("commercial_name")
 
+    customers = Customer.objects.filter(
+        company=company
+    ).order_by("name")
+
+    cost_centers = CostCenter.objects.filter(
+        company=company,
+        is_active=True
+    ).order_by("name")
+
+    other_accounts = Account.objects.filter(
+        company=company,
+        is_active=True
+    ).order_by("code")
+
+    # ==================================================
+    # طرق الدفع
+    # طريقة الدفع مرتبطة بالحساب تلقائياً
+    # ==================================================
+    from payments.models import PaymentMethod
+
+    payment_methods = (
+        PaymentMethod.objects
+        .filter(
+            company=company,
+            active=True
+        )
+        .select_related("account")
+        .order_by("name")
+    )
     if request.method == "POST":
 
-        party_type = (request.POST.get("party_type") or "").strip()
-
-        print("PARTY TYPE =", party_type)
-        print("POST DATA =", request.POST)
+        party_type = (
+            request.POST.get("party_type") or ""
+        ).strip()
 
         supplier_id = request.POST.get("supplier")
         customer_id = request.POST.get("customer")
         cost_center_id = request.POST.get("cost_center")
         other_account_id = request.POST.get("other_account")
-        cash_account_id = request.POST.get("cash_account")
-        amount = (request.POST.get("amount") or "").strip()
-        description = (request.POST.get("description") or "").strip()
 
-        if not cash_account_id or not amount:
-            messages.error(request, "الرجاء تعبئة حساب الصندوق/البنك والمبلغ")
-            return redirect("payments:payment_create")
+        # ==================================================
+        # طريقة الدفع
+        # ==================================================
+        payment_method_id = (
+            request.POST.get("payment_method") or ""
+        ).strip()
 
-        try:
-            amount_decimal = Decimal(amount)
-            if amount_decimal <= Decimal("0.00"):
-                messages.error(request, "المبلغ يجب أن يكون أكبر من صفر")
-                return redirect("payments:payment_create")
-        except (InvalidOperation, TypeError):
-            messages.error(request, "قيمة المبلغ غير صحيحة")
-            return redirect("payments:payment_create")
+        amount = (
+            request.POST.get("amount") or ""
+        ).strip()
 
-        cash_account = Account.objects.filter(
-            company=company,
-            is_active=True,
-            id=cash_account_id
-        ).first()
+        description = (
+            request.POST.get("description") or ""
+        ).strip()
+
+        # ==================================================
+        # التحقق من طريقة الدفع
+        # ==================================================
+
+        if (
+            not payment_method_id
+            or payment_method_id == "None"
+        ):
+            messages.error(
+                request,
+                "الرجاء اختيار طريقة الدفع"
+            )
+            return redirect(
+                "payments:payment_create"
+            )
+
+        if not payment_method_id.isdigit():
+            messages.error(
+                request,
+                "طريقة الدفع غير صحيحة"
+            )
+            return redirect(
+                "payments:payment_create"
+            )
+
+        payment_method = (
+            PaymentMethod.objects
+            .filter(
+                id=payment_method_id,
+                company=company
+            )
+            .select_related("account")
+            .first()
+        )
+
+        if not payment_method:
+            messages.error(
+                request,
+                "طريقة الدفع غير موجودة"
+            )
+            return redirect(
+                "payments:payment_create"
+            )
+
+        # ==================================================
+        # الحساب يؤخذ من طريقة الدفع تلقائياً
+        # ==================================================
+
+        cash_account = payment_method.account
 
         if not cash_account:
-            messages.error(request, "حساب الصندوق/البنك غير موجود أو لا يتبع لشركتك")
-            return redirect("payments:payment_create")
+            messages.error(
+                request,
+                "طريقة الدفع غير مرتبطة بحساب صندوق/بنك"
+            )
+            return redirect(
+                "payments:payment_create"
+            )
+
+        # ==================================================
+        # التحقق من المبلغ
+        # ==================================================
+
+        if not amount:
+            messages.error(
+                request,
+                "الرجاء إدخال المبلغ"
+            )
+            return redirect(
+                "payments:payment_create"
+            )
+
+        try:
+
+            amount_decimal = Decimal(amount)
+
+            if amount_decimal <= Decimal("0.00"):
+
+                messages.error(
+                    request,
+                    "المبلغ يجب أن يكون أكبر من صفر"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
+
+        except (InvalidOperation, TypeError):
+
+            messages.error(
+                request,
+                "قيمة المبلغ غير صحيحة"
+            )
+
+            return redirect(
+                "payments:payment_create"
+            )
+
+        # ==================================================
+        # الجهات
+        # ==================================================
 
         supplier = None
         customer = None
         cost_center = None
         other_account = None
 
+        # ==================================================
+        # مورد
+        # ==================================================
+
         if party_type == "supplier":
+
             if not supplier_id:
-                messages.error(request, "الرجاء اختيار المورد")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "الرجاء اختيار المورد"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
 
             supplier = Supplier.objects.filter(
                 company=company,
@@ -94,13 +223,32 @@ def payment_create(request):
             ).first()
 
             if not supplier:
-                messages.error(request, "المورد غير موجود أو لا يتبع لشركتك")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "المورد غير موجود أو لا يتبع لشركتك"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
+
+        # ==================================================
+        # عميل
+        # ==================================================
 
         elif party_type == "customer":
+
             if not customer_id:
-                messages.error(request, "الرجاء اختيار العميل")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "الرجاء اختيار العميل"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
 
             customer = Customer.objects.filter(
                 company=company,
@@ -108,13 +256,32 @@ def payment_create(request):
             ).first()
 
             if not customer:
-                messages.error(request, "العميل غير موجود أو لا يتبع لشركتك")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "العميل غير موجود أو لا يتبع لشركتك"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
+
+        # ==================================================
+        # مركز تكلفة
+        # ==================================================
 
         elif party_type == "cost_center":
+
             if not cost_center_id:
-                messages.error(request, "الرجاء اختيار مركز التكلفة")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "الرجاء اختيار مركز التكلفة"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
 
             cost_center = CostCenter.objects.filter(
                 company=company,
@@ -123,13 +290,32 @@ def payment_create(request):
             ).first()
 
             if not cost_center:
-                messages.error(request, "مركز التكلفة غير موجود أو لا يتبع لشركتك")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "مركز التكلفة غير موجود أو لا يتبع لشركتك"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
+
+        # ==================================================
+        # حساب آخر
+        # ==================================================
 
         elif party_type == "other":
+
             if not other_account_id:
-                messages.error(request, "الرجاء اختيار الحساب الآخر")
-                return redirect("payments:payment_create")
+
+                messages.error(
+                    request,
+                    "الرجاء اختيار الحساب الآخر"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
 
             other_account = Account.objects.filter(
                 company=company,
@@ -138,15 +324,31 @@ def payment_create(request):
             ).first()
 
             if not other_account:
-                messages.error(request, "الحساب الآخر غير موجود أو لا يتبع لشركتك")
-                return redirect("payments:payment_create")
-        else:
-            messages.error(request, "نوع الجهة غير صحيح")
-            return redirect("payments:payment_create")
 
-        # =============================
-        # توليد رقم سند صرف داخل الشركة فقط
-        # =============================
+                messages.error(
+                    request,
+                    "الحساب الآخر غير موجود أو لا يتبع لشركتك"
+                )
+
+                return redirect(
+                    "payments:payment_create"
+                )
+
+        else:
+
+            messages.error(
+                request,
+                "نوع الجهة غير صحيح"
+            )
+
+            return redirect(
+                "payments:payment_create"
+            )
+
+        # ==================================================
+        # توليد رقم سند الصرف داخل الشركة فقط
+        # ==================================================
+
         last_no = (
             PaymentVoucher.objects
             .filter(company=company)
@@ -154,6 +356,10 @@ def payment_create(request):
         )["m"] or 0
 
         next_voucher_no = last_no + 1
+
+        # ==================================================
+        # إنشاء سند الصرف
+        # ==================================================
 
         voucher = PaymentVoucher.objects.create(
             company=company,
@@ -170,13 +376,24 @@ def payment_create(request):
             status="draft"
         )
 
-        # =============================
+        # ==================================================
         # ترحيل القيد
-        # =============================
+        # ==================================================
+
         post_payment_voucher(voucher)
 
-        messages.success(request, "تم إنشاء سند الصرف وترحيله بنجاح")
-        return redirect("payments:payment_list")
+        messages.success(
+            request,
+            "تم إنشاء سند الصرف وترحيله بنجاح"
+        )
+
+        return redirect(
+            "payments:payment_list"
+        )
+
+    # ==================================================
+    # عرض الصفحة
+    # ==================================================
 
     return render(
         request,
@@ -185,29 +402,19 @@ def payment_create(request):
             "suppliers": suppliers,
             "customers": customers,
             "cost_centers": cost_centers,
-            "cash_accounts": cash_accounts,
             "other_accounts": other_accounts,
+            "payment_methods": payment_methods,
         }
     )
-
-
 # ==================================================
-# 👁️ عرض سند صرف
+# 👁️ تفاصيل سند صرف
 # ==================================================
 @login_required
 def payment_detail(request, pk):
     company = _get_company(request)
 
     voucher = get_object_or_404(
-        PaymentVoucher.objects.select_related(
-            "supplier",
-            "customer",
-            "cost_center",
-            "other_account",
-            "cash_account",
-            "journal_entry",
-            "created_by",
-        ),
+        PaymentVoucher,
         pk=pk,
         company=company
     )
@@ -215,10 +422,10 @@ def payment_detail(request, pk):
     return render(
         request,
         "payments/payment_detail.html",
-        {"voucher": voucher}
+        {
+            "voucher": voucher,
+        }
     )
-
-
 # ==================================================
 # ❌ إلغاء سند صرف (بدون حذف)
 # ==================================================

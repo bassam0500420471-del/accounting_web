@@ -6,10 +6,10 @@
 {% block content %}
 
 <!-- Select2 -->
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 
 <style>
 
@@ -600,315 +600,315 @@ body {
 
 </style>
 
-
 <div class="receipt-page">
 
-    <div class="receipt-wrapper">
+<div class="receipt-wrapper">
 
 
-        <!-- =================================================
-             رأس الصفحة
-        ================================================= -->
+    <!-- =================================================
+         رأس الصفحة
+    ================================================= -->
 
-        <div class="receipt-header">
+    <div class="receipt-header">
 
-            <div class="receipt-header-icon">
+        <div class="receipt-header-icon">
 
-                💰
-
-            </div>
-
-            <div>
-
-                <h3>
-
-                    {% trans "Receipt Voucher" %}
-
-                </h3>
-
-            </div>
+            💰
 
         </div>
 
+        <div>
 
-        <!-- =================================================
-             الكرت الرئيسي
-        ================================================= -->
-
-        <div class="receipt-card">
-
-
-            <div class="receipt-card-header">
+            <h3>
 
                 {% trans "Receipt Voucher" %}
 
-            </div>
+            </h3>
 
+        </div>
 
-            <div class="receipt-card-body">
+    </div>
 
 
-                <form method="post">
+    <!-- =================================================
+         الكرت الرئيسي
+    ================================================= -->
 
-                    {% csrf_token %}
+    <div class="receipt-card">
 
 
-                    <input
-                        type="hidden"
-                        name="invoice_id"
-                        value="{{ invoice_id }}"
-                    >
+        <div class="receipt-card-header">
 
-
-                    <table class="receipt-form-table">
-
-
-                        <!-- نوع الجهة -->
-
-                        <tr>
-
-                            <th>
-
-                                <label for="partyType">
-
-                                    {% trans "Party Type" %}
-
-                                </label>
-
-                            </th>
-
-                            <td>
-
-                                <select
-                                    id="partyType"
-                                    class="form-select"
-                                    required
-                                >
-
-                                    <option value="">
-
-                                        {% trans "-- Select --" %}
-
-                                    </option>
-
-                                    <option value="customer">
-
-                                        {% trans "Customer" %}
-
-                                    </option>
-
-                                    <option value="supplier">
-
-                                        {% trans "Supplier" %}
-
-                                    </option>
-
-                                </select>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- الجهة -->
-
-                        <tr>
-
-                            <th>
-
-                                <label for="partySelect">
-
-                                    {% trans "Party" %}
-
-                                </label>
-
-                            </th>
-
-                            <td>
-
-                                <select
-                                    id="partySelect"
-                                    class="form-select"
-                                    required
-                                >
-
-                                    <option value="">
-
-                                        {% trans "-- Select Party Type First --" %}
-
-                                    </option>
-
-                                </select>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- hidden fields -->
-
-                        <input
-                            type="hidden"
-                            name="party_type"
-                            id="partyTypeInput"
-                        >
-
-                        <input
-                            type="hidden"
-                            name="party_id"
-                            id="partyIdInput"
-                        >
-
-                        <input
-                            type="hidden"
-                            name="customer"
-                            id="customerInput"
-                        >
-
-                        <input
-                            type="hidden"
-                            name="supplier"
-                            id="supplierInput"
-                        >
-
-
-                        <!-- الحساب -->
-
-                        <tr>
-
-                            <th>
-
-                                <label for="cashAccount">
-
-                                    {% trans "Cash / Bank Account" %}
-
-                                </label>
-
-                            </th>
-
-                            <td>
-
-                                <select
-                                    name="cash_account"
-                                    id="cashAccount"
-                                    class="form-select"
-                                    required
-                                >
-
-                                    <option value="">
-
-                                        {% trans "-- Select Account --" %}
-
-                                    </option>
-
-                                    {% for a in cash_accounts %}
-
-                                        <option value="{{ a.id }}">
-
-                                            {{ a.code }} - {{ a.name }}
-
-                                        </option>
-
-                                    {% endfor %}
-
-                                </select>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- المبلغ -->
-
-                        <tr>
-
-                            <th>
-
-                                <label for="amount">
-
-                                    {% trans "Amount" %}
-
-                                </label>
-
-                            </th>
-
-                            <td>
-
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    name="amount"
-                                    id="amount"
-                                    class="receipt-input"
-                                    required
-                                >
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- البيان -->
-
-                        <tr>
-
-                            <th>
-
-                                <label for="description">
-
-                                    {% trans "Description" %}
-
-                                </label>
-
-                            </th>
-
-                            <td>
-
-                                <input
-                                    type="text"
-                                    name="description"
-                                    id="description"
-                                    class="receipt-input"
-                                >
-
-                            </td>
-
-                        </tr>
-
-
-                    </table>
-
-
-                    <!-- =================================================
-                         الأزرار
-                    ================================================= -->
-
-                    <div class="receipt-actions">
-
-                        <button
-                            type="submit"
-                            class="receipt-save-btn"
-                        >
-
-                            💾 {% trans "Save & Post" %}
-
-                        </button>
-
-                    </div>
-
-
-                </form>
-
-
-            </div>
+            {% trans "Receipt Voucher" %}
 
         </div>
 
 
+        <div class="receipt-card-body">
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <input
+                    type="hidden"
+                    name="invoice_id"
+                    value="{{ invoice_id }}"
+                >
+
+
+                <table class="receipt-form-table">
+
+
+                    <!-- نوع الجهة -->
+
+                    <tr>
+
+                        <th>
+
+                            <label for="partyType">
+
+                                {% trans "نوع الجهة" %}
+
+                            </label>
+
+                        </th>
+
+                        <td>
+
+                            <select
+                                id="partyType"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+
+                                    {% trans "-- أختر --" %}
+
+                                </option>
+
+                                <option value="customer">
+
+                                    {% trans "Customer" %}
+
+                                </option>
+
+                                <option value="supplier">
+
+                                    {% trans "Supplier" %}
+
+                                </option>
+
+                            </select>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- الجهة -->
+
+                    <tr>
+
+                        <th>
+
+                            <label for="partySelect">
+
+                                {% trans "الجهة" %}
+
+                            </label>
+
+                        </th>
+
+                        <td>
+
+                            <select
+                                id="partySelect"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+
+                                    {% trans "-- اختر الجهة --" %}
+
+                                </option>
+
+                            </select>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- hidden fields -->
+
+                    <input
+                        type="hidden"
+                        name="party_type"
+                        id="partyTypeInput"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="party_id"
+                        id="partyIdInput"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="customer"
+                        id="customerInput"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="supplier"
+                        id="supplierInput"
+                    >
+
+
+                    <!-- =================================================
+                         طريقة الدفع
+                    ================================================= -->
+
+                    <tr>
+
+                        <th>
+
+                            <label for="paymentMethod">
+
+                                طريقة الدفع
+
+                            </label>
+
+                        </th>
+
+                        <td>
+
+                            <select
+                                name="payment_method"
+                                id="paymentMethod"
+                                class="form-select"
+                                required
+                            >
+
+                                <option value="">
+
+                                    -- اختر طريقة الدفع --
+
+                                </option>
+
+                                {% for method in payment_methods %}
+
+                                    <option value="{{ method.id }}">
+
+                                        {{ method.name }}
+
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- المبلغ -->
+
+                    <tr>
+
+                        <th>
+
+                            <label for="amount">
+
+                                {% trans "Amount" %}
+
+                            </label>
+
+                        </th>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="amount"
+                                id="amount"
+                                class="receipt-input"
+                                required
+                            >
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- البيان -->
+
+                    <tr>
+
+                        <th>
+
+                            <label for="description">
+
+                                {% trans "Description" %}
+
+                            </label>
+
+                        </th>
+
+                        <td>
+
+                            <input
+                                type="text"
+                                name="description"
+                                id="description"
+                                class="receipt-input"
+                            >
+
+                        </td>
+
+                    </tr>
+
+
+                </table>
+
+
+                <!-- =================================================
+                     الأزرار
+                ================================================= -->
+
+                <div class="receipt-actions">
+
+                    <button
+                        type="submit"
+                        class="receipt-save-btn"
+                    >
+
+                        💾 {% trans "Save & Post" %}
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
     </div>
+
 
 </div>
 
+</div>
 
 <script>
 
@@ -1059,6 +1059,5 @@ $(document).ready(function() {
 });
 
 </script>
-
 
 {% endblock %}
