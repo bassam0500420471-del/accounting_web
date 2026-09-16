@@ -2819,3 +2819,396 @@ html[dir="ltr"] .notification-float {
     }
 
 }
+/* ==========================================================
+   MOBILE DEVICE - KEEP DESKTOP PAGE + LARGE ACTIONS
+   الجوال يعرض وضع الكمبيوتر
+   لكن السلة والمفضلة والحساب تكون كبيرة
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .store-actions {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+        padding: 0 2px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .store-actions .action-item {
+        flex: 1 1 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: 76px !important;
+        min-height: 76px !important;
+
+        padding: 8px 4px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 5px !important;
+
+        border-radius: 16px !important;
+
+        background: #f1f1f1 !important;
+        color: #222 !important;
+
+        border: 1px solid #e2e2e2 !important;
+
+        box-shadow: 0 3px 8px rgba(0,0,0,.08) !important;
+
+        text-decoration: none !important;
+    }
+
+    .store-actions .action-item i {
+        font-size: 31px !important;
+        line-height: 1 !important;
+        display: block !important;
+        color: #222 !important;
+    }
+
+    .store-actions .action-label {
+        display: block !important;
+        font-size: 16px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+        color: #222 !important;
+        white-space: nowrap !important;
+    }
+
+    .store-actions .action-icon-wrapper {
+        position: relative !important;
+        width: 36px !important;
+        height: 34px !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .store-actions .action-count {
+        position: absolute !important;
+        top: -7px !important;
+        right: -9px !important;
+
+        width: 22px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+
+        padding: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        border-radius: 50% !important;
+
+        background: #dc3545 !important;
+        color: #fff !important;
+
+        font-size: 11px !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+
+        border: 2px solid #fff !important;
+    }
+
+    .store-actions .action-item:active {
+        transform: scale(.96) !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,.08) !important;
+    }
+}
+
+
+/* ==========================================================
+   SMALL MOBILE DEVICES
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) and (max-width: 500px) {
+
+    .store-actions {
+        gap: 6px !important;
+        margin-top: 9px !important;
+    }
+
+    .store-actions .action-item {
+        height: 72px !important;
+        min-height: 72px !important;
+        border-radius: 15px !important;
+        padding: 7px 2px !important;
+    }
+
+    .store-actions .action-item i {
+        font-size: 29px !important;
+    }
+
+    .store-actions .action-label {
+        font-size: 15px !important;
+        font-weight: 900 !important;
+    }
+}
+/* ==========================================================
+   MOBILE / TOUCH DEVICE
+   Desktop layout stays at width 1450px
+   لكن الأزرار والإعلان تكون كبيرة وواضحة
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* ======================================================
+       الإعلانات
+    ====================================================== */
+
+    .top-announcement-bar {
+
+        height: 90px !important;
+        min-height: 90px !important;
+
+    }
+
+    .announcement-item {
+
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        padding: 0 25px !important;
+        line-height: 1.4 !important;
+
+    }
+
+
+    /* ======================================================
+       السلة + المفضلة + الحساب
+    ====================================================== */
+
+    .store-actions {
+
+        width: 100% !important;
+
+        display: flex !important;
+
+        flex-direction: row !important;
+
+        align-items: stretch !important;
+
+        justify-content: space-between !important;
+
+        gap: 12px !important;
+
+        padding: 8px 4px !important;
+
+        flex-wrap: nowrap !important;
+
+    }
+
+
+    .store-actions .action-item {
+
+        flex: 1 1 0 !important;
+
+        width: auto !important;
+
+        min-width: 0 !important;
+
+        height: 100px !important;
+
+        min-height: 100px !important;
+
+        padding: 10px 6px !important;
+
+        display: flex !important;
+
+        flex-direction: column !important;
+
+        align-items: center !important;
+
+        justify-content: center !important;
+
+        gap: 8px !important;
+
+        border-radius: 18px !important;
+
+        background: #f1f1f1 !important;
+
+        color: #222 !important;
+
+        border: 1px solid #dedede !important;
+
+        box-shadow: 0 4px 10px rgba(0,0,0,.10) !important;
+
+        text-decoration: none !important;
+
+    }
+
+
+    /* الأيقونة */
+
+    .store-actions .action-item i {
+
+        font-size: 40px !important;
+
+        line-height: 1 !important;
+
+        display: block !important;
+
+        color: #222 !important;
+
+    }
+
+
+    /* كلمة السلة / المفضلة / حسابي */
+
+    .store-actions .action-label {
+
+        display: block !important;
+
+        font-size: 22px !important;
+
+        font-weight: 900 !important;
+
+        line-height: 1.2 !important;
+
+        color: #222 !important;
+
+        white-space: nowrap !important;
+
+    }
+
+
+    /* منطقة الأيقونة */
+
+    .store-actions .action-icon-wrapper {
+
+        position: relative !important;
+
+        width: 48px !important;
+
+        height: 44px !important;
+
+        display: flex !important;
+
+        align-items: center !important;
+
+        justify-content: center !important;
+
+    }
+
+
+    /* رقم السلة / المفضلة */
+
+    .store-actions .action-count {
+
+        position: absolute !important;
+
+        top: -10px !important;
+
+        right: -13px !important;
+
+        width: 28px !important;
+
+        min-width: 28px !important;
+
+        height: 28px !important;
+
+        padding: 0 !important;
+
+        display: flex !important;
+
+        align-items: center !important;
+
+        justify-content: center !important;
+
+        border-radius: 50% !important;
+
+        background: #dc3545 !important;
+
+        color: #fff !important;
+
+        font-size: 14px !important;
+
+        font-weight: 900 !important;
+
+        line-height: 1 !important;
+
+        border: 2px solid #fff !important;
+
+    }
+
+
+    /* عند الضغط */
+
+    .store-actions .action-item:active {
+
+        transform: scale(.97) !important;
+
+        box-shadow: 0 2px 6px rgba(0,0,0,.10) !important;
+
+    }
+
+}
+/* ==========================================================
+   MOBILE / TOUCH
+   إبعاد محتوى المتجر عن الهيدر الثابت
+   الكمبيوتر لا يتأثر
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* الهيدر ثابت ويحتاج مساحة إضافية للمحتوى */
+
+    body {
+        padding-top: 260px !important;
+    }
+
+}
+/* ==========================================================
+   MOBILE / TOUCH
+   تكبير شريط الرئيسية والعروض مثل الهيدر
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .store-navbar {
+        min-height: 85px !important;
+        padding: 12px 0 !important;
+    }
+
+    .store-navbar .container {
+        width: 95% !important;
+        max-width: 1450px !important;
+    }
+
+    .navbar-wrapper {
+        min-height: 60px !important;
+    }
+
+    .navbar-links {
+        gap: 18px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .navbar-links li {
+        flex-shrink: 0 !important;
+    }
+
+    .navbar-links li a {
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        padding: 16px 24px !important;
+        min-height: 58px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        border-radius: 16px !important;
+    }
+
+}
