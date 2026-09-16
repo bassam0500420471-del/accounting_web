@@ -675,9 +675,32 @@ body {
 
 <script>
 
+<script>
+
+/* ==========================================================
+   التعرف على الجوال الحقيقي
+========================================================== */
+
+(function () {
+
+    if (
+        /Android|iPhone|iPad|iPod|Mobile/i.test(
+            navigator.userAgent
+        )
+    ) {
+
+        document.documentElement.classList.add(
+            "mobile-store-device"
+        );
+
+    }
+
+})();
+
+
 /* ==========================================================
    إعلان متحرك
-   يتغير كل 4 ثواني
+   يتغير كل 4 ثواني عند وجود أكثر من إعلان
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -687,11 +710,12 @@ document.addEventListener("DOMContentLoaded", function () {
             ".announcement-item"
         );
 
-if (announcements.length <= 1) {
+    if (announcements.length <= 1) {
 
-    return;
+        return;
 
-}
+    }
+
     let current = 0;
 
     setInterval(function () {
