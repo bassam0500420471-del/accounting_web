@@ -2206,3 +2206,392 @@ html[dir="ltr"] .notification-float {
     display: block !important;
 }
 
+/* ==========================================================
+   ALRAED STORE V3
+   MOBILE HEADER + NAVBAR FINAL OVERRIDE
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    /* ======================================================
+       HEADER
+    ====================================================== */
+
+    .store-header {
+        background: #fff !important;
+    }
+
+
+    .store-header .container {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+
+    /* ======================================================
+       اسم المتجر
+    ====================================================== */
+
+    .store-logo {
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 9px !important;
+        width: 100%;
+    }
+
+
+    .store-logo-img {
+        width: 52px !important;
+        height: 52px !important;
+        object-fit: contain;
+    }
+
+
+    .store-name {
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        white-space: nowrap;
+    }
+
+
+    /* ======================================================
+       البحث
+    ====================================================== */
+
+    .store-search-column {
+        width: 100%;
+        margin-top: 4px;
+    }
+
+
+    .search-box {
+        width: 100% !important;
+        height: 50px !important;
+        margin: 0 auto !important;
+    }
+
+
+    .search-box input {
+        font-size: 14px !important;
+        padding: 0 18px !important;
+    }
+
+
+    .search-box button {
+        width: 50px !important;
+        font-size: 20px !important;
+    }
+
+
+    /* ======================================================
+       السلة + المفضلة + حسابي
+    ====================================================== */
+
+    .store-actions {
+
+        width: 100% !important;
+
+        display: flex !important;
+
+        justify-content: space-around !important;
+
+        align-items: stretch !important;
+
+        gap: 7px !important;
+
+        margin-top: 8px !important;
+
+        flex-wrap: nowrap !important;
+
+    }
+
+
+    .store-actions .action-item {
+
+        width: auto !important;
+
+        height: auto !important;
+
+        min-height: 64px !important;
+
+        flex: 1 1 0 !important;
+
+        border-radius: 14px !important;
+
+        background: #f4f4f4 !important;
+
+        color: #333 !important;
+
+        display: flex !important;
+
+        flex-direction: column !important;
+
+        align-items: center !important;
+
+        justify-content: center !important;
+
+        gap: 4px !important;
+
+        padding: 7px 4px !important;
+
+    }
+
+
+    .store-actions .action-item:hover {
+
+        background: #e7e7e7 !important;
+
+        color: #222 !important;
+
+    }
+
+
+    .store-actions .action-item i {
+
+        font-size: 27px !important;
+
+        line-height: 1 !important;
+
+    }
+
+
+    /* اسم العنصر */
+
+    .store-actions .action-label {
+
+        display: block !important;
+
+        font-size: 13px !important;
+
+        line-height: 1.2 !important;
+
+        font-weight: 800 !important;
+
+        white-space: nowrap !important;
+
+    }
+
+
+    /* دائرة عدد السلة والمفضلة */
+
+    .store-actions .action-count {
+
+        top: 3px !important;
+
+        right: calc(50% - 23px) !important;
+
+        left: auto !important;
+
+        width: 20px !important;
+
+        height: 20px !important;
+
+        min-width: 20px !important;
+
+        padding: 0 !important;
+
+        font-size: 10px !important;
+
+        font-weight: 800 !important;
+
+    }
+
+
+    /* ======================================================
+       NAVBAR
+    ====================================================== */
+
+    .store-navbar {
+
+        background: #fff !important;
+
+        border-top: 1px solid #e5e5e5 !important;
+
+        border-bottom: 1px solid #e5e5e5 !important;
+
+        padding: 5px 0 !important;
+
+        overflow: hidden !important;
+
+    }
+
+
+    .store-navbar .container {
+
+        width: 100% !important;
+
+        max-width: 100% !important;
+
+        padding-left: 6px !important;
+
+        padding-right: 6px !important;
+
+    }
+
+
+    .navbar-wrapper {
+
+        width: 100% !important;
+
+        display: block !important;
+
+        overflow-x: auto !important;
+
+        overflow-y: hidden !important;
+
+        white-space: nowrap !important;
+
+        scrollbar-width: none !important;
+
+        -webkit-overflow-scrolling: touch;
+
+    }
+
+
+    .navbar-wrapper::-webkit-scrollbar {
+
+        display: none !important;
+
+    }
+
+
+    .navbar-links {
+
+        display: flex !important;
+
+        flex-direction: row !important;
+
+        flex-wrap: nowrap !important;
+
+        align-items: center !important;
+
+        justify-content: flex-start !important;
+
+        width: max-content !important;
+
+        min-width: 100% !important;
+
+        gap: 6px !important;
+
+        margin: 0 !important;
+
+        padding: 3px 2px !important;
+
+    }
+
+
+    .navbar-links li {
+
+        flex: 0 0 auto !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+    }
+
+
+    .navbar-links li a {
+
+        display: flex !important;
+
+        align-items: center !important;
+
+        justify-content: center !important;
+
+        min-height: 48px !important;
+
+        padding: 8px 17px !important;
+
+        border-radius: 13px !important;
+
+        color: #333 !important;
+
+        background: #f5f5f5 !important;
+
+        font-size: 15px !important;
+
+        font-weight: 800 !important;
+
+        white-space: nowrap !important;
+
+    }
+
+
+    .navbar-links li a:hover {
+
+        background: #e5e5e5 !important;
+
+        color: #222 !important;
+
+    }
+
+
+    .navbar-links li a:active {
+
+        transform: scale(.96);
+
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+   480px
+========================================================== */
+
+@media (max-width: 480px) {
+
+    .store-header .container {
+        padding-top: 9px !important;
+        padding-bottom: 9px !important;
+    }
+
+
+    .store-logo-img {
+        width: 48px !important;
+        height: 48px !important;
+    }
+
+
+    .store-name {
+        font-size: 17px !important;
+    }
+
+
+    .store-actions {
+        gap: 5px !important;
+    }
+
+
+    .store-actions .action-item {
+        min-height: 62px !important;
+        border-radius: 13px !important;
+    }
+
+
+    .store-actions .action-item i {
+        font-size: 26px !important;
+    }
+
+
+    .store-actions .action-label {
+        font-size: 12px !important;
+    }
+
+
+    .navbar-links {
+        gap: 5px !important;
+    }
+
+
+    .navbar-links li a {
+        min-height: 49px !important;
+        padding: 8px 15px !important;
+        font-size: 14px !important;
+    }
+
+}

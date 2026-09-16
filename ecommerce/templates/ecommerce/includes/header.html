@@ -18,7 +18,7 @@
 
         </div>
 
-    </div> <!-- إغلاق top-announcement-bar -->
+    </div>
 
 
     <!-- ======================================================
@@ -66,7 +66,7 @@
                      Search
                 =================================================== -->
 
-                <div class="col-lg-5 col-md-4 col-12">
+                <div class="col-lg-5 col-md-4 col-12 store-search-column">
 
                     {% include "ecommerce/includes/search.html" %}
 
@@ -82,7 +82,9 @@
                     <div class="store-actions">
 
 
-                        <!-- Cart -->
+                        <!-- ==================================================
+                             Cart
+                        =================================================== -->
 
                         <a
                             href="{% url 'ecommerce:cart' store.slug %}"
@@ -90,19 +92,29 @@
                             title="السلة"
                         >
 
-                            <i class="bi bi-cart3"></i>
+                            <div class="action-icon-wrapper">
 
-                            <span
-                                id="cartCount"
-                                class="action-count"
-                            >
-                                {{ cart_count|default:"0" }}
+                                <i class="bi bi-cart3"></i>
+
+                                <span
+                                    id="cartCount"
+                                    class="action-count"
+                                >
+                                    {{ cart_count|default:"0" }}
+                                </span>
+
+                            </div>
+
+                            <span class="action-label">
+                                السلة
                             </span>
 
                         </a>
 
 
-                        <!-- Wishlist -->
+                        <!-- ==================================================
+                             Wishlist
+                        =================================================== -->
 
                         <a
                             href="{% url 'ecommerce:wishlist' store.slug %}"
@@ -110,19 +122,29 @@
                             title="المفضلة"
                         >
 
-                            <i class="bi bi-heart"></i>
+                            <div class="action-icon-wrapper">
 
-                            <span
-                                id="headerWishlistCount"
-                                class="action-count"
-                            >
-                                {{ wishlist_count|default:"0" }}
+                                <i class="bi bi-heart"></i>
+
+                                <span
+                                    id="headerWishlistCount"
+                                    class="action-count"
+                                >
+                                    {{ wishlist_count|default:"0" }}
+                                </span>
+
+                            </div>
+
+                            <span class="action-label">
+                                المفضلة
                             </span>
 
                         </a>
 
 
-                        <!-- Account -->
+                        <!-- ==================================================
+                             Account
+                        =================================================== -->
 
                         {% if user.is_authenticated %}
 
@@ -132,7 +154,15 @@
                                 title="حسابي"
                             >
 
-                                <i class="bi bi-person-circle"></i>
+                                <div class="action-icon-wrapper">
+
+                                    <i class="bi bi-person-circle"></i>
+
+                                </div>
+
+                                <span class="action-label">
+                                    حسابي
+                                </span>
 
                             </a>
 
@@ -144,7 +174,15 @@
                                 title="تسجيل دخول العميل"
                             >
 
-                                <i class="bi bi-box-arrow-in-right"></i>
+                                <div class="action-icon-wrapper">
+
+                                    <i class="bi bi-box-arrow-in-right"></i>
+
+                                </div>
+
+                                <span class="action-label">
+                                    حسابي
+                                </span>
 
                             </a>
 
@@ -162,14 +200,13 @@
 
     </header>
 
-</div> <!-- إغلاق store-fixed-header -->
+</div>
 
 
 <style>
 
 /* ==========================================================
    الحاوية الرئيسية
-   الشريط + الهيدر ثابتين مع بعض
 ========================================================== */
 
 .store-fixed-header {
@@ -183,6 +220,8 @@
     width: 100%;
 
     z-index: 99999;
+
+    transform: none !important;
 
 }
 
@@ -206,6 +245,7 @@
     overflow: hidden;
 
     background: #111827;
+
     color: #ffffff;
 
     position: relative;
@@ -261,8 +301,6 @@
 }
 
 
-/* الإعلان الحالي */
-
 .announcement-item.active {
 
     opacity: 1;
@@ -292,24 +330,90 @@
 
 
 /* ==========================================================
-   مهم:
-   منع أي transform من الأب يؤثر على fixed
+   STORE ACTIONS
 ========================================================== */
 
-.store-fixed-header {
+.store-actions {
 
-    transform: none !important;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 18px;
 
 }
 
 
-/* ==========================================================
-   مساحة للمحتوى أسفل الهيدر
-========================================================== */
+.action-item {
 
-body {
+    position: relative;
 
-    padding-top: 0 !important;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+}
+
+
+.action-icon-wrapper {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.action-item i {
+
+    font-size: 25px;
+
+}
+
+
+.action-label {
+
+    display: none;
+
+}
+
+
+.action-count {
+
+    position: absolute;
+
+    top: -9px;
+    right: -11px;
+
+    min-width: 19px;
+    height: 19px;
+
+    padding: 0 5px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    background: #444;
+
+    color: #fff;
 
 }
 
@@ -322,16 +426,163 @@ body {
 
     .top-announcement-bar {
 
-        height: 46px;
-        min-height: 46px;
+        height: 52px;
+        min-height: 52px;
 
     }
 
+
     .announcement-item {
+
+        font-size: 14px;
+
+        padding: 0 15px;
+
+    }
+
+
+    .store-header {
+
+        padding: 10px 0 12px;
+
+    }
+
+
+    .store-header .container {
+
+        padding-left: 12px;
+        padding-right: 12px;
+
+    }
+
+
+    /* ------------------------------------------
+       الشعار
+    ------------------------------------------ */
+
+    .store-logo {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 8px;
+
+        width: 100%;
+
+        min-height: 42px;
+
+    }
+
+
+    .store-logo-img {
+
+        max-height: 42px;
+
+        max-width: 65px;
+
+        object-fit: contain;
+
+    }
+
+
+    .store-name {
+
+        font-size: 17px !important;
+
+        font-weight: 800;
+
+        white-space: nowrap;
+
+    }
+
+
+    /* ------------------------------------------
+       البحث
+    ------------------------------------------ */
+
+    .store-search-column {
+
+        margin-top: 2px;
+
+    }
+
+
+    /* ------------------------------------------
+       السلة والمفضلة والحساب
+    ------------------------------------------ */
+
+    .store-actions {
+
+        width: 100%;
+
+        gap: 10px;
+
+        justify-content: space-around;
+
+        padding: 5px 4px 2px;
+
+    }
+
+
+    .action-item {
+
+        flex: 1;
+
+        min-height: 58px;
+
+        flex-direction: column;
+
+        gap: 3px;
+
+        border-radius: 14px;
+
+        padding: 6px 4px;
+
+    }
+
+
+    .action-item i {
+
+        font-size: 28px;
+
+    }
+
+
+    .action-label {
+
+        display: block;
 
         font-size: 13px;
 
-        padding: 0 15px;
+        font-weight: 800;
+
+        line-height: 1.2;
+
+        white-space: nowrap;
+
+    }
+
+
+    .action-icon-wrapper {
+
+        min-height: 30px;
+
+    }
+
+
+    .action-count {
+
+        top: -6px;
+
+        right: -8px;
+
+        min-width: 20px;
+        height: 20px;
+
+        font-size: 10px;
 
     }
 
@@ -346,16 +597,76 @@ body {
 
     .top-announcement-bar {
 
-        height: 44px;
-        min-height: 44px;
+        height: 50px;
+        min-height: 50px;
 
     }
 
+
     .announcement-item {
+
+        font-size: 13px;
+
+        padding: 0 10px;
+
+    }
+
+
+    .store-header {
+
+        padding-top: 8px;
+
+        padding-bottom: 10px;
+
+    }
+
+
+    .store-name {
+
+        font-size: 16px !important;
+
+    }
+
+
+    .store-actions {
+
+        gap: 6px;
+
+    }
+
+
+    .action-item {
+
+        min-height: 56px;
+
+        padding: 5px 2px;
+
+    }
+
+
+    .action-item i {
+
+        font-size: 27px;
+
+    }
+
+
+    .action-label {
 
         font-size: 12px;
 
     }
+
+}
+
+
+/* ==========================================================
+   مساحة للمحتوى
+========================================================== */
+
+body {
+
+    padding-top: 0 !important;
 
 }
 
