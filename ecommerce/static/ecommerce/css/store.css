@@ -3212,3 +3212,180 @@ html[dir="ltr"] .notification-float {
     }
 
 }
+/* ==========================================================
+   MOBILE PHONE - FORCE LARGE STORE HEADER
+   يعمل حتى مع viewport = 1450px
+========================================================== */
+
+html.mobile-store-device body {
+    padding-top: 330px !important;
+}
+
+
+/* ==========================================================
+   الإعلان
+========================================================== */
+
+html.mobile-store-device .top-announcement-bar {
+    height: 90px !important;
+    min-height: 90px !important;
+}
+
+html.mobile-store-device .announcement-item {
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    padding: 0 25px !important;
+}
+
+
+/* ==========================================================
+   السلة + المفضلة + الحساب
+========================================================== */
+
+html.mobile-store-device .store-actions {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 8px 4px !important;
+    flex-wrap: nowrap !important;
+}
+
+html.mobile-store-device .store-actions .action-item {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 100px !important;
+    min-height: 100px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 8px !important;
+    padding: 10px 6px !important;
+
+    border-radius: 18px !important;
+    background: #f1f1f1 !important;
+    color: #222 !important;
+    border: 1px solid #dedede !important;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,.10) !important;
+}
+
+html.mobile-store-device .store-actions .action-item i {
+    font-size: 40px !important;
+    line-height: 1 !important;
+    color: #222 !important;
+}
+
+html.mobile-store-device .store-actions .action-label {
+    display: block !important;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+    color: #222 !important;
+    white-space: nowrap !important;
+}
+
+html.mobile-store-device .store-actions .action-icon-wrapper {
+    position: relative !important;
+    width: 48px !important;
+    height: 44px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+html.mobile-store-device .store-actions .action-count {
+    position: absolute !important;
+    top: -10px !important;
+    right: -13px !important;
+
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 28px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 50% !important;
+
+    background: #dc3545 !important;
+    color: #fff !important;
+
+    font-size: 14px !important;
+    font-weight: 900 !important;
+
+    border: 2px solid #fff !important;
+}
+
+
+/* ==========================================================
+   شريط الرئيسية والعروض والأكثر مبيعًا
+========================================================== */
+
+html.mobile-store-device .store-navbar {
+    min-height: 85px !important;
+    padding: 12px 0 !important;
+}
+
+html.mobile-store-device .navbar-wrapper {
+    min-height: 60px !important;
+}
+
+html.mobile-store-device .navbar-links {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    gap: 18px !important;
+
+    width: max-content !important;
+    min-width: 100% !important;
+}
+
+html.mobile-store-device .navbar-links li {
+    flex-shrink: 0 !important;
+}
+
+html.mobile-store-device .navbar-links li a {
+    font-size: 22px !important;
+    font-weight: 900 !important;
+
+    padding: 16px 24px !important;
+
+    min-height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    white-space: nowrap !important;
+
+    border-radius: 16px !important;
+
+    background: #f5f5f5 !important;
+    color: #222 !important;
+}
+
+
+/* ==========================================================
+   الشعار
+========================================================== */
+
+html.mobile-store-device .store-logo-img {
+    width: 70px !important;
+    height: 70px !important;
+}
+
+html.mobile-store-device .store-name {
+    font-size: 24px !important;
+    font-weight: 900 !important;
+}

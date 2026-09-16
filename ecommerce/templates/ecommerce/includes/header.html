@@ -687,12 +687,11 @@ document.addEventListener("DOMContentLoaded", function () {
             ".announcement-item"
         );
 
-    if (!announcements.length) {
+if (announcements.length <= 1) {
 
-        return;
+    return;
 
-    }
-
+}
     let current = 0;
 
     setInterval(function () {
