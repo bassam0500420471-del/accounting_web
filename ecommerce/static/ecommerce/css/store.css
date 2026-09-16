@@ -2595,3 +2595,227 @@ html[dir="ltr"] .notification-float {
     }
 
 }
+/* ==========================================================
+   MOBILE ACTIONS - LARGE & CLEAR
+   السلة + المفضلة + حسابي
+   الجوال فقط - الكمبيوتر لا يتأثر
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .store-actions {
+        width: 100% !important;
+
+        display: flex !important;
+        flex-direction: row !important;
+
+        align-items: stretch !important;
+        justify-content: space-between !important;
+
+        gap: 8px !important;
+
+        margin-top: 10px !important;
+        padding: 0 2px !important;
+
+        flex-wrap: nowrap !important;
+    }
+
+
+    /* ======================================================
+       كل زر
+    ====================================================== */
+
+    .store-actions .action-item {
+
+        flex: 1 1 0 !important;
+
+        width: auto !important;
+        min-width: 0 !important;
+
+        height: 76px !important;
+        min-height: 76px !important;
+
+        padding: 8px 4px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 5px !important;
+
+        border-radius: 16px !important;
+
+        background: #f1f1f1 !important;
+
+        color: #222 !important;
+
+        border: 1px solid #e2e2e2 !important;
+
+        box-shadow:
+            0 3px 8px rgba(0,0,0,.08) !important;
+
+        text-decoration: none !important;
+    }
+
+
+    /* ======================================================
+       الأيقونة
+    ====================================================== */
+
+    .store-actions .action-item i {
+
+        font-size: 31px !important;
+
+        line-height: 1 !important;
+
+        display: block !important;
+
+        color: #222 !important;
+    }
+
+
+    /* ======================================================
+       اسم السلة / المفضلة / حسابي
+    ====================================================== */
+
+    .store-actions .action-label {
+
+        display: block !important;
+
+        font-size: 16px !important;
+
+        font-weight: 900 !important;
+
+        line-height: 1.2 !important;
+
+        color: #222 !important;
+
+        white-space: nowrap !important;
+    }
+
+
+    /* ======================================================
+       منطقة الأيقونة
+    ====================================================== */
+
+    .store-actions .action-icon-wrapper {
+
+        position: relative !important;
+
+        width: 36px !important;
+        height: 34px !important;
+
+        display: flex !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+
+    /* ======================================================
+       رقم السلة / المفضلة
+    ====================================================== */
+
+    .store-actions .action-count {
+
+        position: absolute !important;
+
+        top: -7px !important;
+        right: -9px !important;
+
+        width: 22px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+
+        padding: 0 !important;
+
+        display: flex !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+
+        border-radius: 50% !important;
+
+        background: #dc3545 !important;
+
+        color: #fff !important;
+
+        font-size: 11px !important;
+
+        font-weight: 900 !important;
+
+        line-height: 1 !important;
+
+        border: 2px solid #fff !important;
+    }
+
+
+    /* ======================================================
+       عند الضغط
+    ====================================================== */
+
+    .store-actions .action-item:active {
+
+        transform: scale(.96) !important;
+
+        box-shadow:
+            0 2px 5px rgba(0,0,0,.08) !important;
+    }
+
+}
+
+
+/* ==========================================================
+   جوالات صغيرة
+========================================================== */
+
+@media (max-width: 480px) {
+
+    .store-actions {
+
+        gap: 6px !important;
+
+        margin-top: 9px !important;
+    }
+
+
+    .store-actions .action-item {
+
+        height: 72px !important;
+        min-height: 72px !important;
+
+        border-radius: 15px !important;
+
+        padding: 7px 2px !important;
+    }
+
+
+    .store-actions .action-item i {
+
+        font-size: 29px !important;
+    }
+
+
+    .store-actions .action-label {
+
+        font-size: 15px !important;
+
+        font-weight: 900 !important;
+    }
+
+
+    .store-actions .action-count {
+
+        width: 21px !important;
+        min-width: 21px !important;
+        height: 21px !important;
+
+        font-size: 10px !important;
+
+        top: -6px !important;
+        right: -8px !important;
+    }
+
+}
