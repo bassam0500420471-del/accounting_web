@@ -818,6 +818,95 @@
     visibility: hidden !important;
 
 }
+/* ==========================================================
+   تحسين كرت المنتج للجوال الحقيقي
+   يعمل حتى مع وضع "موقع سطح المكتب"
+========================================================== */
+
+html.mobile-store-device .product-card {
+    min-width: 320px !important;
+    max-width: 320px !important;
+}
+
+html.mobile-store-device .product-image-gallery {
+    height: 300px !important;
+    min-height: 300px !important;
+}
+
+html.mobile-store-device .product-gallery-images {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+html.mobile-store-device .product-gallery-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}
+
+html.mobile-store-device .product-content {
+    padding: 20px !important;
+}
+
+html.mobile-store-device .product-category {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #222 !important;
+    margin-bottom: 8px !important;
+}
+
+html.mobile-store-device .product-name,
+html.mobile-store-device .product-name-tooltip {
+    font-size: 23px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+    color: #111 !important;
+    height: 69px !important;
+    min-height: 69px !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+html.mobile-store-device .product-rating {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    margin: 12px 0 !important;
+}
+
+html.mobile-store-device .product-price {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 10px !important;
+    margin-bottom: 18px !important;
+}
+
+html.mobile-store-device .current-price {
+    font-size: 25px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #111 !important;
+}
+
+html.mobile-store-device .old-price {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #555 !important;
+}
+
+html.mobile-store-device .add-cart-btn {
+    width: 100% !important;
+    height: 58px !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    border-radius: 40px !important;
+}
 
 </style>
 
