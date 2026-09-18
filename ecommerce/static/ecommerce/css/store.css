@@ -3954,3 +3954,224 @@ html.mobile-store-device .add-cart-btn {
     font-size: 20px !important;
     font-weight: 900 !important;
 }
+/* ==========================================================
+   FINAL MOBILE PRODUCT CARD
+   نفس وضوح الهيدر والنافبار
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* الكرت نفسه */
+    .product-card {
+        min-width: 320px !important;
+        max-width: 320px !important;
+        border-radius: 20px !important;
+        border: 1px solid #dddddd !important;
+        box-shadow: 0 8px 22px rgba(0,0,0,.12) !important;
+    }
+
+
+    /* صورة المنتج */
+    .product-image,
+    .product-image-gallery {
+        height: 300px !important;
+        min-height: 300px !important;
+    }
+
+
+    .product-gallery-images {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+
+    .product-gallery-image {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+    }
+
+
+    /* محتوى الكرت */
+    .product-content {
+        padding: 20px !important;
+    }
+
+
+    /* التصنيف */
+    .product-category {
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        color: #222 !important;
+        margin-bottom: 8px !important;
+    }
+
+
+    /* اسم المنتج */
+    .product-name,
+    .product-name-tooltip {
+        font-size: 23px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        color: #111 !important;
+
+        height: 69px !important;
+        min-height: 69px !important;
+
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+        -webkit-line-clamp: 2 !important;
+
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+
+    /* التقييم */
+    .product-rating {
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        margin: 12px 0 !important;
+    }
+
+
+    /* منطقة السعر */
+    .product-price {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        margin-top: 10px !important;
+        margin-bottom: 18px !important;
+    }
+
+
+    /* السعر الحالي */
+    .current-price {
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        color: #111 !important;
+    }
+
+
+    /* السعر القديم */
+    .old-price {
+        font-size: 18px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        color: #555 !important;
+    }
+
+
+    /* زر إضافة للسلة */
+    .add-cart-btn {
+        width: 100% !important;
+        height: 58px !important;
+
+        font-size: 20px !important;
+        font-weight: 900 !important;
+
+        border-radius: 40px !important;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE STORE DEVICE
+   للجوال الحقيقي الذي يستخدم mobile-store-device
+========================================================== */
+
+html.mobile-store-device .product-card {
+
+    min-width: 320px !important;
+    max-width: 320px !important;
+
+}
+
+
+html.mobile-store-device .product-image,
+html.mobile-store-device .product-image-gallery {
+
+    height: 300px !important;
+    min-height: 300px !important;
+
+}
+
+
+html.mobile-store-device .product-content {
+
+    padding: 20px !important;
+
+}
+
+
+html.mobile-store-device .product-category {
+
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #222 !important;
+
+}
+
+
+html.mobile-store-device .product-name,
+html.mobile-store-device .product-name-tooltip {
+
+    font-size: 23px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+
+    height: 69px !important;
+    min-height: 69px !important;
+
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+
+    color: #111 !important;
+
+}
+
+
+html.mobile-store-device .product-rating {
+
+    font-size: 20px !important;
+    font-weight: 900 !important;
+
+}
+
+
+html.mobile-store-device .current-price {
+
+    font-size: 25px !important;
+    font-weight: 900 !important;
+    color: #111 !important;
+
+}
+
+
+html.mobile-store-device .old-price {
+
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: #555 !important;
+
+}
+
+
+html.mobile-store-device .add-cart-btn {
+
+    height: 58px !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
+
+}
