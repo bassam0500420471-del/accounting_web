@@ -3870,3 +3870,87 @@ html.mobile-store-device .section-title h2 {
     }
 
 }
+/* =========================================================
+   MOBILE PRODUCT TEXT - CLEAR LIKE STORE HEADER
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* التصنيف */
+    .product-category {
+        font-size: 20px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        color: #111 !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* اسم المنتج */
+    .product-name {
+        font-size: 23px !important;
+        font-weight: 900 !important;
+        line-height: 1.45 !important;
+        color: #000 !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* السعر */
+    .current-price {
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+        color: #000 !important;
+    }
+
+    /* السعر القديم */
+    .old-price {
+        font-size: 18px !important;
+        font-weight: 900 !important;
+        color: #555 !important;
+    }
+
+    /* زر السلة */
+    .add-cart-btn {
+        font-size: 20px !important;
+        font-weight: 900 !important;
+    }
+}
+
+
+/* نفس الإعداد عندما يكون المتجر على وضع mobile-store-device */
+
+html.mobile-store-device .product-category {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #111 !important;
+    margin-bottom: 8px !important;
+}
+
+html.mobile-store-device .product-name {
+    font-size: 23px !important;
+    font-weight: 900 !important;
+    line-height: 1.45 !important;
+    color: #000 !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+html.mobile-store-device .current-price {
+    font-size: 25px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #000 !important;
+}
+
+html.mobile-store-device .old-price {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: #555 !important;
+}
+
+html.mobile-store-device .add-cart-btn {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+}
