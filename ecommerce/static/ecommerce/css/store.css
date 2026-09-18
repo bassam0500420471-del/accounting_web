@@ -3389,3 +3389,173 @@ html.mobile-store-device .store-name {
     font-size: 24px !important;
     font-weight: 900 !important;
 }
+/* ==========================================================
+   MOBILE PRODUCTS - LARGE & CLEAR
+   تكبير اسم المنتج والسعر والتصنيف في الجوال فقط
+   الكمبيوتر لا يتأثر
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* التصنيف */
+    .product-category {
+        font-size: 20px !important;
+        font-weight: 800 !important;
+        line-height: 1.5 !important;
+        margin-bottom: 10px !important;
+        color: #555 !important;
+    }
+
+    /* اسم المنتج */
+    .product-name {
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+        height: auto !important;
+        min-height: 70px !important;
+        color: #222 !important;
+    }
+
+    /* السعر */
+    .current-price {
+        font-size: 30px !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    /* السعر القديم */
+    .old-price {
+        font-size: 20px !important;
+        font-weight: 700 !important;
+    }
+
+    /* منطقة السعر */
+    .product-price {
+        gap: 14px !important;
+        margin-bottom: 18px !important;
+    }
+
+    /* زر إضافة للسلة */
+    .add-cart-btn {
+        height: 58px !important;
+        font-size: 21px !important;
+        font-weight: 900 !important;
+        border-radius: 40px !important;
+    }
+
+    /* محتوى الكارت */
+    .product-content {
+        padding: 20px !important;
+    }
+
+    /* تقييم المنتج */
+    .product-rating {
+        font-size: 20px !important;
+        margin: 14px 0 !important;
+    }
+
+    /* عنوان القسم */
+    .section-title h2 {
+        font-size: 28px !important;
+        font-weight: 900 !important;
+    }
+}
+
+
+/* ==========================================================
+   MOBILE STORE DEVICE
+   يعمل أيضًا مع وضع الجوال الذي يستخدم viewport = 1450px
+========================================================== */
+
+html.mobile-store-device .product-category {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    line-height: 1.5 !important;
+    color: #555 !important;
+}
+
+html.mobile-store-device .product-name {
+    font-size: 25px !important;
+    font-weight: 900 !important;
+    line-height: 1.6 !important;
+    height: auto !important;
+    min-height: 70px !important;
+    color: #222 !important;
+}
+
+html.mobile-store-device .current-price {
+    font-size: 30px !important;
+    font-weight: 900 !important;
+}
+
+html.mobile-store-device .old-price {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+}
+
+html.mobile-store-device .product-price {
+    gap: 14px !important;
+    margin-bottom: 18px !important;
+}
+
+html.mobile-store-device .add-cart-btn {
+    height: 58px !important;
+    font-size: 21px !important;
+    font-weight: 900 !important;
+}
+
+html.mobile-store-device .product-content {
+    padding: 20px !important;
+}
+
+html.mobile-store-device .product-rating {
+    font-size: 20px !important;
+}
+
+html.mobile-store-device .section-title h2 {
+    font-size: 28px !important;
+    font-weight: 900 !important;
+}
+/* ==========================================================
+   MOBILE PRODUCT IMAGE - LARGE & CLEAR
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .product-image {
+        height: 300px !important;
+        min-height: 300px !important;
+        overflow: hidden !important;
+    }
+
+    .product-image img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+
+    .product-card {
+        overflow: hidden !important;
+    }
+}
+
+
+/* وضع الجوال الخاص بالمتجر */
+html.mobile-store-device .product-image {
+    height: 300px !important;
+    min-height: 300px !important;
+    overflow: hidden !important;
+}
+
+html.mobile-store-device .product-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+html.mobile-store-device .product-card {
+    overflow: hidden !important;
+}
+
