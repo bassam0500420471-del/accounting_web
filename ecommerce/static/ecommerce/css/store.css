@@ -4388,3 +4388,177 @@ html.mobile-store-device .product-badge {
 html.mobile-store-device .product-actions a {
     font-size: 20px !important;
 }
+/* ==========================================================
+   MOBILE REAL DEVICE
+   إصلاح مشكلة viewport = 1450px
+========================================================== */
+
+html.mobile-store-device .product-card {
+    min-width: 620px !important;
+    max-width: 620px !important;
+    width: 620px !important;
+}
+
+
+/* ==========================================================
+   صورة المنتج
+========================================================== */
+
+html.mobile-store-device .product-image-gallery {
+    height: 430px !important;
+    min-height: 430px !important;
+    max-height: 430px !important;
+}
+
+
+html.mobile-store-device .product-gallery-images {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+html.mobile-store-device .product-gallery-image {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+}
+
+
+/* ==========================================================
+   محتوى المنتج
+========================================================== */
+
+html.mobile-store-device .product-content {
+    padding: 28px 32px 32px !important;
+}
+
+
+/* ==========================================================
+   التصنيف
+========================================================== */
+
+html.mobile-store-device .product-category {
+    font-size: 34px !important;
+    font-weight: 900 !important;
+    line-height: 1.35 !important;
+    color: #222 !important;
+    margin-bottom: 12px !important;
+}
+
+
+/* ==========================================================
+   اسم المنتج
+========================================================== */
+
+html.mobile-store-device .product-name,
+html.mobile-store-device .product-name-tooltip {
+    font-size: 38px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+
+    height: 106px !important;
+    min-height: 106px !important;
+    max-height: 106px !important;
+
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+
+    color: #111 !important;
+}
+
+
+/* ==========================================================
+   التقييم
+========================================================== */
+
+html.mobile-store-device .product-rating {
+    font-size: 28px !important;
+    font-weight: 900 !important;
+    margin: 14px 0 !important;
+}
+
+
+/* ==========================================================
+   السعر
+========================================================== */
+
+html.mobile-store-device .product-price {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin-top: 12px !important;
+    margin-bottom: 22px !important;
+}
+
+
+html.mobile-store-device .current-price {
+    font-size: 40px !important;
+    font-weight: 900 !important;
+    line-height: 1.35 !important;
+}
+
+
+html.mobile-store-device .old-price {
+    font-size: 28px !important;
+    font-weight: 900 !important;
+    line-height: 1.35 !important;
+}
+
+
+/* ==========================================================
+   زر السلة
+========================================================== */
+
+html.mobile-store-device .add-cart-btn {
+    width: 100% !important;
+    height: 78px !important;
+
+    font-size: 30px !important;
+    font-weight: 900 !important;
+
+    border-radius: 45px !important;
+}
+
+
+/* ==========================================================
+   أسهم الصور
+========================================================== */
+
+html.mobile-store-device .gallery-arrow {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 24px !important;
+}
+
+
+/* ==========================================================
+   نقاط الصور
+========================================================== */
+
+html.mobile-store-device .gallery-dots {
+    bottom: 14px !important;
+}
+
+html.mobile-store-device .gallery-dot {
+    width: 11px !important;
+    height: 11px !important;
+}
+
+html.mobile-store-device .gallery-dot.active {
+    width: 28px !important;
+}
+
+
+/* ==========================================================
+   أدوات المنتج
+========================================================== */
+
+html.mobile-store-device .product-actions a {
+    font-size: 28px !important;
+}
