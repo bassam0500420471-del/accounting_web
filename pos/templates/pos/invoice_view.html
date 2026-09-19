@@ -322,7 +322,25 @@
     <div class="company-name">
         {{ invoice.company.name }}
     </div>
+<div class="company-address">
 
+    {% if invoice.company.city %}
+        {{ invoice.company.city }}
+    {% endif %}
+
+    {% if invoice.company.district %}
+        - {{ invoice.company.district }}
+    {% endif %}
+
+    {% if invoice.company.street %}
+        - {{ invoice.company.street }}
+    {% endif %}
+
+    {% if invoice.company.building_no %}
+        - {{ invoice.company.building_no }}
+    {% endif %}
+
+</div>
 
     {% if has_tax_number %}
 
