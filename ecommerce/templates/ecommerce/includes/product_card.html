@@ -955,7 +955,176 @@ html.mobile-store-device .add-cart-btn {
     font-weight: 900 !important;
     border-radius: 40px !important;
 }
+/* ==========================================================
+   نافذة تكبير صورة المنتج
+========================================================== */
 
+.product-image-lightbox {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: rgba(0, 0, 0, .78);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity .25s ease,
+        visibility .25s ease;
+
+    z-index: 9999999999;
+
+}
+
+
+.product-image-lightbox.show {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+}
+
+
+/* ==========================================================
+   الصورة المكبرة
+========================================================== */
+
+.product-image-lightbox img {
+
+    display: block;
+
+    width: auto;
+
+    height: auto;
+
+    max-width: 88vw;
+
+    max-height: 88vh;
+
+    object-fit: contain;
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.45);
+
+}
+
+
+/* ==========================================================
+   زر الإغلاق
+========================================================== */
+
+.product-image-lightbox-close {
+
+    position: absolute;
+
+    top: 20px;
+
+    right: 25px;
+
+    width: 52px;
+
+    height: 52px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.95);
+
+    color: #111;
+
+    font-size: 38px;
+
+    font-weight: 900;
+
+    line-height: 48px;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,.3);
+
+    z-index: 2;
+
+}
+
+
+.product-image-lightbox-close:hover {
+
+    transform: scale(1.05);
+
+}
+
+
+/* ==========================================================
+   الجوال
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .product-image-lightbox {
+
+        padding: 25px;
+
+    }
+
+
+    .product-image-lightbox img {
+
+        max-width: 92vw;
+
+        max-height: 82vh;
+
+        border-radius: 12px;
+
+    }
+
+
+    .product-image-lightbox-close {
+
+        top: 15px;
+
+        right: 15px;
+
+        width: 56px;
+
+        height: 56px;
+
+        font-size: 40px;
+
+    }
+
+}
 </style>
 
 <!-- ==========================================================
@@ -1057,7 +1226,201 @@ document.addEventListener("DOMContentLoaded", function () {
         .querySelectorAll(".product-image-gallery")
         .forEach(function (gallery) {
 
+/* ==========================================================
+   نافذة تكبير الصورة
+========================================================== */
 
+const lightbox =
+    document.querySelector(
+        ".product-image-lightbox"
+    );
+
+
+const lightboxImage =
+    lightbox
+        ? lightbox.querySelector(
+            "img"
+        )
+        : null;
+
+
+const lightboxClose =
+    lightbox
+        ? lightbox.querySelector(
+            ".product-image-lightbox-close"
+        )
+        : null;
+
+
+/* ==========================================================
+   فتح الصورة الحالية
+========================================================== */
+
+images.forEach(function (image) {
+
+    image.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+
+            if (
+                !lightbox ||
+                !lightboxImage
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * استخدام الصورة الحالية
+             */
+
+            lightboxImage.src =
+                image.src;
+
+            lightboxImage.alt =
+                image.alt || "صورة المنتج";
+
+
+            /*
+             * إظهار النافذة
+             */
+
+            lightbox.classList.add(
+                "show"
+            );
+
+            lightbox.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+
+            /*
+             * منع تمرير الصفحة
+             */
+
+            document.body.style.overflow =
+                "hidden";
+
+        }
+    );
+
+});
+
+
+/* ==========================================================
+   إغلاق النافذة
+========================================================== */
+
+function closeLightbox() {
+
+    if (!lightbox) {
+
+        return;
+
+    }
+
+
+    lightbox.classList.remove(
+        "show"
+    );
+
+    lightbox.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+
+    /*
+     * تنظيف الصورة
+     */
+
+    if (lightboxImage) {
+
+        lightboxImage.src = "";
+
+    }
+
+}
+
+
+/* ==========================================================
+   زر ×
+========================================================== */
+
+if (lightboxClose) {
+
+    lightboxClose.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            closeLightbox();
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   الضغط خارج الصورة
+========================================================== */
+
+if (lightbox) {
+
+    lightbox.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === lightbox
+            ) {
+
+                closeLightbox();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   زر ESC
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape" &&
+            lightbox &&
+            lightbox.classList.contains("show")
+        ) {
+
+            closeLightbox();
+
+        }
+
+    }
+);
             /* ==================================================
                الصور
             ================================================== */
