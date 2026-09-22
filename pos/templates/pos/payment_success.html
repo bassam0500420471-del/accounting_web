@@ -123,4 +123,215 @@
 
 </div>
 
+
+<!-- ===================================================== -->
+<!-- تنظيف الفاتورة المنفذة من ذاكرة POS المؤقتة -->
+<!-- ===================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        try {
+
+            /*
+             * -------------------------------------------------
+             * قراءة بيانات فواتير POS المؤقتة
+             * -------------------------------------------------
+             */
+
+            const raw =
+                sessionStorage.getItem(
+                    "pos_invoices"
+                );
+
+
+            if (!raw) {
+
+                /*
+                 * لا توجد بيانات مؤقتة
+                 */
+                return;
+            }
+
+
+            const state =
+                JSON.parse(raw);
+
+
+            if (
+                !state ||
+                typeof state !== "object" ||
+                !state.invoices ||
+                typeof state.invoices !== "object"
+            ) {
+
+                sessionStorage.removeItem(
+                    "pos_invoices"
+                );
+
+                return;
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * رقم الفاتورة التي تم دفعها
+             * -------------------------------------------------
+             *
+             * هذا هو ID الحقيقي لقاعدة البيانات.
+             */
+
+            const paidInvoiceId =
+                Number(
+                    "{{ invoice.id }}"
+                );
+
+
+            /*
+             * -------------------------------------------------
+             * حذف الفاتورة المنفذة من الفواتير المؤقتة
+             * -------------------------------------------------
+             */
+
+            const remainingInvoices = {};
+
+
+            Object.keys(
+                state.invoices
+            ).forEach(
+                function (id) {
+
+                    /*
+                     * نحتفظ بكل الفواتير الأخرى.
+                     * نحذف فقط الفاتورة التي تم دفعها.
+                     */
+
+                    if (
+                        Number(id) !==
+                        paidInvoiceId
+                    ) {
+
+                        remainingInvoices[id] =
+                            state.invoices[id];
+
+                    }
+
+                }
+            );
+
+
+            /*
+             * -------------------------------------------------
+             * إذا بقيت فواتير أخرى
+             * -------------------------------------------------
+             */
+
+            const remainingIds =
+                Object.keys(
+                    remainingInvoices
+                );
+
+
+            if (
+                remainingIds.length > 0
+            ) {
+
+                /*
+                 * تحديد فاتورة نشطة جديدة
+                 */
+
+                let newActiveInvoiceId =
+                    Number(
+                        state.activeInvoiceId
+                    );
+
+
+                /*
+                 * إذا كانت الفاتورة النشطة
+                 * هي الفاتورة التي تم دفعها
+                 * نختار أول فاتورة متبقية.
+                 */
+
+                if (
+                    !remainingInvoices[
+                        newActiveInvoiceId
+                    ]
+                ) {
+
+                    newActiveInvoiceId =
+                        Number(
+                            remainingIds[0]
+                        );
+
+                }
+
+
+                /*
+                 * حفظ الحالة الجديدة
+                 */
+
+                sessionStorage.setItem(
+
+                    "pos_invoices",
+
+                    JSON.stringify({
+
+                        invoices:
+                            remainingInvoices,
+
+                        activeInvoiceId:
+                            newActiveInvoiceId,
+
+                        invoiceCounter:
+                            Number(
+                                state.invoiceCounter
+                            ) || 1
+
+                    })
+
+                );
+
+            } else {
+
+                /*
+                 * -------------------------------------------------
+                 * لا توجد أي فاتورة مؤقتة متبقية
+                 * -------------------------------------------------
+                 */
+
+                sessionStorage.removeItem(
+                    "pos_invoices"
+                );
+
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * حذف رقم الفاتورة المعلقة
+             * -------------------------------------------------
+             */
+
+            sessionStorage.removeItem(
+                "pos_pending_payment_invoice"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "POS PAYMENT SUCCESS CLEANUP ERROR:",
+                error
+            );
+
+        }
+
+    }
+);
+
+</script>
+
 {% endblock %}

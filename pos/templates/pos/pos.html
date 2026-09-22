@@ -354,7 +354,17 @@ main,
     height: 28px;
     padding: 0;
 }
-
+.qty-control input.qty-input {
+    width: 58px;
+    height: 28px;
+    padding: 2px 5px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
 
 /* =========================================================
    TOTAL
@@ -2251,32 +2261,35 @@ function renderInvoice(id){
 
                 <td>
 
-                    <div class="qty-control">
+<div class="qty-control">
 
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-secondary"
-                            onclick="changeQty(${id}, '${pid}', -1)"
-                        >
-                            -
-                        </button>
+    <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        onclick="changeQty(${id}, '${pid}', -1)"
+    >
+        -
+    </button>
 
+    <input
+        type="text"
+        class="qty-input"
+        value="${item.qty}"
+        inputmode="decimal"
+        autocomplete="off"
+        onchange="setQty(${id}, '${pid}', this.value)"
+        onkeydown="handleQtyKeydown(event, ${id}, '${pid}', this)"
+    >
 
-                        <span>
-                            ${item.qty}
-                        </span>
+    <button
+        type="button"
+        class="btn btn-sm btn-secondary"
+        onclick="changeQty(${id}, '${pid}', 1)"
+    >
+        +
+    </button>
 
-
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-secondary"
-                            onclick="changeQty(${id}, '${pid}', 1)"
-                        >
-                            +
-                        </button>
-
-                    </div>
-
+</div>
                 </td>
 
 
@@ -2409,9 +2422,21 @@ function changeQty(
     }
 
 
-    item.qty +=
+    /*
+     * زيادة أو نقصان الكمية
+     *
+     * نحافظ على دعم الكميات العشرية
+     */
+
+    item.qty =
+        Number(item.qty || 0) +
         Number(delta);
 
+
+    /*
+     * إذا أصبحت الكمية صفر أو أقل
+     * نحذف الصنف
+     */
 
     if(
         item.qty <= 0
@@ -2423,12 +2448,215 @@ function changeQty(
     }
 
 
+    /*
+     * إعادة رسم الفاتورة
+     * وهذا يعيد حساب الإجمالي
+     */
+
     renderInvoice(
         invoiceId
     );
 
 }
 
+
+/* =========================================================
+   MANUAL QUANTITY
+   ========================================================= */
+
+function setQty(
+    invoiceId,
+    pid,
+    value
+){
+
+    if(
+        !invoices[invoiceId]
+    ){
+
+        return;
+
+    }
+
+
+    const item =
+        invoices[invoiceId]
+        .items[pid];
+
+
+    if(!item){
+
+        return;
+
+    }
+
+
+    /*
+     * تحويل الفاصلة العربية/العادية
+     *
+     * 5,3  →  5.3
+     */
+
+    let normalizedValue =
+        String(value)
+            .trim()
+            .replace(",", ".");
+
+
+    /*
+     * تحويل النص إلى رقم
+     */
+
+    const newQty =
+        Number(normalizedValue);
+
+
+    /*
+     * إذا أدخل المستخدم قيمة غير صحيحة
+     * نرجع للكمية القديمة
+     */
+
+    if(
+        !Number.isFinite(newQty)
+    ){
+
+        renderInvoice(
+            invoiceId
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * منع الصفر والسالب
+     */
+
+    if(
+        newQty <= 0
+    ){
+
+        delete invoices[invoiceId]
+            .items[pid];
+
+
+        renderInvoice(
+            invoiceId
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * التأكد من المخزون
+     */
+
+    const product =
+        document.querySelector(
+            `.product-card[data-id="${pid}"]`
+        );
+
+
+    let stock =
+        0;
+
+
+    if(product){
+
+        stock =
+            parseFloat(
+                String(
+                    product.dataset.stock || "0"
+                ).replace(",", ".")
+            ) || 0;
+
+    }
+
+
+    /*
+     * إذا تجاوزت الكمية المخزون
+     */
+
+    if(
+        newQty > stock &&
+        !item.allowNegative
+    ){
+
+        const confirmNegative =
+            confirm(
+                `{% trans "Stock is lower than requested quantity for product" %} "${item.name}".\n{% trans "Allow negative stock?" %}`
+            );
+
+
+        if(!confirmNegative){
+
+            renderInvoice(
+                invoiceId
+            );
+
+            return;
+
+        }
+
+
+        item.allowNegative =
+            true;
+
+    }
+
+
+    /*
+     * حفظ الكمية الجديدة
+     */
+
+    item.qty =
+        newQty;
+
+
+    /*
+     * إعادة حساب الفاتورة
+     */
+
+    renderInvoice(
+        invoiceId
+    );
+
+}
+
+
+/* =========================================================
+   MANUAL QUANTITY - ENTER
+   ========================================================= */
+
+function handleQtyKeydown(
+    event,
+    invoiceId,
+    pid,
+    input
+){
+
+    if(
+        event.key === "Enter"
+    ){
+
+        event.preventDefault();
+
+
+        setQty(
+            invoiceId,
+            pid,
+            input.value
+        );
+
+
+        input.blur();
+
+    }
+
+}
 
 /* =========================================================
    SAVE INVOICE
@@ -2525,29 +2753,134 @@ function saveInvoice(id){
 
     })
 
-    .then(function(data){
+.then(function(data){
 
-        if(data.success){
+if(data.success){
 
-            sessionStorage.setItem(
-                "pos_pending_payment_invoice",
-                String(data.invoice_id)
+    /*
+     * =====================================================
+     * الفاتورة تم تنفيذها بنجاح
+     * حذفها نهائيًا من الفواتير المؤقتة
+     * =====================================================
+     */
+
+    delete invoices[id];
+
+
+    /*
+     * =====================================================
+     * حذف تبويب الفاتورة من الشاشة
+     * =====================================================
+     */
+
+    const tab =
+        document.querySelector(
+            `.invoice-tab[data-id="${id}"]`
+        );
+
+    const content =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"]`
+        );
+
+    if(tab){
+        tab.remove();
+    }
+
+    if(content){
+        content.remove();
+    }
+
+
+    /*
+     * =====================================================
+     * معرفة الفواتير التي ما زالت مفتوحة
+     * =====================================================
+     */
+
+    const remainingInvoiceIds =
+        Object.keys(invoices);
+
+
+    if(remainingInvoiceIds.length > 0){
+
+        /*
+         * توجد فواتير أخرى مفتوحة
+         */
+
+        activeInvoiceId =
+            Number(
+                remainingInvoiceIds[0]
             );
 
+        /*
+         * حفظ الحالة الجديدة
+         */
+        saveInvoicesState();
 
-            window.location.href =
-                `/pos/payment/${data.invoice_id}/`;
+        /*
+         * تفعيل الفاتورة الأخرى
+         */
+        setActiveInvoice(
+            activeInvoiceId
+        );
 
-        }else{
+    }else{
 
-            alert(
-                data.error ||
-                "حدث خطأ أثناء حفظ الفاتورة"
-            );
+        /*
+         * =================================================
+         * لا توجد أي فاتورة مفتوحة
+         * نمسح بيانات POS القديمة بالكامل
+         * =================================================
+         */
 
-        }
+        invoices = {};
 
-    })
+        activeInvoiceId = null;
+
+        invoiceCounter = 1;
+
+        /*
+         * حذف الفواتير المخزنة نهائيًا
+         */
+        sessionStorage.removeItem(
+            "pos_invoices"
+        );
+
+    }
+
+
+    /*
+     * =====================================================
+     * حفظ رقم الفاتورة المنفذة لصفحة الدفع
+     * =====================================================
+     */
+
+    sessionStorage.setItem(
+        "pos_pending_payment_invoice",
+        String(data.invoice_id)
+    );
+
+
+    /*
+     * =====================================================
+     * الانتقال إلى صفحة الدفع
+     * =====================================================
+     */
+
+    window.location.href =
+        `/pos/payment/${data.invoice_id}/`;
+
+
+}else{
+        alert(
+            data.error ||
+            "حدث خطأ أثناء حفظ الفاتورة"
+        );
+
+    }
+
+})
 
     .catch(function(error){
 
