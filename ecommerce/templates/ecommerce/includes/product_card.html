@@ -1150,292 +1150,66 @@ html.mobile-store-device .add-cart-btn {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
     /* ==========================================================
        اسم المنتج
-    =========================================================== */
+    ========================================================== */
 
     document
         .querySelectorAll(".product-name-tooltip")
         .forEach(function (name) {
 
+            name.addEventListener("click", function (event) {
 
-            /* ==================================================
-               الضغط على اسم المنتج
-            ================================================== */
+                event.preventDefault();
+                event.stopPropagation();
 
-            name.addEventListener(
-                "click",
-                function (event) {
+                document
+                    .querySelectorAll(
+                        ".product-name-tooltip.show-tooltip"
+                    )
+                    .forEach(function (other) {
 
-                    event.preventDefault();
+                        if (other !== name) {
+                            other.classList.remove("show-tooltip");
+                        }
 
-                    event.stopPropagation();
+                    });
 
+                name.classList.toggle("show-tooltip");
 
-                    /*
-                     * إغلاق أي اسم آخر مفتوح
-                     */
-
-                    document
-                        .querySelectorAll(
-                            ".product-name-tooltip.show-tooltip"
-                        )
-                        .forEach(function (other) {
-
-                            if (other !== name) {
-
-                                other.classList.remove(
-                                    "show-tooltip"
-                                );
-
-                            }
-
-                        });
-
-
-                    /*
-                     * إظهار / إخفاء الاسم الكامل
-                     */
-
-                    name.classList.toggle(
-                        "show-tooltip"
-                    );
-
-                }
-            );
-
+            });
 
         });
 
 
     /* ==========================================================
-       الضغط خارج الاسم
-    =========================================================== */
+       الضغط خارج اسم المنتج
+    ========================================================== */
 
-    document.addEventListener(
-        "click",
-        function () {
+    document.addEventListener("click", function () {
 
-            document
-                .querySelectorAll(
-                    ".product-name-tooltip.show-tooltip"
-                )
-                .forEach(function (name) {
+        document
+            .querySelectorAll(
+                ".product-name-tooltip.show-tooltip"
+            )
+            .forEach(function (name) {
 
-                    name.classList.remove(
-                        "show-tooltip"
-                    );
+                name.classList.remove("show-tooltip");
 
-                });
+            });
 
-        }
-    );
+    });
 
 
     /* ==========================================================
        معرض الصور
-    =========================================================== */
+    ========================================================== */
 
     document
         .querySelectorAll(".product-image-gallery")
         .forEach(function (gallery) {
 
-/* ==========================================================
-   نافذة تكبير الصورة
-========================================================== */
 
-const lightbox =
-    document.querySelector(
-        ".product-image-lightbox"
-    );
-
-
-const lightboxImage =
-    lightbox
-        ? lightbox.querySelector(
-            "img"
-        )
-        : null;
-
-
-const lightboxClose =
-    lightbox
-        ? lightbox.querySelector(
-            ".product-image-lightbox-close"
-        )
-        : null;
-
-
-/* ==========================================================
-   فتح الصورة الحالية
-========================================================== */
-
-images.forEach(function (image) {
-
-    image.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-
-            if (
-                !lightbox ||
-                !lightboxImage
-            ) {
-
-                return;
-
-            }
-
-
-            /*
-             * استخدام الصورة الحالية
-             */
-
-            lightboxImage.src =
-                image.src;
-
-            lightboxImage.alt =
-                image.alt || "صورة المنتج";
-
-
-            /*
-             * إظهار النافذة
-             */
-
-            lightbox.classList.add(
-                "show"
-            );
-
-            lightbox.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-
-
-            /*
-             * منع تمرير الصفحة
-             */
-
-            document.body.style.overflow =
-                "hidden";
-
-        }
-    );
-
-});
-
-
-/* ==========================================================
-   إغلاق النافذة
-========================================================== */
-
-function closeLightbox() {
-
-    if (!lightbox) {
-
-        return;
-
-    }
-
-
-    lightbox.classList.remove(
-        "show"
-    );
-
-    lightbox.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    document.body.style.overflow =
-        "";
-
-
-    /*
-     * تنظيف الصورة
-     */
-
-    if (lightboxImage) {
-
-        lightboxImage.src = "";
-
-    }
-
-}
-
-
-/* ==========================================================
-   زر ×
-========================================================== */
-
-if (lightboxClose) {
-
-    lightboxClose.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            closeLightbox();
-
-        }
-    );
-
-}
-
-
-/* ==========================================================
-   الضغط خارج الصورة
-========================================================== */
-
-if (lightbox) {
-
-    lightbox.addEventListener(
-        "click",
-        function (event) {
-
-            if (
-                event.target === lightbox
-            ) {
-
-                closeLightbox();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* ==========================================================
-   زر ESC
-========================================================== */
-
-document.addEventListener(
-    "keydown",
-    function (event) {
-
-        if (
-            event.key === "Escape" &&
-            lightbox &&
-            lightbox.classList.contains("show")
-        ) {
-
-            closeLightbox();
-
-        }
-
-    }
-);
             /* ==================================================
                الصور
             ================================================== */
@@ -1465,27 +1239,24 @@ document.addEventListener(
                     ".gallery-prev"
                 );
 
-
             const next =
                 gallery.querySelector(
                     ".gallery-next"
                 );
 
 
-            /*
-             * لا توجد صور
-             */
+            /* ==================================================
+               لا توجد صور
+            ================================================== */
 
             if (images.length === 0) {
-
                 return;
-
             }
 
 
-            /*
-             * الصورة الحالية
-             */
+            /* ==================================================
+               الصورة الحالية
+            ================================================== */
 
             let current = 0;
 
@@ -1500,8 +1271,7 @@ document.addEventListener(
                     "has-multiple-images"
                 );
 
-            }
-            else {
+            } else {
 
                 gallery.classList.remove(
                     "has-multiple-images"
@@ -1516,19 +1286,10 @@ document.addEventListener(
 
             function showImage(index) {
 
-
-                /*
-                 * حساب الرقم الصحيح
-                 */
-
                 current =
                     (index + images.length)
                     % images.length;
 
-
-                /* ==================================================
-                   تغيير الصور
-                ================================================== */
 
                 images.forEach(
                     function (image, i) {
@@ -1541,10 +1302,6 @@ document.addEventListener(
                     }
                 );
 
-
-                /* ==================================================
-                   تغيير النقاط
-                ================================================== */
 
                 dots.forEach(
                     function (dot, i) {
@@ -1561,6 +1318,178 @@ document.addEventListener(
 
 
             /* ==================================================
+               تكبير الصورة
+            ================================================== */
+
+            const lightbox =
+                document.querySelector(
+                    ".product-image-lightbox"
+                );
+
+            const lightboxImage =
+                lightbox
+                    ? lightbox.querySelector("img")
+                    : null;
+
+            const lightboxClose =
+                lightbox
+                    ? lightbox.querySelector(
+                        ".product-image-lightbox-close"
+                    )
+                    : null;
+
+
+            /* ==================================================
+               فتح الصورة
+            ================================================== */
+
+            images.forEach(function (image) {
+
+                image.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+
+                        if (
+                            !lightbox ||
+                            !lightboxImage
+                        ) {
+                            return;
+                        }
+
+
+                        lightboxImage.src =
+                            image.src;
+
+                        lightboxImage.alt =
+                            image.alt ||
+                            "صورة المنتج";
+
+
+                        lightbox.classList.add(
+                            "show"
+                        );
+
+                        lightbox.setAttribute(
+                            "aria-hidden",
+                            "false"
+                        );
+
+
+                        document.body.style.overflow =
+                            "hidden";
+
+                    }
+                );
+
+            });
+
+
+            /* ==================================================
+               إغلاق نافذة التكبير
+            ================================================== */
+
+            function closeLightbox() {
+
+                if (!lightbox) {
+                    return;
+                }
+
+
+                lightbox.classList.remove(
+                    "show"
+                );
+
+                lightbox.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+
+                document.body.style.overflow =
+                    "";
+
+
+                if (lightboxImage) {
+
+                    lightboxImage.src = "";
+
+                }
+
+            }
+
+
+            /* ==================================================
+               زر ×
+            ================================================== */
+
+            if (lightboxClose) {
+
+                lightboxClose.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        closeLightbox();
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               الضغط خارج الصورة
+            ================================================== */
+
+            if (lightbox) {
+
+                lightbox.addEventListener(
+                    "click",
+                    function (event) {
+
+                        if (
+                            event.target === lightbox
+                        ) {
+
+                            closeLightbox();
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               زر ESC
+            ================================================== */
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Escape" &&
+                        lightbox &&
+                        lightbox.classList.contains("show")
+                    ) {
+
+                        closeLightbox();
+
+                    }
+
+                }
+            );
+
+
+            /* ==================================================
                الصورة التالية
             ================================================== */
 
@@ -1571,7 +1500,6 @@ document.addEventListener(
                     function (event) {
 
                         event.preventDefault();
-
                         event.stopPropagation();
 
                         showImage(
@@ -1595,7 +1523,6 @@ document.addEventListener(
                     function (event) {
 
                         event.preventDefault();
-
                         event.stopPropagation();
 
                         showImage(
@@ -1620,7 +1547,6 @@ document.addEventListener(
                         function (event) {
 
                             event.preventDefault();
-
                             event.stopPropagation();
 
                             showImage(index);
@@ -1643,27 +1569,13 @@ document.addEventListener(
                 "mouseenter",
                 function () {
 
-
-                    /*
-                     * لا تعمل الحركة التلقائية
-                     * إلا إذا كان هناك أكثر من صورة
-                     */
-
                     if (images.length <= 1) {
-
                         return;
-
                     }
 
 
-                    /*
-                     * منع إنشاء أكثر من مؤقت
-                     */
-
                     if (autoSlide) {
-
                         return;
-
                     }
 
 
@@ -1691,11 +1603,6 @@ document.addEventListener(
                 "mouseleave",
                 function () {
 
-
-                    /*
-                     * إيقاف الحركة
-                     */
-
                     if (autoSlide) {
 
                         clearInterval(
@@ -1706,10 +1613,6 @@ document.addEventListener(
 
                     }
 
-
-                    /*
-                     * العودة للصورة الرئيسية
-                     */
 
                     if (images.length > 1) {
 
@@ -1722,11 +1625,10 @@ document.addEventListener(
 
 
             /* ==================================================
-               تأكيد الصورة الأولى عند تحميل الصفحة
+               الصورة الأولى
             ================================================== */
 
             showImage(0);
-
 
         });
 
