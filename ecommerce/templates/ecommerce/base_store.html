@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'ar' }}"
       dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
-
 <head>
 
     <meta charset="UTF-8">
@@ -519,6 +518,17 @@
 }
 
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    if (
+        window.matchMedia("(hover: none) and (pointer: coarse)").matches
+    ) {
+        document.documentElement.classList.add("mobile-store-device");
+    }
+
+});
+</script>
 </head>
 
 
