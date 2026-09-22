@@ -820,7 +820,8 @@
 }
 /* ==========================================================
    تحسين كرت المنتج للجوال الحقيقي
-   يعمل حتى مع وضع "موقع سطح المكتب"
+   تكبير الخط ووضوحه
+   بدون تغيير تصميم الكمبيوتر
 ========================================================== */
 
 html.mobile-store-device .product-card {
@@ -848,59 +849,106 @@ html.mobile-store-device .product-content {
     padding: 20px !important;
 }
 
+
+/* ==========================================================
+   التصنيف
+========================================================== */
+
 html.mobile-store-device .product-category {
-    font-size: 20px !important;
+    font-size: 22px !important;
     font-weight: 900 !important;
     line-height: 1.4 !important;
-    color: #222 !important;
+    color: #111 !important;
     margin-bottom: 8px !important;
 }
 
+
+/* ==========================================================
+   اسم المنتج
+========================================================== */
+
 html.mobile-store-device .product-name,
 html.mobile-store-device .product-name-tooltip {
-    font-size: 23px !important;
+    font-size: 27px !important;
     font-weight: 900 !important;
-    line-height: 1.5 !important;
+    line-height: 1.45 !important;
     color: #111 !important;
-    height: 69px !important;
-    min-height: 69px !important;
+
+    height: 79px !important;
+    min-height: 79px !important;
+
     display: -webkit-box !important;
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 2 !important;
+
     overflow: hidden !important;
     text-overflow: ellipsis !important;
 }
 
+
+/* ==========================================================
+   التقييم
+========================================================== */
+
 html.mobile-store-device .product-rating {
-    font-size: 20px !important;
+    font-size: 21px !important;
     font-weight: 900 !important;
     line-height: 1.4 !important;
     margin: 12px 0 !important;
 }
 
+
+/* ==========================================================
+   السعر
+========================================================== */
+
 html.mobile-store-device .product-price {
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
+
     margin-top: 10px !important;
     margin-bottom: 18px !important;
 }
 
+
+/* ==========================================================
+   السعر الحالي
+========================================================== */
+
 html.mobile-store-device .current-price {
-    font-size: 25px !important;
+    font-size: 27px !important;
     font-weight: 900 !important;
     line-height: 1.4 !important;
     color: #111 !important;
 }
 
+
+/* ==========================================================
+   السعر القديم
+========================================================== */
+
 html.mobile-store-device .old-price {
-    font-size: 18px !important;
+    font-size: 20px !important;
     font-weight: 900 !important;
     line-height: 1.4 !important;
-    color: #555 !important;
+    color: #444 !important;
 }
 
+
+/* ==========================================================
+   زر إضافة للسلة
+========================================================== */
+
 html.mobile-store-device .add-cart-btn {
+    width: 100% !important;
+    height: 58px !important;
+
+    font-size: 21px !important;
+    font-weight: 900 !important;
+
+    border-radius: 40px !important;
+}
     width: 100% !important;
     height: 58px !important;
     font-size: 20px !important;
