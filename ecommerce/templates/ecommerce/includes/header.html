@@ -4,7 +4,31 @@
 
 <div class="store-fixed-header">
 
+<!-- ====================================================== 
+     شريط الإعلانات من قاعدة البيانات
+======================================================= --> 
 
+<div class="top-announcement-bar">
+
+    <div class="announcement-slider">
+
+        {% for announcement in store.announcements.all %}
+
+            <div class="announcement-item {% if forloop.first %}active{% endif %}">
+                📢 {{ announcement.text }}
+            </div>
+
+        {% empty %}
+
+            <div class="announcement-item active">
+                📢 لا توجد إعلانات
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
 
     <!-- ======================================================
          STORE HEADER
