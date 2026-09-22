@@ -38,7 +38,6 @@
                 src="{{ product.image.url }}"
                 alt="{{ product.get_name }}"
                 class="product-gallery-image active-image"
-                loading="lazy"
             >
 
         {% endif %}
@@ -46,6 +45,7 @@
 
         <!-- ==================================================
              الصور الإضافية
+             لا يتم تحميلها عند فتح الصفحة
         =================================================== -->
 
         {% for gallery_image in product.images.all %}
@@ -53,10 +53,9 @@
             {% if gallery_image.image %}
 
                 <img
-                    src="{{ gallery_image.image.url }}"
+                    data-src="{{ gallery_image.image.url }}"
                     alt="{{ gallery_image.alt_text|default:product.get_name }}"
                     class="product-gallery-image"
-                    loading="lazy"
                 >
 
             {% endif %}
@@ -74,7 +73,6 @@
                 src="{% static 'ecommerce/images/no-image.png' %}"
                 alt="لا توجد صورة"
                 class="product-gallery-image active-image"
-                loading="lazy"
             >
 
         {% endif %}
@@ -341,9 +339,7 @@
 
 </div>
 
-<!-- ==========================================================
-     CSS
-=========================================================== -->
+
 <!-- ==========================================================
      نافذة تكبير صورة المنتج
 =========================================================== -->
@@ -354,7 +350,9 @@
 
     <div class="product-image-lightbox-inner">
 
+
         <!-- زر الإغلاق فوق الصورة مباشرة -->
+
         <button
             type="button"
             class="product-image-lightbox-close"
@@ -366,6 +364,7 @@
 
 
         <!-- الصورة السابقة -->
+
         <button
             type="button"
             class="product-lightbox-arrow product-lightbox-prev"
@@ -377,12 +376,14 @@
 
 
         <!-- الصورة المكبرة -->
+
         <img
             src=""
             alt="صورة المنتج">
 
 
         <!-- الصورة التالية -->
+
         <button
             type="button"
             class="product-lightbox-arrow product-lightbox-next"
@@ -394,11 +395,16 @@
 
 
         <!-- نقاط الصور -->
+
         <div class="product-lightbox-dots"></div>
+
 
     </div>
 
 </div>
+
+
+<style>
 
 /* ==========================================================
    السماح للعناصر العائمة بالخروج من الكرت
@@ -414,7 +420,6 @@
 
 /* ==========================================================
    اسم المنتج
-   يظهر سطرين فقط داخل الكرت
 ========================================================== */
 
 .product-name-tooltip {
@@ -503,10 +508,6 @@
 }
 
 
-/* ==========================================================
-   الكمبيوتر - تمرير الماوس
-========================================================== */
-
 @media (min-width: 769px) {
 
     .product-name-tooltip:hover::after {
@@ -522,25 +523,7 @@
 }
 
 
-/* ==========================================================
-   الضغط / التركيز
-========================================================== */
-
-.product-name-tooltip:focus::after {
-
-    opacity: 1;
-
-    visibility: visible;
-
-    transform: translate(50%, -50%);
-
-}
-
-
-/* ==========================================================
-   عند الضغط بواسطة JavaScript
-========================================================== */
-
+.product-name-tooltip:focus::after,
 .product-name-tooltip.show-tooltip::after {
 
     opacity: 1;
@@ -551,10 +534,6 @@
 
 }
 
-
-/* ==========================================================
-   الجوال
-========================================================== */
 
 @media (max-width: 768px) {
 
@@ -584,7 +563,6 @@
 
 
     .product-name-tooltip:focus::after,
-
     .product-name-tooltip.show-tooltip::after {
 
         opacity: 1;
@@ -600,7 +578,7 @@
 
 /* ==========================================================
    حاوية الصورة
-=========================================================== */
+========================================================== */
 
 .product-image-gallery {
 
@@ -613,7 +591,7 @@
 
 /* ==========================================================
    حاوية الصور
-=========================================================== */
+========================================================== */
 
 .product-gallery-images {
 
@@ -628,7 +606,7 @@
 
 /* ==========================================================
    جميع الصور
-=========================================================== */
+========================================================== */
 
 .product-gallery-image {
 
@@ -655,7 +633,7 @@
 
 /* ==========================================================
    الصورة الحالية
-=========================================================== */
+========================================================== */
 
 .product-gallery-image.active-image {
 
@@ -670,7 +648,7 @@
 
 /* ==========================================================
    الأسهم
-=========================================================== */
+========================================================== */
 
 .gallery-arrow {
 
@@ -711,20 +689,12 @@
 }
 
 
-/* ==========================================================
-   إظهار الأسهم عند وجود أكثر من صورة
-=========================================================== */
-
 .product-image-gallery.has-multiple-images .gallery-arrow {
 
     display: flex;
 
 }
 
-
-/* ==========================================================
-   ظهور الأسهم عند المرور
-=========================================================== */
 
 .product-image-gallery.has-multiple-images:hover .gallery-arrow {
 
@@ -733,20 +703,12 @@
 }
 
 
-/* ==========================================================
-   السهم الأيمن
-=========================================================== */
-
 .gallery-prev {
 
     right: 8px;
 
 }
 
-
-/* ==========================================================
-   السهم الأيسر
-=========================================================== */
 
 .gallery-next {
 
@@ -757,7 +719,7 @@
 
 /* ==========================================================
    النقاط
-=========================================================== */
+========================================================== */
 
 .gallery-dots {
 
@@ -780,20 +742,12 @@
 }
 
 
-/* ==========================================================
-   إظهار النقاط عند وجود أكثر من صورة
-=========================================================== */
-
 .product-image-gallery.has-multiple-images .gallery-dots {
 
     display: flex;
 
 }
 
-
-/* ==========================================================
-   النقطة
-=========================================================== */
 
 .gallery-dot {
 
@@ -812,10 +766,6 @@
 }
 
 
-/* ==========================================================
-   النقطة الحالية
-=========================================================== */
-
 .gallery-dot.active {
 
     width: 18px;
@@ -826,10 +776,6 @@
 
 }
 
-
-/* ==========================================================
-   الجوال
-=========================================================== */
 
 @media (max-width: 768px) {
 
@@ -843,8 +789,8 @@
 
 
 /* ==========================================================
-   منع أي CSS خارجي من إخفاء الصورة الرئيسية
-=========================================================== */
+   الصورة الرئيسية
+========================================================== */
 
 .product-image-gallery
 .product-gallery-image.active-image {
@@ -860,7 +806,7 @@
 
 /* ==========================================================
    الصور غير النشطة
-=========================================================== */
+========================================================== */
 
 .product-image-gallery
 .product-gallery-image:not(.active-image) {
@@ -870,35 +816,54 @@
     visibility: hidden !important;
 
 }
+
+
 /* ==========================================================
    تحسين كرت المنتج للجوال الحقيقي
-   تكبير الخط ووضوحه
-   بدون تغيير تصميم الكمبيوتر
 ========================================================== */
 
 html.mobile-store-device .product-card {
+
     min-width: 320px !important;
+
     max-width: 320px !important;
+
 }
+
 
 html.mobile-store-device .product-image-gallery {
+
     height: 300px !important;
+
     min-height: 300px !important;
+
 }
+
 
 html.mobile-store-device .product-gallery-images {
+
     width: 100% !important;
+
     height: 100% !important;
+
 }
+
 
 html.mobile-store-device .product-gallery-image {
+
     width: 100% !important;
+
     height: 100% !important;
+
     object-fit: contain !important;
+
 }
 
+
 html.mobile-store-device .product-content {
+
     padding: 20px !important;
+
 }
 
 
@@ -907,11 +872,17 @@ html.mobile-store-device .product-content {
 ========================================================== */
 
 html.mobile-store-device .product-category {
+
     font-size: 22px !important;
+
     font-weight: 900 !important;
+
     line-height: 1.4 !important;
+
     color: #111 !important;
+
     margin-bottom: 8px !important;
+
 }
 
 
@@ -921,20 +892,29 @@ html.mobile-store-device .product-category {
 
 html.mobile-store-device .product-name,
 html.mobile-store-device .product-name-tooltip {
+
     font-size: 27px !important;
+
     font-weight: 900 !important;
+
     line-height: 1.45 !important;
+
     color: #111 !important;
 
     height: 79px !important;
+
     min-height: 79px !important;
 
     display: -webkit-box !important;
+
     -webkit-box-orient: vertical !important;
+
     -webkit-line-clamp: 2 !important;
 
     overflow: hidden !important;
+
     text-overflow: ellipsis !important;
+
 }
 
 
@@ -943,10 +923,15 @@ html.mobile-store-device .product-name-tooltip {
 ========================================================== */
 
 html.mobile-store-device .product-rating {
+
     font-size: 21px !important;
+
     font-weight: 900 !important;
+
     line-height: 1.4 !important;
+
     margin: 12px 0 !important;
+
 }
 
 
@@ -955,12 +940,17 @@ html.mobile-store-device .product-rating {
 ========================================================== */
 
 html.mobile-store-device .product-price {
+
     display: flex !important;
+
     align-items: center !important;
+
     gap: 12px !important;
 
     margin-top: 10px !important;
+
     margin-bottom: 18px !important;
+
 }
 
 
@@ -969,10 +959,15 @@ html.mobile-store-device .product-price {
 ========================================================== */
 
 html.mobile-store-device .current-price {
+
     font-size: 27px !important;
+
     font-weight: 900 !important;
+
     line-height: 1.4 !important;
+
     color: #111 !important;
+
 }
 
 
@@ -981,10 +976,15 @@ html.mobile-store-device .current-price {
 ========================================================== */
 
 html.mobile-store-device .old-price {
+
     font-size: 20px !important;
+
     font-weight: 900 !important;
+
     line-height: 1.4 !important;
+
     color: #444 !important;
+
 }
 
 
@@ -993,14 +993,20 @@ html.mobile-store-device .old-price {
 ========================================================== */
 
 html.mobile-store-device .add-cart-btn {
+
     width: 100% !important;
+
     height: 58px !important;
 
     font-size: 21px !important;
+
     font-weight: 900 !important;
 
     border-radius: 40px !important;
+
 }
+
+
 /* ==========================================================
    نافذة تكبير صورة المنتج
 ========================================================== */
@@ -1012,9 +1018,10 @@ html.mobile-store-device .add-cart-btn {
     inset: 0;
 
     width: 100vw;
+
     height: 100vh;
 
-    background: rgba(0, 0, 0, .78);
+    background: rgba(0,0,0,.78);
 
     display: flex;
 
@@ -1022,7 +1029,9 @@ html.mobile-store-device .add-cart-btn {
 
     justify-content: center;
 
-    padding: 40px;
+    padding: 30px;
+
+    box-sizing: border-box;
 
     opacity: 0;
 
@@ -1051,10 +1060,35 @@ html.mobile-store-device .add-cart-btn {
 
 
 /* ==========================================================
+   حاوية الصورة المكبرة
+========================================================== */
+
+.product-image-lightbox-inner {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: fit-content;
+
+    height: fit-content;
+
+    max-width: 92vw;
+
+    max-height: 84vh;
+
+}
+
+
+/* ==========================================================
    الصورة المكبرة
 ========================================================== */
 
-.product-image-lightbox img {
+.product-image-lightbox-inner img {
 
     display: block;
 
@@ -1062,15 +1096,15 @@ html.mobile-store-device .add-cart-btn {
 
     height: auto;
 
-    max-width: 88vw;
+    max-width: 82vw;
 
-    max-height: 88vh;
+    max-height: 78vh;
 
     object-fit: contain;
 
     border-radius: 14px;
 
-    background: #fff;
+    background: #ffffff;
 
     box-shadow:
         0 20px 60px rgba(0,0,0,.45);
@@ -1080,15 +1114,18 @@ html.mobile-store-device .add-cart-btn {
 
 /* ==========================================================
    زر الإغلاق
+   فوق الصورة مباشرة
 ========================================================== */
 
 .product-image-lightbox-close {
 
     position: absolute;
 
-    top: 20px;
+    top: -64px;
 
-    right: 25px;
+    left: 50%;
+
+    transform: translateX(-50%);
 
     width: 52px;
 
@@ -1098,7 +1135,7 @@ html.mobile-store-device .add-cart-btn {
 
     border-radius: 50%;
 
-    background: rgba(255,255,255,.95);
+    background: rgba(255,255,255,.97);
 
     color: #111;
 
@@ -1118,16 +1155,143 @@ html.mobile-store-device .add-cart-btn {
 
     justify-content: center;
 
-    box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.3);
 
-    z-index: 2;
+    z-index: 10;
 
 }
 
 
 .product-image-lightbox-close:hover {
 
-    transform: scale(1.05);
+    transform:
+        translateX(-50%)
+        scale(1.05);
+
+}
+
+
+/* ==========================================================
+   أسهم نافذة التكبير
+========================================================== */
+
+.product-lightbox-arrow {
+
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 54px;
+
+    height: 54px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.95);
+
+    color: #111;
+
+    font-size: 42px;
+
+    font-weight: 900;
+
+    line-height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.3);
+
+    z-index: 5;
+
+}
+
+
+.product-lightbox-arrow:hover {
+
+    transform:
+        translateY(-50%)
+        scale(1.05);
+
+}
+
+
+.product-lightbox-prev {
+
+    right: 15px;
+
+}
+
+
+.product-lightbox-next {
+
+    left: 15px;
+
+}
+
+
+/* ==========================================================
+   نقاط نافذة التكبير
+========================================================== */
+
+.product-lightbox-dots {
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: -38px;
+
+    transform: translateX(-50%);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    z-index: 5;
+
+}
+
+
+.product-lightbox-dot {
+
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.45);
+
+    transition:
+        width .2s ease,
+        background .2s ease;
+
+}
+
+
+.product-lightbox-dot.active {
+
+    width: 22px;
+
+    border-radius: 10px;
+
+    background: #ffffff;
 
 }
 
@@ -1140,16 +1304,25 @@ html.mobile-store-device .add-cart-btn {
 
     .product-image-lightbox {
 
-        padding: 25px;
+        padding: 20px;
 
     }
 
 
-    .product-image-lightbox img {
+    .product-image-lightbox-inner {
 
-        max-width: 92vw;
+        max-width: 94vw;
 
-        max-height: 82vh;
+        max-height: 76vh;
+
+    }
+
+
+    .product-image-lightbox-inner img {
+
+        max-width: 90vw;
+
+        max-height: 70vh;
 
         border-radius: 12px;
 
@@ -1158,9 +1331,7 @@ html.mobile-store-device .add-cart-btn {
 
     .product-image-lightbox-close {
 
-        top: 15px;
-
-        right: 15px;
+        top: -62px;
 
         width: 56px;
 
@@ -1170,8 +1341,42 @@ html.mobile-store-device .add-cart-btn {
 
     }
 
+
+    .product-lightbox-arrow {
+
+        width: 48px;
+
+        height: 48px;
+
+        font-size: 38px;
+
+    }
+
+
+    .product-lightbox-prev {
+
+        right: 10px;
+
+    }
+
+
+    .product-lightbox-next {
+
+        left: 10px;
+
+    }
+
+
+    .product-lightbox-dots {
+
+        bottom: -34px;
+
+    }
+
 }
+
 </style>
+
 
 <!-- ==========================================================
      JavaScript معرض الصور + اسم المنتج
@@ -1180,6 +1385,7 @@ html.mobile-store-device .add-cart-btn {
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
+
 
     /* ==========================================================
        اسم المنتج
@@ -1192,7 +1398,9 @@ document.addEventListener("DOMContentLoaded", function () {
             name.addEventListener("click", function (event) {
 
                 event.preventDefault();
+
                 event.stopPropagation();
+
 
                 document
                     .querySelectorAll(
@@ -1201,12 +1409,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     .forEach(function (other) {
 
                         if (other !== name) {
-                            other.classList.remove("show-tooltip");
+
+                            other.classList.remove(
+                                "show-tooltip"
+                            );
+
                         }
 
                     });
 
-                name.classList.toggle("show-tooltip");
+
+                name.classList.toggle(
+                    "show-tooltip"
+                );
 
             });
 
@@ -1225,7 +1440,9 @@ document.addEventListener("DOMContentLoaded", function () {
             )
             .forEach(function (name) {
 
-                name.classList.remove("show-tooltip");
+                name.classList.remove(
+                    "show-tooltip"
+                );
 
             });
 
@@ -1241,19 +1458,13 @@ document.addEventListener("DOMContentLoaded", function () {
         .forEach(function (gallery) {
 
 
-            /* ==================================================
-               الصور
-            ================================================== */
-
             const images =
-                gallery.querySelectorAll(
-                    ".product-gallery-image"
+                Array.from(
+                    gallery.querySelectorAll(
+                        ".product-gallery-image"
+                    )
                 );
 
-
-            /* ==================================================
-               النقاط
-            ================================================== */
 
             const dots =
                 gallery.querySelectorAll(
@@ -1261,14 +1472,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            /* ==================================================
-               الأسهم
-            ================================================== */
-
             const prev =
                 gallery.querySelector(
                     ".gallery-prev"
                 );
+
 
             const next =
                 gallery.querySelector(
@@ -1276,43 +1484,44 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            /* ==================================================
-               لا توجد صور
-            ================================================== */
-
             if (images.length === 0) {
+
                 return;
+
             }
 
-
-            /* ==================================================
-               الصورة الحالية
-            ================================================== */
 
             let current = 0;
 
 
             /* ==================================================
-               تحديد وجود أكثر من صورة
+               تحميل صورة عند الحاجة فقط
             ================================================== */
 
-            if (images.length > 1) {
+            function loadImage(image) {
 
-                gallery.classList.add(
-                    "has-multiple-images"
-                );
+                if (!image) {
 
-            } else {
+                    return;
 
-                gallery.classList.remove(
-                    "has-multiple-images"
-                );
+                }
+
+
+                if (
+                    !image.getAttribute("src") &&
+                    image.dataset.src
+                ) {
+
+                    image.src =
+                        image.dataset.src;
+
+                }
 
             }
 
 
             /* ==================================================
-               عرض الصورة
+               عرض صورة داخل الكرت
             ================================================== */
 
             function showImage(index) {
@@ -1320,6 +1529,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 current =
                     (index + images.length)
                     % images.length;
+
+
+                const currentImage =
+                    images[current];
+
+
+                /* تحميل الصورة الحالية فقط */
+
+                loadImage(currentImage);
 
 
                 images.forEach(
@@ -1349,18 +1567,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
-               تكبير الصورة
+               تحديد وجود أكثر من صورة
             ================================================== */
 
-            const lightbox =
-                document.querySelector(
-                    ".product-image-lightbox"
+            if (images.length > 1) {
+
+                gallery.classList.add(
+                    "has-multiple-images"
                 );
+
+            } else {
+
+                gallery.classList.remove(
+                    "has-multiple-images"
+                );
+
+            }
+
+
+            /* ==================================================
+               Lightbox الخاص بهذا المنتج
+            ================================================== */
+
+            const card =
+                gallery.closest(
+                    ".product-card"
+                );
+
+
+            const lightbox =
+                card
+                    ? card.nextElementSibling
+                    : null;
+
+
+            const lightboxInner =
+                lightbox
+                    ? lightbox.querySelector(
+                        ".product-image-lightbox-inner"
+                    )
+                    : null;
+
 
             const lightboxImage =
                 lightbox
-                    ? lightbox.querySelector("img")
+                    ? lightbox.querySelector(
+                        ".product-image-lightbox-inner img"
+                    )
                     : null;
+
 
             const lightboxClose =
                 lightbox
@@ -1370,69 +1625,237 @@ document.addEventListener("DOMContentLoaded", function () {
                     : null;
 
 
+            const lightboxPrev =
+                lightbox
+                    ? lightbox.querySelector(
+                        ".product-lightbox-prev"
+                    )
+                    : null;
+
+
+            const lightboxNext =
+                lightbox
+                    ? lightbox.querySelector(
+                        ".product-lightbox-next"
+                    )
+                    : null;
+
+
+            const lightboxDots =
+                lightbox
+                    ? lightbox.querySelector(
+                        ".product-lightbox-dots"
+                    )
+                    : null;
+
+
+            let lightboxCurrent = 0;
+
+
             /* ==================================================
-               فتح الصورة
+               إنشاء نقاط Lightbox
             ================================================== */
 
-            images.forEach(function (image) {
+            function buildLightboxDots() {
 
-                image.addEventListener(
-                    "click",
-                    function (event) {
+                if (!lightboxDots) {
 
-                        event.preventDefault();
-                        event.stopPropagation();
+                    return;
 
-
-                        if (
-                            !lightbox ||
-                            !lightboxImage
-                        ) {
-                            return;
-                        }
+                }
 
 
-                        lightboxImage.src =
-                            image.src;
-
-                        lightboxImage.alt =
-                            image.alt ||
-                            "صورة المنتج";
+                lightboxDots.innerHTML = "";
 
 
-                        lightbox.classList.add(
-                            "show"
+                images.forEach(
+                    function (image, index) {
+
+                        const dot =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        dot.className =
+                            "product-lightbox-dot";
+
+
+                        dot.addEventListener(
+                            "click",
+                            function (event) {
+
+                                event.preventDefault();
+
+                                event.stopPropagation();
+
+                                showLightboxImage(
+                                    index
+                                );
+
+                            }
                         );
 
-                        lightbox.setAttribute(
-                            "aria-hidden",
-                            "false"
+
+                        lightboxDots.appendChild(
+                            dot
                         );
-
-
-                        document.body.style.overflow =
-                            "hidden";
 
                     }
                 );
 
-            });
+            }
 
 
             /* ==================================================
-               إغلاق نافذة التكبير
+               عرض صورة داخل Lightbox
+            ================================================== */
+
+            function showLightboxImage(index) {
+
+                if (
+                    !lightbox ||
+                    !lightboxImage ||
+                    images.length === 0
+                ) {
+
+                    return;
+
+                }
+
+
+                lightboxCurrent =
+                    (index + images.length)
+                    % images.length;
+
+
+                const image =
+                    images[lightboxCurrent];
+
+
+                /* تحميل الصورة فقط الآن */
+
+                loadImage(image);
+
+
+                if (image.src) {
+
+                    lightboxImage.src =
+                        image.src;
+
+                }
+
+
+                lightboxImage.alt =
+                    image.alt ||
+                    "صورة المنتج";
+
+
+                if (lightboxDots) {
+
+                    lightboxDots
+                        .querySelectorAll(
+                            ".product-lightbox-dot"
+                        )
+                        .forEach(
+                            function (dot, i) {
+
+                                dot.classList.toggle(
+                                    "active",
+                                    i === lightboxCurrent
+                                );
+
+                            }
+                        );
+
+                }
+
+
+                if (lightboxPrev) {
+
+                    lightboxPrev.style.display =
+                        images.length > 1
+                            ? "flex"
+                            : "none";
+
+                }
+
+
+                if (lightboxNext) {
+
+                    lightboxNext.style.display =
+                        images.length > 1
+                            ? "flex"
+                            : "none";
+
+                }
+
+
+                if (lightboxDots) {
+
+                    lightboxDots.style.display =
+                        images.length > 1
+                            ? "flex"
+                            : "none";
+
+                }
+
+            }
+
+
+            /* ==================================================
+               فتح Lightbox
+            ================================================== */
+
+            function openLightbox(index) {
+
+                if (!lightbox) {
+
+                    return;
+
+                }
+
+
+                buildLightboxDots();
+
+
+                showLightboxImage(index);
+
+
+                lightbox.classList.add(
+                    "show"
+                );
+
+
+                lightbox.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+
+                document.body.style.overflow =
+                    "hidden";
+
+            }
+
+
+            /* ==================================================
+               إغلاق Lightbox
             ================================================== */
 
             function closeLightbox() {
 
                 if (!lightbox) {
+
                     return;
+
                 }
 
 
                 lightbox.classList.remove(
                     "show"
                 );
+
 
                 lightbox.setAttribute(
                     "aria-hidden",
@@ -1454,6 +1877,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
+               الضغط على صور المنتج
+            ================================================== */
+
+            images.forEach(
+                function (image, index) {
+
+                    image.addEventListener(
+                        "click",
+                        function (event) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+
+                            openLightbox(index);
+
+                        }
+                    );
+
+                }
+            );
+
+
+            /* ==================================================
                زر ×
             ================================================== */
 
@@ -1464,6 +1912,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     function (event) {
 
                         event.preventDefault();
+
                         event.stopPropagation();
 
                         closeLightbox();
@@ -1475,7 +1924,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
-               الضغط خارج الصورة
+               الضغط خارج نافذة الصورة
             ================================================== */
 
             if (lightbox) {
@@ -1485,7 +1934,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     function (event) {
 
                         if (
-                            event.target === lightbox
+                            event.target ===
+                            lightbox
                         ) {
 
                             closeLightbox();
@@ -1499,7 +1949,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
-               زر ESC
+               السهم التالي في Lightbox
+            ================================================== */
+
+            if (lightboxNext) {
+
+                lightboxNext.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        showLightboxImage(
+                            lightboxCurrent + 1
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               السهم السابق في Lightbox
+            ================================================== */
+
+            if (lightboxPrev) {
+
+                lightboxPrev.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        showLightboxImage(
+                            lightboxCurrent - 1
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /* ==================================================
+               لوحة المفاتيح
             ================================================== */
 
             document.addEventListener(
@@ -1507,12 +2007,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 function (event) {
 
                     if (
-                        event.key === "Escape" &&
-                        lightbox &&
-                        lightbox.classList.contains("show")
+                        !lightbox ||
+                        !lightbox.classList.contains(
+                            "show"
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "Escape"
                     ) {
 
                         closeLightbox();
+
+                        return;
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "ArrowRight"
+                    ) {
+
+                        showLightboxImage(
+                            lightboxCurrent - 1
+                        );
+
+                    }
+
+
+                    if (
+                        event.key ===
+                        "ArrowLeft"
+                    ) {
+
+                        showLightboxImage(
+                            lightboxCurrent + 1
+                        );
 
                     }
 
@@ -1521,7 +2058,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
-               الصورة التالية
+               الأسهم داخل كرت المنتج
             ================================================== */
 
             if (next) {
@@ -1531,7 +2068,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     function (event) {
 
                         event.preventDefault();
+
                         event.stopPropagation();
+
 
                         showImage(
                             current + 1
@@ -1543,10 +2082,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            /* ==================================================
-               الصورة السابقة
-            ================================================== */
-
             if (prev) {
 
                 prev.addEventListener(
@@ -1554,7 +2089,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     function (event) {
 
                         event.preventDefault();
+
                         event.stopPropagation();
+
 
                         showImage(
                             current - 1
@@ -1567,7 +2104,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             /* ==================================================
-               الضغط على النقاط
+               نقاط كرت المنتج
             ================================================== */
 
             dots.forEach(
@@ -1578,7 +2115,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         function (event) {
 
                             event.preventDefault();
+
                             event.stopPropagation();
+
 
                             showImage(index);
 
@@ -1600,13 +2139,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 "mouseenter",
                 function () {
 
-                    if (images.length <= 1) {
+                    if (
+                        images.length <= 1
+                    ) {
+
                         return;
+
                     }
 
 
                     if (autoSlide) {
+
                         return;
+
                     }
 
 
@@ -1645,7 +2190,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
 
-                    if (images.length > 1) {
+                    if (
+                        images.length > 1
+                    ) {
 
                         showImage(0);
 
