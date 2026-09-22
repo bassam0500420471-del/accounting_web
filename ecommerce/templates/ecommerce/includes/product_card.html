@@ -352,22 +352,53 @@
     class="product-image-lightbox"
     aria-hidden="true">
 
-    <button
-        type="button"
-        class="product-image-lightbox-close"
-        aria-label="إغلاق">
+    <div class="product-image-lightbox-inner">
 
-        ×
+        <!-- زر الإغلاق فوق الصورة مباشرة -->
+        <button
+            type="button"
+            class="product-image-lightbox-close"
+            aria-label="إغلاق">
 
-    </button>
+            ×
 
-    <img
-        src=""
-        alt="صورة المنتج">
+        </button>
+
+
+        <!-- الصورة السابقة -->
+        <button
+            type="button"
+            class="product-lightbox-arrow product-lightbox-prev"
+            aria-label="الصورة السابقة">
+
+            ‹
+
+        </button>
+
+
+        <!-- الصورة المكبرة -->
+        <img
+            src=""
+            alt="صورة المنتج">
+
+
+        <!-- الصورة التالية -->
+        <button
+            type="button"
+            class="product-lightbox-arrow product-lightbox-next"
+            aria-label="الصورة التالية">
+
+            ›
+
+        </button>
+
+
+        <!-- نقاط الصور -->
+        <div class="product-lightbox-dots"></div>
+
+    </div>
 
 </div>
-<style>
-
 
 /* ==========================================================
    السماح للعناصر العائمة بالخروج من الكرت
