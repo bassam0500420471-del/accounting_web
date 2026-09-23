@@ -869,8 +869,8 @@ html.mobile-store-device .product-name-tooltip {
 
     color: #111 !important;
 
-    height: 79px !important;
-    min-height: 79px !important;
+height: 112px !important;
+min-height: 112px !important;
 
     display: -webkit-box !important;
 
@@ -968,7 +968,49 @@ html.mobile-store-device .add-cart-btn {
 
 }
 
+/* ==========================================================
+   الاسم العائم - الجوال الحقيقي
+========================================================== */
 
+html.mobile-store-device .product-name-tooltip::after {
+
+    font-size: 34px !important;
+    font-weight: 900 !important;
+
+    line-height: 1.6 !important;
+
+    padding: 24px 28px !important;
+
+    color: #ffffff !important;
+    background: #111827 !important;
+
+    border-radius: 18px !important;
+
+    width: auto !important;
+    max-width: 1250px !important;
+
+    right: 50% !important;
+    left: auto !important;
+
+    bottom: 50% !important;
+    top: auto !important;
+
+    transform: translate(50%, 50%) !important;
+
+    box-shadow: 0 15px 45px rgba(0,0,0,.45) !important;
+
+    z-index: 999999999 !important;
+}
+
+
+html.mobile-store-device .product-name-tooltip.show-tooltip::after {
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transform: translate(50%, 50%) !important;
+
+}
 /* ==========================================================
    نافذة تكبير صورة المنتج
 ========================================================== */

@@ -5172,3 +5172,12 @@ html.mobile-store-device .store-footer .footer-powered strong {
     }
 
 }
+/* ==========================================================
+   EMAIL - منع خروج البريد من الكرت
+========================================================== */
+
+.store-footer .contact-info,
+.store-footer .contact-info a {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
