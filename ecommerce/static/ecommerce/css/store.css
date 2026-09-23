@@ -5068,3 +5068,107 @@ html.mobile-store-device .store-footer .footer-powered strong {
     font-size: 20px !important;
     font-weight: 900 !important;
 }
+/* ==========================================================
+   FOOTER - REAL MOBILE DEVICE
+   نفس طريقة الهيدر والكرت
+   يعمل حتى مع viewport = 1450px
+   لا يؤثر على الكرت أو الكمبيوتر
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* الفوتر */
+    .store-footer {
+        padding: 55px 0 25px !important;
+    }
+
+
+    /* عناوين الأقسام */
+    .store-footer h3,
+    .store-footer h4 {
+        font-size: 30px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        color: #fff !important;
+        margin-bottom: 22px !important;
+    }
+
+
+    /* اسم المتجر */
+    .store-footer .store-name {
+        font-size: 34px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        color: #fff !important;
+    }
+
+
+    /* وصف المتجر */
+    .store-footer p {
+        font-size: 23px !important;
+        font-weight: 800 !important;
+        line-height: 2 !important;
+        color: #e5e7eb !important;
+    }
+
+
+    /* رقم الجوال والبريد */
+    .store-footer .contact-info {
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        line-height: 2 !important;
+        color: #fff !important;
+    }
+
+
+    /* روابط الفوتر */
+    .store-footer a {
+        font-size: 23px !important;
+        font-weight: 900 !important;
+        line-height: 1.9 !important;
+        color: #e5e7eb !important;
+        margin-bottom: 16px !important;
+    }
+
+
+    /* أيقونات الهاتف والبريد */
+    .store-footer .contact-info i {
+        font-size: 25px !important;
+        margin-left: 8px !important;
+    }
+
+
+    /* أيقونات التواصل الاجتماعي */
+    .store-footer .footer-social a,
+    .store-footer .social-links a {
+        width: 58px !important;
+        height: 58px !important;
+        font-size: 28px !important;
+    }
+
+
+    /* حقوق النشر */
+    .store-footer .footer-copyright {
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        line-height: 2 !important;
+        color: #e5e7eb !important;
+    }
+
+
+    /* نظام الرائد ERP */
+    .store-footer .footer-powered {
+        font-size: 22px !important;
+        font-weight: 800 !important;
+        line-height: 2 !important;
+        color: #d1d5db !important;
+    }
+
+
+    .store-footer .footer-powered strong {
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        color: #fff !important;
+    }
+
+}
