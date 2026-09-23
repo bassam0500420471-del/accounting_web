@@ -52,18 +52,19 @@
 
             <!-- البريد الإلكتروني -->
 
-            {% if store.company.email %}
+{% if store.company.email %}
 
-                <p class="contact-info">
+    <p class="contact-info email-contact">
 
-                    <i class="bi bi-envelope"></i>
+        <i class="bi bi-envelope"></i>
 
-                    {{ store.company.email }}
+        <span class="email-address">
+            {{ store.company.email }}
+        </span>
 
-                </p>
+    </p>
 
-            {% endif %}
-
+{% endif %}
         </div>
 
 
