@@ -4826,4 +4826,245 @@ html.mobile-store-device .product-actions button {
 
     font-size: 20px !important;
 }
+/* ==========================================================
+   FOOTER - LARGE & CLEAR TEXT
+   تكبير خطوط الفوتر فقط
+   لا يؤثر على الكرت أو الهيدر
+========================================================== */
 
+/* عناوين الفوتر */
+.store-footer h3,
+.store-footer h4 {
+    font-size: 26px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+    color: #fff !important;
+    margin-bottom: 22px !important;
+}
+
+
+/* اسم المتجر */
+.store-footer .store-name {
+    font-size: 30px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+    color: #fff !important;
+}
+
+
+/* وصف المتجر */
+.store-footer p {
+    font-size: 19px !important;
+    font-weight: 700 !important;
+    line-height: 2 !important;
+    color: #e5e7eb !important;
+}
+
+
+/* رقم الجوال والبريد */
+.store-footer .contact-info {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    line-height: 2 !important;
+    color: #fff !important;
+}
+
+
+/* روابط الفوتر */
+.store-footer a {
+    font-size: 19px !important;
+    font-weight: 800 !important;
+    line-height: 1.8 !important;
+    color: #e5e7eb !important;
+    margin-bottom: 14px !important;
+}
+
+
+/* أيقونات الهاتف والبريد */
+.store-footer .contact-info i {
+    font-size: 21px !important;
+    margin-left: 6px !important;
+}
+
+
+/* أيقونات التواصل الاجتماعي */
+.store-footer .footer-social a,
+.store-footer .social-links a {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 24px !important;
+}
+
+
+/* حقوق النشر */
+.store-footer .footer-copyright {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    line-height: 2 !important;
+    color: #e5e7eb !important;
+}
+
+
+/* نظام الرائد ERP */
+.store-footer .footer-powered {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    line-height: 2 !important;
+    color: #d1d5db !important;
+}
+
+
+.store-footer .footer-powered strong {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    color: #fff !important;
+}
+
+
+/* ==========================================================
+   FOOTER - MOBILE
+   الجوال يكون أوضح وأكبر
+========================================================== */
+
+@media (max-width: 768px) {
+
+    .store-footer {
+        padding: 45px 0 20px !important;
+    }
+
+
+    /* عناوين الأقسام */
+    .store-footer h3,
+    .store-footer h4 {
+        font-size: 25px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        margin-bottom: 18px !important;
+    }
+
+
+    /* اسم المتجر */
+    .store-footer .store-name {
+        font-size: 29px !important;
+        font-weight: 900 !important;
+    }
+
+
+    /* الوصف */
+    .store-footer p {
+        font-size: 19px !important;
+        font-weight: 700 !important;
+        line-height: 2 !important;
+    }
+
+
+    /* الهاتف والبريد */
+    .store-footer .contact-info {
+        font-size: 20px !important;
+        font-weight: 900 !important;
+    }
+
+
+    /* الروابط */
+    .store-footer a {
+        font-size: 19px !important;
+        font-weight: 800 !important;
+        line-height: 1.8 !important;
+        margin-bottom: 12px !important;
+    }
+
+
+    /* أيقونات التواصل */
+    .store-footer .footer-social a,
+    .store-footer .social-links a {
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 25px !important;
+    }
+
+
+    /* أسفل الفوتر */
+    .store-footer .footer-copyright {
+        font-size: 17px !important;
+        font-weight: 800 !important;
+        line-height: 2 !important;
+    }
+
+
+    .store-footer .footer-powered {
+        font-size: 17px !important;
+        font-weight: 800 !important;
+        line-height: 2 !important;
+    }
+
+
+    .store-footer .footer-powered strong {
+        font-size: 19px !important;
+        font-weight: 900 !important;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE STORE DEVICE
+   يعمل مع html.mobile-store-device
+========================================================== */
+
+html.mobile-store-device .store-footer h3,
+html.mobile-store-device .store-footer h4 {
+    font-size: 26px !important;
+    font-weight: 900 !important;
+}
+
+
+html.mobile-store-device .store-footer .store-name {
+    font-size: 30px !important;
+    font-weight: 900 !important;
+}
+
+
+html.mobile-store-device .store-footer p {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    line-height: 2 !important;
+}
+
+
+html.mobile-store-device .store-footer .contact-info {
+    font-size: 21px !important;
+    font-weight: 900 !important;
+}
+
+
+html.mobile-store-device .store-footer a {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1.8 !important;
+}
+
+
+html.mobile-store-device .store-footer .footer-social a,
+html.mobile-store-device .store-footer .social-links a {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 26px !important;
+}
+
+
+html.mobile-store-device .store-footer .footer-copyright {
+    font-size: 18px !important;
+    font-weight: 900 !important;
+}
+
+
+html.mobile-store-device .store-footer .footer-powered {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+}
+
+
+html.mobile-store-device .store-footer .footer-powered strong {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+}
