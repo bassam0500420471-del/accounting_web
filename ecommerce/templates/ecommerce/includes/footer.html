@@ -52,18 +52,20 @@
 
             <!-- البريد الإلكتروني -->
 
-{% if store.company.email %}
+            {% if store.company.email %}
 
-    <p class="contact-info email-contact">
+                <p class="contact-info email-contact">
 
-        <i class="bi bi-envelope"></i>
+                    <i class="bi bi-envelope"></i>
 
-<span class="email-address">
-    {{ store.company.email|cut:"@" }}
-</span>
-    </p>
+                    <span class="email-address">
+                        {{ store.company.email }}
+                    </span>
 
-{% endif %}
+                </p>
+
+            {% endif %}
+
         </div>
 
 
@@ -337,3 +339,41 @@
 
 
 </footer>
+
+
+<!-- ==========================================================
+     كسر البريد الإلكتروني قبل @ على الجوال الحقيقي
+=========================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".email-address").forEach(function (element) {
+
+        const email = element.textContent.trim();
+
+        const atIndex = email.indexOf("@");
+
+        if (atIndex === -1) {
+            return;
+        }
+
+        const beforeAt = email.substring(0, atIndex);
+        const afterAt = email.substring(atIndex);
+
+        element.innerHTML =
+            '<span class="email-before-at">' +
+                beforeAt +
+            '</span>' +
+            '<wbr>' +
+            '<span class="email-after-at">' +
+                afterAt +
+            '</span>';
+
+    });
+
+});
+
+</script>
+
