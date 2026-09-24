@@ -3232,12 +3232,11 @@ html.mobile-store-device .top-announcement-bar {
 }
 
 html.mobile-store-device .announcement-item {
-    font-size: 24px !important;
-    font-weight: 900 !important;
-    line-height: 1.4 !important;
-    padding: 0 25px !important;
+    font-size:77px !important;
+    font-weight:900 !important;
+    line-height:1.5 !important;
+    padding:0 30px !important;
 }
-
 
 /* ==========================================================
    السلة + المفضلة + الحساب
@@ -3284,12 +3283,12 @@ html.mobile-store-device .store-actions .action-item i {
 }
 
 html.mobile-store-device .store-actions .action-label {
-    display: block !important;
-    font-size: 22px !important;
-    font-weight: 900 !important;
-    line-height: 1.2 !important;
-    color: #222 !important;
-    white-space: nowrap !important;
+    display:block !important;
+    font-size:77px !important;
+    font-weight:900 !important;
+    line-height:1.4 !important;
+    color:#222 !important;
+    white-space:nowrap !important;
 }
 
 html.mobile-store-device .store-actions .action-icon-wrapper {
@@ -3356,7 +3355,7 @@ html.mobile-store-device .navbar-links li {
 }
 
 html.mobile-store-device .navbar-links li a {
-    font-size: 22px !important;
+    font-size: 38px !important;
     font-weight: 900 !important;
 
     padding: 16px 24px !important;
@@ -3386,8 +3385,10 @@ html.mobile-store-device .store-logo-img {
 }
 
 html.mobile-store-device .store-name {
-    font-size: 24px !important;
-    font-weight: 900 !important;
+    font-size:105px !important;
+    font-weight:900 !important;
+    line-height:1.4 !important;
+    white-space:nowrap !important;
 }
 /* ==========================================================
    MOBILE PRODUCTS - LARGE & CLEAR
