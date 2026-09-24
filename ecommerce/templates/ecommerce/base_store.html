@@ -64,18 +64,18 @@
 
 {% if store.favicon %}
 
-```
+
 <link rel="icon"
       type="image/x-icon"
       href="{{ store.favicon.url }}">
-```
+
 
 {% else %}
 
-```
+
 <link rel="icon"
       href="{% static 'ecommerce/favicon.ico' %}">
-```
+
 
 {% endif %}
 
@@ -1132,14 +1132,14 @@ data-currency="{{ store.currency.symbol|default:'SAR' }}">
 
 <main>
 
-```
+
 {% block breadcrumbs %}
 {% endblock %}
 
 
 {% block content %}
 {% endblock %}
-```
+
 
 </main>
 
@@ -1200,9 +1200,9 @@ data-currency="{{ store.currency.symbol|default:'SAR' }}">
 <button id="scrollTop"
      class="btn btn-primary rounded-circle shadow">
 
-```
+
 <i class="bi bi-arrow-up"></i>
-```
+
 
 </button>
 
