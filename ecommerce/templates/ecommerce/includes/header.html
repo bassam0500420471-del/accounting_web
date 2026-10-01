@@ -62,10 +62,10 @@
 
                         {% endif %}
 
-                        <span class="store-name">
-                            {{ store.name }}
-                        </span>
-
+<span class="store-name">
+    <span class="store-type">متجر</span>
+    <span class="store-title">{{ store.name }}</span>
+</span>
                     </a>
 
                 </div>
@@ -891,6 +891,84 @@ body {
 
         border: 2px solid #fff !important;
 
+    }
+
+}
+/* ==========================================================
+   أيقونات السلة والمفضلة والحساب - الجوال الحقيقي
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .store-actions .action-item i {
+        font-size: 58px !important;
+        line-height: 1 !important;
+    }
+
+    .store-actions .action-icon-wrapper {
+        width: 70px !important;
+        height: 65px !important;
+    }
+
+    .store-actions .action-count {
+        width: 38px !important;
+        min-width: 38px !important;
+        height: 38px !important;
+
+        top: -14px !important;
+        right: -18px !important;
+
+        padding: 0 !important;
+
+        font-size: 20px !important;
+        font-weight: 900 !important;
+
+        border: 3px solid #fff !important;
+        border-radius: 50% !important;
+    }
+
+}
+/* ==========================================================
+   اسم المتجر - الجوال الحقيقي
+   متجر في سطر والاسم تحته
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    .store-header .store-name {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+
+        white-space: normal !important;
+
+        font-size: 54px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+
+        max-width: 600px !important;
+        overflow: visible !important;
+    }
+
+    .store-header .store-name .store-type {
+        display: block !important;
+
+        font-size: 42px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+
+        white-space: nowrap !important;
+    }
+
+    .store-header .store-name .store-title {
+        display: block !important;
+
+        font-size: 54px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+
+        white-space: nowrap !important;
     }
 
 }
