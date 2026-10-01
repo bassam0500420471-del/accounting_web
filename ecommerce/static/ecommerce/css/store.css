@@ -3227,8 +3227,8 @@ html.mobile-store-device body {
 ========================================================== */
 
 html.mobile-store-device .top-announcement-bar {
-    height: 120px !important;
-    min-height: 120px !important;
+    height: 160px !important;
+    min-height: 160px !important;
 }
 
 html.mobile-store-device .announcement-item {
