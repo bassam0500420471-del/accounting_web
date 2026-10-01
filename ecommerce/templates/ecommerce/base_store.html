@@ -1076,12 +1076,27 @@ document.addEventListener("DOMContentLoaded", function () {
         const navbar =
             document.querySelector(".store-navbar");
 
-        if (!header || !navbar) {
-            return;
-        }
+const main =
+    document.querySelector("main");
+
+const messages =
+    document.querySelector(".messages");
+
+if (!header || !navbar || !main) {
+    return;
+}
+
+        /* =====================================================
+           حساب ارتفاع الهيدر
+        ===================================================== */
 
         const headerHeight =
             header.getBoundingClientRect().height;
+
+
+        /* =====================================================
+           وضع النايف بار أسفل الهيدر
+        ===================================================== */
 
         navbar.style.setProperty(
             "position",
@@ -1107,29 +1122,54 @@ document.addEventListener("DOMContentLoaded", function () {
             "important"
         );
 
+
+        /* =====================================================
+           حساب ارتفاع النايف بار
+        ===================================================== */
+
+        const navbarHeight =
+            navbar.getBoundingClientRect().height;
+
+
+        /* =====================================================
+           إبعاد المحتوى أسفل الهيدر + النايف بار
+        ===================================================== */
+
+        main.style.setProperty(
+            "padding-top",
+            (headerHeight + navbarHeight) + "px",
+            "important"
+        );
+
     }
 
+
     positionStoreNavbar();
+
 
     setTimeout(
         positionStoreNavbar,
         100
     );
 
+
     setTimeout(
         positionStoreNavbar,
         500
     );
+
 
     setTimeout(
         positionStoreNavbar,
         1000
     );
 
+
     window.addEventListener(
         "load",
         positionStoreNavbar
     );
+
 
     window.addEventListener(
         "resize",
@@ -1139,7 +1179,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
-
 <!-- =========================================================
      MESSAGES
 ========================================================== -->
