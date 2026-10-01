@@ -687,21 +687,31 @@
            NAVBAR
         ===================================================== */
 
-        .store-navbar {
+.store-navbar {
 
-            width: 1450px !important;
+    position: fixed !important;
 
-            min-width: 1450px !important;
+    top: 0 !important;
 
-            min-height: 90px !important;
+    left: 0 !important;
 
-            padding: 12px 0 !important;
+    right: auto !important;
 
-            background: #fff !important;
+    width: 1450px !important;
 
-        }
+    min-width: 1450px !important;
 
+    min-height: 90px !important;
 
+    padding: 12px 0 !important;
+
+    background: #fff !important;
+
+    z-index: 99998 !important;
+
+    margin-top: 0 !important;
+
+}
         .store-navbar .container {
 
             width: 95% !important;
@@ -1055,64 +1065,47 @@ data-currency="{{ store.currency.symbol|default:'SAR' }}">
 
 {% include "ecommerce/includes/navbar.html" %}
 
-<!-- =========================================================
-     HEADER SPACE FIX
-========================================================== -->
-
 <script>
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-            function fixStoreHeaderSpace() {
+    function positionStoreNavbar() {
 
-                const header =
-                    document.querySelector(
-                        ".store-fixed-header"
-                    );
+        const header =
+            document.querySelector(".store-fixed-header");
 
-                const navbar =
-                    document.querySelector(
-                        ".store-navbar"
-                    );
+        const navbar =
+            document.querySelector(".store-navbar");
 
-
-                if (!header || !navbar) {
-
-                    return;
-
-                }
-
-
-
-
-const headerHeight = header.getBoundingClientRect().height;
-
-navbar.style.marginTop = headerHeight + "px";
-            }
-
-
-            fixStoreHeaderSpace();
-
-
-            window.addEventListener(
-                "load",
-                fixStoreHeaderSpace
-            );
-
-
-            window.addEventListener(
-                "resize",
-                fixStoreHeaderSpace
-            );
-
+        if (!header || !navbar) {
+            return;
         }
 
+        const headerHeight =
+            header.getBoundingClientRect().height;
+
+        navbar.style.top =
+            headerHeight + "px";
+
+        navbar.style.marginTop =
+            "0px";
+    }
+
+    positionStoreNavbar();
+
+    window.addEventListener(
+        "load",
+        positionStoreNavbar
     );
 
-</script>
+    window.addEventListener(
+        "resize",
+        positionStoreNavbar
+    );
 
+});
+
+</script>
 <!-- =========================================================
      MESSAGES
 ========================================================== -->
