@@ -1087,7 +1087,9 @@ data-currency="{{ store.currency.symbol|default:'SAR' }}">
 
 
 
-navbar.style.marginTop = "0px";
+const headerHeight = header.getBoundingClientRect().height;
+
+navbar.style.marginTop = headerHeight + "px";
             }
 
 
