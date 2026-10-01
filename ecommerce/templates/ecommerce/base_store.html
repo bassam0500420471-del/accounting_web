@@ -1081,20 +1081,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const headerHeight =
-            header.offsetHeight;
+            header.getBoundingClientRect().height;
 
-        navbar.style.position = "fixed";
+        navbar.style.setProperty(
+            "position",
+            "fixed",
+            "important"
+        );
 
-        navbar.style.top =
-            headerHeight + "px";
+        navbar.style.setProperty(
+            "top",
+            headerHeight + "px",
+            "important"
+        );
 
-        navbar.style.marginTop =
-            "0px";
+        navbar.style.setProperty(
+            "margin-top",
+            "0px",
+            "important"
+        );
 
-        navbar.style.zIndex =
-            "100000";
+        navbar.style.setProperty(
+            "z-index",
+            "100000",
+            "important"
+        );
 
     }
+
+    positionStoreNavbar();
 
     setTimeout(
         positionStoreNavbar,
@@ -1112,6 +1127,11 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     window.addEventListener(
+        "load",
+        positionStoreNavbar
+    );
+
+    window.addEventListener(
         "resize",
         positionStoreNavbar
     );
@@ -1119,6 +1139,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+
 <!-- =========================================================
      MESSAGES
 ========================================================== -->
