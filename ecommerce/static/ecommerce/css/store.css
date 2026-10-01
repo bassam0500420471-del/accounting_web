@@ -5182,3 +5182,33 @@ html.mobile-store-device .store-footer .footer-powered strong {
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
 }
+/* ==========================================================
+   FINAL REAL MOBILE
+   HEADER + NAVBAR
+   نفس أسلوب الفوتر
+   لا يؤثر على الكمبيوتر
+========================================================== */
+
+html.mobile-store-device .store-name {
+    font-size: 54px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+}
+
+html.mobile-store-device .announcement-item {
+    font-size: 38px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+}
+
+html.mobile-store-device .store-actions .action-label {
+    font-size: 38px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+}
+
+html.mobile-store-device .navbar-links li a {
+    font-size: 58px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+}
