@@ -1198,17 +1198,22 @@ min-height: 75px !important;
 /* ==========================================================
    FINAL REAL PHONE FIX
    CART / WISHLIST / ACCOUNT
+   FINAL SPECIFICITY FIX
 ========================================================== */
 
 @media (hover: none) and (pointer: coarse) {
 
-    .store-actions .action-item {
+    html.mobile-store-device .store-actions .action-item {
+
+        flex: 0 0 180px !important;
 
         width: 180px !important;
         min-width: 180px !important;
+        max-width: 180px !important;
 
         height: 210px !important;
         min-height: 210px !important;
+        max-height: 210px !important;
 
         box-sizing: border-box !important;
 
@@ -1236,13 +1241,15 @@ min-height: 75px !important;
     }
 
 
-    .store-actions .action-icon-wrapper {
+    html.mobile-store-device .store-actions .action-icon-wrapper {
 
         width: 90px !important;
         min-width: 90px !important;
+        max-width: 90px !important;
 
         height: 70px !important;
         min-height: 70px !important;
+        max-height: 70px !important;
 
         display: flex !important;
 
@@ -1257,7 +1264,7 @@ min-height: 75px !important;
     }
 
 
-    .store-actions .action-item i {
+    html.mobile-store-device .store-actions .action-item i {
 
         display: block !important;
 
@@ -1272,9 +1279,12 @@ min-height: 75px !important;
     }
 
 
-    .store-actions .action-label {
+    html.mobile-store-device .store-actions .action-label {
 
         display: block !important;
+
+        width: auto !important;
+        min-width: 0 !important;
 
         margin: 0 !important;
         padding: 0 !important;
@@ -1289,7 +1299,7 @@ min-height: 75px !important;
     }
 
 
-    .store-actions .action-count {
+    html.mobile-store-device .store-actions .action-count {
 
         position: absolute !important;
 
