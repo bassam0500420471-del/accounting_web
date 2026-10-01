@@ -834,8 +834,8 @@ body {
     width: 155px !important;
     min-width: 155px !important;
 
-    height: 155px !important;
-    min-height: 155px !important;
+    height: 175px !important;
+    min-height: 175px !important;
 
     display: flex !important;
     flex-direction: column !important;
@@ -843,13 +843,15 @@ body {
     align-items: center !important;
     justify-content: center !important;
 
-    gap: 8px !important;
+    gap: 5px !important;
 
-    padding: 10px !important;
+    padding: 8px !important;
 
     overflow: visible !important;
 
-    border-radius: 20px !important;
+    box-sizing: border-box !important;
+
+    border-radius: 22px !important;
 
     background: #f1f1f1 !important;
 
@@ -904,37 +906,42 @@ body {
 }
 
 .store-actions .action-count {
+    position:absolute !important;
 
-    position: absolute !important;
+    width:50px !important;
+    min-width:50px !important;
+    max-width:50px !important;
 
-    width: 42px !important;
-    min-width: 42px !important;
+    height:50px !important;
+    min-height:50px !important;
+    max-height:50px !important;
 
-    height: 42px !important;
-    min-height: 42px !important;
+    top:-5px !important;
+    right:-5px !important;
 
-    top: 0 !important;
-    right: 0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
 
-    padding: 0 !important;
-    margin: 0 !important;
+    padding:0 !important;
+    margin:0 !important;
 
-    display: flex !important;
+    box-sizing:border-box !important;
 
-    align-items: center !important;
-    justify-content: center !important;
+    background:#000 !important;
+    color:#fff !important;
 
-    font-size: 21px !important;
+    border:3px solid #fff !important;
+    border-radius:50% !important;
 
-    font-weight: 900 !important;
+    font-size:28px !important;
+    font-weight:900 !important;
+    line-height:1 !important;
 
-    line-height: 1 !important;
+    text-align:center !important;
+    white-space:nowrap !important;
 
-    border: 3px solid #fff !important;
-
-    border-radius: 50% !important;
-
-    z-index: 30 !important;
+    z-index:50 !important;
 }
 }
 /* ==========================================================
@@ -968,9 +975,9 @@ body {
         width: 155px !important;
         min-width: 155px !important;
 
-height: 155px !important;
-min-height: 155px !important;
-        display: flex !important;
+height: 175px !important;
+min-height: 175px !important;    
+    display: flex !important;
         flex-direction: column !important;
 
         align-items: center !important;
@@ -1059,39 +1066,46 @@ min-height: 75px !important;
        رقم السلة والمفضلة
     ------------------------------------------------------ */
 
-    .store-actions .action-count {
+.store-actions .action-count {
 
-        position: absolute !important;
+    position: absolute !important;
 
-        width: 42px !important;
-        min-width: 42px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
 
-        height: 42px !important;
-        min-height: 42px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
 
-top: 0 !important;
-right: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
+    top: -5px !important;
+    right: -5px !important;
 
-        display: flex !important;
+    padding: 0 !important;
+    margin: 0 !important;
 
-        align-items: center !important;
-        justify-content: center !important;
+    display: flex !important;
 
-        font-size: 21px !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-        font-weight: 900 !important;
+    box-sizing: border-box !important;
 
-        line-height: 1 !important;
+    background: #000 !important;
+    color: #fff !important;
 
-        border: 3px solid #fff !important;
+    font-size: 28px !important;
 
-        border-radius: 50% !important;
+    font-weight: 900 !important;
 
-        z-index: 30 !important;
-    }
+    line-height: 1 !important;
 
+    border: 3px solid #fff !important;
+
+    border-radius: 50% !important;
+
+    z-index: 30 !important;
+}
 }
 
 /* ==========================================================
