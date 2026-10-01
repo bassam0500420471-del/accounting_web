@@ -769,18 +769,35 @@ body {
     }
 
 
-    .store-header .store-name {
+.store-header .store-name {
 
-        font-size: 105px !important;
+    display: flex !important;
 
-        font-weight: 900 !important;
+    flex-direction: column !important;
 
-        line-height: 1.4 !important;
+    align-items: flex-start !important;
 
-        white-space: nowrap !important;
+    justify-content: center !important;
 
-    }
+    width: 650px !important;
 
+    max-width: 650px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    white-space: normal !important;
+
+    overflow: visible !important;
+
+    font-size: 54px !important;
+
+    font-weight: 900 !important;
+
+    line-height: 1.15 !important;
+
+}
 
     .store-actions {
 
@@ -900,67 +917,164 @@ body {
 
 @media (hover: none) and (pointer: coarse) {
 
-    .store-actions .action-item {
-        overflow: visible !important;
+    /* تحريك مجموعة الأيقونات قليلًا إلى اليسار */
+    .store-actions {
+        position: relative !important;
+        left: -20px !important;
+
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 18px !important;
     }
 
+
+    /* ------------------------------------------------------
+       المربع الخلفي
+    ------------------------------------------------------ */
+
+    .store-actions .action-item {
+
+        width: 155px !important;
+        min-width: 155px !important;
+
+        height: 135px !important;
+        min-height: 135px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 5px !important;
+
+        padding: 8px !important;
+
+        overflow: visible !important;
+
+        border-radius: 20px !important;
+
+        background: #f1f1f1 !important;
+
+        color: #222 !important;
+
+        border: 1px solid #ddd !important;
+
+        box-shadow:
+            0 5px 12px rgba(0,0,0,.10) !important;
+    }
+
+
+    /* ------------------------------------------------------
+       الأيقونة
+    ------------------------------------------------------ */
+
     .store-actions .action-item i {
+
         display: inline-block !important;
-        font-size: 58px !important;
+
+        font-size: 52px !important;
+
         line-height: 1 !important;
+
         width: auto !important;
         height: auto !important;
     }
 
-    .store-actions .action-icon-wrapper {
-        width: 90px !important;
-        min-width: 90px !important;
 
-        height: 80px !important;
-        min-height: 80px !important;
+    /* ------------------------------------------------------
+       اسم السلة والمفضلة وحسابي
+    ------------------------------------------------------ */
+
+    .store-actions .action-label {
+
+        display: block !important;
+
+        font-size: 38px !important;
+
+        font-weight: 900 !important;
+
+        line-height: 1.15 !important;
+
+        white-space: nowrap !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+
+    /* ------------------------------------------------------
+       منطقة الأيقونة والعداد
+    ------------------------------------------------------ */
+
+    .store-actions .action-icon-wrapper {
+
+        width: 85px !important;
+        min-width: 85px !important;
+
+        height: 68px !important;
+        min-height: 68px !important;
 
         display: flex !important;
+
         align-items: center !important;
         justify-content: center !important;
 
         position: relative !important;
+
         overflow: visible !important;
     }
 
+
+    /* ------------------------------------------------------
+       رقم السلة والمفضلة
+    ------------------------------------------------------ */
+
     .store-actions .action-count {
+
         position: absolute !important;
 
-        width: 48px !important;
-        min-width: 48px !important;
+        width: 42px !important;
+        min-width: 42px !important;
 
-        height: 48px !important;
-        min-height: 48px !important;
+        height: 42px !important;
+        min-height: 42px !important;
 
-        top: -10px !important;
-        right: -18px !important;
+        top: -8px !important;
+        right: -15px !important;
 
         padding: 0 !important;
         margin: 0 !important;
 
         display: flex !important;
+
         align-items: center !important;
         justify-content: center !important;
 
-        font-size: 24px !important;
+        font-size: 21px !important;
+
         font-weight: 900 !important;
+
         line-height: 1 !important;
 
         border: 3px solid #fff !important;
+
         border-radius: 50% !important;
 
-        z-index: 20 !important;
+        z-index: 30 !important;
     }
 
 }
 
 /* ==========================================================
    اسم المتجر - الجوال الحقيقي
-   متجر في سطر والاسم تحته
+   متجر في سطر
+   اسم المتجر في السطر التالي
 ========================================================== */
 
 @media (hover: none) and (pointer: coarse) {
@@ -968,6 +1082,9 @@ body {
     .store-header .store-logo {
         width: 100% !important;
         min-width: 650px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 15px !important;
     }
 
     .store-header .store-name {
@@ -979,20 +1096,26 @@ body {
         width: 650px !important;
         max-width: 650px !important;
 
+        margin: 0 !important;
+        padding: 0 !important;
+
         white-space: normal !important;
         overflow: visible !important;
 
         font-size: 54px !important;
         font-weight: 900 !important;
-        line-height: 1.2 !important;
+        line-height: 1.15 !important;
     }
 
     .store-header .store-name .store-type {
         display: block !important;
 
+        margin: 0 !important;
+        padding: 0 !important;
+
         font-size: 42px !important;
         font-weight: 900 !important;
-        line-height: 1.2 !important;
+        line-height: 1.1 !important;
 
         white-space: nowrap !important;
     }
@@ -1003,12 +1126,35 @@ body {
         width: 650px !important;
         max-width: 650px !important;
 
+        margin: 0 !important;
+        padding: 0 !important;
+
         font-size: 54px !important;
         font-weight: 900 !important;
-        line-height: 1.2 !important;
+        line-height: 1.15 !important;
 
-        white-space: normal !important;
+        white-space: nowrap !important;
         overflow: visible !important;
+    }
+
+}
+
+/* ==========================================================
+   ضبط بسيط لموضع البحث والهيدر - الجوال الحقيقي
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* زيادة ارتفاع الهيدر من الأسفل قليلًا */
+    .store-header .container {
+        padding-bottom: 35px !important;
+    }
+
+
+    /* تحريك البحث قليلًا إلى اليسار */
+    .store-search-column {
+        position: relative !important;
+        left: -15px !important;
     }
 
 }
