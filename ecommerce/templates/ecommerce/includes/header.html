@@ -63,8 +63,17 @@
                         {% endif %}
 
 <span class="store-name">
+
     <span class="store-type">متجر</span>
-    <span class="store-title">{{ store.name }}</span>
+
+    <span class="store-title">
+        {% if store.name|slice:":5" == "متجر " %}
+            {{ store.name|slice:"5:" }}
+        {% else %}
+            {{ store.name }}
+        {% endif %}
+    </span>
+
 </span>
                     </a>
 
@@ -820,39 +829,37 @@ body {
     }
 
 
-    .store-actions .action-item {
+.store-actions .action-item {
 
-        width: 125px !important;
-        min-width: 125px !important;
+    width: 155px !important;
+    min-width: 155px !important;
 
-        height: 105px !important;
-        min-height: 105px !important;
+    height: 155px !important;
+    min-height: 155px !important;
 
-        display: flex !important;
+    display: flex !important;
+    flex-direction: column !important;
 
-        flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-        align-items: center !important;
+    gap: 8px !important;
 
-        justify-content: center !important;
+    padding: 10px !important;
 
-        gap: 8px !important;
+    overflow: visible !important;
 
-        padding: 10px !important;
+    border-radius: 20px !important;
 
-        border-radius: 18px !important;
+    background: #f1f1f1 !important;
 
-        background: #f1f1f1 !important;
+    color: #222 !important;
 
-        color: #222 !important;
+    border: 1px solid #ddd !important;
 
-        border: 1px solid #ddd !important;
-
-        box-shadow:
-            0 5px 12px rgba(0,0,0,.10) !important;
-
-    }
-
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.10) !important;
+}
 
     .store-actions .action-item i {
 
@@ -878,38 +885,57 @@ body {
     }
 
 
-    .store-actions .action-icon-wrapper {
+.store-actions .action-icon-wrapper {
 
-        width: 50px !important;
-        height: 48px !important;
+    width: 85px !important;
+    min-width: 85px !important;
 
-        display: flex !important;
+    height: 72px !important;
+    min-height: 72px !important;
 
-        align-items: center !important;
-        justify-content: center !important;
+    display: flex !important;
 
-        position: relative !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    }
+    position: relative !important;
 
+    overflow: visible !important;
+}
 
-    .store-actions .action-count {
+.store-actions .action-count {
 
-        width: 28px !important;
-        min-width: 28px !important;
+    position: absolute !important;
 
-        height: 28px !important;
+    width: 42px !important;
+    min-width: 42px !important;
 
-        top: -10px !important;
-        right: -14px !important;
+    height: 42px !important;
+    min-height: 42px !important;
 
-        font-size: 14px !important;
-        font-weight: 900 !important;
+    top: 0 !important;
+    right: 0 !important;
 
-        border: 2px solid #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
 
-    }
+    display: flex !important;
 
+    align-items: center !important;
+    justify-content: center !important;
+
+    font-size: 21px !important;
+
+    font-weight: 900 !important;
+
+    line-height: 1 !important;
+
+    border: 3px solid #fff !important;
+
+    border-radius: 50% !important;
+
+    z-index: 30 !important;
+}
 }
 /* ==========================================================
    أيقونات السلة والمفضلة والحساب - الجوال الحقيقي
@@ -942,9 +968,8 @@ body {
         width: 155px !important;
         min-width: 155px !important;
 
-        height: 135px !important;
-        min-height: 135px !important;
-
+height: 155px !important;
+min-height: 155px !important;
         display: flex !important;
         flex-direction: column !important;
 
@@ -1017,9 +1042,8 @@ body {
         width: 85px !important;
         min-width: 85px !important;
 
-        height: 68px !important;
-        min-height: 68px !important;
-
+height: 75px !important;
+min-height: 75px !important;
         display: flex !important;
 
         align-items: center !important;
@@ -1045,9 +1069,8 @@ body {
         height: 42px !important;
         min-height: 42px !important;
 
-        top: -8px !important;
-        right: -15px !important;
-
+top: 0 !important;
+right: 0 !important;
         padding: 0 !important;
         margin: 0 !important;
 
@@ -1146,10 +1169,10 @@ body {
 @media (hover: none) and (pointer: coarse) {
 
     /* زيادة ارتفاع الهيدر من الأسفل قليلًا */
-    .store-header .container {
-        padding-bottom: 35px !important;
-    }
-
+.store-header .container {
+    padding-top: 25px !important;
+    padding-bottom: 50px !important;
+}
 
     /* تحريك البحث قليلًا إلى اليسار */
     .store-search-column {
