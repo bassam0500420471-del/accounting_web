@@ -3163,7 +3163,7 @@ html[dir="ltr"] .notification-float {
     /* الهيدر ثابت ويحتاج مساحة إضافية للمحتوى */
 
     body {
-        padding-top: 260px !important;
+    padding-top: 0 !important;
     }
 
 }
