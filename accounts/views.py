@@ -34,10 +34,40 @@ def landing_page(request):
 
 
 def login_page(request):
+
     from django.conf import settings
+    from django.utils.http import url_has_allowed_host_and_scheme
+
     print(f"==============================")
     print(f"DATABASE ENGINE IN USE: {settings.DATABASES['default']['ENGINE']}")
     print(f"==============================")
+
+
+    # =====================================================
+    # حفظ الصفحة التي جاء منها المستخدم
+    # =====================================================
+
+    next_url = (
+        request.POST.get("next")
+        or request.GET.get("next")
+        or request.session.get("login_next")
+    )
+
+
+    if next_url:
+
+        if url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+
+            request.session["login_next"] = next_url
+
+        else:
+
+            next_url = None
+
 
     if request.method == "POST":
 
@@ -64,6 +94,24 @@ def login_page(request):
                 request,
                 user
             )
+
+
+            # =================================================
+            # الرجوع للمكان الذي جاء منه المستخدم
+            # =================================================
+
+            redirect_url = request.session.pop(
+                "login_next",
+                None
+            )
+
+
+            if redirect_url:
+
+                return redirect(
+                    redirect_url
+                )
+
 
             return redirect(
                 "/dashboard/"

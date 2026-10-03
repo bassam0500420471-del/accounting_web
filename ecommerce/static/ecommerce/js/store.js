@@ -815,8 +815,33 @@ refreshWishlist: function () {
                     }
 
 
+                    /*
+                     * ==========================================
+                     * الصفحة الحالية التي كان العميل يتصفحها
+                     * ==========================================
+                     */
+
+                    const currentPage =
+                        window.location.pathname +
+                        window.location.search;
+
+
+                    /*
+                     * ==========================================
+                     * رابط إضافة المنتج للسلة
+                     *
+                     * نرسل الصفحة الحالية للسيرفر
+                     * حتى يعيد العميل إليها بعد تسجيل الدخول.
+                     * ==========================================
+                     */
+
+                    const addToCartUrl =
+                        `/store/${storeSlug}/cart/add/${productId}/` +
+                        `?next=${encodeURIComponent(currentPage)}`;
+
+
                     fetch(
-                        `/store/${storeSlug}/cart/add/${productId}/`,
+                        addToCartUrl,
                         {
 
                             method: "POST",
@@ -855,21 +880,59 @@ refreshWishlist: function () {
                         );
 
 
-                        if (!response.ok) {
+                        return response.json()
+                            .then(data => {
 
-                            throw new Error(
-                                "HTTP " +
-                                response.status
-                            );
+                                /*
+                                 * ==========================================
+                                 * العميل غير مسجل الدخول
+                                 * ==========================================
+                                 */
 
-                        }
+                                if (
+                                    response.status === 401 &&
+                                    data.status === "login_required" &&
+                                    data.login_url
+                                ) {
+
+                                    window.location.href =
+                                        data.login_url;
+
+                                    return null;
+
+                                }
 
 
-                        return response.json();
+                                /*
+                                 * ==========================================
+                                 * أي خطأ آخر من السيرفر
+                                 * ==========================================
+                                 */
+
+                                if (!response.ok) {
+
+                                    throw new Error(
+                                        "HTTP " +
+                                        response.status
+                                    );
+
+                                }
+
+
+                                return data;
+
+                            });
 
                     })
 
                     .then(data => {
+
+                        if (!data) {
+
+                            return;
+
+                        }
+
 
                         console.log(
                             "CART RESPONSE:",
@@ -883,8 +946,9 @@ refreshWishlist: function () {
                         ) {
 
                             /*
-                             * تحديث مباشر
+                             * تحديث عداد السلة مباشرة
                              */
+
                             const cartCount =
                                 document.getElementById(
                                     "cartCount"
@@ -902,8 +966,9 @@ refreshWishlist: function () {
 
 
                             /*
-                             * مزامنة مع السيرفر
+                             * مزامنة العدد مع السيرفر
                              */
+
                             window.Store.refreshCart();
 
 
@@ -942,7 +1007,6 @@ refreshWishlist: function () {
             );
 
         });
-
 
     /* ==========================================
        WISHLIST

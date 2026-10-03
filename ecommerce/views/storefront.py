@@ -2302,22 +2302,139 @@ def remove_wishlist(
 # إضافة للسلة
 # =====================================================
 
-@login_required
 def add_to_cart(
     request,
     store_slug,
     product_id
 ):
 
+    # =================================================
+    # جلب المتجر أولاً
+    # =================================================
+
+    store = get_store(
+        store_slug
+    )
+
+    # =================================================
+    # منع الزائر غير المسجل من إضافة المنتجات
+    # =================================================
+
+    if not request.user.is_authenticated:
+
+        from django.urls import reverse
+        from urllib.parse import urlencode
+        from django.utils.http import (
+            url_has_allowed_host_and_scheme
+        )
+
+        # =================================================
+        # الصفحة التي كان العميل يتصفحها
+        # =================================================
+
+        next_url = (
+
+            request.GET.get("next")
+
+            or request.META.get(
+                "HTTP_REFERER"
+            )
+
+            or f"/store/{store.slug}/"
+
+        )
+
+        # =================================================
+        # حماية رابط الرجوع
+        # =================================================
+
+        if not url_has_allowed_host_and_scheme(
+
+            next_url,
+
+            allowed_hosts={
+                request.get_host()
+            },
+
+            require_https=request.is_secure(),
+
+        ):
+
+            next_url = (
+                f"/store/{store.slug}/"
+            )
+
+        # =================================================
+        # رابط تسجيل دخول عميل المتجر
+        # =================================================
+
+        login_url = reverse(
+
+            "ecommerce:customer_login",
+
+            kwargs={
+
+                "store_slug":
+                    store.slug
+
+            }
+
+        )
+
+        # =================================================
+        # إضافة الصفحة المطلوبة إلى رابط الدخول
+        # =================================================
+
+        login_url = (
+            f"{login_url}?"
+            f"{urlencode({'next': next_url})}"
+        )
+
+        # =================================================
+        # إذا كان الطلب AJAX
+        # =================================================
+
+        if request.headers.get(
+            "X-Requested-With"
+        ) == "XMLHttpRequest":
+
+            return JsonResponse({
+
+                "status":
+                    "login_required",
+
+                "login_url":
+                    login_url,
+
+                "message":
+                    "يجب تسجيل الدخول أولاً لإضافة المنتج إلى السلة."
+
+            }, status=401)
+
+        # =================================================
+        # إذا كان الطلب مباشرًا
+        # =================================================
+
+        return redirect(
+            login_url
+        )
+
+    # =================================================
+    # السماح بـ POST فقط
+    # =================================================
+
     if request.method != "POST":
 
         return JsonResponse({
 
-            "status": "error"
+            "status":
+                "error"
 
         }, status=405)
 
-    store = get_store(store_slug)
+    # =================================================
+    # المنتج
+    # =================================================
 
     product = get_object_or_404(
 
@@ -2331,13 +2448,23 @@ def add_to_cart(
 
     )
 
-    cart, created = Cart.objects.get_or_create(
+    # =================================================
+    # إنشاء / جلب السلة
+    # =================================================
 
-        customer=request.user,
+    cart, created = (
+        Cart.objects.get_or_create(
 
-        store=store
+            customer=request.user,
 
+            store=store
+
+        )
     )
+
+    # =================================================
+    # البحث عن المنتج داخل السلة
+    # =================================================
 
     item = CartItem.objects.filter(
 
@@ -2349,11 +2476,19 @@ def add_to_cart(
 
     ).first()
 
+    # =================================================
+    # زيادة الكمية
+    # =================================================
+
     if item:
 
         item.quantity += 1
 
         item.save()
+
+    # =================================================
+    # إضافة المنتج لأول مرة
+    # =================================================
 
     else:
 
@@ -2371,9 +2506,14 @@ def add_to_cart(
 
         )
 
+    # =================================================
+    # النتيجة
+    # =================================================
+
     return JsonResponse({
 
-        "status": "success",
+        "status":
+            "success",
 
         "items":
             cart.total_items(),
@@ -2447,7 +2587,17 @@ def customer_login(
     store_slug
 ):
 
-    store = get_store(store_slug)
+    from django.utils.http import (
+        url_has_allowed_host_and_scheme
+    )
+
+    store = get_store(
+        store_slug
+    )
+
+    # =================================================
+    # إذا كان العميل مسجلًا بالفعل
+    # =================================================
 
     if request.user.is_authenticated:
 
@@ -2458,6 +2608,65 @@ def customer_login(
             store_slug=store.slug
 
         )
+
+    # =================================================
+    # مفتاح Session خاص بهذا المتجر
+    # =================================================
+
+    next_session_key = (
+        f"customer_login_next_{store.slug}"
+    )
+
+    # =================================================
+    # رابط الرجوع
+    # =================================================
+
+    next_url = (
+
+        request.GET.get("next")
+
+        or request.POST.get("next")
+
+        or request.session.get(
+            next_session_key
+        )
+
+    )
+
+    # =================================================
+    # التحقق من رابط الرجوع
+    # =================================================
+
+    if next_url:
+
+        if url_has_allowed_host_and_scheme(
+
+            next_url,
+
+            allowed_hosts={
+                request.get_host()
+            },
+
+            require_https=request.is_secure(),
+
+        ):
+
+            request.session[
+                next_session_key
+            ] = next_url
+
+        else:
+
+            next_url = None
+
+            request.session.pop(
+                next_session_key,
+                None
+            )
+
+    # =================================================
+    # تسجيل الدخول
+    # =================================================
 
     if request.method == "POST":
 
@@ -2477,6 +2686,10 @@ def customer_login(
 
         )
 
+        # =================================================
+        # التحقق من البيانات
+        # =================================================
+
         if not username or not password:
 
             return render(
@@ -2487,7 +2700,8 @@ def customer_login(
 
                 {
 
-                    "store": store,
+                    "store":
+                        store,
 
                     "error":
                         "يرجى إدخال اسم المستخدم وكلمة المرور.",
@@ -2495,6 +2709,10 @@ def customer_login(
                 }
 
             )
+
+        # =================================================
+        # التحقق من المستخدم
+        # =================================================
 
         user = authenticate(
 
@@ -2506,6 +2724,10 @@ def customer_login(
 
         )
 
+        # =================================================
+        # بيانات الدخول غير صحيحة
+        # =================================================
+
         if user is None:
 
             return render(
@@ -2516,7 +2738,8 @@ def customer_login(
 
                 {
 
-                    "store": store,
+                    "store":
+                        store,
 
                     "error":
                         "اسم المستخدم أو كلمة المرور غير صحيحة.",
@@ -2525,13 +2748,40 @@ def customer_login(
 
             )
 
-        login(request, user)
+        # =================================================
+        # تسجيل الدخول
+        # =================================================
 
-        next_url = request.POST.get("next")
+        login(
+            request,
+            user
+        )
 
-        if next_url:
+        # =================================================
+        # أخذ صفحة الرجوع من Session
+        # =================================================
 
-            return redirect(next_url)
+        redirect_url = (
+            request.session.pop(
+                next_session_key,
+                None
+            )
+        )
+
+        # =================================================
+        # الرجوع إلى الصفحة التي كان فيها العميل
+        # =================================================
+
+        if redirect_url:
+
+            return redirect(
+                redirect_url
+            )
+
+        # =================================================
+        # إذا لم توجد صفحة سابقة
+        # نذهب إلى حساب العميل
+        # =================================================
 
         return redirect(
 
@@ -2541,6 +2791,10 @@ def customer_login(
 
         )
 
+    # =================================================
+    # عرض صفحة تسجيل الدخول
+    # =================================================
+
     return render(
 
         request,
@@ -2549,12 +2803,12 @@ def customer_login(
 
         {
 
-            "store": store,
+            "store":
+                store,
 
         }
 
     )
-
 
 # =====================================================
 # إنشاء حساب عميل المتجر
