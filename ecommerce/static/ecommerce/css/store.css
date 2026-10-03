@@ -5008,3 +5008,11 @@ html.mobile-store-device .store-footer .footer-powered strong {
     font-weight: 900 !important;
     color: #fff !important;
 }
+/* ==========================================================
+   روابط النافبار - الهاتف الحقيقي
+========================================================== */
+
+html.mobile-store-device .navbar-links li a {
+    font-size: 44px !important;
+    font-weight: 900 !important;
+}
