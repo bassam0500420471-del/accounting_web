@@ -2528,10 +2528,41 @@ def add_to_cart(
 # صفحة المفضلة
 # =====================================================
 
-@login_required
 def wishlist(request, store_slug):
 
     store = get_store(store_slug)
+
+    # =================================================
+    # العميل غير مسجل دخول
+    # تحويله إلى تسجيل دخول عميل المتجر
+    # مع حفظ صفحة المفضلة للرجوع إليها بعد الدخول
+    # =================================================
+
+    if not request.user.is_authenticated:
+
+        from django.urls import reverse
+
+        wishlist_url = reverse(
+            "ecommerce:wishlist",
+            kwargs={
+                "store_slug": store.slug
+            }
+        )
+
+        login_url = reverse(
+            "ecommerce:customer_login",
+            kwargs={
+                "store_slug": store.slug
+            }
+        )
+
+        return redirect(
+            f"{login_url}?next={wishlist_url}"
+        )
+
+    # =================================================
+    # المفضلة للعميل المسجل
+    # =================================================
 
     products = (
 
@@ -2576,7 +2607,6 @@ def wishlist(request, store_slug):
         }
 
     )
-
 
 # =====================================================
 # تسجيل دخول عميل المتجر
