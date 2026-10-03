@@ -12,18 +12,25 @@
 
         <div class="footer-column">
 
-            <h3 class="store-name">
-                {{ store.name }}
-            </h3>
+<h3 class="store-name">
 
-            {% if store.description %}
+    <span class="footer-store-prefix">
+        متجر
+    </span>
 
-                <p>
-                    {{ store.description }}
-                </p>
+    <span class="footer-store-main">
+        {{ store.name }}
+    </span>
 
-            {% endif %}
+</h3>
 
+{% if store.description %}
+
+    <p>
+        {{ store.description }}
+    </p>
+
+{% endif %}
 
             <!-- رقم الجوال / الهاتف -->
 
@@ -376,4 +383,33 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+<script>
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".footer-store-main").forEach(function (element) {
+
+        const name = element.textContent.trim();
+
+        const suffix = "للتجارة المحدودة";
+
+        if (name.endsWith(suffix)) {
+
+            const mainName =
+                name.substring(
+                    0,
+                    name.length - suffix.length
+                ).trim();
+
+            element.innerHTML =
+                mainName +
+                "<br>" +
+                suffix;
+
+        }
+
+    });
+
+});
+
+</script>
