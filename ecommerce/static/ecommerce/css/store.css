@@ -4923,3 +4923,88 @@ html.mobile-store-device .product-actions button {
     }
 
 }
+/* ==========================================================
+   FOOTER - REAL PHONE FINAL OVERRIDE
+   الفوتر فقط
+========================================================== */
+
+html.mobile-store-device .store-footer {
+    width: 1450px !important;
+    min-width: 1450px !important;
+    padding: 60px 0 30px !important;
+}
+
+html.mobile-store-device .store-footer h3,
+html.mobile-store-device .store-footer h4 {
+    font-size: 48px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #fff !important;
+    margin-bottom: 25px !important;
+}
+
+html.mobile-store-device .store-footer .store-name {
+    font-size: 54px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #fff !important;
+}
+
+html.mobile-store-device .store-footer p {
+    font-size: 38px !important;
+    font-weight: 800 !important;
+    line-height: 1.8 !important;
+    color: #e5e7eb !important;
+}
+
+html.mobile-store-device .store-footer .contact-info {
+    font-size: 40px !important;
+    font-weight: 900 !important;
+    line-height: 1.8 !important;
+    color: #fff !important;
+}
+
+html.mobile-store-device .store-footer a {
+    font-size: 38px !important;
+    font-weight: 900 !important;
+    line-height: 1.7 !important;
+    color: #e5e7eb !important;
+    margin-bottom: 18px !important;
+}
+
+html.mobile-store-device .store-footer .contact-info i {
+    font-size: 42px !important;
+    margin-left: 10px !important;
+}
+
+html.mobile-store-device .store-footer .footer-social {
+    gap: 20px !important;
+}
+
+html.mobile-store-device .store-footer .footer-social a,
+html.mobile-store-device .store-footer .social-links a {
+    width: 75px !important;
+    height: 75px !important;
+    font-size: 38px !important;
+    margin-bottom: 0 !important;
+}
+
+html.mobile-store-device .store-footer .footer-copyright {
+    font-size: 35px !important;
+    font-weight: 900 !important;
+    line-height: 1.8 !important;
+    color: #e5e7eb !important;
+}
+
+html.mobile-store-device .store-footer .footer-powered {
+    font-size: 35px !important;
+    font-weight: 800 !important;
+    line-height: 1.8 !important;
+    color: #d1d5db !important;
+}
+
+html.mobile-store-device .store-footer .footer-powered strong {
+    font-size: 39px !important;
+    font-weight: 900 !important;
+    color: #fff !important;
+}
