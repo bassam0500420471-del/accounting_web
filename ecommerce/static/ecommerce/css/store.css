@@ -5016,3 +5016,62 @@ html.mobile-store-device .navbar-links li a {
     font-size: 50px !important;
     font-weight: 900 !important;
 }
+/* ==========================================================
+   FINAL REAL PHONE STORE FIXES
+========================================================== */
+
+/* الإعلان */
+html.mobile-store-device .announcement-item {
+    font-size: 55px !important;
+    font-weight: 900 !important;
+    line-height: 1.5 !important;
+    padding: 0 30px !important;
+}
+
+/* روابط النافبار */
+html.mobile-store-device .navbar-links li a {
+    font-size: 50px !important;
+    font-weight: 900 !important;
+}
+
+/* =========================================================
+   اسم المتجر في الفوتر - أقصى اليمين
+========================================================= */
+
+.store-footer .store-name {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 30px 0 !important;
+    padding: 0 !important;
+    text-align: right !important;
+    font-size: 54px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+    color: #fff !important;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+}
+
+/* كلمة متجر */
+.store-footer .footer-store-prefix {
+    display: block !important;
+    font-size: 54px !important;
+    font-weight: 900 !important;
+    line-height: 1.35 !important;
+    margin: 0 0 8px 0 !important;
+    color: #fff !important;
+    text-align: right !important;
+}
+
+/* اسم الشركة */
+.store-footer .footer-store-main {
+    display: block !important;
+    font-size: 54px !important;
+    font-weight: 900 !important;
+    line-height: 1.35 !important;
+    color: #fff !important;
+    white-space: normal !important;
+    text-align: right !important;
+}
