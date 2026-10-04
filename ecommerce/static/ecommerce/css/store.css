@@ -5174,3 +5174,66 @@ html.mobile-store-device .navbar-links li a {
     }
 
 }
+/*==================================================
+        FINAL PRODUCT ACTION ICONS - REAL PHONE
+==================================================*/
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* إظهار حاوية الأيقونات نفسها */
+    html.mobile-store-device .product-actions {
+
+        opacity:1 !important;
+        visibility:visible !important;
+        transform:translateX(0) !important;
+
+    }
+
+
+    /* شكل الأزرار */
+    html.mobile-store-device .product-actions a,
+    html.mobile-store-device .product-actions button {
+
+        width:55px !important;
+        height:55px !important;
+
+        background:#f5f5f5 !important;
+        border:3px solid #444 !important;
+
+        opacity:1 !important;
+        visibility:visible !important;
+        transform:none !important;
+
+    }
+
+
+    /* المفضلة */
+    html.mobile-store-device .product-actions .wishlist-btn i {
+
+        color:#e53935 !important;
+        font-size:32px !important;
+        font-weight:900 !important;
+
+    }
+
+
+    /* عرض المنتج */
+    html.mobile-store-device .product-actions a:nth-child(2) i {
+
+        color:#1976d2 !important;
+        font-size:32px !important;
+        font-weight:900 !important;
+
+    }
+
+
+    /* المقارنة */
+    html.mobile-store-device .product-actions .compare-btn i {
+
+        color:#f57c00 !important;
+        font-size:32px !important;
+        font-weight:900 !important;
+
+    }
+
+}
