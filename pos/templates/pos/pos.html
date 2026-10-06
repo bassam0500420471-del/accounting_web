@@ -354,6 +354,7 @@ main,
     height: 28px;
     padding: 0;
 }
+
 .qty-control input.qty-input {
     width: 58px;
     height: 28px;
@@ -365,6 +366,24 @@ main,
     font-size: 14px;
     font-weight: 600;
 }
+
+
+/* =========================================================
+   TAX INPUT
+   ========================================================= */
+
+.pos-tax-input {
+    width: 70px;
+    min-width: 70px;
+    height: 30px;
+    padding: 2px 5px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 13px;
+}
+
 
 /* =========================================================
    TOTAL
@@ -406,6 +425,44 @@ main,
 }
 
 .invoice-total-empty {
+    grid-column: 5;
+}
+
+
+/* =========================================================
+   TAX TOTALS
+   ========================================================= */
+
+.invoice-tax-row {
+    display: grid;
+    grid-template-columns:
+        minmax(120px, 1fr)
+        80px
+        80px
+        90px
+        40px;
+    align-items: center;
+    column-gap: 0;
+    font-size: 16px;
+    font-weight: 600;
+    direction: rtl;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.invoice-tax-label {
+    grid-column: 1 / 4;
+    text-align: right;
+    padding-right: 5px;
+}
+
+.invoice-tax-value {
+    grid-column: 4;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.invoice-tax-empty {
     grid-column: 5;
 }
 
@@ -640,7 +697,8 @@ main,
         max-width: 280px;
     }
 
-    .invoice-total-row {
+    .invoice-total-row,
+    .invoice-tax-row {
         grid-template-columns:
             minmax(100px, 1fr)
             60px
@@ -1043,6 +1101,16 @@ let activeInvoiceNameElement = null;
 
 
 /* =========================================================
+   VAT STATUS
+   ========================================================= */
+
+const HAS_TAX_NUMBER =
+    {% if has_tax_number %}true{% else %}false{% endif %};
+
+const DEFAULT_TAX_RATE = 15;
+
+
+/* =========================================================
    SAFE STORAGE
    ========================================================= */
 
@@ -1112,6 +1180,7 @@ function loadInvoicesState(){
         }
 
         invoices = {};
+
         invoiceCounter =
             Number(state.invoiceCounter) || 1;
 
@@ -1143,6 +1212,47 @@ function loadInvoicesState(){
 
                 };
 
+                /*
+                 * الفواتير القديمة التي تم حفظها
+                 * قبل إضافة الضريبة إلى POS
+                 * تحصل على نسبة 15% إذا كانت
+                 * الشركة مسجلة ضريبيًا.
+                 */
+
+                if(HAS_TAX_NUMBER){
+
+                    Object.keys(
+                        invoices[id].items
+                    ).forEach(function(pid){
+
+                        const item =
+                            invoices[id].items[pid];
+
+                        if(
+                            item.tax === undefined ||
+                            item.tax === null
+                        ){
+
+                            item.tax =
+                                DEFAULT_TAX_RATE;
+
+                        }
+
+                    });
+
+                }else{
+
+                    Object.keys(
+                        invoices[id].items
+                    ).forEach(function(pid){
+
+                        invoices[id].items[pid].tax =
+                            0;
+
+                    });
+
+                }
+
                 renderInvoice(
                     Number(id)
                 );
@@ -1173,11 +1283,6 @@ function loadInvoicesState(){
             "POS SESSION DATA ERROR:",
             error
         );
-
-        /*
-         * البيانات القديمة تالفة.
-         * نمسحها ونبدأ POS جديد.
-         */
 
         sessionStorage.removeItem(
             "pos_invoices"
@@ -1414,6 +1519,16 @@ function createInvoice(
                             {% trans "Price" %}
                         </th>
 
+                        ${
+                            HAS_TAX_NUMBER
+                                ? `
+                                    <th>
+                                        {% trans "Tax %" %}
+                                    </th>
+                                  `
+                                : ""
+                        }
+
                         <th>
                             {% trans "Total" %}
                         </th>
@@ -1435,6 +1550,56 @@ function createInvoice(
 
 
         <div class="invoice-total-box">
+
+            ${
+                HAS_TAX_NUMBER
+                    ? `
+
+                        <div class="invoice-tax-row">
+
+                            <span class="invoice-tax-label">
+                                {% trans "Total Before Tax:" %}
+                            </span>
+
+                            <span class="invoice-tax-value">
+
+                                <span class="total-before-tax-text">
+                                    0.00
+                                </span>
+
+                                {% trans "SAR" %}
+
+                            </span>
+
+                            <span class="invoice-tax-empty"></span>
+
+                        </div>
+
+
+                        <div class="invoice-tax-row">
+
+                            <span class="invoice-tax-label">
+                                {% trans "Tax:" %}
+                            </span>
+
+                            <span class="invoice-tax-value">
+
+                                <span class="tax-total-text">
+                                    0.00
+                                </span>
+
+                                {% trans "SAR" %}
+
+                            </span>
+
+                            <span class="invoice-tax-empty"></span>
+
+                        </div>
+
+                      `
+                    : ""
+            }
+
 
             <div class="invoice-total-row">
 
@@ -2084,11 +2249,6 @@ function addProductToInvoice(product){
             /*
              * استخدام كمية المخزون الفعلية
              * مع الحفاظ على الكسور العشرية.
-             *
-             * مثال:
-             * 3.50 → 3.50
-             * 2.25 → 2.25
-             * 1.00 → 1.00
              */
 
             qty:
@@ -2100,8 +2260,16 @@ function addProductToInvoice(product){
             discount_type:
                 "percent",
 
+            /*
+             * إذا كانت الشركة مسجلة ضريبيًا
+             * تكون الضريبة الافتراضية 15%.
+             * إذا لم تكن مسجلة تكون 0.
+             */
+
             tax:
-                0,
+                HAS_TAX_NUMBER
+                    ? DEFAULT_TAX_RATE
+                    : 0,
 
             allowNegative:
                 allowNegative
@@ -2156,6 +2324,7 @@ function addProductToInvoice(product){
 
 }
 
+
 /* =========================================================
    RENDER INVOICE
    ========================================================= */
@@ -2193,6 +2362,12 @@ function renderInvoice(id){
     tbody.innerHTML =
         "";
 
+
+    let totalBeforeTax =
+        0;
+
+    let totalTax =
+        0;
 
     let total =
         0;
@@ -2233,9 +2408,84 @@ function renderInvoice(id){
         }
 
 
-        const lineTotal =
+        const beforeTax =
             subtotal -
             discountAmount;
+
+
+        /*
+         * =====================================================
+         * VAT
+         * =====================================================
+         */
+
+        let taxRate =
+            0;
+
+        let taxAmount =
+            0;
+
+
+        if(HAS_TAX_NUMBER){
+
+            /*
+             * إذا كانت الفاتورة القديمة لا تحتوي
+             * على نسبة ضريبة نستخدم 15%.
+             */
+
+            if(
+                item.tax === undefined ||
+                item.tax === null
+            ){
+
+                item.tax =
+                    DEFAULT_TAX_RATE;
+
+            }
+
+
+            taxRate =
+                Number(item.tax);
+
+
+            if(
+                !Number.isFinite(taxRate) ||
+                taxRate < 0
+            ){
+
+                taxRate =
+                    DEFAULT_TAX_RATE;
+
+                item.tax =
+                    DEFAULT_TAX_RATE;
+
+            }
+
+
+            taxAmount =
+                beforeTax *
+                taxRate /
+                100;
+
+        }else{
+
+            item.tax =
+                0;
+
+        }
+
+
+        const lineTotal =
+            beforeTax +
+            taxAmount;
+
+
+        totalBeforeTax +=
+            beforeTax;
+
+
+        totalTax +=
+            taxAmount;
 
 
         total +=
@@ -2261,41 +2511,66 @@ function renderInvoice(id){
 
                 <td>
 
-<div class="qty-control">
+                    <div class="qty-control">
 
-    <button
-        type="button"
-        class="btn btn-sm btn-secondary"
-        onclick="changeQty(${id}, '${pid}', -1)"
-    >
-        -
-    </button>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            onclick="changeQty(${id}, '${pid}', -1)"
+                        >
+                            -
+                        </button>
 
-    <input
-        type="text"
-        class="qty-input"
-        value="${item.qty}"
-        inputmode="decimal"
-        autocomplete="off"
-        onchange="setQty(${id}, '${pid}', this.value)"
-        onkeydown="handleQtyKeydown(event, ${id}, '${pid}', this)"
-    >
 
-    <button
-        type="button"
-        class="btn btn-sm btn-secondary"
-        onclick="changeQty(${id}, '${pid}', 1)"
-    >
-        +
-    </button>
+                        <input
+                            type="text"
+                            class="qty-input"
+                            value="${item.qty}"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            onchange="setQty(${id}, '${pid}', this.value)"
+                            onkeydown="handleQtyKeydown(event, ${id}, '${pid}', this)"
+                        >
 
-</div>
+
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            onclick="changeQty(${id}, '${pid}', 1)"
+                        >
+                            +
+                        </button>
+
+                    </div>
+
                 </td>
 
 
                 <td>
                     ${Number(item.price).toFixed(2)}
                 </td>
+
+
+                ${
+                    HAS_TAX_NUMBER
+                        ? `
+
+                            <td>
+
+                                <input
+                                    type="number"
+                                    class="pos-tax-input"
+                                    value="${taxRate}"
+                                    min="0"
+                                    step="any"
+                                    onchange="setTax(${id}, '${pid}', this.value)"
+                                >
+
+                            </td>
+
+                          `
+                        : ""
+                }
 
 
                 <td>
@@ -2325,6 +2600,54 @@ function renderInvoice(id){
     inv.total =
         total;
 
+
+    /*
+     * =====================================================
+     * TOTAL BEFORE TAX
+     * =====================================================
+     */
+
+    const totalBeforeTaxText =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"] .total-before-tax-text`
+        );
+
+
+    if(totalBeforeTaxText){
+
+        totalBeforeTaxText.innerText =
+            totalBeforeTax.toFixed(2);
+
+    }
+
+
+    /*
+     * =====================================================
+     * TOTAL TAX
+     * =====================================================
+     */
+
+    const taxTotalText =
+        document.querySelector(
+            `.invoice-content[data-id="${id}"] .tax-total-text`
+        );
+
+
+    if(taxTotalText){
+
+        taxTotalText.innerText =
+            HAS_TAX_NUMBER
+                ? totalTax.toFixed(2)
+                : "0.00";
+
+    }
+
+
+    /*
+     * =====================================================
+     * GRAND TOTAL
+     * =====================================================
+     */
 
     const grandTotalText =
         document.querySelector(
@@ -2357,6 +2680,91 @@ function renderInvoice(id){
     saveInvoicesState();
 
     initializeInvoiceNameTooltips();
+
+}
+
+
+/* =========================================================
+   SET TAX
+   ========================================================= */
+
+function setTax(
+    invoiceId,
+    pid,
+    value
+){
+
+    if(
+        !HAS_TAX_NUMBER
+    ){
+
+        if(
+            invoices[invoiceId] &&
+            invoices[invoiceId].items[pid]
+        ){
+
+            invoices[invoiceId]
+                .items[pid]
+                .tax = 0;
+
+        }
+
+        renderInvoice(invoiceId);
+
+        return;
+
+    }
+
+
+    if(
+        !invoices[invoiceId]
+    ){
+
+        return;
+
+    }
+
+
+    const item =
+        invoices[invoiceId]
+        .items[pid];
+
+
+    if(!item){
+
+        return;
+
+    }
+
+
+    let normalizedValue =
+        String(value)
+            .trim()
+            .replace(",", ".");
+
+
+    let taxRate =
+        Number(normalizedValue);
+
+
+    if(
+        !Number.isFinite(taxRate) ||
+        taxRate < 0
+    ){
+
+        taxRate =
+            DEFAULT_TAX_RATE;
+
+    }
+
+
+    item.tax =
+        taxRate;
+
+
+    renderInvoice(
+        invoiceId
+    );
 
 }
 
@@ -2658,6 +3066,7 @@ function handleQtyKeydown(
 
 }
 
+
 /* =========================================================
    SAVE INVOICE
    ========================================================= */
@@ -2689,25 +3098,54 @@ function saveInvoice(id){
         let pid in inv.items
     ){
 
+        let item =
+            inv.items[pid];
+
+
+        let taxRate =
+            0;
+
+
+        if(HAS_TAX_NUMBER){
+
+            taxRate =
+                Number(item.tax);
+
+
+            if(
+                !Number.isFinite(taxRate) ||
+                taxRate < 0
+            ){
+
+                taxRate =
+                    DEFAULT_TAX_RATE;
+
+            }
+
+        }
+
+
         items.push({
 
             product_id:
                 pid,
 
             quantity:
-                inv.items[pid].qty,
+                item.qty,
 
             price:
-                inv.items[pid].price,
+                item.price,
 
             discount:
-                inv.items[pid].discount,
+                item.discount,
 
             discount_type:
-                inv.items[pid].discount_type,
+                item.discount_type,
 
             tax:
-                inv.items[pid].tax
+                HAS_TAX_NUMBER
+                    ? taxRate
+                    : 0
 
         });
 
@@ -2753,134 +3191,142 @@ function saveInvoice(id){
 
     })
 
-.then(function(data){
+    .then(function(data){
 
-if(data.success){
+        if(data.success){
 
-    /*
-     * =====================================================
-     * الفاتورة تم تنفيذها بنجاح
-     * حذفها نهائيًا من الفواتير المؤقتة
-     * =====================================================
-     */
+            /*
+             * =====================================================
+             * الفاتورة تم تنفيذها بنجاح
+             * حذفها نهائيًا من الفواتير المؤقتة
+             * =====================================================
+             */
 
-    delete invoices[id];
-
-
-    /*
-     * =====================================================
-     * حذف تبويب الفاتورة من الشاشة
-     * =====================================================
-     */
-
-    const tab =
-        document.querySelector(
-            `.invoice-tab[data-id="${id}"]`
-        );
-
-    const content =
-        document.querySelector(
-            `.invoice-content[data-id="${id}"]`
-        );
-
-    if(tab){
-        tab.remove();
-    }
-
-    if(content){
-        content.remove();
-    }
+            delete invoices[id];
 
 
-    /*
-     * =====================================================
-     * معرفة الفواتير التي ما زالت مفتوحة
-     * =====================================================
-     */
+            /*
+             * =====================================================
+             * حذف تبويب الفاتورة من الشاشة
+             * =====================================================
+             */
 
-    const remainingInvoiceIds =
-        Object.keys(invoices);
+            const tab =
+                document.querySelector(
+                    `.invoice-tab[data-id="${id}"]`
+                );
+
+            const content =
+                document.querySelector(
+                    `.invoice-content[data-id="${id}"]`
+                );
 
 
-    if(remainingInvoiceIds.length > 0){
+            if(tab){
+                tab.remove();
+            }
 
-        /*
-         * توجد فواتير أخرى مفتوحة
-         */
+            if(content){
+                content.remove();
+            }
 
-        activeInvoiceId =
-            Number(
-                remainingInvoiceIds[0]
+
+            /*
+             * =====================================================
+             * معرفة الفواتير التي ما زالت مفتوحة
+             * =====================================================
+             */
+
+            const remainingInvoiceIds =
+                Object.keys(invoices);
+
+
+            if(remainingInvoiceIds.length > 0){
+
+                /*
+                 * توجد فواتير أخرى مفتوحة
+                 */
+
+                activeInvoiceId =
+                    Number(
+                        remainingInvoiceIds[0]
+                    );
+
+
+                /*
+                 * حفظ الحالة الجديدة
+                 */
+
+                saveInvoicesState();
+
+
+                /*
+                 * تفعيل الفاتورة الأخرى
+                 */
+
+                setActiveInvoice(
+                    activeInvoiceId
+                );
+
+            }else{
+
+                /*
+                 * =================================================
+                 * لا توجد أي فاتورة مفتوحة
+                 * نمسح بيانات POS القديمة بالكامل
+                 * =================================================
+                 */
+
+                invoices = {};
+
+                activeInvoiceId = null;
+
+                invoiceCounter = 1;
+
+
+                /*
+                 * حذف الفواتير المخزنة نهائيًا
+                 */
+
+                sessionStorage.removeItem(
+                    "pos_invoices"
+                );
+
+            }
+
+
+            /*
+             * =====================================================
+             * حفظ رقم الفاتورة المنفذة لصفحة الدفع
+             * =====================================================
+             */
+
+            sessionStorage.setItem(
+                "pos_pending_payment_invoice",
+                String(data.invoice_id)
             );
 
-        /*
-         * حفظ الحالة الجديدة
-         */
-        saveInvoicesState();
 
-        /*
-         * تفعيل الفاتورة الأخرى
-         */
-        setActiveInvoice(
-            activeInvoiceId
-        );
+            /*
+             * =====================================================
+             * الانتقال إلى صفحة الدفع
+             * =====================================================
+             */
 
-    }else{
-
-        /*
-         * =================================================
-         * لا توجد أي فاتورة مفتوحة
-         * نمسح بيانات POS القديمة بالكامل
-         * =================================================
-         */
-
-        invoices = {};
-
-        activeInvoiceId = null;
-
-        invoiceCounter = 1;
-
-        /*
-         * حذف الفواتير المخزنة نهائيًا
-         */
-        sessionStorage.removeItem(
-            "pos_invoices"
-        );
-
-    }
+            window.location.href =
+                `/pos/payment/${data.invoice_id}/`;
 
 
-    /*
-     * =====================================================
-     * حفظ رقم الفاتورة المنفذة لصفحة الدفع
-     * =====================================================
-     */
+        }else{
 
-    sessionStorage.setItem(
-        "pos_pending_payment_invoice",
-        String(data.invoice_id)
-    );
+            alert(
+                data.error ||
+                "حدث خطأ أثناء حفظ الفاتورة"
+            );
 
+        }
 
-    /*
-     * =====================================================
-     * الانتقال إلى صفحة الدفع
-     * =====================================================
-     */
-
-    window.location.href =
-        `/pos/payment/${data.invoice_id}/`;
-
-
-}else{
-        alert(
-            data.error ||
-            "حدث خطأ أثناء حفظ الفاتورة"
-        );
-
-    }
-
-})
+    })
 
     .catch(function(error){
 
@@ -3804,7 +4250,9 @@ $(document).ready(function(){
         );
 
         invoices = {};
+
         activeInvoiceId = null;
+
         invoiceCounter = 1;
 
         sessionStorage.removeItem(
@@ -3842,6 +4290,7 @@ $(document).ready(function(){
                     Object.keys(invoices)[0]
                 );
 
+
             setActiveInvoice(
                 firstId
             );
@@ -3871,7 +4320,10 @@ $(document).ready(function(){
                 invoices,
 
             activeInvoiceId:
-                activeInvoiceId
+                activeInvoiceId,
+
+            HAS_TAX_NUMBER:
+                HAS_TAX_NUMBER
         }
     );
 

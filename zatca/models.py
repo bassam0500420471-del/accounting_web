@@ -48,12 +48,22 @@ class ZatcaSettings(models.Model):
         verbose_name="تفعيل الربط",
     )
 
+    # =====================================================
+    # بيانات الجهاز
+    # =====================================================
+
     device_uuid = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         verbose_name="Device UUID",
     )
+
+    # =====================================================
+    # بيانات Compliance القديمة
+    #
+    # يتم الإبقاء عليها للتوافق مع البيانات الحالية.
+    # =====================================================
 
     compliance_request_id = models.CharField(
         max_length=255,
@@ -74,11 +84,58 @@ class ZatcaSettings(models.Model):
         verbose_name="Secret",
     )
 
+    # =====================================================
+    # بيانات Compliance المنفصلة
+    # =====================================================
+
+    compliance_binary_security_token = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Compliance Binary Security Token",
+    )
+
+    compliance_secret = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Compliance Secret",
+    )
+
+    # =====================================================
+    # بيانات Production
+    # =====================================================
+
+    production_request_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Production Request ID",
+    )
+
+    production_binary_security_token = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Production Binary Security Token",
+    )
+
+    production_secret = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Production Secret",
+    )
+
+    # =====================================================
+    # الشهادة
+    # =====================================================
+
     certificate = models.TextField(
         blank=True,
         null=True,
         verbose_name="Certificate",
     )
+
+    # =====================================================
+    # المفاتيح
+    # =====================================================
 
     private_key = models.TextField(
         blank=True,
@@ -92,11 +149,19 @@ class ZatcaSettings(models.Model):
         verbose_name="Public Key",
     )
 
+    # =====================================================
+    # CSR
+    # =====================================================
+
     csr = models.TextField(
         blank=True,
         null=True,
         verbose_name="CSR",
     )
+
+    # =====================================================
+    # مسارات الملفات
+    # =====================================================
 
     private_key_path = models.CharField(
         max_length=500,
@@ -118,6 +183,10 @@ class ZatcaSettings(models.Model):
         null=True,
         verbose_name="CSR Path",
     )
+
+    # =====================================================
+    # التواريخ
+    # =====================================================
 
     created_at = models.DateTimeField(
         auto_now_add=True,

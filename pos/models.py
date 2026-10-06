@@ -126,6 +126,15 @@ class InvoiceItem(models.Model):
         decimal_places=2,
         default=0
     )
+
+    discount_type = models.CharField(
+        max_length=20,
+        choices=[
+            ("percent", "Percentage"),
+            ("amount", "Amount"),
+        ],
+        default="amount",
+    )
     tax = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -135,22 +144,25 @@ class InvoiceItem(models.Model):
     # ==========================================================
     # ✅ هذا هو الكود الذي يجب عليك إضافته داخل كلاس InvoiceItem
     # ==========================================================
-    @property
-    def total(self):
-        # 1. نحسب المجموع الأساسي للسطر (السعر × الكمية)
-        subtotal = self.price * self.quantity
-        
-        # 2. نحسب قيمة الخصم بناءً على نسبة مئوية
-        discount_amount = (subtotal * self.discount / 100)
-        
-        # 3. نحسب المبلغ بعد الخصم
-        after_discount = subtotal - discount_amount
-        
-        # 4. نحسب الضريبة بناءً على المبلغ بعد الخصم
-        tax_amount = (after_discount * self.tax / 100)
-        
-        # 5. النتيجة النهائية: المبلغ بعد الخصم + الضريبة
-        return after_discount + tax_amount
+@property
+def total(self):
+    # المجموع قبل الخصم
+    subtotal = self.price * self.quantity
+
+    # حساب الخصم حسب نوعه
+    if self.discount_type == "percent":
+        discount_amount = subtotal * self.discount / 100
+    else:
+        discount_amount = self.discount
+
+    # المبلغ بعد الخصم
+    after_discount = subtotal - discount_amount
+
+    # الضريبة
+    tax_amount = after_discount * self.tax / 100
+
+    # الإجمالي النهائي
+    return after_discount + tax_amount
     # ==========================================================
 
     def __str__(self):

@@ -185,7 +185,7 @@ def create_pos_journal(invoice, payment):
     # -----------------------------------------------------
     if JournalEntry.objects.filter(
         company=company,
-        source_type="sales_invoice",
+        source_type="pos_invoice",
         source_id=invoice.id
     ).exists():
 
@@ -218,7 +218,7 @@ def create_pos_journal(invoice, payment):
             f"{invoice.invoice_no}"
         ),
 
-        source_type="sales_invoice",
+        source_type="pos_invoice",
 
         source_id=invoice.id,
 
@@ -289,13 +289,31 @@ def create_pos_journal(invoice, payment):
             price * quantity
         )
 
-        discount_value = (
-            discount * quantity
-        )
+        # -------------------------------------------------
+        # حساب الخصم حسب نوع الخصم
+        # -------------------------------------------------
+        if item.discount_type == "percent":
+
+            discount_value = (
+                line_total
+                * discount
+                / Decimal("100")
+            )
+
+        else:
+
+            discount_value = discount
 
         after_discount = (
             line_total - discount_value
         )
+
+        # منع أن يصبح صافي السطر سالباً
+        if after_discount < Decimal("0.00"):
+
+            after_discount = Decimal(
+                "0.00"
+            )
 
         subtotal += after_discount
 
@@ -351,7 +369,6 @@ def create_pos_journal(invoice, payment):
         )
 
     return entry
-
 
 # =========================================================
 # الصفحة الرئيسية POS
@@ -568,12 +585,16 @@ def pos_save_invoice(request):
                 - discount_amount
             )
 
+            # منع أن يصبح صافي السطر سالبًا
+            if after_discount < Decimal("0.00"):
+
+                after_discount = Decimal("0.00")
+
             tax_amount = (
                 after_discount
                 * tax
                 / Decimal("100")
             )
-
             total += (
                 after_discount
                 + tax_amount
@@ -707,6 +728,13 @@ def pos_save_invoice(request):
                     )
                 )
 
+                discount_type = (
+                    item_data.get(
+                        "discount_type"
+                    )
+                    or "amount"
+                )
+
                 if has_tax_number:
 
                     tax = Decimal(
@@ -719,6 +747,7 @@ def pos_save_invoice(request):
                     )
 
                 else:
+
 
                     tax = Decimal("0.00")
 
@@ -748,6 +777,8 @@ def pos_save_invoice(request):
                         price=price,
 
                         discount=discount,
+
+                        discount_type=discount_type,
 
                         tax=tax
                     )
