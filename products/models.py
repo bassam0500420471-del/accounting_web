@@ -7,7 +7,6 @@ from django.utils.translation import get_language
 from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 
-
 # ======================================
 #   ✅ التصنيفات (Folders) لواجهة POS
 # ======================================
@@ -211,6 +210,13 @@ class Product(models.Model):
             "name",
         ]
 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "barcode"],
+                name="uniq_product_barcode_per_company",
+            ),
+        ]
+
     def clean(self):
 
         if self.category_id and self.category.company_id != self.company_id:
@@ -261,6 +267,59 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
 
+        # =====================================================
+        # إنشاء باركود تلقائي للمنتج الجديد إذا لم يتم إدخاله
+        # =====================================================
+
+        if self._state.adding and not self.barcode:
+
+            import random
+
+            while True:
+
+                # أول رقمين 20 = باركود داخلي للنظام
+                barcode_body = "20" + "".join(
+                    random.choices(
+                        "0123456789",
+                        k=10
+                    )
+                )
+
+                # حساب رقم التحقق EAN-13
+                total = 0
+
+                for index, digit in enumerate(barcode_body):
+
+                    value = int(digit)
+
+                    if index % 2 == 0:
+                        total += value
+                    else:
+                        total += value * 3
+
+                check_digit = (
+                    10 - (total % 10)
+                ) % 10
+
+                generated_barcode = (
+                    barcode_body
+                    + str(check_digit)
+                )
+
+                # التأكد أن الباركود غير مستخدم داخل نفس الشركة
+                if not Product.objects.filter(
+                    company_id=self.company_id,
+                    barcode=generated_barcode,
+                ).exists():
+
+                    self.barcode = generated_barcode
+                    break
+
+
+        # =====================================================
+        # إنشاء الرابط Slug تلقائياً
+        # =====================================================
+
         if not self.slug:
 
             base_slug = slugify(
@@ -273,19 +332,19 @@ class Product(models.Model):
             slug = base_slug
             counter = 1
 
-            while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            while Product.objects.filter(
+                slug=slug
+            ).exclude(
+                pk=self.pk
+            ).exists():
 
                 slug = f"{base_slug}-{counter}"
                 counter += 1
 
             self.slug = slug
 
+
         super().save(*args, **kwargs)
-
-
-    def __str__(self):
-        return self.get_name()
-
 
 # ======================================
 #   مكونات المنتج المركّب (Bundle)

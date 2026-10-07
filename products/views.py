@@ -121,6 +121,33 @@ def product_add(request):
         # إنشاء المنتج
         # ==========================================
 
+        barcode = request.POST.get("barcode") or None
+
+        if barcode:
+
+            barcode_exists = Product.objects.filter(
+                company=request.company,
+                barcode=barcode,
+            ).exists()
+
+            if barcode_exists:
+
+                messages.error(
+                    request,
+                    "هذا الباركود مستخدم بالفعل داخل هذه الشركة."
+                )
+
+                return render(
+                    request,
+                    "products/product_form.html",
+                    {
+                        "products": products,
+                        "accounts": accounts,
+                        "categories": categories,
+                    }
+                )
+
+
         product = Product.objects.create(
 
             company=request.company,
@@ -129,8 +156,7 @@ def product_add(request):
 
             sku=request.POST.get("sku"),
 
-            barcode=request.POST.get("barcode") or None,
-
+            barcode=barcode,
             category=category,
 
             purchase_price=(
@@ -323,10 +349,47 @@ def product_edit(request, pk):
             "sku"
         )
 
-        product.barcode = request.POST.get(
+        barcode = request.POST.get(
             "barcode"
         ) or None
 
+        if barcode:
+
+            barcode_exists = Product.objects.filter(
+                company=request.company,
+                barcode=barcode,
+            ).exclude(
+                id=product.id
+            ).exists()
+
+            if barcode_exists:
+
+                messages.error(
+                    request,
+                    "هذا الباركود مستخدم بالفعل داخل هذه الشركة."
+                )
+
+                return render(
+                    request,
+                    "products/product_form.html",
+                    {
+                        "product": product,
+                        "products": products,
+                        "components": BundleComponent.objects.filter(
+                            product=product
+                        ),
+                        "accounts": accounts,
+                        "categories": categories,
+                        "gallery_images": ProductImage.objects.filter(
+                            product=product
+                        ).order_by(
+                            "sort_order",
+                            "id"
+                        ),
+                    }
+                )
+
+        product.barcode = barcode
         product.purchase_price = (
             request.POST.get(
                 "purchase_price"
