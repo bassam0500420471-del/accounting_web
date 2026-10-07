@@ -98,6 +98,14 @@ class Product(models.Model):
         null=True,
     )
 
+    barcode = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        db_index=True,
+        verbose_name="الباركود",
+    )
+
     slug = models.SlugField(
         max_length=255,
         unique=True,
@@ -106,7 +114,6 @@ class Product(models.Model):
         db_index=True,
         verbose_name="الرابط",
     )
-
     type = models.CharField(
         max_length=20,
         choices=PRODUCT_TYPES,

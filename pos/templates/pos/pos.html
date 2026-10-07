@@ -752,7 +752,20 @@ main,
             >
                 ➕ إضافة طريقة دفع
             </button>
+<!-- BARCODE SCANNER -->
 
+<div class="pos-search-wrapper barcode-search-wrapper">
+
+    <input
+        type="text"
+        id="barcode-search"
+        class="form-control"
+        placeholder="امسح الباركود هنا"
+        autocomplete="off"
+        inputmode="numeric"
+    >
+
+</div>
 
             <!-- PRODUCT SEARCH -->
 
@@ -880,16 +893,16 @@ main,
 
                 {% for p in products %}
 
-                <div
-                    class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mb-2 product-card"
-                    data-id="{{ p.id }}"
-                    data-name="{{ p.get_name }}"
-                    data-price="{{ p.sale_price }}"
-                    data-stock="{{ p.current_stock }}"
-                    data-category="{% if p.category %}{{ p.category.id }}{% endif %}"
-                    style="display:none;"
-                >
-
+<div
+    class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6 mb-2 product-card"
+    data-id="{{ p.id }}"
+    data-name="{{ p.get_name }}"
+    data-price="{{ p.sale_price }}"
+    data-stock="{{ p.current_stock }}"
+    data-barcode="{{ p.barcode|default:'' }}"
+    data-category="{% if p.category %}{{ p.category.id }}{% endif %}"
+    style="display:none;"
+>
                     <div class="product-box">
 
                         {% if p.image %}
@@ -2062,7 +2075,148 @@ function initializeProductSearch(){
 
 }
 
+/* =========================================================
+   BARCODE SCANNER
+   ========================================================= */
 
+function initializeBarcodeScanner(){
+
+    const barcodeInput =
+        document.getElementById(
+            "barcode-search"
+        );
+
+
+    if(!barcodeInput){
+
+        return;
+
+    }
+
+
+    barcodeInput.addEventListener(
+        "keydown",
+        function(event){
+
+            if(
+                event.key !== "Enter"
+            ){
+
+                return;
+
+            }
+
+
+            event.preventDefault();
+
+
+            const barcode =
+                String(
+                    this.value || ""
+                ).trim();
+
+
+            if(!barcode){
+
+                return;
+
+            }
+
+
+            const products =
+                document.querySelectorAll(
+                    ".product-card"
+                );
+
+
+            let product = null;
+
+
+            products.forEach(
+                function(card){
+
+                    if(product){
+
+                        return;
+
+                    }
+
+
+                    const cardBarcode =
+                        String(
+                            card.dataset.barcode || ""
+                        ).trim();
+
+
+                    if(
+                        cardBarcode &&
+                        cardBarcode === barcode
+                    ){
+
+                        product =
+                            card;
+
+                    }
+
+                }
+            );
+
+
+            if(!product){
+
+                alert(
+                    "لم يتم العثور على منتج بهذا الباركود: " +
+                    barcode
+                );
+
+
+                this.value =
+                    "";
+
+
+                this.focus();
+
+                return;
+
+            }
+
+
+            /*
+             * إظهار المنتج الذي تم مسحه
+             */
+
+            filterProductsBySearch(
+                product.dataset.id
+            );
+
+
+            /*
+             * إضافة المنتج إلى الفاتورة
+             *
+             * إذا كان موجودًا بالفعل
+             * ستزيد الكمية 1 تلقائيًا
+             */
+
+            addProductToInvoice(
+                product
+            );
+
+
+            /*
+             * تفريغ خانة الباركود
+             * للاستعداد للمسح التالي
+             */
+
+            this.value =
+                "";
+
+
+            this.focus();
+
+        }
+    );
+
+}
 /* =========================================================
    INVOICE SEARCH
    ========================================================= */
@@ -4205,10 +4359,11 @@ $(document).ready(function(){
      * تهيئة البحث
      */
 
-    initializeProductSearch();
+initializeProductSearch();
 
-    initializeInvoiceSearch();
+initializeInvoiceSearch();
 
+initializeBarcodeScanner();
 
     /*
      * 2

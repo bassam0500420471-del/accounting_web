@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages  # لإظهار رسائل
-
+from django.db.models import Q
 from accounting.models import Account   # ⭐ الحسابات
 from .models import Product, BundleComponent, Category  # ✅ إضافة Category
 from django.db.models.deletion import ProtectedError
@@ -128,6 +128,8 @@ def product_add(request):
             name=request.POST.get("name"),
 
             sku=request.POST.get("sku"),
+
+            barcode=request.POST.get("barcode") or None,
 
             category=category,
 
@@ -320,6 +322,10 @@ def product_edit(request, pk):
         product.sku = request.POST.get(
             "sku"
         )
+
+        product.barcode = request.POST.get(
+            "barcode"
+        ) or None
 
         product.purchase_price = (
             request.POST.get(
@@ -695,21 +701,39 @@ def product_view(request, pk):
 #   بحث المنتجات (API للفواتير)
 # ================================
 def search_products(request):
+
     q = request.GET.get("q", "").strip()
 
     if not getattr(request, "company", None):
-        return JsonResponse([], safe=False)
+
+        return JsonResponse(
+            [],
+            safe=False
+        )
 
     products = Product.objects.filter(
         company=request.company,
-        name__icontains=q,
         active=True
-    )[:20]
+    )
+
+    if q:
+
+        products = products.filter(
+            Q(name__icontains=q)
+            | Q(sku__icontains=q)
+            | Q(barcode__icontains=q)
+        )
+
+    products = products[:20]
 
     results = [{
         "id": p.id,
         "name": p.name,
+        "barcode": p.barcode,
         "price": float(p.sale_price or 0),
     } for p in products]
 
-    return JsonResponse(results, safe=False)
+    return JsonResponse(
+        results,
+        safe=False
+    )

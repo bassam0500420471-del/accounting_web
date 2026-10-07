@@ -654,24 +654,44 @@
                 </div>
 
 
-                <!-- SKU -->
+<!-- SKU -->
 
-                <div class="col-md-4 text-end">
+<div class="col-md-4 text-end">
 
-                    <label class="form-label">
+    <label class="form-label">
 
-                        {% trans "SKU" %}
+        {% trans "SKU" %}
 
-                    </label>
+    </label>
 
-                    <input
-                        type="text"
-                        name="sku"
-                        value="{{ product.sku|default:'' }}"
-                        class="form-control">
+    <input
+        type="text"
+        name="sku"
+        value="{{ product.sku|default:'' }}"
+        class="form-control">
 
-                </div>
+</div>
 
+
+<!-- الباركود -->
+
+<div class="col-md-4 text-end">
+
+    <label class="form-label">
+
+        الباركود
+
+    </label>
+
+    <input
+        type="text"
+        name="barcode"
+        value="{{ product.barcode|default:'' }}"
+        class="form-control"
+        inputmode="numeric"
+        autocomplete="off">
+
+</div>
 
                 <!-- التصنيف -->
 
