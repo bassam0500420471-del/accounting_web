@@ -97,6 +97,14 @@ class Product(models.Model):
         null=True,
     )
 
+    scale_code = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        db_index=True,
+        verbose_name="كود الميزان",
+    )
+
     barcode = models.CharField(
         max_length=100,
         blank=True,

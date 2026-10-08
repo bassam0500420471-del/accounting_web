@@ -900,6 +900,7 @@ main,
     data-price="{{ p.sale_price }}"
     data-stock="{{ p.current_stock }}"
     data-barcode="{{ p.barcode|default:'' }}"
+data-scale-code="{{ p.scale_code|default:'' }}"
     data-category="{% if p.category %}{{ p.category.id }}{% endif %}"
     style="display:none;"
 >
@@ -1994,7 +1995,88 @@ function refreshInvoiceSearch(){
 
 }
 
+/* =========================================================
+   INVOICE SEARCH
+   ========================================================= */
 
+function initializeInvoiceSearch(){
+
+    $("#invoice-search").select2({
+
+        placeholder:
+            "{% trans 'Search invoice...' %}",
+
+        allowClear: true,
+
+        dir: "rtl",
+
+        width: "100%",
+
+        language: {
+
+            noResults: function(){
+
+                return "لا توجد نتائج";
+
+            },
+
+            searching: function(){
+
+                return "جاري البحث...";
+
+            }
+
+        }
+
+    });
+
+
+    $("#invoice-search").on(
+        "select2:select",
+        function(e){
+
+            const invoiceId =
+                Number(
+                    e.params.data.id
+                );
+
+
+            if(
+                invoiceId &&
+                invoices[invoiceId]
+            ){
+
+                setActiveInvoice(
+                    invoiceId
+                );
+
+            }
+
+
+            $(this)
+                .val(null)
+                .trigger("change");
+
+        }
+    );
+
+
+    $("#invoice-search").on(
+        "select2:clear",
+        function(){
+
+            if(activeInvoiceId){
+
+                setActiveInvoice(
+                    activeInvoiceId
+                );
+
+            }
+
+        }
+    );
+
+}
 /* =========================================================
    PRODUCT SEARCH
    ========================================================= */
@@ -2123,17 +2205,24 @@ function initializeBarcodeScanner(){
             }
 
 
-            const products =
-                document.querySelectorAll(
-                    ".product-card"
-                );
-
-
             let product = null;
+            let weightedQuantity = null;
 
 
-            products.forEach(
-                function(card){
+            /*
+             * =====================================================
+             * 1
+             * البحث أولاً عن الباركود العادي
+             *
+             * مهم:
+             * الباركود العادي قد يبدأ أيضاً بـ 20.
+             * لذلك نبحث عنه أولاً.
+             * =====================================================
+             */
+
+            document
+                .querySelectorAll(".product-card")
+                .forEach(function(card){
 
                     if(product){
 
@@ -2153,26 +2242,107 @@ function initializeBarcodeScanner(){
                         cardBarcode === barcode
                     ){
 
-                        product =
-                            card;
+                        product = card;
 
                     }
 
-                }
-            );
+                });
 
+
+            /*
+             * =====================================================
+             * 2
+             * إذا لم نجد باركود عادي
+             * نجرب باركود الميزان
+             *
+             * مثال:
+             *
+             * 2001234012505
+             *
+             * 20    = نوع الباركود
+             * 01234 = كود الميزان
+             * 01250 = الوزن
+             * 5     = Check Digit
+             *
+             * 01250 / 1000 = 1.250 كجم
+             * =====================================================
+             */
+
+            if(
+                !product &&
+                barcode.length === 13 &&
+                barcode.startsWith("20")
+            ){
+
+                const scaleCode =
+                    barcode.substring(2, 7);
+
+
+                const weightPart =
+                    barcode.substring(7, 12);
+
+
+                const parsedWeight =
+                    Number(weightPart) / 1000;
+
+
+                if(
+                    Number.isFinite(parsedWeight) &&
+                    parsedWeight > 0
+                ){
+
+                    document
+                        .querySelectorAll(".product-card")
+                        .forEach(function(card){
+
+                            if(product){
+
+                                return;
+
+                            }
+
+
+                            const cardScaleCode =
+                                String(
+                                    card.dataset.scaleCode || ""
+                                ).trim();
+
+
+                            if(
+                                cardScaleCode &&
+                                cardScaleCode === scaleCode
+                            ){
+
+                                product = card;
+
+                                weightedQuantity =
+                                    parsedWeight;
+
+                            }
+
+                        });
+
+                }
+
+            }
+
+
+            /*
+             * =====================================================
+             * 3
+             * المنتج غير موجود
+             * =====================================================
+             */
 
             if(!product){
 
                 alert(
-                    "لم يتم العثور على منتج بهذا الباركود: " +
+                    "لم يتم العثور على منتج بهذا الباركود أو كود الميزان: " +
                     barcode
                 );
 
 
-                this.value =
-                    "";
-
+                this.value = "";
 
                 this.focus();
 
@@ -2182,7 +2352,10 @@ function initializeBarcodeScanner(){
 
 
             /*
-             * إظهار المنتج الذي تم مسحه
+             * =====================================================
+             * 4
+             * إظهار المنتج
+             * =====================================================
              */
 
             filterProductsBySearch(
@@ -2191,25 +2364,38 @@ function initializeBarcodeScanner(){
 
 
             /*
-             * إضافة المنتج إلى الفاتورة
-             *
-             * إذا كان موجودًا بالفعل
-             * ستزيد الكمية 1 تلقائيًا
+             * =====================================================
+             * 5
+             * إضافة المنتج
+             * =====================================================
              */
 
-            addProductToInvoice(
-                product
-            );
+            if(
+                weightedQuantity !== null
+            ){
+
+                addProductToInvoice(
+                    product,
+                    weightedQuantity
+                );
+
+            }else{
+
+                addProductToInvoice(
+                    product
+                );
+
+            }
 
 
             /*
-             * تفريغ خانة الباركود
-             * للاستعداد للمسح التالي
+             * =====================================================
+             * 6
+             * تجهيز الماسح للمسح التالي
+             * =====================================================
              */
 
-            this.value =
-                "";
-
+            this.value = "";
 
             this.focus();
 
@@ -2217,81 +2403,15 @@ function initializeBarcodeScanner(){
     );
 
 }
-/* =========================================================
-   INVOICE SEARCH
-   ========================================================= */
-
-function initializeInvoiceSearch(){
-
-    /*
-     * لا يوجد AJAX هنا.
-     *
-     * السبب:
-     * search_saved_invoices غير موجود في urls.py.
-     *
-     * البحث يعمل على الفواتير المفتوحة
-     * في POS فقط.
-     */
-
-    $("#invoice-search").select2({
-
-        placeholder:
-            "{% trans 'Search invoice...' %}",
-
-        allowClear: true,
-
-        dir: "rtl",
-
-        width: "100%",
-
-        minimumInputLength: 0,
-
-        language: {
-
-            noResults: function(){
-                return "لا توجد فواتير";
-            },
-
-            searching: function(){
-                return "جاري البحث...";
-            }
-
-        }
-
-    });
-
-
-    $("#invoice-search").on(
-        "select2:select",
-        function(e){
-
-            const invoiceId =
-                Number(
-                    e.params.data.id
-                );
-
-
-            if(
-                invoices[invoiceId]
-            ){
-
-                setActiveInvoice(
-                    invoiceId
-                );
-
-            }
-
-        }
-    );
-
-}
-
 
 /* =========================================================
    ADD PRODUCT
    ========================================================= */
 
-function addProductToInvoice(product){
+function addProductToInvoice(
+    product,
+    scannedQuantity = 1
+){
 
     /*
      * إذا لم توجد فاتورة لأي سبب
@@ -2405,9 +2525,8 @@ function addProductToInvoice(product){
              * مع الحفاظ على الكسور العشرية.
              */
 
-            qty:
-                1,
-
+qty:
+    scannedQuantity,
             discount:
                 0,
 
@@ -2436,9 +2555,9 @@ function addProductToInvoice(product){
             inv.items[pid];
 
 
-        const newQty =
-            Number(item.qty || 0) + 1;
-
+const newQty =
+    Number(item.qty || 0) +
+    Number(scannedQuantity);
 
         if(
             newQty > stock &&
