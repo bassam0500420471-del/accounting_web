@@ -45,14 +45,13 @@ CERTIFICATE_TEMPLATE_OID = ObjectIdentifier(
 
 def generate_private_key():
     """
-    إنشاء مفتاح خاص ECC P-256.
+    إنشاء مفتاح خاص ECC باستخدام secp256k1
+    وفق متطلبات ZATCA.
     """
 
     return ec.generate_private_key(
-        ec.SECP256R1()
+        ec.SECP256K1()
     )
-
-
 # =========================================================
 # إنشاء DER PrintableString
 # =========================================================

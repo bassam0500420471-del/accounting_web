@@ -1,4 +1,4 @@
-import os
+﻿import os
 import uuid
 
 from django.conf import settings
@@ -7,44 +7,51 @@ from zatca.models import ZatcaSettings
 from company.models import CompanyInfo
 
 from .api_client import ZatcaAPI
-from .csr_generator import (
-    generate_and_save_zatca_files,
-)
+from .csr_generator import generate_and_save_zatca_files
 from .key_manager import generate_public_key
-
 
 def start_onboarding(company):
 
-    # =====================================================
-    # بيانات الشركة
-    # =====================================================
 
     try:
         company_info = CompanyInfo.objects.get(
             company=company
         )
-
     except CompanyInfo.DoesNotExist:
         raise Exception(
-            "بيانات الشركة غير موجودة."
+            "ط¨ظٹط§ظ†ط§طھ ط§ظ„ط´ط±ظƒط© ط؛ظٹط± ظ…ظˆط¬ظˆط¯ط©."
         )
 
-    # =====================================================
-    # الرقم الضريبي
-    # =====================================================
+    zatca_settings, created = (
+        ZatcaSettings.objects.get_or_create(
+            company=company
+        )
+    )
+
+    if zatca_settings.csr:
+
+        if not zatca_settings.device_uuid:
+            zatca_settings.device_uuid = str(
+                uuid.uuid4()
+            )
+
+            zatca_settings.save(
+                update_fields=[
+                    "device_uuid",
+                    "updated_at",
+                ]
+            )
+
+        return zatca_settings
 
     tax_number = (
-        company_info.tax_number or ""
+        company.vat_no or ""
     ).strip()
 
     if not tax_number:
         raise Exception(
-            "الرقم الضريبي غير موجود."
+            "ط§ظ„ط±ظ‚ظ… ط§ظ„ط¶ط±ظٹط¨ظٹ ط؛ظٹط± ظ…ظˆط¬ظˆط¯ ظپظٹ ط¨ظٹط§ظ†ط§طھ ط§ظ„ط´ط±ظƒط©."
         )
-
-    # =====================================================
-    # بيانات مطلوبة للـ CSR
-    # =====================================================
 
     company_name = (
         company_info.name
@@ -54,7 +61,7 @@ def start_onboarding(company):
 
     if not company_name:
         raise Exception(
-            "اسم الشركة غير موجود."
+            "ط§ط³ظ… ط§ظ„ط´ط±ظƒط© ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
         )
 
     organization_unit = (
@@ -62,6 +69,11 @@ def start_onboarding(company):
         or company.name
         or ""
     ).strip()
+
+    if not organization_unit:
+        raise Exception(
+            "Organization Unit ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
+        )
 
     location = (
         company_info.city
@@ -71,36 +83,34 @@ def start_onboarding(company):
 
     if not location:
         raise Exception(
-            "مدينة الشركة أو العنوان غير موجود."
+            "ظ…ط¯ظٹظ†ط© ط§ظ„ط´ط±ظƒط© ط£ظˆ ط§ظ„ط¹ظ†ظˆط§ظ† ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
         )
 
     industry = "Trading"
 
-    # =====================================================
-    # EGS Serial Number
-    # =====================================================
-
-    zatca_settings, created = (
-        ZatcaSettings.objects.get_or_create(
-            company=company
-        )
-    )
-
     if zatca_settings.device_uuid:
-        device_uuid = zatca_settings.device_uuid
-
+        device_uuid = (
+            zatca_settings.device_uuid
+        )
     else:
         device_uuid = str(
             uuid.uuid4()
         )
 
+        zatca_settings.device_uuid = (
+            device_uuid
+        )
+
+        zatca_settings.save(
+            update_fields=[
+                "device_uuid",
+                "updated_at",
+            ]
+        )
+
     egs_serial_number = (
         f"1-ERP|2-Django|3-{device_uuid}"
     )
-
-    # =====================================================
-    # إنشاء ملفات ZATCA
-    # =====================================================
 
     files = generate_and_save_zatca_files(
         company_id=company.id,
@@ -118,10 +128,6 @@ def start_onboarding(company):
         certificate_template="PREZATCA-Code-Signing",
     )
 
-    # =====================================================
-    # المسارات
-    # =====================================================
-
     private_key_path = files[
         "private_key_path"
     ]
@@ -137,18 +143,10 @@ def start_onboarding(company):
         "public_key.pem",
     )
 
-    # =====================================================
-    # إنشاء Public Key
-    # =====================================================
-
     generate_public_key(
         private_key_path,
         public_key_path,
     )
-
-    # =====================================================
-    # قراءة محتوى الملفات
-    # =====================================================
 
     with open(
         private_key_path,
@@ -171,16 +169,13 @@ def start_onboarding(company):
     ) as f:
         public_key_content = f.read()
 
-    # =====================================================
-    # حفظ بيانات ZATCA
-    # =====================================================
+    zatca_settings.device_uuid = (
+        device_uuid
+    )
 
-    zatca_settings.device_uuid = device_uuid
-    zatca_settings.status = "csr_created"
-
-    # =====================================================
-    # حفظ المحتوى داخل قاعدة البيانات
-    # =====================================================
+    zatca_settings.status = (
+        "csr_created"
+    )
 
     zatca_settings.private_key = (
         private_key_content
@@ -194,10 +189,6 @@ def start_onboarding(company):
         public_key_content
     )
 
-    # =====================================================
-    # حفظ المسارات
-    # =====================================================
-
     zatca_settings.private_key_path = (
         private_key_path
     )
@@ -210,45 +201,39 @@ def start_onboarding(company):
         public_key_path
     )
 
+    zatca_settings.is_enabled = False
+
     zatca_settings.save()
 
     return zatca_settings
 
-
 def complete_compliance(
     zatca_settings,
     otp,
-):
+    ):
+
     """
-    إرسال CSR إلى ZATCA للحصول على Compliance CSID.
+    ط¥ط±ط³ط§ظ„ CSR ط¥ظ„ظ‰ ZATCA ظ„ظ„ط­طµظˆظ„ ط¹ظ„ظ‰ Compliance CSID.
     """
 
     if not zatca_settings:
         raise Exception(
-            "إعدادات ZATCA غير موجودة."
+            "ط¥ط¹ط¯ط§ط¯ط§طھ ZATCA ط؛ظٹط± ظ…ظˆط¬ظˆط¯ط©."
         )
 
     if not zatca_settings.csr:
         raise Exception(
-            "CSR غير موجود."
+            "CSR ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
         )
 
     if not otp:
         raise Exception(
-            "OTP غير موجود."
+            "OTP ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
         )
-
-    # =====================================================
-    # إنشاء عميل ZATCA
-    # =====================================================
 
     api = ZatcaAPI(
         zatca_settings.environment
     )
-
-    # =====================================================
-    # إرسال طلب Compliance
-    # =====================================================
 
     result = api.request_compliance_csid(
         csr=zatca_settings.csr,
@@ -263,14 +248,9 @@ def complete_compliance(
         "response"
     )
 
-    # =====================================================
-    # التحقق من الاستجابة
-    # =====================================================
-
     if status_code != 200:
-
         raise Exception(
-            f"فشل طلب Compliance من ZATCA "
+            f"ظپط´ظ„ ط·ظ„ط¨ Compliance ظ…ظ† ZATCA "
             f"(HTTP {status_code}): "
             f"{response_data}"
         )
@@ -280,12 +260,8 @@ def complete_compliance(
         dict,
     ):
         raise Exception(
-            "استجابة ZATCA غير صحيحة."
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ط؛ظٹط± طµط­ظٹط­ط©."
         )
-
-    # =====================================================
-    # استخراج بيانات Compliance
-    # =====================================================
 
     request_id = response_data.get(
         "requestID"
@@ -307,28 +283,20 @@ def complete_compliance(
         )
     )
 
-    # =====================================================
-    # التحقق من البيانات
-    # =====================================================
-
     if not request_id:
         raise Exception(
-            "استجابة ZATCA لا تحتوي على requestID."
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ظ„ط§ طھط­طھظˆظٹ ط¹ظ„ظ‰ requestID."
         )
 
     if not binary_security_token:
         raise Exception(
-            "استجابة ZATCA لا تحتوي على binarySecurityToken."
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ظ„ط§ طھط­طھظˆظٹ ط¹ظ„ظ‰ binarySecurityToken."
         )
 
     if not secret:
         raise Exception(
-            "استجابة ZATCA لا تحتوي على secret."
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ظ„ط§ طھط­طھظˆظٹ ط¹ظ„ظ‰ secret."
         )
-
-    # =====================================================
-    # حفظ Compliance في الحقول الجديدة
-    # =====================================================
 
     zatca_settings.compliance_request_id = (
         request_id
@@ -342,10 +310,6 @@ def complete_compliance(
         secret
     )
 
-    # =====================================================
-    # الحفاظ على الحقول القديمة للتوافق
-    # =====================================================
-
     zatca_settings.binary_security_token = (
         binary_security_token
     )
@@ -354,67 +318,55 @@ def complete_compliance(
         secret
     )
 
-    zatca_settings.status = "compliance"
+    zatca_settings.status = (
+        "compliance"
+    )
+
+    zatca_settings.is_enabled = False
 
     zatca_settings.save()
 
-    # =====================================================
-    # إرجاع النتيجة
-    # =====================================================
-
     return {
         "request_id": request_id,
-        "binary_security_token": binary_security_token,
+        "binary_security_token": (
+            binary_security_token
+        ),
         "secret": secret,
-        "disposition_message": disposition_message,
+        "disposition_message": (
+            disposition_message
+        ),
         "status": zatca_settings.status,
     }
 
-
 def complete_production_csid(
     zatca_settings,
-):
-    """
-    طلب Production CSID بعد نجاح Compliance.
+    ):
 
-    يستخدم Compliance CSID الموجود في:
+    """
+    ط·ظ„ط¨ Production CSID ط¨ط¹ط¯ ظ†ط¬ط§ط­ Compliance.
+
+    ظٹط³طھط®ط¯ظ… Compliance CSID ط§ظ„ظ…ظˆط¬ظˆط¯ ظپظٹ:
     compliance_binary_security_token
     """
 
     if not zatca_settings:
         raise Exception(
-            "إعدادات ZATCA غير موجودة."
+            "ط¥ط¹ط¯ط§ط¯ط§طھ ZATCA ط؛ظٹط± ظ…ظˆط¬ظˆط¯ط©."
         )
-
-    # =====================================================
-    # التحقق من Compliance CSID
-    # =====================================================
 
     if not zatca_settings.compliance_binary_security_token:
         raise Exception(
-            "Compliance CSID غير موجود."
+            "Compliance CSID ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
         )
-
-    # =====================================================
-    # التحقق من CSR
-    # =====================================================
 
     if not zatca_settings.csr:
         raise Exception(
-            "CSR غير موجود."
+            "CSR ط؛ظٹط± ظ…ظˆط¬ظˆط¯."
         )
-
-    # =====================================================
-    # إنشاء عميل ZATCA
-    # =====================================================
 
     api = ZatcaAPI(
         zatca_settings.environment
     )
-
-    # =====================================================
-    # إرسال طلب Production CSID
-    # =====================================================
 
     result = api.request_production_csid(
         current_csid=(
@@ -431,14 +383,9 @@ def complete_production_csid(
         "response"
     )
 
-    # =====================================================
-    # التحقق من الاستجابة
-    # =====================================================
-
     if status_code != 200:
-
         raise Exception(
-            f"فشل طلب Production CSID من ZATCA "
+            f"ظپط´ظ„ ط·ظ„ط¨ Production CSID ظ…ظ† ZATCA "
             f"(HTTP {status_code}): "
             f"{response_data}"
         )
@@ -448,12 +395,8 @@ def complete_production_csid(
         dict,
     ):
         raise Exception(
-            "استجابة Production CSID غير صحيحة."
+            "ط§ط³طھط¬ط§ط¨ط© Production CSID ط؛ظٹط± طµط­ظٹط­ط©."
         )
-
-    # =====================================================
-    # استخراج بيانات Production CSID
-    # =====================================================
 
     production_request_id = (
         response_data.get(
@@ -479,23 +422,20 @@ def complete_production_csid(
         )
     )
 
-    # =====================================================
-    # التحقق من البيانات
-    # =====================================================
+    if not production_request_id:
+        raise Exception(
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ظ„ط§ طھط­طھظˆظٹ ط¹ظ„ظ‰ Production requestID."
+        )
 
     if not production_security_token:
         raise Exception(
-            "استجابة ZATCA لا تحتوي على Production CSID."
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ظ„ط§ طھط­طھظˆظٹ ط¹ظ„ظ‰ Production CSID."
         )
 
     if not production_secret:
         raise Exception(
-            "استجابة ZATCA لا تحتوي على Production Secret."
+            "ط§ط³طھط¬ط§ط¨ط© ZATCA ظ„ط§ طھط­طھظˆظٹ ط¹ظ„ظ‰ Production Secret."
         )
-
-    # =====================================================
-    # حفظ Production CSID بشكل منفصل
-    # =====================================================
 
     zatca_settings.production_request_id = (
         production_request_id
@@ -509,18 +449,13 @@ def complete_production_csid(
         production_secret
     )
 
-    # =====================================================
-    # تحديث الحالة
-    # =====================================================
+    zatca_settings.status = (
+        "active"
+    )
 
-    zatca_settings.status = "active"
     zatca_settings.is_enabled = True
 
     zatca_settings.save()
-
-    # =====================================================
-    # إرجاع النتيجة
-    # =====================================================
 
     return {
         "request_id": production_request_id,
@@ -528,6 +463,8 @@ def complete_production_csid(
             production_security_token
         ),
         "secret": production_secret,
-        "disposition_message": disposition_message,
+        "disposition_message": (
+            disposition_message
+        ),
         "status": zatca_settings.status,
     }

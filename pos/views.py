@@ -22,7 +22,7 @@ from customers.models import Customer
 from accounting.models import Account, JournalEntry, JournalLine
 
 from accounting.services.journal_service import create_sales_journal
-
+from accounting.views.account_views import generate_next_child_code
 
 print("===== POS VIEWS LOADED =====")
 
@@ -61,34 +61,58 @@ def _has_tax_number(company):
 # =========================================================
 # تجهيز حسابات شجرة الحسابات
 # =========================================================
+
 def _get_payment_parent_accounts(company):
+    """
+    عرض الحسابات النشطة بترتيب الشجرة المحاسبية:
+    الحساب الرئيسي ثم أبناؤه، مع إظهار مستوى كل حساب.
+    """
+    accounts = list(
+        Account.objects.filter(
+            company=company,
+            is_active=True,
+        ).order_by("code", "id")
+    )
 
-    accounts = Account.objects.filter(
-        company=company,
-        is_active=True
-    ).order_by("code")
-
-    payment_parent_accounts = []
+    accounts_by_id = {account.id: account for account in accounts}
+    children_by_parent = {}
 
     for account in accounts:
+        children_by_parent.setdefault(account.parent_id, []).append(account)
 
-        level = 0
-        parent = account.parent
+    ordered_accounts = []
+    visited = set()
 
-        while parent:
+    def add_branch(account, level):
+        if account.id in visited:
+            return
 
-            level += 1
-            parent = parent.parent
-
+        visited.add(account.id)
         account.display_name = (
-            ("— " * level)
-            + f"{account.code} - {account.name}"
+            ("　　" * level)
+            + f"{account.code or 'بلا رقم'} - {account.name}"
         )
+        ordered_accounts.append(account)
 
-        payment_parent_accounts.append(account)
+        for child in children_by_parent.get(account.id, []):
+            add_branch(child, level + 1)
 
-    return payment_parent_accounts
+    # عرض الحسابات الرئيسية أولًا، ثم كل فرع تحت أبيه.
+    roots = [
+        account
+        for account in accounts
+        if account.parent_id not in accounts_by_id
+    ]
 
+    for account in roots:
+        add_branch(account, 0)
+
+    # إظهار أي حساب متبقٍ بدل إخفائه إذا كانت علاقته بالأب غير سليمة.
+    for account in accounts:
+        if account.id not in visited:
+            add_branch(account, 0)
+
+    return ordered_accounts
 
 # =========================================================
 # إنشاء QR Code للفاتورة
@@ -1720,6 +1744,7 @@ def payment_detail(
         }
     )
 
+
 # =========================================================
 # إضافة وسيلة دفع جديدة AJAX
 # =========================================================
@@ -1729,180 +1754,104 @@ def add_payment_method(request):
     company = _get_company(request)
 
     if request.method != "POST":
-
         return JsonResponse(
             {
                 "success": False,
-                "error":
-                    "طريقة الطلب غير صحيحة"
+                "error": "طريقة الطلب غير صحيحة"
             },
             status=400
         )
 
     try:
+        data = json.loads(request.body)
 
-        data = json.loads(
-            request.body
-        )
+        name = str(data.get("name", "")).strip()
+        parent_id = data.get("parent_id")
 
-        name = str(
-            data.get(
-                "name",
-                ""
-            )
-        ).strip()
-
-        parent_id = data.get(
-            "parent_id"
-        )
-
-        # -------------------------------------------------
-        # التحقق من الاسم
-        # -------------------------------------------------
         if not name:
+            return JsonResponse({
+                "success": False,
+                "error": "اسم طريقة الدفع مطلوب"
+            })
 
-            return JsonResponse(
-                {
-                    "success": False,
-                    "error":
-                        "اسم طريقة الدفع مطلوب"
-                }
-            )
-
-        # -------------------------------------------------
-        # التحقق من الحساب الرئيسي
-        # -------------------------------------------------
         if not parent_id:
-
-            return JsonResponse(
-                {
-                    "success": False,
-                    "error":
-                        "اختر الحساب الرئيسي"
-                }
-            )
+            return JsonResponse({
+                "success": False,
+                "error": "اختر الحساب الأب"
+            })
 
         parent_account = get_object_or_404(
-
             Account,
-
             id=parent_id,
-
-            company=company
+            company=company,
+            is_active=True
         )
 
-        # -------------------------------------------------
-        # منع تكرار طريقة الدفع
-        # -------------------------------------------------
         if PaymentMethod.objects.filter(
             company=company,
             name=name
         ).exists():
+            return JsonResponse({
+                "success": False,
+                "error": "طريقة الدفع موجودة بالفعل"
+            })
 
-            return JsonResponse(
-                {
-                    "success": False,
-                    "error":
-                        "طريقة الدفع موجودة بالفعل"
-                }
+        with transaction.atomic():
+
+            # إنشاء رقم جديد وفق قاعدة ترقيم الحسابات الحالية
+            new_code = generate_next_child_code(
+                parent_account,
+                company
             )
 
-        # -------------------------------------------------
-        # إنشاء كود الحساب الجديد
-        # -------------------------------------------------
-        numeric_codes = []
-
-        for code in (
-            Account.objects
-            .filter(company=company)
-            .values_list("code", flat=True)
-        ):
-
-            try:
-
-                numeric_codes.append(
-                    int(code)
-                )
-
-            except (
-                ValueError,
-                TypeError
-            ):
-
-                continue
-
-        if numeric_codes:
-
-            new_code = str(
-                max(numeric_codes) + 1
-            )
-
-        else:
-
-            new_code = "1000"
-
-        # -------------------------------------------------
-        # إنشاء الحساب
-        # -------------------------------------------------
-        payment_account = (
-            Account.objects.create(
-
+            # حماية إضافية من تكرار رقم الحساب
+            if Account.objects.filter(
                 company=company,
+                code=new_code
+            ).exists():
+                return JsonResponse({
+                    "success": False,
+                    "error": (
+                        f"رقم الحساب {new_code} مستخدم بالفعل. "
+                        "لم يتم إنشاء طريقة الدفع."
+                    )
+                }, status=409)
 
+            # إنشاء الحساب الجديد مع وراثة بياناته المحاسبية
+            payment_account = Account.objects.create(
+                company=company,
                 code=new_code,
-
                 name=name,
-
-                parent=parent_account
+                parent=parent_account,
+                account_type=parent_account.account_type,
+                nature=parent_account.nature,
+                is_group=False,
+                is_active=True,
+                is_payment_method=True
             )
-        )
 
-        # -------------------------------------------------
-        # إنشاء طريقة الدفع
-        # -------------------------------------------------
-        method = PaymentMethod.objects.create(
+            # ربط طريقة الدفع بالحساب المحاسبي
+            method = PaymentMethod.objects.create(
+                company=company,
+                name=name,
+                account=payment_account
+            )
 
-            company=company,
-
-            name=name,
-
-            account=payment_account
-        )
-
-        return JsonResponse(
-            {
-                "success": True,
-
-                "id":
-                    method.id,
-
-                "name":
-                    method.name,
-
-                "account_id":
-                    payment_account.id,
-
-                "account_code":
-                    payment_account.code,
-            }
-        )
+        return JsonResponse({
+            "success": True,
+            "id": method.id,
+            "name": method.name,
+            "account_id": payment_account.id,
+            "account_code": payment_account.code,
+        })
 
     except Exception as e:
+        print("ADD PAYMENT METHOD ERROR:", e)
 
-        print(
-            "ADD PAYMENT METHOD ERROR:",
-            e
-        )
-
-        return JsonResponse(
-            {
-                "success": False,
-                "error":
-                    str(e)
-            },
-            status=500
-        )
-
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
 
 # =========================================================
 # عرض فاتورة POS

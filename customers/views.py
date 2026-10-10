@@ -1,3 +1,4 @@
+
 import json
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,6 +7,7 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal, ROUND_HALF_UP
+
 from .models import Customer
 from sales.models import SalesInvoice
 from accounting.models import Account
@@ -44,30 +46,38 @@ def api_customers(request):
 def customers_list(request):
     company = _get_company(request)
     if not company:
-        return render(request, "customers/customers_list.html", {"customers": []})
+        return render(
+            request,
+            "customers/customers_list.html",
+            {"customers": []},
+        )
 
     customers = Customer.objects.filter(company=company).order_by("-id")
 
     for c in customers:
         c.invoice_count = SalesInvoice.objects.filter(customer=c).count()
-        total_invoices = SalesInvoice.objects.filter(customer=c).aggregate(
-            sum=Sum("total_after_tax")
-        )["sum"] or 0
+
+        total_invoices = (
+            SalesInvoice.objects.filter(customer=c).aggregate(
+                sum=Sum("total_after_tax")
+            )["sum"]
+            or 0
+        )
 
         total_payments = Decimal("0.00")
 
         c.balance = (
-            Decimal(str(total_invoices or 0))
-            - total_payments
+            Decimal(str(total_invoices or 0)) - total_payments
         ).quantize(
             Decimal("0.01"),
-            rounding=ROUND_HALF_UP
+            rounding=ROUND_HALF_UP,
         )
 
         c.balance_abs = abs(c.balance).quantize(
             Decimal("0.01"),
-            rounding=ROUND_HALF_UP
+            rounding=ROUND_HALF_UP,
         )
+
         if c.balance > 0:
             c.state = "مدين"
         elif c.balance < 0:
@@ -75,31 +85,39 @@ def customers_list(request):
         else:
             c.state = "متزن"
 
-    return render(request, "customers/customers_list.html", {"customers": customers})
+    return render(
+        request,
+        "customers/customers_list.html",
+        {"customers": customers},
+    )
 
 
 # ================================
-#   عرض تفاصيل العميل (تمت الإضافة)
+#   عرض تفاصيل العميل
 # ================================
 @login_required
 def customer_view(request, pk):
     company = _get_company(request)
-    # جلب العميل مع شرط الشركة لضمان العزل
-    customer = get_object_or_404(Customer, pk=pk, company=company)
-    return render(request, "customers/customer_view.html", {"customer": customer})
+
+    customer = get_object_or_404(
+        Customer,
+        pk=pk,
+        company=company,
+    )
+
+    return render(
+        request,
+        "customers/customer_view.html",
+        {"customer": customer},
+    )
 
 
 # ================================
-#   ➕ إنشاء عميل
+#   إنشاء عميل
 # ================================
 @login_required
 def customer_create(request):
-    print("========== CUSTOMER CREATE ENTER ==========")
-
     company = _get_company(request)
-
-    print("USER:", request.user)
-    print("COMPANY:", company)
 
     if not company:
         return redirect("/customers/")
@@ -131,33 +149,47 @@ def customer_create(request):
             address=request.POST.get("street1") or "",
         )
 
-        parent_account, created = Account.objects.get_or_create(
+        # البحث عن الحساب التجميعي الصحيح للعملاء
+        parent_account = Account.objects.filter(
             company=company,
-            code="10000103",
-            defaults={
-                "name": "العملاء",
-                "is_active": True,
-                "parent": None,
-            }
-        )
+            code="1100",
+            name="العملاء",
+            is_group=True,
+            parent__company=company,
+        ).first()
 
-        last_child = Account.objects.filter(
+        if not parent_account:
+            # منع إنشاء حساب عميل تحت حساب غير صحيح
+            customer.delete()
+            return HttpResponse(
+                "تعذر إنشاء حساب العميل: "
+                "لم يتم العثور على الحساب التجميعي 1100 العملاء "
+                "التابع للشركة الحالية. يرجى مراجعة دليل الحسابات.",
+                status=400,
+            )
+
+        # استخراج أرقام الحسابات التابعة مباشرة للحساب التجميعي
+        child_codes = Account.objects.filter(
             company=company,
-            parent=parent_account
-        ).order_by("-code").first()
+            parent=parent_account,
+        ).values_list("code", flat=True)
 
-        new_code = (
-            int(last_child.code) + 1
-            if last_child and str(last_child.code).isdigit()
-            else 10000103001
-        )
+        numeric_codes = [
+            int(code)
+            for code in child_codes
+            if str(code).isdigit()
+        ]
+
+        # إنشاء رقم جديد بعد آخر حساب تابع
+        new_code = str(max(numeric_codes + [1100]) + 1)
 
         account = Account.objects.create(
             company=company,
-            code=str(new_code),
+            code=new_code,
             name=f"عميل - {customer.commercial_name or customer.name}",
             parent=parent_account,
-            is_active=True
+            is_active=True,
+            is_group=False,
         )
 
         customer.account = account
@@ -172,8 +204,9 @@ def customer_create(request):
 
     return render(
         request,
-        "customers/customer_form.html"
+        "customers/customer_form.html",
     )
+
 
 # ================================
 #   API: إضافة عميل (AJAX)
@@ -181,34 +214,81 @@ def customer_create(request):
 @login_required
 def api_add_customer(request):
     company = _get_company(request)
+
     if not company:
-        return JsonResponse({"status": "error", "message": "User has no company"}, status=400)
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "User has no company",
+            },
+            status=400,
+        )
 
     if request.method == "POST":
-        data = json.loads(request.body or "{}")
+        try:
+            data = json.loads(request.body or "{}")
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Invalid JSON",
+                },
+                status=400,
+            )
+
         customer = Customer.objects.create(
             company=company,
             name=data.get("name", ""),
             phone=data.get("phone", ""),
-            address=data.get("address", "")
+            address=data.get("address", ""),
         )
-        return JsonResponse({"status": "ok", "customer": {"id": customer.id, "name": customer.name}})
-    
-    return JsonResponse({"status": "error", "message": "Invalid method"}, status=400)
+
+        return JsonResponse(
+            {
+                "status": "ok",
+                "customer": {
+                    "id": customer.id,
+                    "name": customer.name,
+                },
+            }
+        )
+
+    return JsonResponse(
+        {
+            "status": "error",
+            "message": "Invalid method",
+        },
+        status=400,
+    )
+
+
 # ================================
-#   🔍 بحث العملاء
+#   بحث العملاء
 # ================================
 @login_required
 def search_customer(request):
     company = _get_company(request)
+
     if not company:
         return JsonResponse([], safe=False)
 
     q = request.GET.get("q", "").strip()
-    customers = Customer.objects.filter(company=company, name__icontains=q).order_by("name")
+
+    customers = Customer.objects.filter(
+        company=company,
+        name__icontains=q,
+    ).order_by("name")
+
     return JsonResponse(
-        [{"id": c.id, "name": c.name, "phone": c.phone or ""} for c in customers],
-        safe=False
+        [
+            {
+                "id": c.id,
+                "name": c.name,
+                "phone": c.phone or "",
+            }
+            for c in customers
+        ],
+        safe=False,
     )
 
 
@@ -218,20 +298,23 @@ def search_customer(request):
 @login_required
 def all_customers(request):
     company = _get_company(request)
+
     if not company:
         return JsonResponse([], safe=False)
 
     return JsonResponse(
-        list(Customer.objects.filter(company=company).values("id", "name")),
-        safe=False
+        list(
+            Customer.objects.filter(company=company).values(
+                "id",
+                "name",
+            )
+        ),
+        safe=False,
     )
 
 
 # ================================
 #   تعديل عميل
-# ================================
-# ================================
-#    تعديل عميل
 # ================================
 def customer_edit(request, pk):
     company = _get_company(request)
@@ -239,14 +322,15 @@ def customer_edit(request, pk):
     customer = get_object_or_404(
         Customer,
         pk=pk,
-        company=company
+        company=company,
     )
+
     if request.method == "POST":
         customer.customer_type = request.POST.get("customer_type")
         customer.commercial_name = request.POST.get("commercial_name")
         customer.name_en = request.POST.get("name_en")
-        customer.address_en = request.POST.get("address_en")  # تم إضافة هذا السطر لحفظ العنوان الإنجليزي
-        customer.name = request.POST.get("commercial_name")
+        customer.address_en = request.POST.get("address_en")
+        customer.name = request.POST.get("commercial_name") or ""
         customer.first_name = request.POST.get("first_name")
         customer.last_name = request.POST.get("last_name")
         customer.phone = request.POST.get("phone")
@@ -261,14 +345,23 @@ def customer_edit(request, pk):
         customer.tax_number = request.POST.get("tax_number")
         customer.cr_number = request.POST.get("cr_number")
         customer.notes = request.POST.get("notes")
-        
+
         if request.FILES.get("attachment"):
             customer.attachment = request.FILES.get("attachment")
-            
+
         customer.save()
         return redirect("customers_list")
-        
-    return render(request, "customers/customer_form.html", {"customer": customer, "edit_mode": True})
+
+    return render(
+        request,
+        "customers/customer_form.html",
+        {
+            "customer": customer,
+            "edit_mode": True,
+        },
+    )
+
+
 # ================================
 #   حذف عميل
 # ================================

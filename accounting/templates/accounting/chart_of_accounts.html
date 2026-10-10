@@ -470,7 +470,21 @@ body {
 
 }
 
+.main-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
 
+.main-add-btn {
+    background: linear-gradient(145deg, #666, #333);
+    border-color: rgba(255,255,255,.25);
+}
+
+.main-add-btn:hover {
+    background: linear-gradient(145deg, #555, #222);
+}
 .main-view-btn:hover {
 
     color: #fff;
@@ -1245,19 +1259,27 @@ $(function () {
                             </div>
 
 
+                        <div class="main-card-actions">
+
                             <a
-
                                 href="/accounting/accounts/${root.id}/view/"
-
                                 class="main-view-btn"
-
                                 title="{% trans 'View' %}"
-
                             >
-
                                 <i class="fa fa-eye"></i>
-
                             </a>
+
+                            <a
+                                href="/accounting/accounts/${root.id}/add-child/"
+                                class="main-view-btn main-add-btn"
+                                title="{% trans 'Add Child' %}"
+                                aria-label="{% trans 'Add Child' %}"
+                            >
+                                <i class="fa fa-plus"></i>
+                            </a>
+
+                        </div>
+
 
                         </div>
 
