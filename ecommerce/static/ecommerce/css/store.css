@@ -5273,3 +5273,8 @@ html.mobile-store-device .navbar-links li a {
     }
 
 }
+@media (hover: none) and (pointer: coarse) {
+    html.mobile-store-device .store-header .store-name {
+        transform: translateY(42px) !important;
+    }
+}
