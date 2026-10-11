@@ -18,10 +18,11 @@
         متجر
     </span>
 
-    <span class="footer-store-main">
-        {{ store.name }}
-    </span>
 
+
+<span class="footer-store-main">
+    {% if store.name|slice:":5" == "متجر " %}{{ store.name|slice:"5:" }}{% else %}{{ store.name }}{% endif %}
+</span>
 </h3>
 {% if store.description %}
 
