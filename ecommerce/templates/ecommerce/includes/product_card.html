@@ -1374,6 +1374,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ==========================================================
+       إظهار أيقونات الكرت المحدد باللمس على الجوال فقط
+    ========================================================== */
+
+    const mobileStoreTouch = window.matchMedia(
+        "(hover: none) and (pointer: coarse)"
+    ).matches;
+
+    if (
+        mobileStoreTouch &&
+        document.documentElement.classList.contains("mobile-store-device")
+    ) {
+        document.addEventListener("click", function (event) {
+            const selectedCard = event.target.closest(".product-card");
+
+            document
+                .querySelectorAll(".product-card.mobile-actions-active")
+                .forEach(function (card) {
+                    if (card !== selectedCard) {
+                        card.classList.remove("mobile-actions-active");
+                    }
+                });
+
+            if (selectedCard) {
+                selectedCard.classList.add("mobile-actions-active");
+            }
+        }, true);
+    }
+    /* ==========================================================
        اسم المنتج
     ========================================================== */
 

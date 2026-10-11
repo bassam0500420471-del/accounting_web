@@ -5237,3 +5237,28 @@ html.mobile-store-device .navbar-links li a {
     }
 
 }
+
+/* ==========================================================
+   الجوال: إظهار أيقونات الكرت الذي تم لمسه فقط
+   لا يغيّر مقاسات الكرت أو الصورة أو الأيقونات
+========================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    html.mobile-store-device .product-card .product-actions {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transform: translateX(20px) !important;
+        pointer-events: none !important;
+    }
+
+    html.mobile-store-device
+    .product-card.mobile-actions-active
+    .product-actions {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateX(0) !important;
+        pointer-events: auto !important;
+    }
+
+}
