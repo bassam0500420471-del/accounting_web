@@ -6,7 +6,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
+from decimal import Decimal, ROUND_HALF_UP
 from ecommerce.views.storefront import send_pusher_notification
 
 from ecommerce.models import (
@@ -75,7 +76,6 @@ def checkout(request, store_slug):
             for item in items
         )
 
-        from decimal import Decimal
 
         total = Decimal(
             str(total)
@@ -271,6 +271,7 @@ def checkout(request, store_slug):
             "USER:",
             request.user
         )
+
         print(
             "STORE:",
             store
@@ -290,30 +291,120 @@ def checkout(request, store_slug):
                 }
             )
 
-        total = sum(
-            item.subtotal()
-            for item in cart.items.all()
+        # =================================================
+        # المنتجات وحساب الإجمالي
+        # =================================================
+
+        cart_items = list(
+            cart.items.select_related(
+                "product",
+                "variant"
+            ).all()
         )
+
+        total = Decimal("0.00")
+
+        for item in cart_items:
+
+            quantity = Decimal(str(item.quantity))
+            price = Decimal(str(item.price))
+
+            if quantity <= 0 or price < 0:
+
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "توجد كمية أو قيمة سعر غير صالحة في السلة."
+                    }
+                )
+
+            line_total = (
+                quantity * price
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP
+            )
+
+            total += line_total
+
+        total = total.quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # =================================================
+        # الضريبة: تعتمد فقط على Company.vat_no
+        # =================================================
+
+        has_tax_number = bool(
+            store.company
+            and store.company.vat_no
+            and str(store.company.vat_no).strip()
+        )
+
+        if has_tax_number:
+
+            tax = (
+                total * Decimal("0.15")
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP
+            )
+
+        else:
+
+            tax = Decimal("0.00")
+
+        # =================================================
+        # تكلفة الشحن
+        # =================================================
+
+        shipping_cost = Decimal(
+            str(store.shipping_cost or "0.00")
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # =================================================
+        # الإجمالي النهائي المطلوب دفعه
+        # =================================================
+
+        final_total = (
+            total + tax + shipping_cost
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # =================================================
+        # حفظ نسخة المنتجات وقت بدء الدفع
+        # =================================================
 
         snapshot = []
 
-        for item in cart.items.all():
+        for item in cart_items:
 
             snapshot.append(
                 {
                     "product_id": item.product.id,
                     "name": item.product.name,
-                    "quantity": float(item.quantity),
-                    "price": float(item.price),
+                    "quantity": str(item.quantity),
+                    "price": str(item.price),
+                    "variant_id": item.variant_id,
                 }
             )
+
+        # =================================================
+        # إنشاء طلب نية الدفع
+        # =================================================
 
         intent = PaymentIntent.objects.create(
             company=store.company,
             store=store,
             customer=request.user,
             payment_method=payment_method,
-            grand_total=total,
+            grand_total=final_total,
             cart_snapshot=snapshot,
             status="pending"
         )
@@ -333,16 +424,13 @@ def checkout(request, store_slug):
                     + f"?reference={intent.uuid}"
                 ),
 
-                "amount": int(
-                    round(total * 100)
-                ),
+                "amount": int(final_total * 100),
 
                 "description": (
                     f"Order from Store - {store.slug}"
                 ),
             }
         )
-
     # =================================================
     # التحويل البنكي
     # =================================================
@@ -610,12 +698,20 @@ def moyasar_callback(request, store_slug):
         data.get("amount", 0)
     )
 
+
     if (
         data.get("status") != "paid"
         or data.get("currency") != "SAR"
         or data.get("source", {}).get("type")
         not in ALLOWED_SOURCES
     ):
+
+        messages.error(
+            request,
+            "لم تكتمل عملية الدفع أو تم رفضها. "
+            "لم يتم تأكيد الطلب كمدفوع. "
+            "يمكنك المحاولة مرة أخرى."
+        )
 
         return redirect(
             f"/store/{store.slug}/checkout/"
@@ -642,11 +738,14 @@ def moyasar_callback(request, store_slug):
             )
 
         expected = int(
-            round(
-                intent.grand_total * 100
+            (
+                Decimal(str(intent.grand_total))
+                * 100
+            ).quantize(
+                Decimal("1"),
+                rounding=ROUND_HALF_UP,
             )
         )
-
         if amount_paid != expected:
 
             logger.error(
@@ -671,11 +770,25 @@ def moyasar_callback(request, store_slug):
             service = CheckoutService(
                 customer=intent.customer,
                 store=store,
-                payment_method=payment_method,
+                payment_method=intent.payment_method,
+                cart_snapshot=intent.cart_snapshot,
             )
 
             order = service.process()
 
+            # التأكد من تطابق إجمالي الطلب مع المبلغ المحفوظ
+            if order.total != intent.grand_total:
+                logger.error(
+                    "Moyasar order total mismatch: "
+                    "order_id=%s, order_total=%s, intent_total=%s",
+                    order.id,
+                    order.total,
+                    intent.grand_total,
+                )
+
+                raise ValueError(
+                    "إجمالي الطلب لا يطابق المبلغ المحفوظ لعملية الدفع."
+                )
             Payment.objects.create(
                 company=store.company,
                 order=order,

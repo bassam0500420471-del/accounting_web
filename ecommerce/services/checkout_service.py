@@ -1,6 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
-
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 from ecommerce.models import (
     Cart,
@@ -25,13 +24,16 @@ class CheckoutService:
         shipping_address=None,
         payment_method=None,
         note="",
+        cart_snapshot=None,
+        shipping_address_override=False,
     ):
         self.customer = customer
         self.store = store
         self.shipping_address = shipping_address
         self.payment_method = payment_method
         self.note = note
-
+        self.cart_snapshot = cart_snapshot
+        self.shipping_address_override = shipping_address_override
     # =====================================================
     # التحقق من وجود الرقم الضريبي
     # المصدر الوحيد:
@@ -63,50 +65,107 @@ class CheckoutService:
     @transaction.atomic
     def process(self):
 
+
         cart = Cart.objects.filter(
             customer=self.customer,
             store=self.store,
         ).prefetch_related(
-            "items"
+            "items__product",
+            "items__variant",
         ).first()
 
-        if not cart:
+        items = []
 
-            raise ValueError(
-                "السلة غير موجودة."
-            )
+        if self.cart_snapshot is not None:
+            if not isinstance(self.cart_snapshot, list) or not self.cart_snapshot:
+                raise ValueError("نسخة السلة المحفوظة فارغة أو غير صالحة.")
 
-        items = list(
-            cart.items.all()
-        )
+            from products.models import Product, ProductVariant
+
+            for saved_item in self.cart_snapshot:
+                product_id = saved_item.get("product_id")
+                variant_id = saved_item.get("variant_id")
+                quantity = Decimal(str(saved_item.get("quantity", "0")))
+                price = Decimal(str(saved_item.get("price", "0")))
+
+                if quantity <= 0 or price < 0:
+                    raise ValueError("توجد كمية أو قيمة سعر غير صالحة في نسخة السلة.")
+
+                product = Product.objects.get(id=product_id)
+
+                variant = None
+                if variant_id:
+                    variant = ProductVariant.objects.get(
+                        id=variant_id,
+                        product=product,
+                    )
+
+                items.append({
+                    "product": product,
+                    "variant": variant,
+                    "quantity": quantity,
+                    "price": price,
+                })
+
+        else:
+            if not cart:
+                raise ValueError("السلة غير موجودة.")
+
+            items = list(cart.items.all())
 
         if not items:
-
-            raise ValueError(
-                "السلة فارغة."
-            )
-
-        # =================================================
-        # حساب إجمالي المنتجات
-        # =================================================
+            raise ValueError("السلة فارغة.")
 
         subtotal = Decimal("0.00")
+        calculated_items = []
 
         for item in items:
+            if isinstance(item, dict):
+                product = item["product"]
+                variant = item["variant"]
+                quantity = Decimal(str(item["quantity"]))
+                price = Decimal(str(item["price"]))
+            else:
+                product = item.product
+                variant = item.variant
+                quantity = Decimal(str(item.quantity))
+                price = Decimal(str(item.price))
 
-            subtotal += Decimal(
-                str(item.subtotal())
+            if quantity <= 0:
+                raise ValueError(
+                    f"كمية المنتج {product} يجب أن تكون أكبر من صفر."
+                )
+
+            if price < 0:
+                raise ValueError(
+                    f"سعر المنتج {product} لا يمكن أن يكون سالبًا."
+                )
+
+            line_total = (
+                quantity * price
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP,
             )
+
+            subtotal += line_total
+
+            calculated_items.append({
+                "product": product,
+                "variant": variant,
+                "quantity": quantity,
+                "price": price,
+                "total": line_total,
+            })
 
         subtotal = subtotal.quantize(
             Decimal("0.01"),
-            rounding=ROUND_HALF_UP
+            rounding=ROUND_HALF_UP,
         )
 
         # =================================================
         # تكلفة الشحن
         # =================================================
-
         shipping_cost = getattr(
             self.store,
             "shipping_cost",
@@ -282,22 +341,15 @@ class CheckoutService:
         # نسخ المنتجات إلى الطلب
         # =================================================
 
-        for item in items:
 
+        for item in calculated_items:
             OrderItem.objects.create(
-
                 order=order,
-
-                product=item.product,
-
-                variant=item.variant,
-
-                quantity=item.quantity,
-
-                price=item.price,
-
-                total=item.subtotal(),
-
+                product=item["product"],
+                variant=item["variant"],
+                quantity=item["quantity"],
+                price=item["price"],
+                total=item["total"],
             )
 
         return order

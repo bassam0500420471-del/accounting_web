@@ -11,9 +11,25 @@
 
 {% endblock %}
 
+
 {% block content %}
 
 <div class="container py-5">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show"
+                 role="alert"
+                 style="margin-bottom:20px; padding:15px; border-radius:12px; text-align:right;">
+                <strong>تعذر إتمام الدفع:</strong>
+                {{ message }}
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="إغلاق"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
 
 <div class="row g-4">
 
@@ -300,7 +316,7 @@
                 {% for method in payment_methods %}
 
 
-                    {% if method.payment_type == "bank" or method.payment_type == "cash" %}
+                    {% if method.payment_type == "bank" or method.payment_type == "cash" or method.gateway_name|lower == "moyasar" %}
 
 
                         <label
@@ -309,15 +325,16 @@
                         >
 
 
-                            <input
-                                type="radio"
-                                data-type="{{ method.payment_type }}"
-                                name="payment_method"
-                                value="{{ method.id }}"
-                                {% if forloop.first %}checked{% endif %}
-                                class="form-check-input me-2"
-                            >
-
+<input
+    type="radio"
+    data-type="{{ method.payment_type }}"
+    data-gateway="{{ method.gateway_name|default:'' }}"
+    data-key="{{ method.gateway_publishable_key|default:'' }}"
+    name="payment_method"
+    value="{{ method.id }}"
+    {% if forloop.first %}checked{% endif %}
+    class="form-check-input me-2"
+>
 
                             {{ method.name }}
 
@@ -556,108 +573,113 @@ document.addEventListener("DOMContentLoaded", function () {
        تأكيد الطلب
     ====================================================== */
 
-    submitBtn.addEventListener(
-        "click",
-        async function () {
 
+submitBtn.addEventListener("click", async function () {
+    if (submitBtn.disabled) {
+        return;
+    }
 
-            if (submitBtn.disabled) {
+    submitBtn.disabled = true;
 
+    console.log("CONFIRM BUTTON CLICKED");
+
+    const form = document.getElementById("checkoutForm");
+
+    try {
+        const response = await fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        let data;
+
+        try {
+            data = await response.json();
+        } catch (error) {
+            throw new Error(
+                "الخادم لم يُرجع استجابة JSON. HTTP: " +
+                response.status
+            );
+        }
+
+        console.log("CHECKOUT RESPONSE:", data);
+
+        if (data.redirect) {
+            window.location.href = data.redirect;
+            return;
+        }
+
+        if (!response.ok || !data.success) {
+            alert(
+                data.message ||
+                "تعذر تجهيز الطلب. رمز الاستجابة: " +
+                response.status
+            );
+            return;
+        }
+
+        if (
+            data.reference &&
+            data.callback_url &&
+            data.amount != null
+        ) {
+            if (!selectedKey) {
+                alert("مفتاح الدفع العام غير مسجل.");
                 return;
-
             }
 
+            try {
+                document.querySelector(".mysr-form").innerHTML = "";
 
-            submitBtn.disabled = true;
+                Moyasar.init({
+                    element: ".mysr-form",
+                    amount: Number(data.amount),
+                    currency: "SAR",
+                    description:
+                        data.description ||
+                        "Order from Store - {{ store.slug }}",
+                    publishable_api_key: selectedKey,
+                    callback_url: data.callback_url,
+                    methods: ["creditcard"]
+                });
 
-
-            console.log(
-                "CONFIRM BUTTON CLICKED"
-            );
-
-
-            const form =
-                document.getElementById(
-                    "checkoutForm"
-                );
-
-
-            const response =
-                await fetch(
-                    form.action,
-                    {
-
-                        method: "POST",
-
-                        body:
-                            new FormData(form),
-
-                        headers: {
-
-                            "X-Requested-With":
-                                "XMLHttpRequest"
-
-                        }
-
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            console.log(
-                "CHECKOUT RESPONSE:",
-                data
-            );
-
-
-            if (data.redirect) {
-
-                window.location.href =
-                    data.redirect;
-
+                submitBtn.style.display = "none";
                 return;
 
-            }
-
-
-            if (!data.success) {
-
+            } catch (error) {
+                console.error(
+                    "MOYASAR INITIALIZATION ERROR:",
+                    error
+                );
 
                 alert(
-                    data.message
+                    "تعذر تهيئة الدفع. راجع Console لمعرفة التفاصيل."
                 );
-
-
-                submitBtn.disabled = false;
-
-
                 return;
-
             }
-
-
-            console.log(
-                "AMOUNT FROM SERVER:",
-                data.amount
-            );
-
-
-            console.log(
-                "CALLBACK:",
-                data.callback_url
-            );
-
-
-            console.log(
-                "OPEN MOYASAR"
-            );
-
-
         }
-    );
+
+        alert(
+            data.message ||
+            "بيانات عملية الدفع غير مكتملة."
+        );
+
+    } catch (error) {
+        console.error("CHECKOUT ERROR:", error);
+
+        alert(
+            "تعذر إكمال الطلب. راجع Console لمعرفة التفاصيل."
+        );
+
+    } finally {
+        if (submitBtn.style.display !== "none") {
+            submitBtn.disabled = false;
+        }
+    }
+});
 
 
 
@@ -665,186 +687,68 @@ document.addEventListener("DOMContentLoaded", function () {
        تهيئة طريقة الدفع
     ====================================================== */
 
-    function initPayment() {
-
-
-        let selected =
-            document.querySelector(
-                'input[name="payment_method"]:checked'
-            );
-
-
-        if (!selected) {
-
-            console.log(
-                "NO PAYMENT SELECTED"
-            );
-
-            return;
-
-        }
-
-
-        let gateway =
-            (
-                selected.dataset.gateway || ""
-            )
-            .trim()
-            .toLowerCase();
-
-
-        let paymentType =
-            selected.dataset.type;
-
-
-        let key =
-            selected.dataset.key;
-
-
-        selectedKey = key;
-
-
-        console.log(
-            "GATEWAY:",
-            gateway
-        );
-
-
-        console.log(
-            "PAYMENT TYPE:",
-            paymentType
-        );
-
-
-        console.log(
-            "KEY:",
-            key
-        );
-
-
-
-        /* =================================================
-           Moyasar
-        ================================================== */
-
-        if (
-            gateway.includes("moyasar")
-        ) {
-
-
-            cardSection.style.display =
-                "block";
-
-
-            bankSection.style.display =
-                "none";
-
-
-            submitBtn.style.display =
-                "none";
-
-
-            document.querySelector(
-                ".mysr-form"
-            ).innerHTML = "";
-
-
-            Moyasar.init({
-
-                element:
-                    ".mysr-form",
-
-
-                /*
-                 * المبلغ النهائي:
-                 *
-                 * المنتجات
-                 * + الشحن
-                 * + الضريبة
-                 */
-
-                amount:
-                    Math.round(
-                        FINAL_TOTAL * 100
-                    ),
-
-
-                currency:
-                    "SAR",
-
-
-                description:
-                    "Order from Store - {{ store.slug }}",
-
-
-                publishable_api_key:
-                    key,
-
-
-                callback_url:
-                    window.location.origin +
-                    "/store/{{ store.slug }}/payment/moyasar/callback/",
-
-
-                methods:
-                    [
-                        "creditcard"
-                    ]
-
-            });
-
-
-        }
-
-
-
-        /* =================================================
-           Bank
-        ================================================== */
-
-        else if (
-            paymentType === "bank"
-        ) {
-
-
-            cardSection.style.display =
-                "none";
-
-
-            bankSection.style.display =
-                "block";
-
-
-            submitBtn.style.display =
-                "block";
-
-
-        }
-
-
-
-        /* =================================================
-           Cash
-        ================================================== */
-
-        else {
-
-
-            cardSection.style.display =
-                "none";
-
-
-            bankSection.style.display =
-                "none";
-
-
-            submitBtn.style.display =
-                "block";
-
-        }
-
-
+function initPayment() {
+    const selected = document.querySelector(
+        'input[name="payment_method"]:checked'
+    );
+
+    if (!selected) {
+        cardSection.style.display = "none";
+        bankSection.style.display = "none";
+        submitBtn.style.display = "none";
+        return;
     }
+
+    const gateway = (
+        selected.dataset.gateway || ""
+    ).trim().toLowerCase();
+
+    const paymentType = selected.dataset.type;
+    selectedKey = (selected.dataset.key || "").trim();
+
+    // إعادة تهيئة الزر عند تغيير طريقة الدفع
+    submitBtn.disabled = false;
+
+    if (gateway.includes("moyasar")) {
+        // الدفع بالبطاقة
+        cardSection.style.display = "block";
+        bankSection.style.display = "none";
+
+        submitBtn.style.display = "block";
+        submitBtn.textContent = "بدء الدفع بالبطاقة";
+
+        // لا ننشئ PaymentIntent هنا.
+        // إنشاء عملية الدفع يتم فقط عند ضغط الزر.
+        document.querySelector(".mysr-form").innerHTML = "";
+
+    } else if (paymentType === "bank") {
+        // التحويل البنكي
+        cardSection.style.display = "none";
+        bankSection.style.display = "block";
+
+        submitBtn.style.display = "block";
+        submitBtn.textContent = "تأكيد الطلب";
+
+        document.querySelector(".mysr-form").innerHTML = "";
+
+    } else if (paymentType === "cash") {
+        // الدفع عند الاستلام
+        cardSection.style.display = "none";
+        bankSection.style.display = "none";
+
+        submitBtn.style.display = "block";
+        submitBtn.textContent = "تأكيد الطلب";
+
+        document.querySelector(".mysr-form").innerHTML = "";
+
+    } else {
+        cardSection.style.display = "none";
+        bankSection.style.display = "none";
+        submitBtn.style.display = "none";
+    }
+}
+
+
 
 
 
