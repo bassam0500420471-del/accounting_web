@@ -12,12 +12,13 @@
 
     /* النصوص العامة داخل محتوى الصفحة */
     .container.py-5 {
-        font-size: 22px;
+        font-size: 28px !important;
+        line-height: 1.8;
     }
 
     /* عناوين البطاقات */
     .container.py-5 .card-header {
-        font-size: 27px !important;
+        font-size: 34px !important;
         line-height: 1.7;
         font-weight: 700;
     }
@@ -30,54 +31,60 @@
     .container.py-5 .card-body label,
     .container.py-5 .card-body .mb-3,
     .container.py-5 .payment-box {
-        font-size: 22px !important;
+        font-size: 28px !important;
         line-height: 1.8;
     }
 
     /* الإجمالي النهائي */
     .container.py-5 h5 {
-        font-size: 27px !important;
+        font-size: 34px !important;
         line-height: 1.7;
+        font-weight: 700;
     }
 
-    /* حقول البيانات وأزرار الاختيار */
+    /* حقول البيانات والقوائم */
     #checkoutForm input:not([type="radio"]):not([type="checkbox"]),
     #checkoutForm select,
     #checkoutForm textarea {
-        font-size: 22px !important;
-        min-height: 56px;
+        font-size: 28px !important;
+        min-height: 68px;
+        line-height: 1.6;
     }
 
-    #checkoutForm input[type="radio"] {
-        transform: scale(1.35);
-        margin-left: 8px;
+    /* أزرار الاختيار */
+    #checkoutForm input[type="radio"],
+    #checkoutForm input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-left: 12px;
     }
 
     /* أزرار الدفع وتعديل عنوان الشحن */
     .container.py-5 .btn {
-        font-size: 23px !important;
-        min-height: 60px;
-        padding: 12px 18px;
+        font-size: 29px !important;
+        min-height: 72px;
+        padding: 16px 22px;
+        line-height: 1.6;
     }
 
     /* تفاصيل التحويل والتنبيهات */
     .container.py-5 .alert,
     .container.py-5 .alert p,
     .container.py-5 .alert strong {
-        font-size: 21px !important;
-        line-height: 1.8;
+        font-size: 27px !important;
+        line-height: 1.9;
     }
 
     /* حقول بطاقة ميسر */
     .mysr-form {
-        font-size: 21px !important;
+        font-size: 27px !important;
     }
 
     .mysr-form input,
     .mysr-form select,
     .mysr-form button {
-        font-size: 21px !important;
-        min-height: 54px;
+        font-size: 27px !important;
+        min-height: 66px;
+        line-height: 1.6;
     }
 }
 </style>
