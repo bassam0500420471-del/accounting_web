@@ -4,6 +4,21 @@
 {% endblock %}
 
 {% block content %}
+<style>
+/* cart-mobile-font-fix */
+@media (hover: none) and (pointer: coarse) {
+    .account-page .cart-item h5 {
+        font-size: 1.15rem;
+    }
+    .account-page .cart-item small,
+    .account-page .cart-item .fw-bold,
+    .account-page .cart-item button,
+    .account-page .card-body .d-flex,
+    .account-page .card-body a {
+        font-size: 1.08rem;
+    }
+}
+</style>
 
 <div class="account-page py-5">
 
