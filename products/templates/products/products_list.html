@@ -37,24 +37,57 @@
             </div>
 
 
-            <a
-                href="{% url 'products:product_add' %}"
-                class="add-btn"
-            >
 
-                <i class="fa-solid fa-plus"></i>
 
-                {% trans "Add Product" %}
+<div class="header-actions">
 
+    <a href="{% url 'products:product_add' %}"
+       class="add-btn">
+        <i class="fa-solid fa-plus"></i>
+        {% trans "Add Product" %}
+    </a>
+
+    <div class="export-dropdown">
+
+        <button type="button"
+                class="add-btn export-toggle"
+                aria-expanded="false">
+            <i class="fa-solid fa-file-export"></i>
+            تصدير
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <div class="export-menu">
+
+            <a href="{% url 'products:products_export_excel' %}?q={{ request.GET.q|urlencode }}"
+               class="export-option">
+                <i class="fa-solid fa-file-excel"></i>
+                تصدير Excel
+            </a>
+
+            <a href="{% url 'products:products_export_word' %}?q={{ request.GET.q|urlencode }}"
+               class="export-option">
+                <i class="fa-solid fa-file-word"></i>
+                تصدير Word
+            </a>
+
+            <a href="{% url 'products:products_export_pdf' %}?q={{ request.GET.q|urlencode }}"
+               class="export-option">
+                <i class="fa-solid fa-file-pdf"></i>
+                تصدير PDF
             </a>
 
         </div>
 
+    </div>
 
-        <!-- ===================================================== -->
-        <!-- الجدول -->
-        <!-- ===================================================== -->
+    </div>
 
+</div>
+
+<!-- ===================================================== -->
+<!-- الجدول -->
+<!-- ===================================================== -->
         <div class="table-box">
 
             <table class="product-table">
@@ -1354,6 +1387,92 @@ body {
 
 
 /* =========================================================
+   زر التصدير والقائمة المنسدلة
+========================================================= */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.header-actions .add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.export-dropdown {
+    position: relative;
+    display: inline-flex;
+}
+
+.export-toggle {
+    font-family: inherit;
+    font-size: 14px;
+}
+
+
+.export-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    padding: 8px;
+    margin: 0;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+    border: 1px solid #dddddd;
+    z-index: 99999;
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+.export-dropdown.open .export-menu {
+    display: block;
+}
+
+.export-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    margin: 0;
+    border-radius: 9px;
+    color: #444444;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.export-menu a:hover {
+    background: linear-gradient(145deg, #666666, #444444);
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .header-actions .add-btn {
+        display: inline-flex;
+        width: auto;
+    }
+}
+
+/* =========================================================
    الشاشات الصغيرة
 ========================================================= */
 
@@ -1471,124 +1590,99 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    /* =====================================================
-       صورة المنتج عند المرور
-    ===================================================== */
+/* =====================================================
+   صورة المنتج العائمة بجوار الصورة الأصلية
+===================================================== */
 
-    document
-        .querySelectorAll(".product-image-wrapper")
-        .forEach(wrapper => {
+document
+    .querySelectorAll(".product-image-wrapper")
+    .forEach(wrapper => {
 
+        const image = wrapper.querySelector(".product-thumb");
+        const popup = wrapper.querySelector(".product-hover-popup");
 
-            const image =
-                wrapper.querySelector(".product-thumb");
+        if (!image || !popup) {
+            return;
+        }
 
+        /* نقل الصورة المنبثقة خارج الجدول وحاويات الصفحة */
+        document.body.appendChild(popup);
 
-            const popup =
-                wrapper.querySelector(".product-hover-popup");
-
-
-            if (!image || !popup) {
-
-                return;
-
-            }
-
-
-            image.addEventListener(
-                "mouseenter",
-                function () {
-
-
-                    const rect =
-                        image.getBoundingClientRect();
-
-
-                    popup.style.display =
-                        "block";
-
-
-                    const popupWidth =
-                        popup.offsetWidth;
-
-
-                    const popupHeight =
-                        popup.offsetHeight;
-
-
-                    let left =
-                        rect.left +
-                        (rect.width / 2) -
-                        (popupWidth / 2);
-
-
-                    let top =
-                        rect.bottom + 10;
-
-
-                    if (
-                        left + popupWidth >
-                        window.innerWidth - 10
-                    ) {
-
-                        left =
-                            window.innerWidth -
-                            popupWidth -
-                            10;
-
-                    }
-
-
-                    if (left < 10) {
-
-                        left = 10;
-
-                    }
-
-
-                    if (
-                        top + popupHeight >
-                        window.innerHeight - 10
-                    ) {
-
-                        top =
-                            rect.top -
-                            popupHeight -
-                            10;
-
-                    }
-
-
-                    if (top < 10) {
-
-                        top = 10;
-
-                    }
-
-
-                    popup.style.left =
-                        left + "px";
-
-
-                    popup.style.top =
-                        top + "px";
-
-                }
-            );
-
-
-            image.addEventListener(
-                "mouseleave",
-                function () {
-
-                    popup.style.display =
-                        "none";
-
-                }
-            );
-
+        /* تجهيز نافذة الصورة العائمة */
+        Object.assign(popup.style, {
+            display: "none",
+            position: "fixed",
+            zIndex: "2147483647",
+            pointerEvents: "none",
+            width: "420px",
+            maxWidth: "45vw",
+            maxHeight: "85vh",
+            overflow: "auto",
+            margin: "0",
+            transform: "none",
+            background: "#ffffff",
+            padding: "6px",
+            border: "1px solid #ddd",
+            borderRadius: "12px",
+            boxShadow: "0 12px 35px rgba(0,0,0,0.35)",
+            boxSizing: "border-box"
         });
 
+        const popupImage = popup.querySelector("img");
+
+        if (popupImage) {
+            Object.assign(popupImage.style, {
+                display: "block",
+                width: "100%",
+                height: "auto",
+                maxWidth: "100%",
+                maxHeight: "80vh",
+                objectFit: "contain",
+                margin: "0",
+                background: "#fff"
+            });
+        }
+
+        image.addEventListener("mouseenter", function () {
+
+            const rect = image.getBoundingClientRect();
+
+            popup.style.display = "block";
+
+            const popupWidth = popup.offsetWidth;
+            const popupHeight = popup.offsetHeight;
+
+            /* إظهار الصورة إلى اليسار وبالقرب من الأصلية */
+            let left = rect.left - popupWidth - 8;
+
+            /* إذا لم تتوفر مساحة كافية، تظهر إلى اليمين */
+            if (left < 5) {
+                left = rect.right + 8;
+            }
+
+            /* محاذاة أعلى الصورة العائمة مع الصورة الأصلية */
+            let top = rect.top;
+
+            /* إبقاء النافذة داخل الشاشة */
+            left = Math.max(
+                5,
+                Math.min(left, window.innerWidth - popupWidth - 5)
+            );
+
+            top = Math.max(
+                5,
+                Math.min(top, window.innerHeight - popupHeight - 5)
+            );
+
+            popup.style.left = left + "px";
+            popup.style.top = top + "px";
+        });
+
+        image.addEventListener("mouseleave", function () {
+            popup.style.display = "none";
+        });
+
+    });
 
 
     /* =====================================================
@@ -2105,6 +2199,46 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     );
 
+
+    /* قائمة تصدير المنتجات */
+
+    const exportDropdown =
+        document.querySelector(".export-dropdown");
+
+    const exportToggle =
+        document.querySelector(".export-toggle");
+
+    if (exportDropdown && exportToggle) {
+
+        exportToggle.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isOpen =
+                exportDropdown.classList.toggle("open");
+
+            exportToggle.setAttribute(
+                "aria-expanded",
+                isOpen ? "true" : "false"
+            );
+        });
+
+        exportDropdown.addEventListener("click", function (event) {
+            event.stopPropagation();
+        });
+
+        document.addEventListener("click", function () {
+            exportDropdown.classList.remove("open");
+            exportToggle.setAttribute("aria-expanded", "false");
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                exportDropdown.classList.remove("open");
+                exportToggle.setAttribute("aria-expanded", "false");
+            }
+        });
+    }
 
 });
 
