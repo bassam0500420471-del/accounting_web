@@ -800,3 +800,276 @@ def search_products(request):
         results,
         safe=False
     )
+# ==========================================
+# تصدير قائمة المنتجات: Excel وWord وPDF
+# ==========================================
+
+def _products_export_queryset(request):
+    """إرجاع منتجات الشركة المحددة فقط، مع احترام البحث بالاسم."""
+    company = getattr(request, "company", None)
+
+    if company is None:
+        return None
+
+    products = Product.objects.filter(company=company)
+
+    q = request.GET.get("q", "").strip()
+    if q:
+        products = products.filter(name__icontains=q)
+
+    return products.select_related("category").order_by("name", "id")
+
+
+def _products_export_rows(products):
+    """تجهيز أعمدة موحدة للملفات الثلاثة."""
+    headers = [
+        "اسم المنتج",
+        "كود المنتج",
+        "الباركود",
+        "التصنيف",
+        "سعر الشراء",
+        "سعر البيع",
+        "الكمية المتاحة",
+    ]
+
+    rows = []
+    for product in products:
+        rows.append([
+            product.name or "",
+            product.sku or "",
+            product.barcode or "",
+            product.category.name if product.category else "",
+            float(product.purchase_price or 0),
+            float(product.sale_price or 0),
+            float(product.current_stock or 0),
+        ])
+
+    return headers, rows
+
+
+def products_export_excel(request):
+    from io import BytesIO
+    from django.http import HttpResponse
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment
+    from openpyxl.utils import get_column_letter
+
+    products = _products_export_queryset(request)
+    if products is None:
+        return HttpResponse("لا توجد شركة محددة للمستخدم.", status=403)
+
+    headers, rows = _products_export_rows(products)
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "المنتجات"
+    sheet.sheet_view.rightToLeft = True
+
+    sheet.append(headers)
+    for row in rows:
+        sheet.append(row)
+
+    for cell in sheet[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill("solid", fgColor="217346")
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for row in sheet.iter_rows(min_row=2):
+        for cell in row:
+            cell.alignment = Alignment(horizontal="right", vertical="center")
+
+    for column_cells in sheet.columns:
+        column_index = column_cells[0].column
+        max_length = max(
+            len(str(cell.value or "")) for cell in column_cells
+        )
+        sheet.column_dimensions[get_column_letter(column_index)].width = min(
+            max(max_length + 3, 14), 35
+        )
+
+    output = BytesIO()
+    workbook.save(output)
+    output.seek(0)
+
+    response = HttpResponse(
+        output.getvalue(),
+        content_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+    )
+    response["Content-Disposition"] = 'attachment; filename="products.xlsx"'
+    return response
+
+
+def products_export_word(request):
+    from io import BytesIO
+    from django.http import HttpResponse
+    from docx import Document
+    from docx.shared import Inches, Pt
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
+
+    products = _products_export_queryset(request)
+    if products is None:
+        return HttpResponse("لا توجد شركة محددة للمستخدم.", status=403)
+
+    headers, rows = _products_export_rows(products)
+
+    document = Document()
+    document.add_heading("قائمة المنتجات", level=1)
+
+    title = document.paragraphs[0]
+    title.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+    table = document.add_table(rows=1, cols=len(headers))
+    table.style = "Table Grid"
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    for index, header in enumerate(headers):
+        cell = table.rows[0].cells[index]
+        cell.text = header
+        cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+        for paragraph in cell.paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            for run in paragraph.runs:
+                run.bold = True
+                run.font.size = Pt(9)
+
+    for row in rows:
+        cells = table.add_row().cells
+        for index, value in enumerate(row):
+            cells[index].text = str(value)
+            cells[index].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+            for paragraph in cells[index].paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                for run in paragraph.runs:
+                    run.font.size = Pt(8)
+
+    output = BytesIO()
+    document.save(output)
+    output.seek(0)
+
+    response = HttpResponse(
+        output.getvalue(),
+        content_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "wordprocessingml.document"
+        ),
+    )
+    response["Content-Disposition"] = 'attachment; filename="products.docx"'
+    return response
+
+
+def products_export_pdf(request):
+    from io import BytesIO
+    from pathlib import Path
+    from django.conf import settings
+    from django.http import HttpResponse
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.enums import TA_RIGHT, TA_CENTER
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+
+    products = _products_export_queryset(request)
+    if products is None:
+        return HttpResponse("لا توجد شركة محددة للمستخدم.", status=403)
+
+    headers, rows = _products_export_rows(products)
+
+    font_path = Path(settings.BASE_DIR) / "static" / "fonts" / "Amiri-Regular.ttf"
+    if not font_path.exists():
+        return HttpResponse(
+            "تعذر إنشاء PDF: ملف الخط العربي Amiri-Regular.ttf غير موجود.",
+            status=500,
+            content_type="text/plain; charset=utf-8",
+        )
+
+    if "AmiriExport" not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont("AmiriExport", str(font_path)))
+
+    def shape_arabic(value):
+        text = str(value if value is not None else "")
+        return get_display(arabic_reshaper.reshape(text))
+
+    output = BytesIO()
+    document = SimpleDocTemplate(
+        output,
+        pagesize=landscape(A4),
+        rightMargin=18,
+        leftMargin=18,
+        topMargin=24,
+        bottomMargin=24,
+    )
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        "ArabicExportTitle",
+        parent=styles["Title"],
+        fontName="AmiriExport",
+        fontSize=18,
+        leading=24,
+        alignment=TA_CENTER,
+    )
+    cell_style = ParagraphStyle(
+        "ArabicExportCell",
+        parent=styles["Normal"],
+        fontName="AmiriExport",
+        fontSize=8,
+        leading=11,
+        alignment=TA_RIGHT,
+    )
+    header_style = ParagraphStyle(
+        "ArabicExportHeader",
+        parent=cell_style,
+        textColor=colors.white,
+        alignment=TA_CENTER,
+    )
+
+    table_data = [
+        [Paragraph(shape_arabic(header), header_style) for header in
+         ["الكمية المتاحة", "سعر البيع", "سعر الشراء", "التصنيف",
+          "الباركود", "كود المنتج", "اسم المنتج"]]
+    ]
+
+    # ترتيب الأعمدة من اليسار إلى اليمين، بحيث يظهر اسم المنتج أقصى اليمين.
+    for row in rows:
+        reversed_row = list(reversed(row))
+        table_data.append([
+            Paragraph(shape_arabic(value), cell_style)
+            for value in reversed_row
+        ])
+
+    table = Table(
+        table_data,
+        repeatRows=1,
+        colWidths=[65, 65, 65, 90, 95, 80, 230],
+    )
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#B42318")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (0, 0), (-1, -1), "RIGHT"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+    ]))
+
+    story = [
+        Paragraph(shape_arabic("قائمة المنتجات"), title_style),
+        Spacer(1, 12),
+        table,
+    ]
+    document.build(story)
+    output.seek(0)
+
+    response = HttpResponse(output.getvalue(), content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="products.pdf"'
+    return response

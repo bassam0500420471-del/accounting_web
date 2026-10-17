@@ -21,7 +21,9 @@ from .views_category import (
 app_name = "products"
 
 urlpatterns = [
-
+    path("export/excel/", views.products_export_excel, name="products_export_excel"),
+    path("export/word/", views.products_export_word, name="products_export_word"),
+    path("export/pdf/", views.products_export_pdf, name="products_export_pdf"),
     # =========================
     # المنتجات
     # =========================
