@@ -5278,3 +5278,11 @@ html.mobile-store-device .navbar-links li a {
         transform: translateY(42px) !important;
     }
 }
+/* عرض 4 منتجات في الصف عند عرض الكل - الجوال الحقيقي فقط */
+@media (hover: none) and (pointer: coarse) {
+
+    html.mobile-store-device .products-wrapper.expanded-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+
+}
