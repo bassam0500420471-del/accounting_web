@@ -5,8 +5,10 @@ from django.db import transaction, IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from urllib.parse import urlencode
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from decimal import Decimal, ROUND_HALF_UP
 from ecommerce.views.storefront import send_pusher_notification
 
@@ -35,12 +37,29 @@ ALLOWED_SOURCES = {
 # CHECKOUT PAGE
 # =====================================================
 
-@login_required
 @require_http_methods(["GET", "POST"])
 def checkout(request, store_slug):
 
-    store = getattr(request, "store", None)
+    # ==========================================
+    # تحويل الزائر إلى تسجيل دخول العملاء
+    # مع العودة إلى إتمام الطلب بعد تسجيل الدخول
+    # ==========================================
 
+    if not request.user.is_authenticated:
+        login_url = reverse(
+            "ecommerce:customer_login",
+            kwargs={"store_slug": store_slug},
+        )
+
+        query_string = urlencode({
+            "next": request.get_full_path(),
+        })
+
+        return redirect(
+            f"{login_url}?{query_string}"
+        )
+
+    store = getattr(request, "store", None)
     if not store:
         store = get_object_or_404(
             Store,

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from decimal import Decimal
-
+from types import SimpleNamespace
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -101,7 +101,145 @@ def send_pusher_notification(
         print("\n")
 
         return False
+# =====================================================
+# سلة الزائر المحفوظة في Session
+# =====================================================
 
+def get_guest_cart_key(store):
+    return f"guest_cart_{store.id}"
+
+
+def get_guest_cart_data(request, store):
+    key = get_guest_cart_key(store)
+    data = request.session.get(key, {})
+
+    if not isinstance(data, dict):
+        data = {}
+
+    return data
+
+
+def save_guest_cart_data(request, store, data):
+    key = get_guest_cart_key(store)
+    request.session[key] = data
+    request.session.modified = True
+
+
+def build_guest_cart_items(request, store):
+    data = get_guest_cart_data(request, store)
+    items = []
+    valid_data = {}
+
+    for product_id, entry in data.items():
+        try:
+            product = Product.objects.get(
+                id=int(product_id),
+                company=store.company,
+                active=True,
+            )
+
+            quantity = Decimal(str(entry["quantity"]))
+            price = Decimal(str(entry["price"]))
+
+            if quantity <= 0 or price < 0:
+                continue
+
+        except (
+            Product.DoesNotExist,
+            TypeError,
+            ValueError,
+            KeyError,
+            ArithmeticError,
+        ):
+            continue
+
+        valid_data[str(product.id)] = {
+            "quantity": str(quantity),
+            "price": str(price),
+        }
+
+        item = SimpleNamespace(
+            id=product.id,
+            product=product,
+            quantity=quantity,
+            price=price,
+            variant=None,
+        )
+
+        item.subtotal = lambda item=item: (
+            item.quantity * item.price
+        )
+
+        items.append(item)
+
+    if valid_data != data:
+        save_guest_cart_data(request, store, valid_data)
+
+    return items
+# =====================================================
+# نقل سلة الزائر إلى سلة العميل بعد تسجيل الدخول
+# =====================================================
+
+def merge_guest_cart(request, store, customer):
+
+    data = get_guest_cart_data(request, store)
+
+    if not data:
+        return
+
+    cart, created = Cart.objects.get_or_create(
+        customer=customer,
+        store=store,
+    )
+
+    for product_id, entry in data.items():
+
+        try:
+            product = Product.objects.get(
+                id=int(product_id),
+                company=store.company,
+                active=True,
+            )
+
+            quantity = Decimal(str(entry["quantity"]))
+            price = Decimal(str(entry["price"]))
+
+            if quantity <= 0 or price < 0:
+                continue
+
+        except (
+            Product.DoesNotExist,
+            TypeError,
+            ValueError,
+            KeyError,
+            ArithmeticError,
+        ):
+            continue
+
+        item = CartItem.objects.filter(
+            cart=cart,
+            product=product,
+            variant=None,
+        ).first()
+
+        if item:
+            item.quantity += quantity
+            item.save(update_fields=["quantity"])
+
+        else:
+            CartItem.objects.create(
+                cart=cart,
+                product=product,
+                variant=None,
+                quantity=quantity,
+                price=price,
+            )
+
+    request.session.pop(
+        get_guest_cart_key(store),
+        None,
+    )
+    request.session.modified = True
 # =====================================================
 # جلب المتجر
 # =====================================================
@@ -655,7 +793,6 @@ def cart(request, store_slug):
     store = get_store(store_slug)
 
     cart = None
-
     items = []
 
     # =================================================
@@ -663,112 +800,75 @@ def cart(request, store_slug):
     # =================================================
 
     has_tax_number = bool(
-
         store.company
-
         and store.company.vat_no
-
-        and str(
-            store.company.vat_no
-        ).strip()
-
+        and str(store.company.vat_no).strip()
     )
 
     tax_rate = (
-
         Decimal("0.15")
         if has_tax_number
         else Decimal("0.00")
-
     )
 
     # =================================================
-    # السلة
+    # جلب السلة
     # =================================================
 
     if request.user.is_authenticated:
 
         cart = Cart.objects.filter(
-
             customer=request.user,
-
-            store=store
-
+            store=store,
         ).first()
 
         if cart:
-
             items = list(
-
-                cart.items.select_related(
-                    "product"
-                ).all()
-
+                cart.items.select_related("product").all()
             )
 
+    else:
+        items = build_guest_cart_items(request, store)
+
     # =================================================
-    # الإجمالي
+    # الإجمالي والضريبة
     # =================================================
 
     total = Decimal("0.00")
-
     cart_tax = Decimal("0.00")
 
     for item in items:
 
         item.subtotal_value = Decimal(
-
-            str(
-                item.subtotal()
-            )
-
+            str(item.subtotal())
         )
 
         if has_tax_number:
-
             item.cart_tax = (
-
-                item.subtotal_value
-                * tax_rate
-
-            ).quantize(
-                Decimal("0.01")
-            )
-
+                item.subtotal_value * tax_rate
+            ).quantize(Decimal("0.01"))
         else:
-
-            item.cart_tax = Decimal(
-                "0.00"
-            )
+            item.cart_tax = Decimal("0.00")
 
         total += item.subtotal_value
-
         cart_tax += item.cart_tax
 
     # =================================================
-    # شامل الضريبة
+    # الإجمالي شامل الضريبة
     # =================================================
 
     cart_total_with_tax = (
-
         total + cart_tax
-
-    ).quantize(
-        Decimal("0.01")
-    )
+    ).quantize(Decimal("0.01"))
 
     # =================================================
     # التوصيل
     # =================================================
 
     shipping_cost = (
-
         store.shipping_cost
-
         if store.shipping_cost is not None
-
         else Decimal("0.00")
-
     )
 
     # =================================================
@@ -776,54 +876,33 @@ def cart(request, store_slug):
     # =================================================
 
     final_total = (
-
-        cart_total_with_tax
-        + shipping_cost
-
-    ).quantize(
-        Decimal("0.01")
-    )
+        cart_total_with_tax + shipping_cost
+    ).quantize(Decimal("0.01"))
 
     # =================================================
     # عرض الصفحة
     # =================================================
 
     return render(
-
         request,
-
         "ecommerce/cart.html",
-
         {
-
             "store": store,
-
             "cart": cart,
-
             "items": items,
-
             "total": total,
-
             "cart_tax": cart_tax,
-
-            "cart_total_with_tax":
-                cart_total_with_tax,
-
-            "has_tax_number":
-                has_tax_number,
-
+            "cart_total_with_tax": cart_total_with_tax,
+            "has_tax_number": has_tax_number,
             "tax_rate": tax_rate,
-
-            "shipping_cost":
-                shipping_cost,
-
-            "final_total":
-                final_total,
-
-        }
-
+            "shipping_cost": shipping_cost,
+            "final_total": final_total,
+        },
     )
 
+# =====================================================
+# عداد السلة
+# =====================================================
 
 # =====================================================
 # عداد السلة
@@ -838,23 +917,31 @@ def cart_count(request, store_slug):
     if request.user.is_authenticated:
 
         cart = Cart.objects.filter(
-
             customer=request.user,
-
-            store=store
-
+            store=store,
         ).first()
 
         if cart:
-
             count = cart.total_items()
 
+    else:
+
+        data = get_guest_cart_data(request, store)
+
+        try:
+            count = int(sum(
+                (
+                    Decimal(str(entry.get("quantity", "0")))
+                    for entry in data.values()
+                ),
+                Decimal("0"),
+            ))
+        except (TypeError, ValueError, ArithmeticError):
+            count = 0
+
     return JsonResponse({
-
-        "count": count
-
+        "count": count,
     })
-
 
 # =====================================================
 # عداد المفضلة
@@ -887,283 +974,309 @@ def wishlist_count(request, store_slug):
 # تحديث كمية السلة
 # =====================================================
 
-def update_cart_item(
-    request,
-    store_slug,
-    item_id
-):
+# =====================================================
+# تحديث كمية السلة
+# =====================================================
+
+def update_cart_item(request, store_slug, item_id):
 
     store = get_store(store_slug)
-
-    item = get_object_or_404(
-
-        CartItem,
-
-        id=item_id,
-
-        cart__store=store,
-
-        cart__customer=request.user
-
-    )
-
     action = request.GET.get("action")
 
-    if action == "increase":
+    # =================================================
+    # تحديد العنصر: سلة الزائر أو العميل
+    # =================================================
 
-        item.quantity += 1
+    if request.user.is_authenticated:
 
-    elif action == "decrease":
+        item = get_object_or_404(
+            CartItem,
+            id=item_id,
+            cart__store=store,
+            cart__customer=request.user,
+        )
 
-        if item.quantity > 1:
-
-            item.quantity -= 1
+        current_quantity = item.quantity
 
     else:
 
-        quantity = request.POST.get(
-            "quantity"
-        )
+        data = get_guest_cart_data(request, store)
+        key = str(item_id)
 
-        if quantity:
+        if key not in data:
+            return JsonResponse({
+                "success": False,
+                "message": "المنتج غير موجود في السلة.",
+            }, status=404)
 
-            item.quantity = int(quantity)
+        item_data = data[key]
 
-    item.save()
+        try:
+            current_quantity = Decimal(
+                str(item_data["quantity"])
+            )
+            price = Decimal(
+                str(item_data["price"])
+            )
+        except (
+            TypeError,
+            ValueError,
+            KeyError,
+            ArithmeticError,
+        ):
+            return JsonResponse({
+                "success": False,
+                "message": "بيانات المنتج في السلة غير صحيحة.",
+            }, status=400)
 
     # =================================================
-    # حالة الضريبة
+    # تحديد الكمية الجديدة
+    # =================================================
+
+    if action == "increase":
+
+        new_quantity = current_quantity + Decimal("1")
+
+    elif action == "decrease":
+
+        new_quantity = max(
+            Decimal("1"),
+            current_quantity - Decimal("1"),
+        )
+
+    else:
+
+        quantity_value = request.POST.get("quantity", "")
+
+        try:
+            new_quantity = Decimal(
+                quantity_value.replace(",", ".").strip()
+            )
+        except (AttributeError, ValueError, ArithmeticError):
+            return JsonResponse({
+                "success": False,
+                "message": "الكمية المدخلة غير صحيحة.",
+            }, status=400)
+
+        if new_quantity <= 0:
+            return JsonResponse({
+                "success": False,
+                "message": "يجب أن تكون الكمية أكبر من صفر.",
+            }, status=400)
+
+    # =================================================
+    # حفظ الكمية
+    # =================================================
+
+    if request.user.is_authenticated:
+
+        item.quantity = new_quantity
+        item.save(update_fields=["quantity"])
+
+        cart_items = list(
+            item.cart.items.all()
+        )
+
+        cart_count_value = item.cart.total_items()
+
+    else:
+
+        data[key]["quantity"] = str(new_quantity)
+        save_guest_cart_data(request, store, data)
+
+        cart_items = build_guest_cart_items(request, store)
+
+        cart_count_value = int(sum(
+            (x.quantity for x in cart_items),
+            Decimal("0"),
+        ))
+
+        item = next(
+            x for x in cart_items if x.id == item_id
+        )
+
+    # =================================================
+    # إعادة حساب الإجمالي والضريبة
     # =================================================
 
     has_tax_number = bool(
-
         store.company
-
         and store.company.vat_no
-
-        and str(
-            store.company.vat_no
-        ).strip()
-
+        and str(store.company.vat_no).strip()
     )
 
     tax_rate = (
-
         Decimal("0.15")
-
         if has_tax_number
-
         else Decimal("0.00")
-
     )
 
-    # =================================================
-    # إعادة حساب السلة
-    # =================================================
-
     total = Decimal("0.00")
-
     cart_tax = Decimal("0.00")
 
-    for cart_item in item.cart.items.all():
+    for cart_item in cart_items:
 
         subtotal = Decimal(
-
-            str(
-                cart_item.subtotal()
-            )
-
+            str(cart_item.subtotal())
         )
 
         total += subtotal
 
         if has_tax_number:
+            cart_tax += subtotal * tax_rate
 
-            cart_tax += (
-                subtotal * tax_rate
-            )
-
-    cart_tax = cart_tax.quantize(
-        Decimal("0.01")
-    )
-
-    # =================================================
-    # شامل الضريبة
-    # =================================================
+    cart_tax = cart_tax.quantize(Decimal("0.01"))
 
     cart_total_with_tax = (
-
         total + cart_tax
-
-    ).quantize(
-        Decimal("0.01")
-    )
-
-    # =================================================
-    # ضريبة المنتج الحالي
-    # =================================================
+    ).quantize(Decimal("0.01"))
 
     item_subtotal = Decimal(
-
-        str(
-            item.subtotal()
-        )
-
+        str(item.subtotal())
     )
 
     item_tax = (
-
         item_subtotal * tax_rate
-
-    ).quantize(
-        Decimal("0.01")
-    )
-
-    # =================================================
-    # إجمالي المنتج
-    # =================================================
+    ).quantize(Decimal("0.01"))
 
     item_total_with_tax = (
-
         item_subtotal + item_tax
-
-    ).quantize(
-        Decimal("0.01")
-    )
-
-    # =================================================
-    # التوصيل
-    # =================================================
+    ).quantize(Decimal("0.01"))
 
     shipping_cost = (
-
         store.shipping_cost
-
         if store.shipping_cost is not None
-
         else Decimal("0.00")
-
     )
-
-    # =================================================
-    # الإجمالي النهائي
-    # =================================================
 
     final_total = (
-
-        cart_total_with_tax
-        + shipping_cost
-
-    ).quantize(
-        Decimal("0.01")
-    )
-
-    # =================================================
-    # النتيجة
-    # =================================================
+        cart_total_with_tax + shipping_cost
+    ).quantize(Decimal("0.01"))
 
     return JsonResponse({
-
         "success": True,
-
         "quantity": item.quantity,
-
-        "subtotal":
-            f"{item_subtotal:.2f}",
-
-        "tax":
-            f"{item_tax:.2f}",
-
-        "total_with_tax":
-            f"{item_total_with_tax:.2f}",
-
-        "subtotal_total":
-            f"{total:.2f}",
-
-        "cart_tax":
-            f"{cart_tax:.2f}",
-
-        "total":
-            f"{cart_total_with_tax:.2f}",
-
-        "shipping_cost":
-            f"{shipping_cost:.2f}",
-
-        "final_total":
-            f"{final_total:.2f}",
-
-        "cart_count":
-            item.cart.total_items(),
-
-        "has_tax_number":
-            has_tax_number,
-
+        "subtotal": f"{item_subtotal:.2f}",
+        "tax": f"{item_tax:.2f}",
+        "total_with_tax": f"{item_total_with_tax:.2f}",
+        "subtotal_total": f"{total:.2f}",
+        "cart_tax": f"{cart_tax:.2f}",
+        "total": f"{cart_total_with_tax:.2f}",
+        "shipping_cost": f"{shipping_cost:.2f}",
+        "final_total": f"{final_total:.2f}",
+        "cart_count": cart_count_value,
+        "has_tax_number": has_tax_number,
     })
-
 
 # =====================================================
 # حذف منتج من السلة
 # =====================================================
 
-def remove_cart_item(
-    request,
-    store_slug,
-    item_id
-):
+# =====================================================
+# حذف منتج من السلة
+# =====================================================
+
+def remove_cart_item(request, store_slug, item_id):
 
     store = get_store(store_slug)
 
-    item = get_object_or_404(
+    # =================================================
+    # حذف من سلة العميل المسجل
+    # =================================================
 
-        CartItem,
+    if request.user.is_authenticated:
 
-        id=item_id,
+        item = get_object_or_404(
+            CartItem,
+            id=item_id,
+            cart__store=store,
+            cart__customer=request.user,
+        )
 
-        cart__store=store,
+        cart = item.cart
+        item.delete()
 
-        cart__customer=request.user
+        cart_items = list(cart.items.all())
 
-    )
+        cart_count_value = cart.total_items()
 
-    cart = item.cart
+    # =================================================
+    # حذف من سلة الزائر
+    # =================================================
 
-    item.delete()
+    else:
+
+        data = get_guest_cart_data(request, store)
+        key = str(item_id)
+
+        if key not in data:
+            return JsonResponse({
+                "success": False,
+                "message": "المنتج غير موجود في السلة.",
+            }, status=404)
+
+        data.pop(key, None)
+        save_guest_cart_data(request, store, data)
+
+        cart_items = build_guest_cart_items(request, store)
+
+        cart_count_value = int(sum(
+            (x.quantity for x in cart_items),
+            Decimal("0"),
+        ))
+
+    # =================================================
+    # إعادة حساب الإجمالي
+    # =================================================
 
     total = sum(
-
-        x.subtotal()
-
-        for x in cart.items.all()
-
+        (
+            Decimal(str(item.subtotal()))
+            for item in cart_items
+        ),
+        Decimal("0.00"),
     )
+
+    has_tax_number = bool(
+        store.company
+        and store.company.vat_no
+        and str(store.company.vat_no).strip()
+    )
+
+    tax_rate = (
+        Decimal("0.15")
+        if has_tax_number
+        else Decimal("0.00")
+    )
+
+    cart_tax = (
+        total * tax_rate
+    ).quantize(Decimal("0.01"))
+
+    total_with_tax = (
+        total + cart_tax
+    ).quantize(Decimal("0.01"))
 
     shipping_cost = (
-
         store.shipping_cost
-
-        if 0 < total < 100
-
-        else 0
-
+        if Decimal("0") < total < Decimal("100")
+        and store.shipping_cost is not None
+        else Decimal("0.00")
     )
 
+    final_total = (
+        total_with_tax + shipping_cost
+    ).quantize(Decimal("0.01"))
+
     return JsonResponse({
-
         "success": True,
-
-        "total": total,
-
-        "shipping_cost":
-            shipping_cost,
-
-        "final_total":
-            total + shipping_cost,
-
-        "cart_count":
-            cart.total_items(),
-
+        "total": f"{total_with_tax:.2f}",
+        "subtotal_total": f"{total:.2f}",
+        "cart_tax": f"{cart_tax:.2f}",
+        "shipping_cost": f"{shipping_cost:.2f}",
+        "final_total": f"{final_total:.2f}",
+        "cart_count": cart_count_value,
     })
-
 
 # =====================================================
 # إتمام الطلب والدفع
@@ -2302,228 +2415,128 @@ def remove_wishlist(
 # إضافة للسلة
 # =====================================================
 
-def add_to_cart(
-    request,
-    store_slug,
-    product_id
-):
+# =====================================================
+# إضافة للسلة
+# =====================================================
 
-    # =================================================
-    # جلب المتجر أولاً
-    # =================================================
+def add_to_cart(request, store_slug, product_id):
 
-    store = get_store(
-        store_slug
-    )
-
-    # =================================================
-    # منع الزائر غير المسجل من إضافة المنتجات
-    # =================================================
-
-    if not request.user.is_authenticated:
-
-        from django.urls import reverse
-        from urllib.parse import urlencode
-        from django.utils.http import (
-            url_has_allowed_host_and_scheme
-        )
-
-        # =================================================
-        # الصفحة التي كان العميل يتصفحها
-        # =================================================
-
-        next_url = (
-
-            request.GET.get("next")
-
-            or request.META.get(
-                "HTTP_REFERER"
-            )
-
-            or f"/store/{store.slug}/"
-
-        )
-
-        # =================================================
-        # حماية رابط الرجوع
-        # =================================================
-
-        if not url_has_allowed_host_and_scheme(
-
-            next_url,
-
-            allowed_hosts={
-                request.get_host()
-            },
-
-            require_https=request.is_secure(),
-
-        ):
-
-            next_url = (
-                f"/store/{store.slug}/"
-            )
-
-        # =================================================
-        # رابط تسجيل دخول عميل المتجر
-        # =================================================
-
-        login_url = reverse(
-
-            "ecommerce:customer_login",
-
-            kwargs={
-
-                "store_slug":
-                    store.slug
-
-            }
-
-        )
-
-        # =================================================
-        # إضافة الصفحة المطلوبة إلى رابط الدخول
-        # =================================================
-
-        login_url = (
-            f"{login_url}?"
-            f"{urlencode({'next': next_url})}"
-        )
-
-        # =================================================
-        # إذا كان الطلب AJAX
-        # =================================================
-
-        if request.headers.get(
-            "X-Requested-With"
-        ) == "XMLHttpRequest":
-
-            return JsonResponse({
-
-                "status":
-                    "login_required",
-
-                "login_url":
-                    login_url,
-
-                "message":
-                    "يجب تسجيل الدخول أولاً لإضافة المنتج إلى السلة."
-
-            }, status=401)
-
-        # =================================================
-        # إذا كان الطلب مباشرًا
-        # =================================================
-
-        return redirect(
-            login_url
-        )
+    store = get_store(store_slug)
 
     # =================================================
     # السماح بـ POST فقط
     # =================================================
 
     if request.method != "POST":
-
         return JsonResponse({
-
-            "status":
-                "error"
-
+            "status": "error",
+            "message": "طريقة الطلب غير صحيحة.",
         }, status=405)
 
     # =================================================
-    # المنتج
+    # جلب المنتج
     # =================================================
 
     product = get_object_or_404(
-
         Product,
-
         id=product_id,
-
         company=store.company,
-
-        active=True
-
+        active=True,
     )
 
     # =================================================
-    # إنشاء / جلب السلة
+    # سلة الزائر
     # =================================================
 
-    cart, created = (
-        Cart.objects.get_or_create(
+    if not request.user.is_authenticated:
 
-            customer=request.user,
+        data = get_guest_cart_data(request, store)
+        key = str(product.id)
 
-            store=store
+        if key in data:
 
+            try:
+                quantity = Decimal(
+                    str(data[key]["quantity"])
+                )
+                price = Decimal(
+                    str(data[key]["price"])
+                )
+            except (
+                TypeError,
+                ValueError,
+                KeyError,
+                ArithmeticError,
+            ):
+                quantity = Decimal("0")
+                price = Decimal(str(product.sale_price))
+
+            if quantity <= 0:
+                quantity = Decimal("0")
+
+            data[key] = {
+                "quantity": str(quantity + Decimal("1")),
+                "price": str(price),
+            }
+
+        else:
+
+            data[key] = {
+                "quantity": "1",
+                "price": str(product.sale_price),
+            }
+
+        save_guest_cart_data(request, store, data)
+
+        count = sum(
+            (
+                Decimal(str(entry.get("quantity", "0")))
+                for entry in data.values()
+            ),
+            Decimal("0"),
         )
-    )
+
+        return JsonResponse({
+            "status": "success",
+            "items": int(count),
+            "message": "تمت إضافة المنتج إلى السلة.",
+        })
 
     # =================================================
-    # البحث عن المنتج داخل السلة
+    # سلة العميل المسجل
     # =================================================
+
+    cart, created = Cart.objects.get_or_create(
+        customer=request.user,
+        store=store,
+    )
 
     item = CartItem.objects.filter(
-
         cart=cart,
-
         product=product,
-
-        variant=None
-
+        variant=None,
     ).first()
-
-    # =================================================
-    # زيادة الكمية
-    # =================================================
 
     if item:
 
-        item.quantity += 1
-
-        item.save()
-
-    # =================================================
-    # إضافة المنتج لأول مرة
-    # =================================================
+        item.quantity += Decimal("1")
+        item.save(update_fields=["quantity"])
 
     else:
 
         CartItem.objects.create(
-
             cart=cart,
-
             product=product,
-
             variant=None,
-
             price=product.sale_price,
-
-            quantity=1
-
+            quantity=Decimal("1"),
         )
 
-    # =================================================
-    # النتيجة
-    # =================================================
-
     return JsonResponse({
-
-        "status":
-            "success",
-
-        "items":
-            cart.total_items(),
-
-        "message":
-            "تم تحديث السلة"
-
+        "status": "success",
+        "items": cart.total_items(),
+        "message": "تم تحديث السلة",
     })
-
-
 # =====================================================
 # صفحة المفضلة
 # =====================================================
@@ -2782,11 +2795,10 @@ def customer_login(
         # تسجيل الدخول
         # =================================================
 
-        login(
-            request,
-            user
-        )
+        login(request, user)
 
+        # نقل سلة الزائر إلى حساب العميل
+        merge_guest_cart(request, store, user)
         # =================================================
         # أخذ صفحة الرجوع من Session
         # =================================================
@@ -3065,14 +3077,13 @@ def customer_register(
 
         login(request, user)
 
+        # نقل سلة الزائر إلى حساب العميل الجديد
+        merge_guest_cart(request, store, user)
+
         return redirect(
-
             "ecommerce:account",
-
-            store_slug=store.slug
-
+            store_slug=store.slug,
         )
-
     return render(
 
         request,

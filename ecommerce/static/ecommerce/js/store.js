@@ -166,25 +166,44 @@ document.addEventListener("DOMContentLoaded", () => {
             container.querySelector(".slider-prev");
 
 
-        const scrollAmount = 320;
 
+const scrollAmount = 320;
 
-        if (nextBtn) {
+function moveSlider(direction) {
+    const maxScroll = slider.scrollWidth - slider.clientWidth;
 
-            nextBtn.addEventListener("click", () => {
+    if (maxScroll <= 1) {
+        console.warn("لا توجد مساحة كافية لتحريك المنتجات", {
+            scrollWidth: slider.scrollWidth,
+            clientWidth: slider.clientWidth
+        });
+        return;
+    }
 
-                slider.scrollBy({
+    const currentPosition = Math.abs(slider.scrollLeft);
+    const step = direction === "next" ? scrollAmount : -scrollAmount;
 
-                    left: scrollAmount,
+    slider.scrollBy({
+        left: step,
+        behavior: "smooth"
+    });
+}
 
-                    behavior: "smooth"
+if (nextBtn) {
+    nextBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        moveSlider("next");
+    });
+}
 
-                });
-
-            });
-
-        }
-
+if (prevBtn) {
+    prevBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        moveSlider("prev");
+    });
+}
 
         if (prevBtn) {
 

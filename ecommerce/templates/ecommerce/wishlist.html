@@ -144,7 +144,31 @@
 
 <style>
 
+/* عرض الكل: شبكة بأربعة أعمدة */
 
+#wishlistProducts.wishlist-expanded {
+
+    display: grid !important;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    overflow: visible;
+
+    flex-wrap: initial;
+
+    align-items: stretch;
+
+}
+
+/* الحفاظ على عرض الكروت في شبكة عرض الكل */
+
+#wishlistProducts.wishlist-expanded > .wishlist-product-item {
+
+    width: 100%;
+
+    min-width: 0;
+
+}
 /* ==========================================================
    رأس المفضلة
 ========================================================== */
@@ -222,15 +246,41 @@
 
 #wishlistProducts {
 
-    display: grid;
+    display: flex !important;
 
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+    flex-direction: row;
+
+    flex-wrap: nowrap;
 
     gap: 20px;
 
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    scroll-behavior: smooth;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+
+    align-items: stretch;
+
 }
 
+#wishlistProducts::-webkit-scrollbar {
+    display: none;
+}
+
+#wishlistProducts > .wishlist-product-item {
+
+    flex: 0 0 280px;
+
+    width: 280px;
+
+    min-width: 280px;
+
+}
 
 /* ==========================================================
    عنصر المنتج
@@ -524,71 +574,52 @@ document.addEventListener("DOMContentLoaded", function () {
        عرض أول 4
     ========================================================== */
 
-    function showFirstFour() {
+function showFirstFour() {
 
-        const items = getWishlistItems();
+    const items = getWishlistItems();
 
+    items.forEach(function (item) {
+        item.classList.remove("wishlist-hidden");
+    });
 
-        items.forEach(function (item, index) {
+    productsContainer.classList.remove("wishlist-expanded");
 
-            if (index < 4) {
+    productsContainer.scrollTo({
+        left: 0,
+        behavior: "smooth"
+    });
 
-                item.classList.remove(
-                    "wishlist-hidden"
-                );
-
-            } else {
-
-                item.classList.add(
-                    "wishlist-hidden"
-                );
-
-            }
-
-        });
-
-
-        if (toggleButton) {
-
-            toggleButton.textContent = "عرض الكل";
-
-        }
-
-
-        updateToggleButton();
-
+    if (toggleButton) {
+        toggleButton.textContent = "عرض الكل";
     }
 
-
+    updateToggleButton();
+}
     /* ==========================================================
        عرض جميع المنتجات
     ========================================================== */
 
-    function showAll() {
+function showAll() {
 
-        const items = getWishlistItems();
+    const items = getWishlistItems();
 
+    items.forEach(function (item) {
+        item.classList.remove("wishlist-hidden");
+    });
 
-        items.forEach(function (item) {
+    productsContainer.classList.add("wishlist-expanded");
 
-            item.classList.remove(
-                "wishlist-hidden"
-            );
+    productsContainer.scrollTo({
+        left: 0,
+        behavior: "smooth"
+    });
 
-        });
-
-
-        if (toggleButton) {
-
-            toggleButton.textContent = "عرض أقل";
-
-        }
-
-
-        updateToggleButton();
-
+    if (toggleButton) {
+        toggleButton.textContent = "عرض أقل";
     }
 
+    updateToggleButton();
+}
 
     /* ==========================================================
        الحالة الأولية
@@ -622,38 +653,22 @@ document.addEventListener("DOMContentLoaded", function () {
        عرض الكل / عرض أقل
     ========================================================== */
 
-    if (toggleButton) {
+if (toggleButton) {
 
-        toggleButton.addEventListener(
-            "click",
-            function (event) {
+    toggleButton.addEventListener("click", function (event) {
 
-                event.preventDefault();
+        event.preventDefault();
+        event.stopPropagation();
 
-                event.stopPropagation();
+        if (productsContainer.classList.contains("wishlist-expanded")) {
+            showFirstFour();
+        } else {
+            showAll();
+        }
 
+    });
 
-                const hiddenItems =
-                    productsContainer.querySelectorAll(
-                        ".wishlist-product-item.wishlist-hidden"
-                    );
-
-
-                if (hiddenItems.length > 0) {
-
-                    showAll();
-
-                } else {
-
-                    showFirstFour();
-
-                }
-
-            }
-        );
-
-    }
-
+}
 
     /* ==========================================================
        إزالة المنتج من المفضلة
