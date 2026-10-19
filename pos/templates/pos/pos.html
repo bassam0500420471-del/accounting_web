@@ -1968,34 +1968,60 @@ function initializeInvoiceSearch(){
     });
 
 
-    $("#invoice-search").on(
-        "select2:select",
-        function(e){
 
-            const invoiceId =
-                Number(
-                    e.params.data.id
+$("#invoice-search").on(
+    "select2:select",
+    function(e) {
+
+        const selectedId = String(
+            e.params.data.id || ""
+        );
+
+        // الفاتورة المحفوظة في قاعدة البيانات
+        if (selectedId.startsWith("saved_")) {
+
+            const savedInvoiceId = Number(
+                selectedId.slice(6)
+            );
+
+            if (
+                Number.isInteger(savedInvoiceId) &&
+                savedInvoiceId > 0
+            ) {
+                const printUrlTemplate =
+                    "{% url 'pos:pos_invoice_print' 0 %}";
+
+                const printUrl =
+                    printUrlTemplate.replace(
+                        /0\/$/,
+                        savedInvoiceId + "/"
+                    );
+
+                // عرض الفاتورة المحفوظة في نافذة جديدة
+                window.open(
+                    printUrl,
+                    "_blank"
                 );
-
-
-            if(
-                invoiceId &&
-                invoices[invoiceId]
-            ){
-
-                setActiveInvoice(
-                    invoiceId
-                );
-
             }
 
+        } else {
 
-            $(this)
-                .val(null)
-                .trigger("change");
+            // الفاتورة المؤقتة: تبقى كما هي
+            const invoiceId = Number(selectedId);
 
+            if (
+                invoiceId &&
+                invoices[invoiceId]
+            ) {
+                setActiveInvoice(invoiceId);
+            }
         }
-    );
+
+        $(this)
+            .val(null)
+            .trigger("change");
+    }
+);
 
 
     $("#invoice-search").on(
