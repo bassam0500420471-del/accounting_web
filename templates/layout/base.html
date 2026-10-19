@@ -2205,91 +2205,125 @@ html[dir="ltr"] .gpt-float {
     </button>
 
 
-    <div class="submenu">
 
-        <div class="menu-btn">
+<div class="submenu">
 
-            <a href="{% url 'pos:pos_home' %}">
-                {% trans "Point of Sale" %}
-            </a>
+    <div class="menu-btn">
 
-            <button
-                class="add-icon-btn"
-                onclick="goAdd('{% url 'pos:pos_home' %}')"
-            >
-                +
-            </button>
+        <a href="{% url 'pos:pos_home' %}">
+            {% trans "Point of Sale" %}
+        </a>
 
-        </div>
+        <button
+            class="add-icon-btn"
+            onclick="goAdd('{% url 'pos:pos_home' %}')"
+        >
+            +
+        </button>
+
+    </div>
+
+</div>
+
+<!-- =================================================
+     إضافة طريقة دفع - قسم مستقل
+     ================================================= -->
+
+<button class="menu-btn menu-toggle">
+
+    <span>
+        إضافة طريقة دفع
+    </span>
+
+    <span class="menu-arrow">
+        ▼
+    </span>
+
+</button>
+
+<div class="submenu">
+
+    <div class="menu-btn">
+
+<a href="#" onclick="openPaymentMethodModal(event)">
+    إضافة طريقة دفع
+</a>
+<button
+    type="button"
+    class="add-icon-btn"
+    onclick="openPaymentMethodModal(event)"
+>
+    +
+</button>
+    </div>
+
+</div>
+
+<!-- =================================================
+     Sales
+     ================================================= -->
+
+<button class="menu-btn menu-toggle">
+
+    <span>
+        {% trans "Sales" %}
+    </span>
+
+    <span class="menu-arrow">
+        ▼
+    </span>
+
+</button>
+
+
+<div class="submenu">
+
+    <div class="menu-btn">
+
+        <a href="/customers/">
+            {% trans "Customers" %}
+        </a>
+
+        <button
+            class="add-icon-btn"
+            onclick="goAdd('/customers/add/')"
+        >
+            +
+        </button>
 
     </div>
 
 
-    <!-- =================================================
-         Sales
-         ================================================= -->
+    <div class="menu-btn">
 
-    <button class="menu-btn menu-toggle">
+        <a href="/sales/invoices/">
+            {% trans "Sales Invoices" %}
+        </a>
 
-        <span>
-            {% trans "Sales" %}
-        </span>
+        <button
+            class="add-icon-btn"
+            onclick="goAdd('/sales/invoices/add/')"
+        >
+            +
+        </button>
 
-        <span class="menu-arrow">
-            ▼
-        </span>
-
-    </button>
-
-
-    <div class="submenu">
-
-        <div class="menu-btn">
-
-            <a href="/customers/">
-                {% trans "Customers" %}
-            </a>
-
-            <button
-                class="add-icon-btn"
-                onclick="goAdd('/customers/add/')"
-            >
-                +
-            </button>
-
-        </div>
+    </div>
 
 
-        <div class="menu-btn">
+    <div class="menu-btn">
 
-            <a href="/sales/invoices/">
-                {% trans "Sales Invoices" %}
-            </a>
+        <a href="/sales/returns/">
+            {% trans "Sales Returns" %}
+        </a>
 
-            <button
-                class="add-icon-btn"
-                onclick="goAdd('/sales/invoices/add/')"
-            >
-                +
-            </button>
+        <button
+            class="add-icon-btn"
+            onclick="goAdd('/sales/returns/new/')"
+        >
+            +
+        </button>
 
-        </div>
-
-
-        <div class="menu-btn">
-
-            <a href="/sales/returns/">
-                {% trans "Sales Returns" %}
-            </a>
-
-            <button
-                class="add-icon-btn"
-                onclick="goAdd('/sales/returns/new/')"
-            >
-                +
-            </button>
-
-        </div>
+    </div>
 
 
         <div class="menu-btn">
@@ -5155,6 +5189,117 @@ gptInput.addEventListener(
 
 {% endif %}
 
+
+<!-- نافذة إضافة طريقة الدفع المشتركة -->
+<div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة طريقة دفع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <label for="payment-method-name">اسم طريقة الدفع</label>
+                <input
+                    type="text"
+                    id="payment-method-name"
+                    class="form-control"
+                    placeholder="مثال: بنك البلاد"
+                >
+
+                <br>
+
+                <label for="payment-main-account">الحساب الرئيسي</label>
+                <select id="payment-main-account" class="form-select">
+                    <option value="">اختر الحساب</option>
+                    {% for account in payment_parent_accounts %}
+                    <option value="{{ account.id }}">{{ account.display_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="save-payment-method">
+                    حفظ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPaymentMethodModal(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    const modalElement = document.getElementById("paymentMethodModal");
+
+    if (!modalElement || typeof bootstrap === "undefined") {
+        alert("تعذر فتح النافذة. تأكد من تحميل Bootstrap.");
+        return;
+    }
+
+    bootstrap.Modal.getOrCreateInstance(modalElement).show();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const saveButton = document.getElementById("save-payment-method");
+
+    if (!saveButton || saveButton.dataset.initialized === "1") {
+        return;
+    }
+
+    saveButton.dataset.initialized = "1";
+
+    saveButton.addEventListener("click", function () {
+        const name = document.getElementById("payment-method-name").value.trim();
+        const account = document.getElementById("payment-main-account").value;
+
+        if (!name) {
+            alert("أدخل اسم طريقة الدفع");
+            return;
+        }
+
+        if (!account) {
+            alert("اختر الحساب الرئيسي");
+            return;
+        }
+
+        saveButton.disabled = true;
+
+        fetch("{% url 'pos:add_payment_method' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                name: name,
+                parent_id: account
+            })
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            if (data.success) {
+                alert("تم حفظ طريقة الدفع بنجاح");
+                window.location.reload();
+            } else {
+                alert(data.error || "حدث خطأ أثناء الحفظ");
+            }
+        })
+        .catch(function () {
+            alert("تعذر حفظ طريقة الدفع. تحقق من الاتصال ثم حاول مرة أخرى.");
+        })
+        .finally(function () {
+            saveButton.disabled = false;
+        });
+    });
+});
+</script>
 
 </body>
 

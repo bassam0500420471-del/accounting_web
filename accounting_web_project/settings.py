@@ -185,7 +185,7 @@ TEMPLATES = [
     'ecommerce.context_processors.navigation_context',
     'ecommerce.context_processors.cart_count',
     'ecommerce.context_processors.notification_context',
-
+   'accounting.context_processors.payment_method_context',
 ],
         },
     },
