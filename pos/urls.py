@@ -43,6 +43,12 @@ urlpatterns = [
         name="pos_save_invoice"
     ),
 
+    path(
+        "user-invoices/",
+        views.pos_user_invoices,
+        name="pos_user_invoices"
+    ),
+
     # =========================================
     # عرض فاتورة POS
     # =========================================

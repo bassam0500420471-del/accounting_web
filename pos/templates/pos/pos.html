@@ -84,20 +84,16 @@ main,
    ========================================================= */
 
 .pos-search-wrapper {
+    order: 1;
     flex: 1;
     min-width: 0;
 }
-
 #new-invoice-btn {
-    order: 1;
+    order: 5;
     flex: 0 0 auto;
+    margin-left: 0;
+    margin-right: 0;
 }
-
-#add-payment-method-btn {
-    order: 2;
-    flex: 0 0 auto;
-}
-
 .product-search-wrapper {
     order: 3;
 }
@@ -677,12 +673,12 @@ main,
         order: unset !important;
     }
 
-    #new-invoice-btn,
-    #add-payment-method-btn {
-        flex: 1 1 auto;
-        order: unset;
-    }
-
+#new-invoice-btn {
+    flex: 0 0 auto;
+    order: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
     .category-card {
         width: 110px;
         height: 135px;
@@ -745,13 +741,6 @@ main,
             </button>
 
 
-            <button
-                class="btn btn-success"
-                id="add-payment-method-btn"
-                type="button"
-            >
-                ➕ إضافة طريقة دفع
-            </button>
 <!-- BARCODE SCANNER -->
 
 <div class="pos-search-wrapper barcode-search-wrapper">
@@ -986,93 +975,6 @@ data-scale-code="{{ p.scale_code|default:'' }}"
 ></div>
 
 
-<!-- =========================================================
-     PAYMENT METHOD MODAL
-     ========================================================= -->
-
-<div
-    class="modal fade"
-    id="paymentMethodModal"
-    tabindex="-1"
->
-
-    <div class="modal-dialog">
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-                    إضافة طريقة دفع
-                </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                ></button>
-
-            </div>
-
-
-            <div class="modal-body">
-
-                <label>
-                    اسم طريقة الدفع
-                </label>
-
-                <input
-                    type="text"
-                    id="payment-method-name"
-                    class="form-control"
-                    placeholder="مثال: بنك البلاد"
-                >
-
-                <br>
-
-                <label>
-                    الحساب الرئيسي
-                </label>
-
-                <select
-                    id="payment-main-account"
-                    class="form-select"
-                >
-
-                    <option value="">
-                        اختر الحساب
-                    </option>
-
-                    {% for account in payment_parent_accounts %}
-
-                    <option value="{{ account.id }}">
-                        {{ account.display_name }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-
-            <div class="modal-footer">
-
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    id="save-payment-method"
-                >
-                    حفظ
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
 
 
 <!-- =========================================================
@@ -1947,52 +1849,87 @@ function deleteInvoice(id){
    INVOICE SEARCH
    ========================================================= */
 
-function refreshInvoiceSearch(){
 
-    const select =
-        $("#invoice-search");
+async function refreshInvoiceSearch(){
 
+    const select = $("#invoice-search");
 
-    if(
-        !select.length
-    ){
-
+    if(!select.length){
         return;
+    }
+
+    // الاحتفاظ بالفواتير المؤقتة الموجودة في المتصفح
+    select.empty();
+
+    select.append(
+        new Option("", "", false, false)
+    );
+
+    Object.keys(invoices).forEach(function(id){
+
+        select.append(
+            new Option("فاتورة مؤقتة " + id, id, false, false)
+        );
+
+    });
+
+    // جلب الفواتير المحفوظة من قاعدة البيانات
+    try {
+
+        const response = await fetch(
+            "{% url 'pos:pos_user_invoices' %}",
+            {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                credentials: "same-origin"
+            }
+        );
+
+        if(!response.ok){
+            throw new Error(
+                "تعذر جلب الفواتير: " + response.status
+            );
+        }
+
+        const data = await response.json();
+
+        if(data.success && Array.isArray(data.invoices)){
+
+            data.invoices.forEach(function(invoice){
+
+                const label =
+                    "فاتورة #" + invoice.id +
+                    " | " + invoice.total +
+                    " ريال | " + invoice.date +
+                    (invoice.customer
+                        ? " | " + invoice.customer
+                        : "");
+
+                select.append(
+                    new Option(
+                        label,
+                        "saved_" + invoice.id,
+                        false,
+                        false
+                    )
+                );
+
+            });
+
+        }
+
+    } catch(error) {
+
+        console.error(
+            "POS SAVED INVOICES ERROR:",
+            error
+        );
 
     }
 
-
-    select.empty();
-
-
-    select.append(
-        new Option(
-            "",
-            "",
-            false,
-            false
-        )
-    );
-
-
-    Object.keys(invoices)
-        .forEach(function(id){
-
-            const option =
-                new Option(
-                    "فاتورة " + id,
-                    id,
-                    false,
-                    false
-                );
-
-            select.append(option);
-
-        });
-
-
-    select.trigger("change");
-
+    select.trigger("change.select2");
 }
 
 /* =========================================================
@@ -3953,66 +3890,12 @@ function initializeNewInvoiceButton(){
 }
 
 
+
 /* =========================================================
    PAYMENT METHOD
    ========================================================= */
 
 function initializePaymentMethod(){
-
-    const addButton =
-        document.getElementById(
-            "add-payment-method-btn"
-        );
-
-
-    if(addButton){
-
-        addButton.addEventListener(
-            "click",
-            function(){
-
-                const modalElement =
-                    document.getElementById(
-                        "paymentMethodModal"
-                    );
-
-
-                if(
-                    !modalElement
-                ){
-
-                    return;
-
-                }
-
-
-                if(
-                    typeof bootstrap ===
-                    "undefined"
-                ){
-
-                    alert(
-                        "Bootstrap غير محمل"
-                    );
-
-                    return;
-
-                }
-
-
-                const modal =
-                    bootstrap.Modal.getOrCreateInstance(
-                        modalElement
-                    );
-
-
-                modal.show();
-
-            }
-        );
-
-    }
-
 
     const saveButton =
         document.getElementById(

@@ -835,6 +835,43 @@ def pos_save_invoice(request):
         )
 
 
+def pos_user_invoices(request):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {"success": False, "invoices": []},
+            status=401
+        )
+
+    company = _get_company(request)
+
+    invoices = (
+        Invoice.objects
+        .filter(
+            company=company,
+            created_by=request.user
+        )
+        .select_related("customer")
+        .order_by("-created_at", "-id")[:100]
+    )
+
+    results = []
+
+    for invoice in invoices:
+        results.append({
+            "id": invoice.id,
+            "total": str(invoice.total),
+            "date": invoice.created_at.strftime("%Y-%m-%d %H:%M"),
+            "customer": (
+                str(invoice.customer)
+                if invoice.customer else ""
+            ),
+        })
+
+    return JsonResponse({
+        "success": True,
+        "invoices": results
+    })
+
 # =========================================================
 # تعديل طريقة الدفع
 # =========================================================
