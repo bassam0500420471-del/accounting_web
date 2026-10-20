@@ -1,1270 +1,714 @@
 {% extends "layout/base.html" %}
 {% load static %}
 
-{% block title %}
-    قائمة التدفقات النقدية
-{% endblock %}
+{% block title %}ميزان المراجعة{% endblock %}
 
 {% block content %}
 
-<!-- ================= Select2 ================= -->
-
-<link
-    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-    rel="stylesheet"
-/>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
 <style>
-
-/* =========================================================
-   الخلفية العامة
-========================================================= */
-
-body {
-
-    background:
-        radial-gradient(
-            circle at top left,
-            #ffffff 0%,
-            #eeeeee 35%,
-            #d4d4d4 100%
-        );
-
-}
-
-
-/* =========================================================
-   الصفحة
-========================================================= */
-
-.cash-flow-page {
-
+.trial-balance-page {
     min-height: calc(100vh - 40px);
-
-    padding: 30px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #f8f8f8 0%,
-            #e9e9e9 45%,
-            #cecece 100%
-        );
-
+    padding: 25px;
+    direction: rtl;
+    background: linear-gradient(135deg, #f8f8f8, #e9e9e9 45%, #cecece);
 }
 
-
-/* =========================================================
-   الحاوية
-========================================================= */
-
-.cash-flow-wrapper {
-
-    max-width: 1200px;
-
+.trial-balance-wrapper {
+    max-width: 1500px;
     margin: auto;
-
 }
 
-
-/* =========================================================
-   رأس الصفحة
-========================================================= */
-
-.cash-flow-header {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 16px;
-
-    margin-bottom: 28px;
-
-    padding: 22px 26px;
-
-    border-radius: 22px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #dedede
-        );
-
+.trial-balance-header,
+.trial-balance-card,
+.trial-balance-filters,
+.trial-balance-switch,
+.trial-balance-status {
     border: 1px solid rgba(255,255,255,.9);
-
-    box-shadow:
-        0 16px 35px rgba(0,0,0,.16),
-        0 5px 12px rgba(0,0,0,.07),
-        inset 0 1px 1px rgba(255,255,255,.95);
-
+    box-shadow: 0 14px 30px rgba(0,0,0,.12),
+                0 4px 10px rgba(0,0,0,.06),
+                inset 0 1px 1px rgba(255,255,255,.9);
 }
 
-
-/* =========================================================
-   أيقونة الرأس
-========================================================= */
-
-.cash-flow-header-icon {
-
-    width: 58px;
-
-    height: 58px;
-
+.trial-balance-header {
     display: flex;
-
     align-items: center;
-
-    justify-content: center;
-
-    border-radius: 16px;
-
-    color: #fff;
-
-    font-size: 24px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #777777,
-            #292929
-        );
-
-    box-shadow:
-        0 8px 18px rgba(0,0,0,.25),
-        inset 0 1px 1px rgba(255,255,255,.25);
-
-}
-
-
-/* =========================================================
-   عنوان الصفحة
-========================================================= */
-
-.cash-flow-header h3 {
-
-    margin: 0;
-
-    color: #333;
-
-    font-size: 27px;
-
-    font-weight: 800;
-
-}
-
-
-/* =========================================================
-   وصف الصفحة
-========================================================= */
-
-.cash-flow-header p {
-
-    margin: 5px 0 0;
-
-    color: #777;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-}
-
-
-/* =========================================================
-   الكرت الرئيسي
-========================================================= */
-
-.cash-flow-card {
-
-    position: relative;
-
-    overflow: hidden;
-
-    border-radius: 24px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff 0%,
-            #eeeeee 55%,
-            #d8d8d8 100%
-        );
-
-    border: 1px solid rgba(255,255,255,.95);
-
-    box-shadow:
-        0 20px 42px rgba(0,0,0,.18),
-        0 6px 14px rgba(0,0,0,.08),
-        inset 0 1px 1px rgba(255,255,255,.95);
-
-}
-
-
-/* =========================================================
-   الخط العلوي
-========================================================= */
-
-.cash-flow-card::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: 15%;
-
-    right: 15%;
-
-    height: 2px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255,255,255,.95),
-            transparent
-        );
-
-    z-index: 5;
-
-}
-
-
-/* =========================================================
-   رأس الكرت
-========================================================= */
-
-.cash-flow-card-header {
-
-    padding: 18px 24px;
-
-    color: #fff;
-
-    font-size: 18px;
-
-    font-weight: 800;
-
-    background:
-        linear-gradient(
-            135deg,
-            #777777,
-            #3b3b3b
-        );
-
-    box-shadow:
-        inset 0 -1px 0 rgba(0,0,0,.20),
-        inset 0 1px 1px rgba(255,255,255,.25);
-
-}
-
-
-/* =========================================================
-   جسم الكرت
-========================================================= */
-
-.cash-flow-card-body {
-
-    padding: 24px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #f0f0f0
-        );
-
-}
-
-
-/* =========================================================
-   منطقة الفلاتر
-========================================================= */
-
-.cash-flow-filters {
-
-    padding: 20px;
-
-    margin-bottom: 20px;
-
-    border-radius: 18px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #eeeeee,
-            #d2d2d2
-        );
-
-    border: 1px solid #d0d0d0;
-
-    box-shadow:
-        inset 0 1px 1px rgba(255,255,255,.9),
-        0 8px 18px rgba(0,0,0,.10);
-
-}
-
-
-/* =========================================================
-   عناوين الفلاتر
-========================================================= */
-
-.cash-flow-filters .form-label {
-
-    color: #555;
-
-    font-size: 14px;
-
-    font-weight: 800;
-
-    margin-bottom: 7px;
-
-}
-
-
-/* =========================================================
-   حقول الإدخال
-========================================================= */
-
-.cash-flow-filters .form-control,
-.cash-flow-filters .select2-container {
-
-    width: 100% !important;
-
-}
-
-
-/* =========================================================
-   حقول التاريخ
-========================================================= */
-
-.cash-flow-filters .form-control {
-
-    min-height: 44px;
-
-    padding: 9px 13px;
-
-    color: #444;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #eeeeee
-        );
-
-    border: 1px solid #cfcfcf;
-
-    border-radius: 11px;
-
-    outline: none;
-
-    box-shadow:
-        0 4px 9px rgba(0,0,0,.08),
-        inset 0 1px 1px rgba(255,255,255,.95);
-
-    transition: .2s ease;
-
-}
-
-
-.cash-flow-filters .form-control:focus {
-
-    border-color: #888;
-
-    box-shadow:
-        0 5px 12px rgba(0,0,0,.12),
-        inset 0 1px 1px rgba(255,255,255,.95);
-
-}
-
-
-/* =========================================================
-   Select2
-========================================================= */
-
-.cash-flow-filters
-.select2-container
-.select2-selection--single {
-
-    height: 44px !important;
-
-    padding: 7px 13px;
-
-    color: #444;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #eeeeee
-        );
-
-    border: 1px solid #cfcfcf;
-
-    border-radius: 11px;
-
-    box-shadow:
-        0 4px 9px rgba(0,0,0,.08),
-        inset 0 1px 1px rgba(255,255,255,.95);
-
-    display: flex;
-
-    align-items: center;
-
-}
-
-
-.cash-flow-filters
-.select2-container
-.select2-selection__rendered {
-
-    color: #444 !important;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    line-height: normal !important;
-
-}
-
-
-.cash-flow-filters
-.select2-container
-.select2-selection__arrow {
-
-    height: 42px !important;
-
-}
-
-
-/* =========================================================
-   زر عرض
-========================================================= */
-
-.cash-flow-view-btn {
-
-    min-height: 44px;
-
-    padding: 10px 24px;
-
-    color: #fff !important;
-
-    border: 1px solid rgba(255,255,255,.25);
-
-    border-radius: 11px;
-
-    font-size: 14px;
-
-    font-weight: 800;
-
-    background:
-        linear-gradient(
-            145deg,
-            #777777,
-            #3c3c3c
-        );
-
-    box-shadow:
-        0 6px 12px rgba(0,0,0,.18),
-        inset 0 1px 1px rgba(255,255,255,.25);
-
-    transition: .2s ease;
-
-}
-
-
-.cash-flow-view-btn:hover {
-
-    color: #fff !important;
-
-    transform: translateY(-2px);
-
-    background:
-        linear-gradient(
-            145deg,
-            #858585,
-            #333333
-        );
-
-    box-shadow:
-        0 9px 17px rgba(0,0,0,.22),
-        inset 0 1px 1px rgba(255,255,255,.3);
-
-}
-
-
-/* =========================================================
-   أزرار نوع العرض
-========================================================= */
-
-.cash-flow-view-switch {
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    margin-bottom: 24px;
-
-    padding: 14px;
-
-    border-radius: 16px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #eeeeee,
-            #d5d5d5
-        );
-
-    border: 1px solid #d0d0d0;
-
-    box-shadow:
-        inset 0 1px 1px rgba(255,255,255,.9),
-        0 6px 14px rgba(0,0,0,.08);
-
-}
-
-
-.cash-flow-view-switch .btn {
-
-    min-width: 130px;
-
-    min-height: 40px;
-
-    padding: 8px 18px;
-
-    border-radius: 10px;
-
-    font-size: 13px;
-
-    font-weight: 800;
-
-    border: 1px solid #999;
-
-    color: #444;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #dddddd
-        );
-
-    box-shadow:
-        0 4px 9px rgba(0,0,0,.10),
-        inset 0 1px 1px rgba(255,255,255,.9);
-
-    transition: .2s ease;
-
-}
-
-
-.cash-flow-view-switch .btn:hover {
-
-    transform: translateY(-1px);
-
-    color: #222;
-
-    background:
-        linear-gradient(
-            145deg,
-            #f5f5f5,
-            #cccccc
-        );
-
-}
-
-
-.cash-flow-view-switch .btn.active {
-
-    color: #fff !important;
-
-    background:
-        linear-gradient(
-            145deg,
-            #777777,
-            #333333
-        );
-
-    border-color: #444;
-
-}
-
-
-/* =========================================================
-   جداول التقرير
-========================================================= */
-
-.cash-flow-table-wrapper {
-
-    overflow-x: auto;
-
+    gap: 16px;
     margin-bottom: 22px;
+    padding: 22px 26px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #fff, #dedede);
+}
 
+.trial-balance-header-icon {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 16px;
-
-    box-shadow:
-        0 8px 20px rgba(0,0,0,.10);
-
+    color: #fff;
+    font-size: 25px;
+    background: linear-gradient(145deg, #777, #292929);
+    box-shadow: 0 8px 18px rgba(0,0,0,.25);
 }
 
-
-.cash-flow-table {
-
-    width: 100%;
-
+.trial-balance-header h3 {
     margin: 0;
-
-    border-collapse: separate;
-
-    border-spacing: 0;
-
-}
-
-
-/* =========================================================
-   رأس الجدول
-========================================================= */
-
-.cash-flow-table thead th {
-
-    padding: 13px 15px;
-
-    color: #fff;
-
-    text-align: right;
-
-    background:
-        linear-gradient(
-            135deg,
-            #666666,
-            #292929
-        );
-
-    border: 1px solid #444;
-
-    font-size: 14px;
-
+    color: #333;
+    font-size: 27px;
     font-weight: 800;
-
 }
 
-
-/* =========================================================
-   خلايا الجدول
-========================================================= */
-
-.cash-flow-table tbody td {
-
-    padding: 12px 15px;
-
-    color: #444;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #f3f3f3
-        );
-
-    border: 1px solid #d5d5d5;
-
-    font-size: 14px;
-
+.trial-balance-header p {
+    margin: 5px 0 0;
+    color: #777;
+    font-size: 13px;
     font-weight: 600;
-
 }
 
-
-/* =========================================================
-   Hover
-========================================================= */
-
-.cash-flow-table tbody tr:hover td {
-
-    background:
-        linear-gradient(
-            145deg,
-            #f2f2f2,
-            #e3e3e3
-        );
-
+.trial-balance-filters {
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #eee, #d2d2d2);
 }
 
-
-/* =========================================================
-   الأرقام
-========================================================= */
-
-.amount {
-
-    width: 200px;
-
-    min-width: 200px;
-
-    text-align: left !important;
-
-    direction: ltr;
-
-    white-space: nowrap;
-
-    font-weight: 800 !important;
-
-}
-
-
-/* =========================================================
-   الصفوف المهمة
-========================================================= */
-
-.cash-flow-opening td,
-.cash-flow-change td,
-.cash-flow-closing td {
-
-    font-weight: 800 !important;
-
-}
-
-
-/* =========================================================
-   رصيد آخر الفترة
-========================================================= */
-
-.cash-flow-closing td {
-
-    background:
-        linear-gradient(
-            145deg,
-            #eeeeee,
-            #d2d2d2
-        ) !important;
-
-    border-top: 2px solid #aaa;
-
-}
-
-
-/* =========================================================
-   عناوين الأقسام التفصيلية
-========================================================= */
-
-.cash-flow-section-title {
-
-    margin-top: 28px;
-
-    margin-bottom: 12px;
-
-    padding: 13px 18px;
-
-    border-radius: 14px;
-
-    color: #fff;
-
-    font-size: 17px;
-
+.trial-balance-filters .form-label {
+    color: #444;
+    font-size: 14px;
     font-weight: 800;
-
-    background:
-        linear-gradient(
-            135deg,
-            #707070,
-            #333333
-        );
-
-    box-shadow:
-        0 7px 15px rgba(0,0,0,.15),
-        inset 0 1px 1px rgba(255,255,255,.2);
-
+    margin-bottom: 7px;
 }
 
-
-/* =========================================================
-   الخط الفاصل
-========================================================= */
-
-.cash-flow-divider {
-
-    height: 1px;
-
-    margin: 20px 0;
-
-    border: 0;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            #c8c8c8,
-            transparent
-        );
-
+.trial-balance-filters .form-control,
+.trial-balance-filters .form-select {
+    min-height: 44px;
+    padding: 9px 13px;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+    background: linear-gradient(145deg, #fff, #eee);
+    border: 1px solid #cfcfcf;
+    border-radius: 11px;
+    box-shadow: 0 4px 9px rgba(0,0,0,.08);
 }
 
+.trial-balance-view-btn {
+    min-height: 44px;
+    padding: 10px 24px;
+    color: #fff !important;
+    border: 1px solid #555;
+    border-radius: 11px;
+    font-size: 14px;
+    font-weight: 800;
+    background: linear-gradient(145deg, #666, #2d3033);
+    box-shadow: 0 6px 12px rgba(0,0,0,.18);
+}
 
-/* =========================================================
-   الشاشات الصغيرة
-========================================================= */
+.trial-balance-view-btn:hover {
+    color: #fff !important;
+    background: linear-gradient(145deg, #777, #222);
+}
+
+.trial-balance-switch {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 14px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #eee, #d5d5d5);
+}
+
+.trial-balance-switch .btn {
+    min-width: 130px;
+    min-height: 40px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    border: 1px solid #999;
+    color: #444;
+    background: linear-gradient(145deg, #fff, #ddd);
+    box-shadow: 0 4px 9px rgba(0,0,0,.10);
+}
+
+.trial-balance-switch .btn.active {
+    color: #fff !important;
+    background: linear-gradient(145deg, #666, #2d3033);
+    border-color: #333;
+}
+
+.trial-balance-status {
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    border-radius: 15px;
+    color: #333;
+    font-weight: 800;
+    background: linear-gradient(145deg, #eee, #d5d5d5);
+}
+
+.trial-balance-status small {
+    display: block;
+    margin-top: 6px;
+    color: #666;
+    font-weight: 600;
+}
+
+/* كل قسم داخل كرت مستقل */
+.trial-balance-section {
+    margin-bottom: 22px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #fff, #e5e5e5);
+    border: 1px solid rgba(255,255,255,.95);
+    box-shadow: 0 16px 32px rgba(0,0,0,.14),
+                0 5px 12px rgba(0,0,0,.07),
+                inset 0 1px 1px rgba(255,255,255,.95);
+}
+
+.trial-balance-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    color: #fff;
+    background: linear-gradient(135deg, #666, #2d3033);
+}
+
+.trial-balance-section-title {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 900;
+}
+
+.trial-balance-section-subtitle {
+    margin-top: 5px;
+    color: #e0e0e0;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.trial-balance-section-toggle {
+    flex-shrink: 0;
+    min-width: 95px;
+    padding: 8px 13px;
+    color: #333;
+    background: linear-gradient(145deg, #fff, #ddd);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.trial-balance-section-body {
+    padding: 18px;
+    background: linear-gradient(145deg, #fff, #eee);
+}
+
+.trial-balance-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 13px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+.trial-balance-table {
+    width: 100%;
+    min-width: 1000px;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.trial-balance-table thead th {
+    padding: 12px 10px;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    background: linear-gradient(135deg, #666, #292929);
+    border: 1px solid #444;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.trial-balance-table tbody td,
+.trial-balance-table tfoot td {
+    padding: 11px 10px;
+    color: #444;
+    background: linear-gradient(145deg, #fff, #f0f0f0);
+    border: 1px solid #ddd;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.trial-balance-table tbody tr:hover td {
+    background: linear-gradient(145deg, #f2f2f2, #e1e1e1);
+}
+
+.trial-balance-table .account-code {
+    width: 110px;
+    white-space: nowrap;
+    direction: ltr;
+    text-align: center;
+}
+
+.trial-balance-table .account-name {
+    min-width: 220px;
+    white-space: nowrap;
+}
+
+.trial-balance-table .amount {
+    min-width: 115px;
+    text-align: left;
+    direction: ltr;
+    white-space: nowrap;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.trial-balance-table .total-row td {
+    font-weight: 900;
+    background: linear-gradient(145deg, #e8e8e8, #cfcfcf);
+    border-top: 2px solid #999;
+}
+
+.account-tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-left: 6px;
+    border: 1px solid #bbb;
+    border-radius: 7px;
+    color: #333;
+    background: linear-gradient(145deg, #fff, #ddd);
+    cursor: pointer;
+    font-weight: 900;
+}
+
+.account-tree-toggle:disabled {
+    visibility: hidden;
+}
+
+.trial-balance-empty {
+    padding: 25px !important;
+    text-align: center;
+    color: #777 !important;
+}
+
+.trial-balance-grand-total {
+    margin-top: 24px;
+    padding: 22px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #eee, #d0d0d0);
+    border: 1px solid #ccc;
+    box-shadow: 0 12px 25px rgba(0,0,0,.12),
+                inset 0 1px 1px rgba(255,255,255,.9);
+}
+
+.trial-balance-grand-total h4 {
+    margin: 0 0 15px;
+    color: #333;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.trial-balance-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.trial-balance-summary-item {
+    padding: 15px;
+    border-radius: 13px;
+    background: linear-gradient(145deg, #fff, #e8e8e8);
+    box-shadow: 0 5px 12px rgba(0,0,0,.08);
+}
+
+.trial-balance-summary-item span {
+    display: block;
+    margin-bottom: 7px;
+    color: #666;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.trial-balance-summary-item strong {
+    color: #333;
+    font-size: 19px;
+    font-weight: 900;
+    direction: ltr;
+    display: block;
+    overflow-wrap: anywhere;
+}
 
 @media (max-width: 768px) {
-
-    .cash-flow-page {
-
-        padding: 15px;
-
+    .trial-balance-page {
+        padding: 12px;
     }
 
-
-    .cash-flow-header {
-
-        padding: 18px;
-
+    .trial-balance-header {
+        padding: 16px;
     }
 
-
-    .cash-flow-header h3 {
-
+    .trial-balance-header h3 {
         font-size: 21px;
-
     }
 
-
-    .cash-flow-header-icon {
-
-        width: 50px;
-
-        height: 50px;
-
+    .trial-balance-header-icon {
+        width: 48px;
+        height: 48px;
         font-size: 20px;
-
     }
 
-
-    .cash-flow-card-body {
-
-        padding: 14px;
-
+    .trial-balance-section-header {
+        padding: 15px;
     }
 
-
-    .cash-flow-filters {
-
-        padding: 14px;
-
+    .trial-balance-section-title {
+        font-size: 16px;
     }
 
-
-    .cash-flow-view-switch {
-
-        flex-direction: column;
-
+    .trial-balance-section-body {
+        padding: 10px;
     }
 
-
-    .cash-flow-view-switch .btn {
-
-        width: 100%;
-
+    .trial-balance-summary-grid {
+        grid-template-columns: 1fr;
     }
 
-
-    .cash-flow-table {
-
-        min-width: 650px;
-
+    .trial-balance-section-toggle {
+        min-width: 78px;
+        padding: 8px;
     }
-
 }
-
 </style>
 
+<div class="trial-balance-page">
+    <div class="trial-balance-wrapper">
 
-<div class="cash-flow-page">
-
-    <div class="cash-flow-wrapper">
-
-
-        <!-- =================================================
-             رأس الصفحة
-        ================================================= -->
-
-        <div class="cash-flow-header">
-
-            <div class="cash-flow-header-icon">
-
-                💰
-
-            </div>
-
+        <div class="trial-balance-header">
+            <div class="trial-balance-header-icon">⚖️</div>
             <div>
-
-                <h3>
-                    قائمة التدفقات النقدية
-                </h3>
-
-                <p>
-                    عرض حركة النقدية والتدفقات التشغيلية والاستثمارية والتمويلية
-                </p>
-
+                <h3>ميزان المراجعة</h3>
+                <p>الأصول والخصوم وحقوق الملكية والإيرادات والمصروفات</p>
             </div>
-
         </div>
 
+        <div class="trial-balance-filters">
+            <form method="get" class="row g-3 align-items-end">
 
-        <!-- =================================================
-             الكرت الرئيسي
-        ================================================= -->
-
-        <div class="cash-flow-card">
-
-
-            <div class="cash-flow-card-header">
-
-                قائمة التدفقات النقدية
-
-            </div>
-
-
-            <div class="cash-flow-card-body">
-
-
-                <!-- =================================================
-                     الفلاتر
-                ================================================= -->
-
-                <div class="cash-flow-filters">
-
-                    <form
-                        method="get"
-                        class="row g-3 align-items-end"
+                <div class="col-md-3">
+                    <label class="form-label">من تاريخ</label>
+                    <input
+                        type="date"
+                        name="date_from"
+                        value="{{ date_from|date:'Y-m-d' }}"
+                        class="form-control"
                     >
+                </div>
 
+                <div class="col-md-3">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input
+                        type="date"
+                        name="date_to"
+                        value="{{ date_to|date:'Y-m-d' }}"
+                        class="form-control"
+                    >
+                </div>
 
-                        <!-- من تاريخ -->
-
-                        <div class="col-md-3">
-
-                            <label class="form-label">
-
-                                من تاريخ
-
-                            </label>
-
-                            <input
-                                type="date"
-                                name="date_from"
-                                value="{{ date_from|date:'Y-m-d' }}"
-                                class="form-control"
+                <div class="col-md-3">
+                    <label class="form-label">مركز التكلفة</label>
+                    <select name="cost_center" class="form-select">
+                        <option value="">كل المراكز</option>
+                        {% for cc in cost_centers %}
+                            <option
+                                value="{{ cc.id }}"
+                                {% if cc.id|stringformat:"s" == selected_cost_center|stringformat:"s" %}selected{% endif %}
                             >
+                                {{ cc.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
+                <div class="col-md-3">
+                    <button type="submit" class="btn trial-balance-view-btn w-100">
+                        🔍 عرض الميزان
+                    </button>
+                </div>
+
+                <input type="hidden" name="view_mode" value="{{ view_mode }}">
+            </form>
+        </div>
+
+        <div class="trial-balance-switch">
+            <a
+                href="?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}&cost_center={{ selected_cost_center|urlencode }}&view_mode=summary"
+                class="btn {% if view_mode == 'summary' %}active{% endif %}"
+            >
+                📋 عرض مختصر
+            </a>
+
+            <a
+                href="?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}&cost_center={{ selected_cost_center|urlencode }}&view_mode=detailed"
+                class="btn {% if view_mode == 'detailed' %}active{% endif %}"
+            >
+                📊 عرض تفصيلي
+            </a>
+        </div>
+
+        <div class="trial-balance-status">
+            {% if is_balanced %}
+                إجمالي الأرصدة الختامية متوازن حسابيًا.
+            {% else %}
+                يوجد فرق في الأرصدة أو الحركات؛ يرجى مراجعة القيود.
+            {% endif %}
+            <small>
+                يعتمد التوازن على القيم التي جهزها التقرير، ويجب التأكد من احتساب الحسابات المرحلة دون تكرار الحسابات الرئيسية والفرعية.
+            </small>
+        </div>
+
+        {% for section in sections %}
+            <section class="trial-balance-section">
+
+                <div class="trial-balance-section-header">
+                    <div>
+                        <h4 class="trial-balance-section-title">
+                            {{ section.title }}
+                        </h4>
+                        <div class="trial-balance-section-subtitle">
+                            حسابات هذا القسم وأرصدتها
                         </div>
+                    </div>
 
+                    <button
+                        type="button"
+                        class="trial-balance-section-toggle"
+                        data-section-toggle
+                        aria-expanded="true"
+                    >
+                        طي القسم −
+                    </button>
+                </div>
 
-                        <!-- إلى تاريخ -->
+                <div class="trial-balance-section-body">
+                    <div class="trial-balance-table-wrapper">
+                        <table class="trial-balance-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">كود الحساب</th>
+                                    <th rowspan="2">اسم الحساب</th>
+                                    <th colspan="2">رصيد أول الفترة</th>
+                                    <th colspan="2">حركة الفترة</th>
+                                    <th colspan="2">الرصيد حتى تاريخ النهاية</th>
+                                </tr>
+                                <tr>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                </tr>
+                            </thead>
 
-                        <div class="col-md-3">
-
-                            <label class="form-label">
-
-                                إلى تاريخ
-
-                            </label>
-
-                            <input
-                                type="date"
-                                name="date_to"
-                                value="{{ date_to|date:'Y-m-d' }}"
-                                class="form-control"
-                            >
-
-                        </div>
-
-
-                        <!-- مركز التكلفة -->
-
-                        <div class="col-md-3">
-
-                            <label class="form-label">
-
-                                مركز التكلفة
-
-                            </label>
-
-                            <select
-                                name="cost_center"
-                                id="costCenterSelect"
-                                class="form-select"
-                            >
-
-                                <option value=""></option>
-
-                                {% for cc in cost_centers %}
-
-                                    <option
-                                        value="{{ cc.id }}"
-                                        {% if cc.id|stringformat:"s" == selected_cost_center %}
-                                            selected
-                                        {% endif %}
+                            <tbody>
+                                {% for row in section.rows %}
+                                    <tr
+                                        data-account-row
+                                        data-account-id="{{ row.account.id }}"
+                                        data-parent-id="{{ row.parent_id|default:'' }}"
+                                        data-level="{{ row.level|default:0 }}"
                                     >
+                                        <td class="account-code">
+                                            {{ row.account.code }}
+                                        </td>
 
-                                        {{ cc.name }}
+                                        <td class="account-name">
+                                            <span style="display:inline-flex;align-items:center;padding-right:{{ row.level|default:0 }}em;">
+                                                {% if row.has_children %}
+                                                    <button
+                                                        type="button"
+                                                        class="account-tree-toggle"
+                                                        data-tree-toggle
+                                                        data-account-id="{{ row.account.id }}"
+                                                        aria-expanded="true"
+                                                        title="فتح أو طي الحسابات الفرعية"
+                                                    >−</button>
+                                                {% else %}
+                                                    <button
+                                                        type="button"
+                                                        class="account-tree-toggle"
+                                                        disabled
+                                                        aria-hidden="true"
+                                                    >·</button>
+                                                {% endif %}
+                                                {{ row.account.name }}
+                                            </span>
+                                        </td>
 
-                                    </option>
-
+                                        <td class="amount">{{ row.opening_debit|floatformat:2 }}</td>
+                                        <td class="amount">{{ row.opening_credit|floatformat:2 }}</td>
+                                        <td class="amount">{{ row.movement_debit|floatformat:2 }}</td>
+                                        <td class="amount">{{ row.movement_credit|floatformat:2 }}</td>
+                                        <td class="amount">{{ row.closing_debit|floatformat:2 }}</td>
+                                        <td class="amount">{{ row.closing_credit|floatformat:2 }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="trial-balance-empty">
+                                            لا توجد حسابات أو حركات في هذا القسم خلال الفترة المحددة.
+                                        </td>
+                                    </tr>
                                 {% endfor %}
+                            </tbody>
 
-                            </select>
-
-                        </div>
-
-
-                        <!-- زر العرض -->
-
-                        <div class="col-md-3">
-
-                            <button
-                                type="submit"
-                                class="btn cash-flow-view-btn w-100"
-                            >
-
-                                🔍
-                                عرض
-
-                            </button>
-
-                        </div>
-
-
-                        <input
-                            type="hidden"
-                            name="view_mode"
-                            value="{{ view_mode }}"
-                        >
-
-                    </form>
-
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="2">إجمالي {{ section.title }}</td>
+                                    <td class="amount">{{ section.total_open_debit|floatformat:2 }}</td>
+                                    <td class="amount">{{ section.total_open_credit|floatformat:2 }}</td>
+                                    <td class="amount">{{ section.total_mov_debit|floatformat:2 }}</td>
+                                    <td class="amount">{{ section.total_mov_credit|floatformat:2 }}</td>
+                                    <td class="amount">{{ section.total_closing_debit|floatformat:2 }}</td>
+                                    <td class="amount">{{ section.total_closing_credit|floatformat:2 }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-
-
-                <!-- =================================================
-                     اختيار العرض
-                ================================================= -->
-
-                <div class="cash-flow-view-switch">
-
-                    <a
-                        href="?view_mode=summary"
-                        class="btn
-                            {% if view_mode == 'summary' %}
-                                active
-                            {% endif %}
-                        "
-                    >
-
-                        📋
-                        عرض مختصر
-
-                    </a>
-
-
-                    <a
-                        href="?view_mode=detailed"
-                        class="btn
-                            {% if view_mode == 'detailed' %}
-                                active
-                            {% endif %}
-                        "
-                    >
-
-                        📊
-                        عرض تفصيلي
-
-                    </a>
-
-                </div>
-
-
-                <!-- =================================================
-                     ملخص النقدية
-                ================================================= -->
-
-                <div class="cash-flow-table-wrapper">
-
-                    <table class="cash-flow-table">
-
-                        <tbody>
-
-
-                            <tr class="cash-flow-opening">
-
-                                <td>
-                                    رصيد النقدية أول الفترة
-                                </td>
-
-                                <td class="amount">
-
-                                    {{ opening_cash|floatformat:2 }}
-
-                                </td>
-
-                            </tr>
-
-
-                            <tr class="cash-flow-change">
-
-                                <td>
-                                    صافي التغير في النقدية
-                                </td>
-
-                                <td class="amount">
-
-                                    {{ net_cash_change|floatformat:2 }}
-
-                                </td>
-
-                            </tr>
-
-
-                            <tr class="cash-flow-closing">
-
-                                <td>
-                                    رصيد النقدية آخر الفترة
-                                </td>
-
-                                <td class="amount">
-
-                                    {{ closing_cash|floatformat:2 }}
-
-                                </td>
-
-                            </tr>
-
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-                <!-- =================================================
-                     العرض التفصيلي
-                ================================================= -->
-
-                {% if view_mode == "detailed" %}
-
-                    {% for section, rows in detailed_sections.items %}
-
-
-                        <div class="cash-flow-section-title">
-
-                            {% if section == "operating" %}
-
-                                🔄 أنشطة تشغيلية
-
-                            {% endif %}
-
-
-                            {% if section == "investing" %}
-
-                                📈 أنشطة استثمارية
-
-                            {% endif %}
-
-
-                            {% if section == "financing" %}
-
-                                💳 أنشطة تمويلية
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="cash-flow-table-wrapper">
-
-                            <table class="cash-flow-table">
-
-                                <tbody>
-
-                                    {% for name, value in rows.items %}
-
-                                        <tr>
-
-                                            <td>
-
-                                                {{ name }}
-
-                                            </td>
-
-                                            <td class="amount">
-
-                                                {{ value|floatformat:2 }}
-
-                                            </td>
-
-                                        </tr>
-
-                                    {% endfor %}
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-
-                    {% endfor %}
-
-                {% endif %}
-
-
+            </section>
+        {% empty %}
+            <div class="trial-balance-card" style="padding:25px;text-align:center;color:#666;">
+                لم تصل بيانات الأقسام إلى القالب بعد. يجب تجهيز المتغير sections في ملف trial_balance.py.
             </div>
+        {% endfor %}
 
+        <div class="trial-balance-grand-total">
+            <h4>ملخص ميزان المراجعة</h4>
+
+            <div class="trial-balance-summary-grid">
+                <div class="trial-balance-summary-item">
+                    <span>إجمالي الأرصدة الافتتاحية المدينة</span>
+                    <strong>{{ total_open_debit|floatformat:2 }}</strong>
+                </div>
+
+                <div class="trial-balance-summary-item">
+                    <span>إجمالي الأرصدة الافتتاحية الدائنة</span>
+                    <strong>{{ total_open_credit|floatformat:2 }}</strong>
+                </div>
+
+                <div class="trial-balance-summary-item">
+                    <span>إجمالي حركة الفترة المدينة</span>
+                    <strong>{{ total_mov_debit|floatformat:2 }}</strong>
+                </div>
+
+                <div class="trial-balance-summary-item">
+                    <span>إجمالي حركة الفترة الدائنة</span>
+                    <strong>{{ total_mov_credit|floatformat:2 }}</strong>
+                </div>
+
+                <div class="trial-balance-summary-item">
+                    <span>إجمالي الأرصدة الختامية المدينة</span>
+                    <strong>{{ total_net_debit|floatformat:2 }}</strong>
+                </div>
+
+                <div class="trial-balance-summary-item">
+                    <span>إجمالي الأرصدة الختامية الدائنة</span>
+                    <strong>{{ total_net_credit|floatformat:2 }}</strong>
+                </div>
+            </div>
         </div>
 
     </div>
-
 </div>
 
-
-<!-- =========================================================
-     تفعيل Select2
-========================================================= -->
-
 <script>
+document.addEventListener("DOMContentLoaded", function () {
 
-$(document).ready(function () {
+    // طي وفتح القسم بالكامل
+    document.querySelectorAll("[data-section-toggle]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const section = button.closest(".trial-balance-section");
+            const body = section.querySelector(".trial-balance-section-body");
+            const expanded = button.getAttribute("aria-expanded") === "true";
 
-    $('#costCenterSelect').select2({
-
-        dir: "rtl",
-
-        width: '100%',
-
-        placeholder: "— كل المراكز —",
-
-        allowClear: true
-
+            body.hidden = expanded;
+            button.setAttribute("aria-expanded", String(!expanded));
+            button.textContent = expanded ? "فتح القسم +" : "طي القسم −";
+        });
     });
 
+    // فتح وطي الحسابات الفرعية
+    document.querySelectorAll("[data-tree-toggle]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const accountId = button.dataset.accountId;
+            const section = button.closest(".trial-balance-section");
+            const expanded = button.getAttribute("aria-expanded") === "true";
+            const rows = Array.from(section.querySelectorAll("[data-account-row]"));
+
+            const descendants = [];
+            let parentIds = [accountId];
+
+            // إخفاء جميع مستويات الأبناء التابعة للحساب المحدد
+            while (parentIds.length) {
+                const nextIds = [];
+
+                rows.forEach(function (row) {
+                    if (parentIds.includes(row.dataset.parentId)) {
+                        descendants.push(row);
+                        nextIds.push(row.dataset.accountId);
+                    }
+                });
+
+                parentIds = nextIds;
+            }
+
+            if (expanded) {
+                descendants.forEach(function (row) {
+                    row.hidden = true;
+                });
+
+                button.textContent = "+";
+                button.setAttribute("aria-expanded", "false");
+            } else {
+                // إظهار الأبناء المباشرين فقط؛ تظل مستويات الأحفاد مطوية
+                rows.forEach(function (row) {
+                    if (row.dataset.parentId === accountId) {
+                        row.hidden = false;
+                    }
+                });
+
+                button.textContent = "−";
+                button.setAttribute("aria-expanded", "true");
+            }
+        });
+    });
+
+    // في العرض المختصر، تظهر الحسابات ذات المستوى الأول فقط
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("view_mode") === "summary") {
+        document.querySelectorAll("[data-account-row]").forEach(function (row) {
+            const level = parseInt(row.dataset.level || "0", 10);
+            if (level > 0) {
+                row.hidden = true;
+            }
+        });
+
+        document.querySelectorAll("[data-tree-toggle]").forEach(function (button) {
+            button.textContent = "+";
+            button.setAttribute("aria-expanded", "false");
+        });
+    }
 });
-
 </script>
-
 
 {% endblock %}
