@@ -84,7 +84,26 @@ urlpatterns = [
         views.edit_payment_method,
         name="edit_payment_method"
     ),
-
+path(
+    "payment-methods/",
+    views.payment_methods_list,
+    name="payment_methods_list",
+),
+path(
+    "payment-methods/<int:pk>/",
+    views.payment_method_detail,
+    name="payment_method_detail",
+),
+path(
+    "payment-methods/<int:pk>/edit/",
+    views.payment_method_edit,
+    name="payment_method_edit",
+),
+path(
+    "payment-methods/<int:pk>/delete/",
+    views.payment_method_delete,
+    name="payment_method_delete",
+),
     # =========================================
     # مرتجع فاتورة POS
     # =========================================

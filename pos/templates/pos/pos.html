@@ -1191,10 +1191,11 @@ function loadInvoicesState(){
 
         }
 
+        renumberOpenInvoices();
+
         return true;
 
     } catch(error) {
-
         console.error(
             "POS SESSION DATA ERROR:",
             error
@@ -1690,12 +1691,13 @@ function createInvoice(
     }
 
 
+    renumberOpenInvoices();
+
     refreshInvoiceSearch();
 
     return id;
 
 }
-
 
 /* =========================================================
    ACTIVE INVOICE
@@ -1781,6 +1783,26 @@ function setActiveInvoice(id){
 }
 
 
+function renumberOpenInvoices(){
+
+    const tabs = document.querySelectorAll(
+        "#invoice-tabs .invoice-tab"
+    );
+
+    tabs.forEach(function(tab, index){
+
+        const title = tab.querySelector(
+            ".invoice-tab-title"
+        );
+
+        if(title){
+            title.textContent = "فاتورة " + (index + 1);
+        }
+
+    });
+
+}
+
 /* =========================================================
    DELETE INVOICE
    ========================================================= */
@@ -1812,6 +1834,7 @@ function deleteInvoice(id){
         content.remove();
     }
 
+    renumberOpenInvoices();
 
     const keys =
         Object.keys(invoices);
@@ -1865,14 +1888,18 @@ async function refreshInvoiceSearch(){
         new Option("", "", false, false)
     );
 
-    Object.keys(invoices).forEach(function(id){
+    Object.keys(invoices).forEach(function(id, index){
 
         select.append(
-            new Option("فاتورة مؤقتة " + id, id, false, false)
+            new Option(
+                "فاتورة مؤقتة " + (index + 1),
+                id,
+                false,
+                false
+            )
         );
 
     });
-
     // جلب الفواتير المحفوظة من قاعدة البيانات
     try {
 
@@ -3466,13 +3493,13 @@ function saveInvoice(id){
                 content.remove();
             }
 
+            renumberOpenInvoices();
 
             /*
              * =====================================================
              * معرفة الفواتير التي ما زالت مفتوحة
              * =====================================================
              */
-
             const remainingInvoiceIds =
                 Object.keys(invoices);
 

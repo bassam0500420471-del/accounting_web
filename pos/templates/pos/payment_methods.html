@@ -1,0 +1,913 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}
+    إدارة طرق الدفع
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid payment-methods-page mt-4">
+
+    <div class="payment-method-card">
+
+        <!-- رأس الصفحة -->
+        <div class="page-header">
+
+            <div>
+                <h3>
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    إدارة طرق الدفع
+                </h3>
+
+                <p>عرض وإدارة طرق الدفع والحسابات المحاسبية المرتبطة بها</p>
+            </div>
+
+            <a href="{% url 'pos:pos_home' %}" class="add-btn">
+                <i class="fa-solid fa-arrow-right"></i>
+                العودة إلى نقاط البيع
+            </a>
+
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="payment-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- تفاصيل طريقة الدفع -->
+        {% if page_mode == "detail" %}
+
+            <div class="detail-card">
+
+                <h4>
+                    <i class="fa-solid fa-circle-info"></i>
+                    تفاصيل طريقة الدفع
+                </h4>
+
+                <div class="detail-row">
+                    <strong>اسم طريقة الدفع</strong>
+                    <span>{{ payment_method.name }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>رقم الحساب</strong>
+                    <span>
+                        {% if payment_method.account %}
+                            {{ payment_method.account.code|default:"—" }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>الحساب المحاسبي</strong>
+                    <span>
+                        {% if payment_method.account %}
+                            {{ payment_method.account.name }}
+                        {% else %}
+                            غير مرتبط بحساب
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-actions">
+                    <a class="add-btn"
+                       href="{% url 'pos:payment_method_edit' payment_method.pk %}">
+                        <i class="fa-solid fa-pen"></i>
+                        تعديل
+                    </a>
+
+                    <a class="secondary-btn"
+                       href="{% url 'pos:payment_methods_list' %}">
+                        العودة للقائمة
+                    </a>
+                </div>
+
+            </div>
+
+        <!-- تعديل طريقة الدفع -->
+        {% elif page_mode == "edit" %}
+
+            <div class="detail-card">
+
+                <h4>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    تعديل طريقة الدفع
+                </h4>
+
+                <form method="post" class="payment-edit-form">
+                    {% csrf_token %}
+
+                    <label for="payment-method-name">
+                        اسم طريقة الدفع
+                    </label>
+
+                    <input
+                        id="payment-method-name"
+                        type="text"
+                        name="name"
+                        value="{{ payment_method.name }}"
+                        maxlength="100"
+                        required
+                    >
+
+                    <label>الحساب المحاسبي المرتبط</label>
+
+                    <div class="account-info">
+                        {% if payment_method.account %}
+                            {{ payment_method.account.code|default:"—" }}
+                            - {{ payment_method.account.name }}
+                        {% else %}
+                            لا يوجد حساب مرتبط
+                        {% endif %}
+                    </div>
+
+                    <p class="edit-note">
+                        يتم الحفاظ على الحساب المحاسبي الحالي لضمان سلامة القيود السابقة.
+                    </p>
+
+                    <div class="detail-actions">
+                        <button type="submit" class="add-btn">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            حفظ التعديلات
+                        </button>
+
+                        <a class="secondary-btn"
+                           href="{% url 'pos:payment_methods_list' %}">
+                            إلغاء
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        <!-- قائمة طرق الدفع -->
+        {% else %}
+
+            <!-- البحث -->
+            <div class="table-box">
+
+                <table class="payment-method-table">
+
+                    <thead>
+
+                        <tr class="filter-row">
+
+                            <th>
+                                <input
+                                    type="text"
+                                    class="filter-input"
+                                    placeholder="بحث بالرقم"
+                                    data-column="0"
+                                >
+                            </th>
+
+                            <th>
+                                <input
+                                    type="text"
+                                    class="filter-input"
+                                    placeholder="بحث باسم الطريقة"
+                                    data-column="1"
+                                >
+                            </th>
+
+                            <th>
+                                <input
+                                    type="text"
+                                    class="filter-input"
+                                    placeholder="بحث برقم الحساب"
+                                    data-column="2"
+                                >
+                            </th>
+
+                            <th>
+                                <input
+                                    type="text"
+                                    class="filter-input"
+                                    placeholder="بحث بالحساب المحاسبي"
+                                    data-column="3"
+                                >
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                        <tr class="header-row">
+                            <th>#</th>
+                            <th>اسم طريقة الدفع</th>
+                            <th>رقم الحساب</th>
+                            <th>الحساب المحاسبي</th>
+                            <th>الإجراءات</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for method in payment_methods %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="order-badge">
+                                        {{ forloop.revcounter }}
+                                    </span>
+                                </td>
+
+                                <td class="method-name">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                    {{ method.name }}
+                                </td>
+
+                                <td>
+                                    {% if method.account %}
+                                        <span class="account-badge">
+                                            {{ method.account.code|default:"—" }}
+                                        </span>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td class="account-name">
+                                    {% if method.account %}
+                                        {{ method.account.name }}
+                                    {% else %}
+                                        غير مرتبط بحساب
+                                    {% endif %}
+                                </td>
+
+                                <td>
+
+                                    <div class="options-dropdown">
+
+                                        <button
+                                            type="button"
+                                            class="action-btn options-button"
+                                        >
+                                            <i class="fa-solid fa-gear"></i>
+                                            الإجراءات
+                                        </button>
+
+                                        <ul class="dropdown-menu custom-menu text-end">
+
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="{% url 'pos:payment_method_detail' method.pk %}"
+                                                >
+                                                    <i class="fa-solid fa-eye"></i>
+                                                    عرض
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="{% url 'pos:payment_method_edit' method.pk %}"
+                                                >
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                    تعديل
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <form
+                                                    method="post"
+                                                    action="{% url 'pos:payment_method_delete' method.pk %}"
+                                                    onsubmit="return confirm('هل أنت متأكد من حذف طريقة الدفع؟');"
+                                                >
+                                                    {% csrf_token %}
+
+                                                    <button
+                                                        type="submit"
+                                                        class="dropdown-item delete-option"
+                                                    >
+                                                        <i class="fa-solid fa-trash"></i>
+                                                        حذف
+                                                    </button>
+                                                </form>
+                                            </li>
+
+                                        </ul>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="5" class="empty">
+                                    <i class="fa-solid fa-money-bill-transfer"></i>
+                                    <div>لا توجد طرق دفع مضافة حتى الآن</div>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<style>
+
+/* الخلفية العامة */
+
+body {
+    background: #eeeeee;
+}
+
+/* الصفحة */
+
+.payment-methods-page {
+    direction: rtl;
+    background: linear-gradient(135deg, #f8f8f8, #d5d5d5);
+    min-height: 90vh;
+    padding: 25px;
+}
+
+/* البطاقة الرئيسية */
+
+.payment-method-card {
+    background: white;
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.15);
+}
+
+/* رأس الصفحة */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.page-header h3 {
+    font-weight: 800;
+    color: #444;
+    margin-bottom: 5px;
+}
+
+.page-header h3 i {
+    color: #666;
+    margin-left: 5px;
+}
+
+.page-header p {
+    color: #777;
+    margin: 0;
+}
+
+/* زر الإضافة بنفس تدرج التصميم الأصلي */
+
+.add-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #666, #444);
+    color: white;
+    padding: 12px 22px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 0;
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.20);
+    transition: .3s;
+    cursor: pointer;
+}
+
+.add-btn:hover {
+    background: linear-gradient(135deg, #555, #333);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,.25);
+}
+
+/* زر العودة الثانوي */
+
+.secondary-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 14px;
+    color: #444;
+    text-decoration: none;
+    font-weight: 700;
+    background: linear-gradient(135deg, #eee, #d5d5d5);
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,.10);
+}
+
+/* الرسائل */
+
+.payment-message {
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f7f7f7, #e2e2e2);
+    color: #444;
+    box-shadow: 0 4px 8px rgba(0,0,0,.08);
+}
+
+/* صندوق الجدول */
+
+.table-box {
+    overflow-x: auto;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+
+/* الجدول */
+
+.payment-method-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+/* صف البحث */
+
+.filter-row {
+    background: linear-gradient(135deg, #f7f7f7, #ddd);
+}
+
+.filter-row th {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 8px 10px;
+    text-align: center;
+    border: 1px solid #aaa;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #fff, #e5e5e5);
+    color: #444;
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,.08),
+        0 2px 4px rgba(0,0,0,.06);
+    transition: .3s;
+    font-size: 12px;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #666;
+    box-shadow:
+        0 0 0 3px rgba(100,100,100,.12),
+        inset 0 2px 4px rgba(0,0,0,.08);
+}
+
+.filter-input::placeholder {
+    text-align: center;
+    color: #777;
+}
+
+/* رأس الجدول */
+
+.header-row {
+    background: linear-gradient(90deg, #444, #888);
+    color: white;
+}
+
+.header-row th {
+    padding: 17px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+
+/* خلايا الجدول */
+
+.payment-method-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+    vertical-align: middle;
+    color: #555;
+}
+
+/* تأثير ثلاثي الأبعاد للصفوف */
+
+.payment-method-table tbody tr {
+    transition: .3s;
+    background: linear-gradient(135deg, #fff, #f5f5f5);
+}
+
+.payment-method-table tbody tr:hover {
+    background: linear-gradient(135deg, #f5f5f5, #ddd);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,.10);
+}
+
+/* اسم طريقة الدفع */
+
+.method-name {
+    font-weight: 700;
+    color: #444 !important;
+}
+
+.method-name i {
+    color: #777;
+    margin-left: 5px;
+}
+
+/* الحساب المحاسبي */
+
+.account-name {
+    font-weight: 600;
+    color: #555 !important;
+}
+
+/* رقم الحساب */
+
+.account-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #eee, #d4d4d4);
+    color: #555;
+    font-size: 12px;
+    box-shadow:
+        0 3px 6px rgba(0,0,0,.10),
+        inset 0 1px 1px rgba(255,255,255,.8);
+}
+
+/* الرقم التسلسلي */
+
+.order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    background: linear-gradient(145deg, #e5e5e5, #cfcfcf);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #444;
+    box-shadow:
+        0 3px 6px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.8);
+}
+
+/* زر الخيارات */
+
+.action-btn {
+    background: linear-gradient(135deg, #666, #444);
+    color: white;
+    border: 0;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.20),
+        inset 0 1px 1px rgba(255,255,255,.18);
+    transition: .3s;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background: linear-gradient(135deg, #555, #333);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 12px rgba(0,0,0,.25);
+}
+
+/* حاوية الخيارات */
+
+.options-dropdown {
+    position: relative;
+}
+
+/* القائمة المنسدلة */
+
+.custom-menu {
+    display: none;
+    position: fixed !important;
+    min-width: 210px;
+    padding: 8px;
+    margin: 0 !important;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #fff, #ddd);
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.22),
+        0 3px 6px rgba(0,0,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.9);
+    z-index: 999999999 !important;
+}
+
+.custom-menu.menu-open {
+    display: block !important;
+}
+
+/* عناصر القائمة */
+
+.custom-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    margin: 2px 0;
+    border: 0;
+    border-radius: 9px;
+    color: #444;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    background: linear-gradient(135deg, #fff, #eee);
+    box-shadow:
+        0 2px 4px rgba(0,0,0,.06),
+        inset 0 1px 1px rgba(255,255,255,.8);
+    transition: .2s;
+    cursor: pointer;
+}
+
+.custom-menu .dropdown-item:hover {
+    background: linear-gradient(135deg, #eee, #d2d2d2);
+    color: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.12);
+}
+
+.custom-menu .dropdown-item i {
+    width: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.custom-menu .dropdown-item:hover i {
+    color: #444;
+}
+
+/* حذف */
+
+.custom-menu .delete-option {
+    color: #555;
+}
+
+.custom-menu .delete-option:hover {
+    color: #333;
+}
+
+/* النماذج */
+
+.detail-card {
+    padding: 25px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff, #f3f3f3);
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.08),
+        inset 0 1px 1px #fff;
+}
+
+.detail-card h4 {
+    color: #444;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f7f7f7, #e5e5e5);
+}
+
+.detail-row strong {
+    color: #444;
+}
+
+.detail-row span {
+    color: #666;
+}
+
+.detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.payment-edit-form label {
+    display: block;
+    margin: 16px 0 8px;
+    color: #444;
+    font-weight: 700;
+}
+
+.payment-edit-form input {
+    width: 100%;
+    max-width: 650px;
+    padding: 12px;
+    border: 1px solid #aaa;
+    border-radius: 9px;
+    background: linear-gradient(145deg, #fff, #eee);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.06);
+}
+
+.account-info {
+    max-width: 650px;
+    padding: 12px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #eee, #ddd);
+}
+
+.edit-note {
+    color: #777;
+    margin-top: 10px;
+}
+
+/* القائمة الفارغة */
+
+.empty {
+    padding: 35px !important;
+    color: #999 !important;
+    font-size: 14px;
+}
+
+.empty i {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #aaa;
+}
+
+/* الشاشات الصغيرة */
+
+@media (max-width: 768px) {
+    .payment-methods-page {
+        padding: 15px;
+    }
+
+    .payment-method-card {
+        padding: 18px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .page-header .add-btn {
+        text-align: center;
+    }
+
+    .payment-method-table {
+        min-width: 850px;
+    }
+
+    .detail-row {
+        flex-direction: column;
+    }
+}
+
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* البحث داخل الجدول */
+    const filterInputs = document.querySelectorAll(".filter-input");
+    const tableRows = document.querySelectorAll(".payment-method-table tbody tr");
+
+    filterInputs.forEach(function (input) {
+        input.addEventListener("input", function () {
+            const value = this.value.toLowerCase().trim();
+            const columnIndex = Number(this.dataset.column);
+
+            tableRows.forEach(function (row) {
+                const cells = row.querySelectorAll("td");
+                const cell = cells[columnIndex];
+
+                if (!cell) return;
+
+                row.style.display =
+                    cell.textContent.toLowerCase().includes(value) ? "" : "none";
+            });
+        });
+    });
+
+    /* قائمة الخيارات: نقلها إلى body لتفادي قصّها داخل الجدول */
+    let openedMenu = null;
+    let openedButton = null;
+
+    function closeOptionsMenu() {
+        if (!openedMenu) return;
+
+        openedMenu.classList.remove("menu-open");
+
+        if (openedButton) {
+            const originalDropdown = openedButton.closest(".options-dropdown");
+
+            if (originalDropdown) {
+                originalDropdown.appendChild(openedMenu);
+            }
+        }
+
+        openedMenu.style.top = "";
+        openedMenu.style.left = "";
+        openedMenu.style.right = "";
+        openedMenu.style.bottom = "";
+        openedMenu.style.transform = "";
+
+        openedMenu = null;
+        openedButton = null;
+    }
+
+    function positionOptionsMenu() {
+        if (!openedMenu || !openedButton) return;
+
+        const rect = openedButton.getBoundingClientRect();
+        const menuHeight = openedMenu.offsetHeight;
+        const menuWidth = openedMenu.offsetWidth;
+        const gap = 8;
+
+        let top = rect.top - menuHeight - gap;
+        let left = rect.left + (rect.width - menuWidth) / 2;
+
+        if (top < 8) top = 8;
+        if (left + menuWidth > window.innerWidth - 8) {
+            left = window.innerWidth - menuWidth - 8;
+        }
+        if (left < 8) left = 8;
+
+        openedMenu.style.top = top + "px";
+        openedMenu.style.left = left + "px";
+        openedMenu.style.right = "auto";
+        openedMenu.style.bottom = "auto";
+        openedMenu.style.transform = "none";
+    }
+
+    document.querySelectorAll(".options-button").forEach(function (button) {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const dropdown = this.closest(".options-dropdown");
+            const menu = dropdown
+                ? dropdown.querySelector(".custom-menu")
+                : null;
+
+            if (!menu) return;
+
+            if (openedMenu === menu && menu.classList.contains("menu-open")) {
+                closeOptionsMenu();
+                return;
+            }
+
+            closeOptionsMenu();
+
+            document.body.appendChild(menu);
+            menu.classList.add("menu-open");
+
+            openedMenu = menu;
+            openedButton = this;
+
+            positionOptionsMenu();
+        });
+    });
+
+    document.addEventListener("click", function () {
+        closeOptionsMenu();
+    });
+
+    window.addEventListener("scroll", positionOptionsMenu, true);
+
+    window.addEventListener("resize", closeOptionsMenu);
+
+});
+</script>
+
+{% endblock %}

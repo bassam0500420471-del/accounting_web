@@ -860,7 +860,7 @@ def pos_user_invoices(request):
         results.append({
             "id": invoice.id,
             "total": str(invoice.total),
-            "date": invoice.created_at.strftime("%Y-%m-%d %H:%M"),
+            "date": timezone.localtime(invoice.created_at).strftime("%Y-%m-%d %H:%M"),
             "customer": (
                 str(invoice.customer)
                 if invoice.customer else ""
@@ -1889,7 +1889,160 @@ def add_payment_method(request):
             "success": False,
             "error": str(e)
         }, status=500)
+# =========================================================
+# قائمة طرق الدفع
+# =========================================================
+def payment_methods_list(request):
+    company = _get_company(request)
 
+    payment_methods = (
+        PaymentMethod.objects
+        .filter(company=company)
+        .select_related("account", "account__parent")
+        .order_by("name", "id")
+    )
+
+    return render(
+        request,
+        "pos/payment_methods.html",
+        {
+            "page_mode": "list",
+            "payment_methods": payment_methods,
+        }
+    )
+
+
+# =========================================================
+# عرض تفاصيل طريقة الدفع
+# =========================================================
+def payment_method_detail(request, pk):
+    company = _get_company(request)
+
+    payment_method = get_object_or_404(
+        PaymentMethod.objects.select_related(
+            "account",
+            "account__parent",
+        ),
+        pk=pk,
+        company=company,
+    )
+
+    return render(
+        request,
+        "pos/payment_methods.html",
+        {
+            "page_mode": "detail",
+            "payment_method": payment_method,
+        }
+    )
+
+
+# =========================================================
+# تعديل طريقة الدفع
+# =========================================================
+def payment_method_edit(request, pk):
+    company = _get_company(request)
+
+    payment_method = get_object_or_404(
+        PaymentMethod.objects.select_related("account"),
+        pk=pk,
+        company=company,
+    )
+
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+
+        if not name:
+            messages.error(request, "يرجى إدخال اسم طريقة الدفع.")
+        elif PaymentMethod.objects.filter(
+            company=company,
+            name=name,
+        ).exclude(pk=payment_method.pk).exists():
+            messages.error(request, "اسم طريقة الدفع مستخدم بالفعل.")
+        else:
+            with transaction.atomic():
+                payment_method.name = name
+                payment_method.save(update_fields=["name"])
+
+                # مزامنة اسم الحساب المرتبط، دون تغيير الحساب نفسه.
+                if payment_method.account:
+                    payment_method.account.name = name
+                    payment_method.account.save(
+                        update_fields=["name"]
+                    )
+
+            messages.success(request, "تم تعديل طريقة الدفع بنجاح.")
+            return redirect("pos:payment_methods_list")
+
+    return render(
+        request,
+        "pos/payment_methods.html",
+        {
+            "page_mode": "edit",
+            "payment_method": payment_method,
+        }
+    )
+
+
+# =========================================================
+# حذف طريقة الدفع بأمان
+# =========================================================
+def payment_method_delete(request, pk):
+    company = _get_company(request)
+
+    payment_method = get_object_or_404(
+        PaymentMethod.objects.select_related("account"),
+        pk=pk,
+        company=company,
+    )
+
+    if request.method != "POST":
+        return redirect("pos:payment_methods_list")
+
+    account = payment_method.account
+
+    # لا نحذف طريقة دفع مستخدمة في دفعات سابقة.
+    if Payment.objects.filter(method=payment_method).exists():
+        messages.error(
+            request,
+            "لا يمكن حذف طريقة الدفع لأنها مرتبطة بدفعات سابقة."
+        )
+        return redirect("pos:payment_methods_list")
+
+    if account:
+        # لا نحذف الحساب إذا استُخدم في قيود محاسبية.
+        if JournalLine.objects.filter(account=account).exists():
+            messages.error(
+                request,
+                "لا يمكن حذف طريقة الدفع لأن حسابها مرتبط بقيود محاسبية."
+            )
+            return redirect("pos:payment_methods_list")
+
+        # لا نحذف حسابًا له حسابات فرعية.
+        if Account.objects.filter(parent=account).exists():
+            messages.error(
+                request,
+                "لا يمكن حذف طريقة الدفع لأن حسابها يحتوي على حسابات فرعية."
+            )
+            return redirect("pos:payment_methods_list")
+
+    try:
+        with transaction.atomic():
+            payment_method.delete()
+
+            # حذف الحساب المرتبط فقط بعد التحقق من عدم استخدامه.
+            if account:
+                account.delete()
+
+        messages.success(request, "تم حذف طريقة الدفع بنجاح.")
+
+    except Exception:
+        messages.error(
+            request,
+            "تعذر الحذف لأن الحساب مرتبط ببيانات محاسبية أخرى."
+        )
+
+    return redirect("pos:payment_methods_list")
 # =========================================================
 # عرض فاتورة POS
 # =========================================================
