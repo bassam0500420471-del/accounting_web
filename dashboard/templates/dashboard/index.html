@@ -1,212 +1,122 @@
+
 {% extends "layout/base.html" %}
 {% load i18n %}
 
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 
 {% block extra_head %}
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-/* خلفية الصفحة */
-.container-fluid{
-    background: linear-gradient(135deg,#f1f3f6,#dfe3e8);
-    padding:25px;
-    border-radius:25px;
+.container-fluid {
+    background: linear-gradient(135deg, #f1f3f6, #dfe3e8);
+    padding: 25px;
+    border-radius: 25px;
 }
 
-
-/* كروت المؤشرات العلوية */
-.indicator{
-
-    min-height:90px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:linear-gradient(145deg,#ffffff,#d9dde3)!important;
-
-    border-radius:20px;
-
-    padding:20px;
-
-    text-align:center;
-
-    font-weight:700;
-
-    font-size:18px;
-
-    color:#343a40;
-
+.indicator {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #ffffff, #d9dde3) !important;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: #343a40;
     box-shadow:
-    12px 12px 25px rgba(0,0,0,.20),
-    -10px -10px 25px rgba(255,255,255,.9);
-
-    transition:.3s;
-
+        12px 12px 25px rgba(0,0,0,.20),
+        -10px -10px 25px rgba(255,255,255,.9);
+    transition: .3s;
 }
 
-
-.indicator:hover{
-
-    transform:translateY(-8px);
-
+.indicator:hover {
+    transform: translateY(-8px);
 }
 
-
-
-/* كل الكروت */
 .card,
-.chart-container{
-
-    background:
-    linear-gradient(145deg,#ffffff,#e1e5ea)!important;
-
-    border-radius:25px!important;
-
-    border:none!important;
-
+.chart-container {
+    background: linear-gradient(145deg, #ffffff, #e1e5ea) !important;
+    border-radius: 25px !important;
+    border: none !important;
     box-shadow:
-
-    15px 15px 35px rgba(0,0,0,.18),
-
-    -12px -12px 25px rgba(255,255,255,.9)!important;
-
-    transition:.3s;
-
+        15px 15px 35px rgba(0,0,0,.18),
+        -12px -12px 25px rgba(255,255,255,.9) !important;
+    transition: .3s;
 }
-
-
 
 .card:hover,
-.chart-container:hover{
-
-    transform:translateY(-8px);
-
+.chart-container:hover {
+    transform: translateY(-8px);
 }
 
-
-
-/* عناوين الأقسام */
-.section-title{
-
-    font-weight:800;
-
-    color:#343a40;
-
-    font-size:22px;
-
-    padding-bottom:10px;
-
-    text-shadow:
-
-    1px 2px 3px rgba(0,0,0,.15);
-
+.section-title {
+    font-weight: 800;
+    color: #343a40;
+    font-size: 22px;
+    padding-bottom: 10px;
+    text-shadow: 1px 2px 3px rgba(0,0,0,.15);
 }
 
-
-
-/* الجداول */
-
-.table{
-
-    border-radius:15px;
-
-    overflow:hidden;
-
+.table {
+    border-radius: 15px;
+    overflow: hidden;
 }
 
-
-
-.table thead th{
-
-    background:#343a40;
-
-    color:white;
-
-    border:none;
-
+.table thead th {
+    background: #343a40;
+    color: white;
+    border: none;
 }
 
-
-
-.table tbody tr{
-
-    transition:.2s;
-
+.table tbody tr {
+    transition: .2s;
 }
 
-
-
-.table tbody tr:hover{
-
-    background:#f0f2f5;
-
-    transform:scale(1.01);
-
+.table tbody tr:hover {
+    background: #f0f2f5;
+    transform: scale(1.01);
 }
 
-
-
-/* الشارت */
-
-.chart-container canvas{
-
-    height:320px!important;
-
+.chart-container {
+    min-height: 400px;
 }
 
-
-
-/* تحسين الموبايل */
-
-@media(max-width:768px){
-
-.container-fluid{
-
-    padding:15px;
-
+.chart-container canvas {
+    height: 320px !important;
 }
 
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 15px;
+    }
 
-.indicator{
+    .indicator {
+        font-size: 15px;
+    }
 
-    font-size:15px;
-
+    .section-title {
+        font-size: 18px;
+    }
 }
 
-
-.section-title{
-
-    font-size:18px;
-
+.container-fluid .table {
+    background: transparent;
 }
 
+.container-fluid canvas {
+    padding: 10px;
 }
-
-
-.container-fluid .table{
-
-    background:transparent;
-
-}
-
-
-.container-fluid canvas{
-
-    padding:10px;
-
-}
-
 </style>
-
 {% endblock %}
-{% block content %}
 
+
+{% block content %}
 <div class="container-fluid">
 
-    <!-- Top Indicators -->
+    <!-- المؤشرات العلوية -->
     <div class="row mb-4">
 
         <div class="col-md-3 col-6">
@@ -216,7 +126,6 @@
             </div>
         </div>
 
-
         <div class="col-md-3 col-6">
             <div class="indicator">
                 {% trans "Today's Attendance" %}:
@@ -224,14 +133,12 @@
             </div>
         </div>
 
-
         <div class="col-md-3 col-6">
             <div class="indicator">
                 {% trans "Invoices" %}:
                 {{ total_invoices|default:0 }}
             </div>
         </div>
-
 
         <div class="col-md-3 col-6">
             <div class="indicator">
@@ -242,773 +149,408 @@
 
     </div>
 
-
-
-    <!-- Charts -->
-
+    <!-- الرسوم البيانية -->
     <div class="row">
 
         <div class="col-md-6 col-12">
-
             <div class="chart-container p-4">
-
                 <h2 class="section-title">
                     {% trans "Monthly Sales Invoices" %}
                 </h2>
-
                 <canvas id="salesChart"></canvas>
-
             </div>
-
         </div>
 
-
-
         <div class="col-md-6 col-12">
-
             <div class="chart-container p-4">
-
                 <h2 class="section-title">
                     {% trans "Monthly Purchase Invoices" %}
                 </h2>
-
                 <canvas id="purchaseChart"></canvas>
-
             </div>
-
         </div>
 
     </div>
 
-
-
-
-<!-- جدول الحضور اليومي -->
-
-<div class="row mt-4">
-
-    <div class="col-12">
-
-        <h2 class="section-title">
-            {% trans "Daily Attendance Table" %}
-        </h2>
-
-        <div class="card p-3 table-responsive">
-
-            <table class="table table-striped table-hover">
-
-                <thead>
-
-                    <tr>
-
-                        <th>#</th>
-
-                        <th>
-                            {% trans "Employee Number" %}
-                        </th>
-
-                        <th>
-                            {% trans "Employee" %}
-                        </th>
-
-                        <th>
-                            {% trans "Date" %}
-                        </th>
-
-                        <th>
-                            {% trans "Status" %}
-                        </th>
-
-                        <!-- الحضور 1 -->
-                        <th>
-                            الحضور 1
-                        </th>
-
-                        <th>
-                            الانصراف 1
-                        </th>
-
-                        <th>
-                            الموقع 1
-                        </th>
-
-                        <!-- الحضور 2 -->
-                        <th>
-                            الحضور 2
-                        </th>
-
-                        <th>
-                            الانصراف 2
-                        </th>
-
-                        <th>
-                            الموقع 2
-                        </th>
-
-                        <!-- الحضور 3 -->
-                        <th>
-                            الحضور 3
-                        </th>
-
-                        <th>
-                            الانصراف 3
-                        </th>
-
-                        <th>
-                            الموقع 3
-                        </th>
-
-                        <th>
-                            {% trans "Notes" %}
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-
-                {% for att in attendance_data %}
-
-                    <tr>
-
-                        <td>
-                            {{ forloop.counter }}
-                        </td>
-
-
-                        <td>
-                            {{ att.employee_number }}
-                        </td>
-
-
-                        {% get_current_language as LANGUAGE_CODE %}
-
-
-                        <td>
-
-                            {% if LANGUAGE_CODE == "ar" %}
-
-                                {{ att.employee.first_name_ar }}
-                                {{ att.employee.last_name_ar }}
-
-                            {% else %}
-
-                                {{ att.employee.first_name_en }}
-                                {{ att.employee.last_name_en }}
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-                            {{ att.date }}
-                        </td>
-
-
-<td>
-
-    {% if att.status == "absent" or att.status == "Absent" or att.status == "غياب" %}
-
-        غائب
-
-    {% elif att.status == "present" or att.status == "Present" or att.status == "حضور" %}
-
-        حاضر
-
-    {% elif att.status == "late" or att.status == "Late" or att.status == "متأخر" %}
-
-        متأخر
-
-    {% elif att.status == "early_leave" or att.status == "Early Leave" or att.status == "خروج مبكر" %}
-
-        خروج مبكر
-
-    {% elif att.status == "completed" or att.status == "Completed" or att.status == "حضور" %}
-
-        حضور
-
-    {% else %}
-
-        {{ att.status }}
-
-    {% endif %}
-
-</td>
-
-                        <!-- ================= الحضور 1 ================= -->
-
-                        <td>
-
-                            {% if att.check_in_1 %}
-
-                                {{ att.check_in_1|time:"g:i A" }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-
-                            {% if att.check_out_1 %}
-
-                                {{ att.check_out_1|time:"g:i A" }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-
-                            {% if att.work_location_1 %}
-
-                                {{ att.work_location_1 }}
-
-                            {% elif att.location_1 %}
-
-                                {{ att.location_1 }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- ================= الحضور 2 ================= -->
-
-                        <td>
-
-                            {% if att.check_in_2 %}
-
-                                {{ att.check_in_2|time:"g:i A" }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-
-                            {% if att.check_out_2 %}
-
-                                {{ att.check_out_2|time:"g:i A" }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-
-                            {% if att.work_location_2 %}
-
-                                {{ att.work_location_2 }}
-
-                            {% elif att.location_2 %}
-
-                                {{ att.location_2 }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- ================= الحضور 3 ================= -->
-
-                        <td>
-
-                            {% if att.check_in_3 %}
-
-                                {{ att.check_in_3|time:"g:i A" }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-
-                            {% if att.check_out_3 %}
-
-                                {{ att.check_out_3|time:"g:i A" }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <td>
-
-                            {% if att.work_location_3 %}
-
-                                {{ att.work_location_3 }}
-
-                            {% elif att.location_3 %}
-
-                                {{ att.location_3 }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-
-                        <!-- ================= الملاحظات ================= -->
-
-                        <td>
-
-                            {{ att.notes|default:"-" }}
-
-                        </td>
-
-                    </tr>
-
-
-                {% empty %}
-
-                    <tr>
-
-                        <td colspan="15">
-
-                            {% trans "No attendance data today" %}
-
-                        </td>
-
-                    </tr>
-
-                {% endfor %}
-
-
-                </tbody>
-
-            </table>
-
+    <!-- جدول الحضور اليومي -->
+    <div class="row mt-4">
+        <div class="col-12">
+
+            <h2 class="section-title">
+                {% trans "Daily Attendance Table" %}
+            </h2>
+
+            <div class="card p-3 table-responsive">
+                <table class="table table-striped table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "Employee Number" %}</th>
+                            <th>{% trans "Employee" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th>الحضور 1</th>
+                            <th>الانصراف 1</th>
+                            <th>الموقع 1</th>
+                            <th>الحضور 2</th>
+                            <th>الانصراف 2</th>
+                            <th>الموقع 2</th>
+                            <th>الحضور 3</th>
+                            <th>الانصراف 3</th>
+                            <th>الموقع 3</th>
+                            <th>{% trans "Notes" %}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% get_current_language as LANGUAGE_CODE %}
+
+                    {% for att in attendance_data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ att.employee_number }}</td>
+
+                            <td>
+                                {% if LANGUAGE_CODE == "ar" %}
+                                    {{ att.employee.first_name_ar }}
+                                    {{ att.employee.last_name_ar }}
+                                {% else %}
+                                    {{ att.employee.first_name_en }}
+                                    {{ att.employee.last_name_en }}
+                                {% endif %}
+                            </td>
+
+                            <td>{{ att.date }}</td>
+
+                            <td>
+                                {% if att.status == "absent" or att.status == "Absent" or att.status == "غياب" %}
+                                    غائب
+                                {% elif att.status == "present" or att.status == "Present" or att.status == "حضور" %}
+                                    حاضر
+                                {% elif att.status == "late" or att.status == "Late" or att.status == "متأخر" %}
+                                    متأخر
+                                {% elif att.status == "early_leave" or att.status == "Early Leave" or att.status == "خروج مبكر" %}
+                                    خروج مبكر
+                                {% elif att.status == "completed" or att.status == "Completed" %}
+                                    حضور
+                                {% else %}
+                                    {{ att.status }}
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.check_in_1 %}
+                                    {{ att.check_in_1|time:"g:i A" }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.check_out_1 %}
+                                    {{ att.check_out_1|time:"g:i A" }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.work_location_1 %}
+                                    {{ att.work_location_1 }}
+                                {% elif att.location_1 %}
+                                    {{ att.location_1 }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.check_in_2 %}
+                                    {{ att.check_in_2|time:"g:i A" }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.check_out_2 %}
+                                    {{ att.check_out_2|time:"g:i A" }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.work_location_2 %}
+                                    {{ att.work_location_2 }}
+                                {% elif att.location_2 %}
+                                    {{ att.location_2 }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.check_in_3 %}
+                                    {{ att.check_in_3|time:"g:i A" }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.check_out_3 %}
+                                    {{ att.check_out_3|time:"g:i A" }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>
+                                {% if att.work_location_3 %}
+                                    {{ att.work_location_3 }}
+                                {% elif att.location_3 %}
+                                    {{ att.location_3 }}
+                                {% else %}-{% endif %}
+                            </td>
+
+                            <td>{{ att.notes|default:"-" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="15">
+                                {% trans "No attendance data today" %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
         </div>
-
     </div>
 
-</div>
-
-
-
-
-    <!-- Top Products & Low Stock -->
-
-
+    <!-- أفضل المنتجات والمخزون المنخفض -->
     <div class="row mt-4">
 
-
-
-        <!-- Top Products -->
-
-
         <div class="col-md-6 col-12">
-
-
             <div class="card p-3 table-responsive">
 
-
                 <h2 class="section-title">
-
                     {% trans "Top Selling Products" %}
-
                 </h2>
 
-
-
                 <table class="table table-striped table-hover">
-
-
                     <thead>
-
                         <tr>
-
                             <th>#</th>
-
-                            <th>
-                                {% trans "Product Name" %}
-                            </th>
-
-                            <th>
-                                {% trans "Sales" %}
-                            </th>
-
-
+                            <th>{% trans "Product Name" %}</th>
+                            <th>{% trans "Sales" %}</th>
                         </tr>
-
-
                     </thead>
 
-
-
                     <tbody>
-
-
                     {% for p in top_products %}
-
-
                         <tr>
-
-
-                            <td>
-                                {{ forloop.counter }}
-                            </td>
-
-
-                            <td>
-                                {{ p.name }}
-                            </td>
-
-
-                            <td>
-                                {{ p.total_sold|default:0 }}
-                            </td>
-
-
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ p.name }}</td>
+                            <td>{{ p.total_sold|default:0 }}</td>
                         </tr>
-
-
                     {% empty %}
-
-
                         <tr>
-
-                            <td colspan="3">
-
-                                {% trans "No sales data" %}
-
-                            </td>
-
+                            <td colspan="3">{% trans "No sales data" %}</td>
                         </tr>
-
-
                     {% endfor %}
-
-
                     </tbody>
-
-
                 </table>
 
-
             </div>
-
-
         </div>
-
-
-
-
-
-        <!-- Low Stock -->
-
 
         <div class="col-md-6 col-12">
-
-
             <div class="card p-3 table-responsive">
 
-
                 <h2 class="section-title">
-
                     {% trans "Low Stock" %}
-
                 </h2>
 
-
-
                 <table class="table table-striped table-hover">
-
-
                     <thead>
-
                         <tr>
-
                             <th>#</th>
-
-                            <th>
-                                {% trans "Product Name" %}
-                            </th>
-
-                            <th>
-                                {% trans "Stock" %}
-                            </th>
-
-
+                            <th>{% trans "Product Name" %}</th>
+                            <th>{% trans "Stock" %}</th>
                         </tr>
-
-
                     </thead>
 
-
-
                     <tbody>
-
-
                     {% for p in low_stock_products %}
-
-
                         <tr>
-
-
-                            <td>
-                                {{ forloop.counter }}
-                            </td>
-
-
-                            <td>
-                                {{ p.name }}
-                            </td>
-
-
-                            <td>
-                                {{ p.current_stock|default:0 }}
-                            </td>
-
-
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ p.name }}</td>
+                            <td>{{ p.current_stock|default:0 }}</td>
                         </tr>
-
-
                     {% empty %}
-
-
                         <tr>
-
-                            <td colspan="3">
-
-                                {% trans "No stock data" %}
-
-                            </td>
-
-
+                            <td colspan="3">{% trans "No stock data" %}</td>
                         </tr>
-
-
                     {% endfor %}
-
-
                     </tbody>
-
-
                 </table>
 
-
             </div>
-
-
         </div>
-
-
 
     </div>
 
-
 </div>
-
-
 {% endblock %}
+
+
 {% block extra_js %}
-
 <script>
+(function () {
+    'use strict';
 
-
-const salesLabels = [
-{% for inv in top_sales %}
-"{{ inv.date_invoice|date:'d-m' }}",
-{% endfor %}
-];
-
-
-const salesData = [
-{% for inv in top_sales %}
-{{ inv.total_after_tax|default:0 }},
-{% endfor %}
-];
-
-
-const salesPaidData = [
-{% for inv in top_sales %}
-{{ inv.paid_amount|default:0 }},
-{% endfor %}
-];
-
-
-
-new Chart(document.getElementById('salesChart'), {
-
-    type:'bar',
-
-    data:{
-
-        labels:salesLabels,
-
-
-        datasets:[
-
-            {
-
-                label:"{% trans 'Total Invoice' %}",
-
-                data:salesData,
-
-                backgroundColor:'rgba(52,58,64,0.85)',
-
-                borderRadius:10
-
-            },
-
-
-            {
-
-                label:"{% trans 'Payments' %}",
-
-                data:salesPaidData,
-
-                backgroundColor:'rgba(40,167,69,0.85)',
-
-                borderRadius:10
-
-            }
-
-        ]
-
+    if (typeof Chart === 'undefined') {
+        console.error('Dashboard: Chart.js لم يتم تحميله.');
+        return;
     }
 
-});
-
-
-
-
-
-
-const purchaseLabels = [
-{% for inv in top_purchases %}
-"{{ inv.date_invoice|date:'d-m' }}",
-{% endfor %}
-];
-
-
-
-const purchaseData = [
-{% for inv in top_purchases %}
-{{ inv.total_after_tax|default:0 }},
-{% endfor %}
-];
-
-
-
-const purchasePaidData = [
-{% for inv in top_purchases %}
-{{ inv.paid_amount|default:0 }},
-{% endfor %}
-];
-
-
-
-
-
-new Chart(document.getElementById('purchaseChart'), {
-
-
-    type:'bar',
-
-
-    data:{
-
-
-        labels:purchaseLabels,
-
-
-        datasets:[
-
-
-            {
-
-
-                label:"{% trans 'Total Invoice' %}",
-
-
-                data:purchaseData,
-
-
-                backgroundColor:'rgba(52,58,64,0.85)',
-
-
-                borderRadius:10
-
-
+    /*
+     * إعداد موحد للأعمدة في الرسمين.
+     * floatformat:"2u" يمنع استخدام الفاصلة المحلية
+     * كفاصل عشري داخل JavaScript.
+     */
+    const commonChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        scales: {
+            x: {
+                stacked: false
             },
-
-
-
-            {
-
-
-                label:"{% trans 'Payments' %}",
-
-
-                data:purchasePaidData,
-
-
-                backgroundColor:'rgba(255,193,7,0.85)',
-
-
-                borderRadius:10
-
-
+            y: {
+                beginAtZero: true,
+                stacked: false
             }
+        },
+        datasets: {
+            bar: {
+                categoryPercentage: 0.8,
+                barPercentage: 0.9,
+                grouped: true
+            }
+        }
+    };
 
+    /* بيانات المبيعات */
+    const salesRows = [
+        {% for inv in top_sales %}
+        {
+            date: "{{ inv.date_invoice|date:'d-m' }}",
+            total: {{ inv.total_after_tax|default:0|floatformat:"2u" }},
+            paid: {{ inv.paid_amount|default:0|floatformat:"2u" }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
 
-        ]
+    const salesLabels = salesRows.map(row => row.date);
+    const salesData = salesRows.map(row => row.total);
+    const salesPaidData = salesRows.map(row => row.paid);
 
+    console.log('Dashboard sales counts:', {
+        rows: salesRows.length,
+        labels: salesLabels.length,
+        totals: salesData.length,
+        payments: salesPaidData.length
+    });
 
+    const salesCanvas = document.getElementById('salesChart');
+
+    if (salesCanvas) {
+        const oldSalesChart = Chart.getChart(salesCanvas);
+
+        if (oldSalesChart) {
+            oldSalesChart.destroy();
+        }
+
+        new Chart(salesCanvas, {
+            type: 'bar',
+            data: {
+                labels: salesLabels,
+                datasets: [
+                    {
+                        label: "{% trans 'Total Invoice' %}",
+                        data: salesData,
+                        backgroundColor: 'rgba(52, 58, 64, 0.85)',
+                        borderRadius: 8,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    },
+                    {
+                        label: "{% trans 'Payments' %}",
+                        data: salesPaidData,
+                        backgroundColor: 'rgba(40, 167, 69, 0.85)',
+                        borderRadius: 8,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }
+                ]
+            },
+            options: JSON.parse(JSON.stringify(commonChartOptions))
+        });
+    } else {
+        console.error('Dashboard: لم يتم العثور على salesChart.');
     }
 
+    /* بيانات المشتريات */
+    const purchaseRows = [
+        {% for inv in top_purchases %}
+        {
+            date: "{{ inv.date_invoice|date:'d-m' }}",
+            total: {{ inv.total_after_tax|default:0|floatformat:"2u" }},
+            paid: {{ inv.paid_amount|default:0|floatformat:"2u" }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
 
-});
+    const purchaseLabels = purchaseRows.map(row => row.date);
+    const purchaseData = purchaseRows.map(row => row.total);
+    const purchasePaidData = purchaseRows.map(row => row.paid);
 
+    console.log('Dashboard purchase counts:', {
+        rows: purchaseRows.length,
+        labels: purchaseLabels.length,
+        totals: purchaseData.length,
+        payments: purchasePaidData.length
+    });
 
+    const purchaseCanvas = document.getElementById('purchaseChart');
 
+    if (purchaseCanvas) {
+        const oldPurchaseChart = Chart.getChart(purchaseCanvas);
+
+        if (oldPurchaseChart) {
+            oldPurchaseChart.destroy();
+        }
+
+        new Chart(purchaseCanvas, {
+            type: 'bar',
+            data: {
+                labels: purchaseLabels,
+                datasets: [
+                    {
+                        label: "{% trans 'Total Invoice' %}",
+                        data: purchaseData,
+                        backgroundColor: 'rgba(52, 58, 64, 0.85)',
+                        borderRadius: 8,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    },
+                    {
+                        label: "{% trans 'Payments' %}",
+                        data: purchasePaidData,
+                        backgroundColor: 'rgba(255, 193, 7, 0.85)',
+                        borderRadius: 8,
+                        categoryPercentage: 0.8,
+                        barPercentage: 0.9
+                    }
+                ]
+            },
+            options: JSON.parse(JSON.stringify(commonChartOptions))
+        });
+    } else {
+        console.error('Dashboard: لم يتم العثور على purchaseChart.');
+    }
+})();
 </script>
-
-
 {% endblock %}
