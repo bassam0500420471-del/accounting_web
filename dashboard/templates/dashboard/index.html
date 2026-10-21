@@ -1,4 +1,3 @@
-
 {% extends "layout/base.html" %}
 {% load i18n %}
 
@@ -69,6 +68,7 @@
     background: #343a40;
     color: white;
     border: none;
+    white-space: nowrap;
 }
 
 .table tbody tr {
@@ -86,6 +86,18 @@
 
 .chart-container canvas {
     height: 320px !important;
+}
+
+.product-quantity {
+    font-weight: 700;
+    color: #343a40;
+    white-space: nowrap;
+}
+
+.product-sales {
+    font-weight: 800;
+    color: #198754;
+    white-space: nowrap;
 }
 
 @media (max-width: 768px) {
@@ -318,6 +330,7 @@
     <!-- أفضل المنتجات والمخزون المنخفض -->
     <div class="row mt-4">
 
+        <!-- أكثر المنتجات مبيعًا -->
         <div class="col-md-6 col-12">
             <div class="card p-3 table-responsive">
 
@@ -330,7 +343,8 @@
                         <tr>
                             <th>#</th>
                             <th>{% trans "Product Name" %}</th>
-                            <th>{% trans "Sales" %}</th>
+                            <th>الكمية المباعة</th>
+                            <th>إجمالي المبيعات</th>
                         </tr>
                     </thead>
 
@@ -338,12 +352,22 @@
                     {% for p in top_products %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
+
                             <td>{{ p.name }}</td>
-                            <td>{{ p.total_sold|default:0 }}</td>
+
+                            <td class="product-quantity">
+                                {{ p.total_sold|default:0|floatformat:2 }}
+                            </td>
+
+                            <td class="product-sales">
+                                {{ p.total_sales|default:0|floatformat:2 }}
+                            </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="3">{% trans "No sales data" %}</td>
+                            <td colspan="4">
+                                {% trans "No sales data" %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -352,6 +376,7 @@
             </div>
         </div>
 
+        <!-- المخزون المنخفض -->
         <div class="col-md-6 col-12">
             <div class="card p-3 table-responsive">
 
@@ -402,11 +427,6 @@
         return;
     }
 
-    /*
-     * إعداد موحد للأعمدة في الرسمين.
-     * floatformat:"2u" يمنع استخدام الفاصلة المحلية
-     * كفاصل عشري داخل JavaScript.
-     */
     const commonChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -421,13 +441,6 @@
             y: {
                 beginAtZero: true,
                 stacked: false
-            }
-        },
-        datasets: {
-            bar: {
-                categoryPercentage: 0.8,
-                barPercentage: 0.9,
-                grouped: true
             }
         }
     };
@@ -486,7 +499,7 @@
                     }
                 ]
             },
-            options: JSON.parse(JSON.stringify(commonChartOptions))
+            options: commonChartOptions
         });
     } else {
         console.error('Dashboard: لم يتم العثور على salesChart.');
@@ -546,7 +559,7 @@
                     }
                 ]
             },
-            options: JSON.parse(JSON.stringify(commonChartOptions))
+            options: commonChartOptions
         });
     } else {
         console.error('Dashboard: لم يتم العثور على purchaseChart.');
