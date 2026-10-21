@@ -185,39 +185,111 @@ def _generate_invoice_qr(invoice, tax_amount=None):
 # =========================================================
 # إنشاء قيد محاسبي لفاتورة POS
 # =========================================================
+
+# =========================================================
+# إنشاء قيد محاسبي لفاتورة POS
+# =========================================================
 def create_pos_journal(invoice, payment):
 
     company = invoice.company
+    ZERO = Decimal("0.00")
+    HUNDRED = Decimal("100.00")
 
-    # -----------------------------------------------------
-    # التأكد من وجود طريقة دفع وحساب محاسبي
-    # -----------------------------------------------------
     if not payment.method:
-
-        raise Exception(
-            "عملية الدفع غير مرتبطة بطريقة دفع"
-        )
+        raise Exception("عملية الدفع غير مرتبطة بطريقة دفع")
 
     if not payment.method.account:
+        raise Exception("طريقة الدفع غير مرتبطة بحساب محاسبي")
 
-        raise Exception(
-            "طريقة الدفع غير مرتبطة بحساب محاسبي"
-        )
-
-    # -----------------------------------------------------
-    # منع إنشاء أكثر من قيد لنفس الفاتورة
-    # -----------------------------------------------------
+    # منع تكرار قيد الفاتورة
     if JournalEntry.objects.filter(
         company=company,
         source_type="pos_invoice",
         source_id=invoice.id
     ).exists():
-
         return None
 
-    # -----------------------------------------------------
-    # رقم القيد التالي للشركة
-    # -----------------------------------------------------
+    # حساب المبيعات والضريبة
+    subtotal = ZERO
+    vat_amount = ZERO
+
+    for item in invoice.items.all():
+        price = Decimal(str(item.price or 0))
+        quantity = Decimal(str(item.quantity or 0))
+        discount = Decimal(str(item.discount or 0))
+        tax = (
+            Decimal(str(item.tax or 0))
+            if _has_tax_number(company)
+            else ZERO
+        )
+
+        line_total = price * quantity
+
+        if item.discount_type == "percent":
+            discount_amount = line_total * discount / HUNDRED
+        else:
+            discount_amount = discount
+
+        after_discount = max(ZERO, line_total - discount_amount)
+
+        subtotal += after_discount
+        vat_amount += after_discount * tax / HUNDRED
+
+    subtotal = subtotal.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    vat_amount = vat_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    grand_total = (subtotal + vat_amount).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP
+    )
+
+    paid_amount = Decimal(str(payment.amount or 0)).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP
+    )
+
+    if paid_amount <= ZERO:
+        raise Exception("مبلغ الدفعة يجب أن يكون أكبر من صفر")
+
+    if paid_amount > grand_total:
+        raise Exception("مبلغ الدفعة أكبر من إجمالي الفاتورة")
+
+    remaining_amount = (grand_total - paid_amount).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP
+    )
+
+    # حساب المبيعات
+    sales_account = Account.objects.filter(
+        company=company,
+        code="4000"
+    ).first()
+
+    if not sales_account:
+        raise Exception("حساب المبيعات 4000 غير موجود")
+
+    # حساب الضريبة
+    vat_account = Account.objects.filter(
+        company=company,
+        name__icontains="ضريبة القيمة المضافة"
+    ).first()
+
+    if vat_amount > ZERO and not vat_account:
+        raise Exception("حساب ضريبة القيمة المضافة غير موجود")
+
+    # حساب العميل للمبلغ الآجل
+    customer_account = None
+
+    if invoice.customer:
+        customer_account = getattr(invoice.customer, "account", None)
+
+    if remaining_amount > ZERO and not customer_account:
+        raise Exception(
+            "الفاتورة غير مسددة بالكامل، والعميل غير مرتبط بحساب محاسبي. "
+            "يجب استخدام حساب العميل النقدي المرتبط بالشركة."
+        )
+
+    # رقم القيد التالي
     last_no = (
         JournalEntry.objects
         .filter(company=company)
@@ -226,171 +298,69 @@ def create_pos_journal(invoice, payment):
         or 0
     )
 
-    # -----------------------------------------------------
     # إنشاء رأس القيد
-    # -----------------------------------------------------
     entry = JournalEntry.objects.create(
-
         company=company,
-
         entry_no=last_no + 1,
-
         date=invoice.created_at.date(),
-
-        description=(
-            f"قيد فاتورة POS رقم "
-            f"{invoice.invoice_no}"
-        ),
-
+        description=f"قيد فاتورة POS رقم {invoice.invoice_no}",
         source_type="pos_invoice",
-
         source_id=invoice.id,
-
-        posted=True
+        posted=False
     )
 
-    # -----------------------------------------------------
-    # مدين: حساب الصندوق / البنك
-    # -----------------------------------------------------
+    # مدين: المبلغ المدفوع
     JournalLine.objects.create(
-
         entry=entry,
-
         account=payment.method.account,
-
-        debit=payment.amount,
-
-        credit=Decimal("0.00")
+        debit=paid_amount,
+        credit=ZERO
     )
 
-    # -----------------------------------------------------
-    # حساب المبيعات
-    # -----------------------------------------------------
-    sales_account = Account.objects.filter(
-        company=company,
-        code="4000"
-    ).first()
-
-    if not sales_account:
-
-        raise Exception(
-            "حساب المبيعات 4000 غير موجود"
-        )
-
-    # -----------------------------------------------------
-    # حساب ضريبة القيمة المضافة
-    # -----------------------------------------------------
-    vat_account = Account.objects.filter(
-        company=company,
-        name__icontains="ضريبة القيمة المضافة"
-    ).first()
-
-    # -----------------------------------------------------
-    # حساب صافي المبيعات والضريبة
-    # -----------------------------------------------------
-    subtotal = Decimal("0.00")
-    vat_amount = Decimal("0.00")
-
-    for item in invoice.items.all():
-
-        price = Decimal(
-            str(item.price or 0)
-        )
-
-        quantity = Decimal(
-            str(item.quantity or 0)
-        )
-
-        discount = Decimal(
-            str(item.discount or 0)
-        )
-
-        tax = Decimal(
-            str(item.tax or 0)
-        )
-
-        line_total = (
-            price * quantity
-        )
-
-        # -------------------------------------------------
-        # حساب الخصم حسب نوع الخصم
-        # -------------------------------------------------
-        if item.discount_type == "percent":
-
-            discount_value = (
-                line_total
-                * discount
-                / Decimal("100")
-            )
-
-        else:
-
-            discount_value = discount
-
-        after_discount = (
-            line_total - discount_value
-        )
-
-        # منع أن يصبح صافي السطر سالباً
-        if after_discount < Decimal("0.00"):
-
-            after_discount = Decimal(
-                "0.00"
-            )
-
-        subtotal += after_discount
-
-        vat_amount += (
-            after_discount
-            * tax
-            / Decimal("100")
-        )
-
-    subtotal = subtotal.quantize(
-        Decimal("0.01"),
-        rounding=ROUND_HALF_UP
-    )
-
-    vat_amount = vat_amount.quantize(
-        Decimal("0.01"),
-        rounding=ROUND_HALF_UP
-    )
-
-    # -----------------------------------------------------
-    # دائن: المبيعات
-    # -----------------------------------------------------
-    if subtotal > Decimal("0.00"):
-
+    # مدين: المبلغ المتبقي على العميل
+    if remaining_amount > ZERO:
         JournalLine.objects.create(
-
             entry=entry,
+            account=customer_account,
+            debit=remaining_amount,
+            credit=ZERO
+        )
 
+    # دائن: المبيعات
+    if subtotal > ZERO:
+        JournalLine.objects.create(
+            entry=entry,
             account=sales_account,
-
-            debit=Decimal("0.00"),
-
+            debit=ZERO,
             credit=subtotal
         )
 
-    # -----------------------------------------------------
     # دائن: ضريبة القيمة المضافة
-    # -----------------------------------------------------
-    if (
-        vat_amount > Decimal("0.00")
-        and vat_account
-    ):
-
+    if vat_amount > ZERO:
         JournalLine.objects.create(
-
             entry=entry,
-
             account=vat_account,
-
-            debit=Decimal("0.00"),
-
+            debit=ZERO,
             credit=vat_amount
         )
+
+    # التحقق من توازن القيد
+    totals = JournalLine.objects.filter(entry=entry).aggregate(
+        total_debit=Sum("debit"),
+        total_credit=Sum("credit")
+    )
+
+    total_debit = totals["total_debit"] or ZERO
+    total_credit = totals["total_credit"] or ZERO
+
+    if total_debit != total_credit:
+        raise Exception(
+            f"القيد غير متوازن: المدين {total_debit}، "
+            f"الدائن {total_credit}"
+        )
+
+    entry.posted = True
+    entry.save(update_fields=["posted"])
 
     return entry
 
@@ -629,25 +599,36 @@ def pos_save_invoice(request):
             rounding=ROUND_HALF_UP
         )
 
-        # =================================================
+
         # العميل
-        # =================================================
         customer = None
 
-        customer_id = data.get(
-            "customer_id"
-        )
+        customer_id = data.get("customer_id")
 
         if customer_id:
+            customer = Customer.objects.filter(
+                company=company,
+                id=customer_id
+            ).first()
 
-            customer = (
-                Customer.objects
-                .filter(
-                    company=company,
-                    id=customer_id
-                )
-                .first()
-            )
+            if not customer:
+                return JsonResponse({
+                    "success": False,
+                    "error": "العميل المحدد غير موجود في الشركة الحالية."
+                }, status=400)
+
+        else:
+            customer = Customer.objects.filter(
+                company=company,
+                name="عميل نقدي",
+                account__isnull=False
+            ).first()
+
+            if not customer:
+                return JsonResponse({
+                    "success": False,
+                    "error": "لا يوجد عميل نقدي مرتبط بحساب محاسبي للشركة الحالية."
+                }, status=400)
 
         # =================================================
         # الحفظ داخل Transaction
