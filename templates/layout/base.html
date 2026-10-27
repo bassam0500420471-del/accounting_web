@@ -1967,7 +1967,7 @@ html[dir="ltr"] .gpt-float {
 <!-- =====================================================
      SIDEBAR
      ===================================================== -->
-
+{% if request.resolver_match.view_name != 'hr:employee_portal' %}
 <div class="sidebar">
 
     <h4>{% trans "" %}</h4>
@@ -2007,8 +2007,24 @@ html[dir="ltr"] .gpt-float {
 
     </button>
 
-
     <div class="submenu">
+
+        <!-- بوابة الموظف -->
+        <div class="menu-btn d-flex align-items-center justify-content-between">
+
+            <a href="{% url 'hr:employee_portal' %}">
+                <i class="fas fa-user-circle"></i>
+                <span>بوابة الموظف</span>
+            </a>
+
+            <button
+                class="add-icon-btn"
+                onclick="goAdd('{% url 'hr:employee_portal' %}')"
+            >
+                +
+            </button>
+
+        </div>
 
 
         <div class="menu-btn d-flex align-items-center justify-content-between">
@@ -2180,7 +2196,6 @@ html[dir="ltr"] .gpt-float {
         </div>
 
     </div>
-
 
     <!-- =================================================
          POS
@@ -2783,8 +2798,9 @@ html[dir="ltr"] .gpt-float {
 
     </div>
 
-
 </div>
+
+{% endif %}
 
 {% endblock sidebar %}
 
@@ -2792,7 +2808,6 @@ html[dir="ltr"] .gpt-float {
 <!-- =====================================================
      CONTENT
      ===================================================== -->
-
 <div class="content-wrapper">
 
     <div class="page-box">

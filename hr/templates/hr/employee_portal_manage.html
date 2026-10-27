@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة بوابة الموظفين</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Tahoma, Arial, sans-serif;
+            color: #333;
+            background: linear-gradient(135deg, #f0f2f5, #dce0e5);
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        .header, .panel {
+            padding: 25px;
+            margin-bottom: 22px;
+            border-radius: 22px;
+            background: linear-gradient(145deg, #f9fafb, #e2e5e9);
+            box-shadow: 8px 8px 20px #c9cdd2,
+                        -8px -8px 20px #ffffff;
+        }
+
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: 27px;
+        }
+
+        .muted {
+            color: #777;
+            line-height: 1.9;
+        }
+
+        .link-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .link-row input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #d5d8dd;
+            border-radius: 12px;
+            background: #fff;
+            font-size: 15px;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #666, #414141);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #555, #333);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #dfe2e6;
+            text-align: right;
+        }
+
+        th {
+            background: #e7e9ec;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 9px;
+            background: #e1eee4;
+            color: #27633a;
+            font-size: 12px;
+        }
+
+        .empty {
+            padding: 22px;
+            text-align: center;
+            color: #777;
+        }
+
+        .error {
+            padding: 16px;
+            border-radius: 12px;
+            background: #f5dddd;
+            color: #8a2626;
+            line-height: 1.9;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 13px;
+            }
+
+            .header, .panel {
+                padding: 18px;
+                border-radius: 17px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .link-row {
+                flex-direction: column;
+            }
+
+            .link-row .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+    {% if portal_error %}
+        <section class="panel">
+            <h1>إدارة بوابة الموظفين</h1>
+            <div class="error">{{ portal_error }}</div>
+        </section>
+    {% else %}
+
+        <section class="header">
+            <h1>إدارة بوابة الموظفين</h1>
+            <p class="muted">
+                شارك رابط الدخول مع الموظفين الذين لديهم حساب دخول مفعّل.
+                يستخدم كل موظف اسم المستخدم وكلمة المرور الحاليين.
+            </p>
+
+            <label for="portal-link"><strong>رابط دخول الموظفين</strong></label>
+
+            <div class="link-row">
+                <input
+                    id="portal-link"
+                    type="text"
+                    value="{{ portal_login_url }}"
+                    readonly
+                >
+                <button
+                    type="button"
+                    class="button"
+                    onclick="copyPortalLink()"
+                >
+                    نسخ الرابط
+                </button>
+            </div>
+
+            <p id="copy-status" class="muted" aria-live="polite"></p>
+        </section>
+
+        <section class="panel">
+            <h2>الموظفون المرتبطون بحسابات الدخول</h2>
+            <p class="muted">
+                تظهر هنا أسماء الموظفين الذين تم تفعيل حساب دخول لهم.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الموظف</th>
+                            <th>رقم الموظف</th>
+                            <th>اسم المستخدم</th>
+                            <th>حالة الحساب</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for employee in employees %}
+                            <tr>
+                                <td>
+                                    {{ employee.first_name_ar }}
+                                    {{ employee.last_name_ar }}
+                                </td>
+                                <td>{{ employee.employee_number|default:"—" }}</td>
+                                <td>
+                                    {% if employee.user %}
+                                        {{ employee.user.username }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if employee.user and employee.user.is_active and employee.active %}
+                                        <span class="status">نشط</span>
+                                    {% else %}
+                                        غير نشط
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="empty">
+                                    لا يوجد موظفون مرتبطون بحسابات دخول في الشركة الحالية.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    {% endif %}
+
+</main>
+
+<script>
+    async function copyPortalLink() {
+        const input = document.getElementById("portal-link");
+        const status = document.getElementById("copy-status");
+
+        try {
+            await navigator.clipboard.writeText(input.value);
+            status.textContent = "تم نسخ الرابط.";
+        } catch (error) {
+            input.focus();
+            input.select();
+
+            const copied = document.execCommand("copy");
+            status.textContent = copied
+                ? "تم نسخ الرابط."
+                : "تعذّر النسخ التلقائي. حدّد الرابط وانسخه يدويًا.";
+        }
+    }
+</script>
+</body>
+</html>

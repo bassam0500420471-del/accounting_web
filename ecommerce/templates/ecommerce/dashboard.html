@@ -1,350 +1,721 @@
 {% extends "layout/base.html" %}
-{% block title %}
-لوحة تحكم المتجر
-{% endblock %}
-
+{% block title %}لوحة تحكم المتجر{% endblock %}
 
 {% block content %}
 
+<!-- رأس لوحة التحكم: إطار واحد للعنوان والرابط -->
 <div class="store-dashboard-header">
 
-    <h2>
-        🛒 لوحة تحكم المتجر الإلكتروني
-    </h2>
+    <!-- رابط المتجر في اليسار -->
+    <div class="store-link-panel" dir="rtl">
 
-    <p>
-        إدارة المنتجات والطلبات والعملاء وإعدادات المتجر
-    </p>
+        <div class="store-link-icon">🏪</div>
+
+        <div class="store-link-content">
+
+            <div class="store-link-title-row">
+                <h3>رابط متجرك الإلكتروني</h3>
+                <span class="store-link-badge">رابط المشاركة</span>
+            </div>
+
+            {% if store and store.slug %}
+
+            <div class="store-link-row" dir="ltr">
+
+                <a
+                    href="{% url 'ecommerce:home' store_slug=store.slug %}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="store-public-link"
+                    id="storePublicLink"
+                    title="فتح المتجر الإلكتروني"
+                >
+                    <span class="store-link-chain">↗</span>
+                    <span class="store-link-url">{{ request.scheme }}://{{ request.get_host }}{% url 'ecommerce:home' store_slug=store.slug %}</span>
+                </a>
+
+                <button
+                    type="button"
+                    class="store-copy-button"
+                    id="copyStoreLinkButton"
+                >
+                    <span class="store-copy-icon">▢</span>
+                    <span>نسخ الرابط</span>
+                </button>
+
+            </div>
+
+            <p class="store-link-help">
+                شارك رابط متجرك مع عملائك ليتصفحوا المنتجات ويطلبوا مباشرة.
+            </p>
+
+            <div
+                class="store-copy-message"
+                id="storeCopyMessage"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+            {% else %}
+
+            <p class="store-link-help">
+                رابط المتجر غير متاح حاليًا.
+            </p>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+
+    <!-- عنوان لوحة التحكم في اليمين -->
+    <div class="store-dashboard-heading">
+
+        <div class="store-heading-icon">🛒</div>
+
+        <div class="store-heading-text">
+            <h2>لوحة تحكم المتجر الإلكتروني</h2>
+            <p>إدارة المنتجات والطلبات والعملاء وإعدادات المتجر</p>
+        </div>
+
+    </div>
 
 </div>
 
 
-
+<!-- بطاقات لوحة التحكم -->
 <div class="store-dashboard-cards">
 
-
     <a href="{% url 'ecommerce:dashboard_products' store_slug=store.slug %}"
-   class="store-card products-card">
-
-        <div class="card-icon">
-            📦
-        </div>
-
+       class="store-card products-card">
+        <div class="card-icon">📦</div>
         <div>
-            <h4>
-                المنتجات
-            </h4>
-
-            <span>
-                إدارة المنتجات والتصنيفات
-            </span>
+            <h4>المنتجات</h4>
+            <span>إدارة المنتجات والتصنيفات</span>
         </div>
-
     </a>
 
-
-
-
-    <a href="{% url 'ecommerce:dashboard_orders' store_slug=store.slug %}" class="store-card orders-card">
-
-    <div class="card-icon">
-        🛒
-    </div>
-
-    <div>
-
-        <h4>
-            الطلبات
-        </h4>
-
-        <span>
-            متابعة طلبات العملاء
-        </span>
-
-    </div>
-
-</a>
-
-
+    <a href="{% url 'ecommerce:dashboard_orders' store_slug=store.slug %}"
+       class="store-card orders-card">
+        <div class="card-icon">🛒</div>
+        <div>
+            <h4>الطلبات</h4>
+            <span>متابعة طلبات العملاء</span>
+        </div>
+    </a>
 
     <a href="{% url 'ecommerce:dashboard_customers' store_slug=store.slug %}"
-   class="store-card customers-card">
-
-        <div class="card-icon">
-            👥
-        </div>
-
+       class="store-card customers-card">
+        <div class="card-icon">👥</div>
         <div>
-
-            <h4>
-                العملاء
-            </h4>
-
-            <span>
-                بيانات عملاء المتجر
-            </span>
-
+            <h4>العملاء</h4>
+            <span>بيانات عملاء المتجر</span>
         </div>
-
     </a>
-
-
-
 
     <a href="{% url 'ecommerce:dashboard_reports' store_slug=store.slug %}"
-   class="store-card reports-card">
-
-        <div class="card-icon">
-            📊
-        </div>
-
+       class="store-card reports-card">
+        <div class="card-icon">📊</div>
         <div>
-
-            <h4>
-                التقارير
-            </h4>
-
-            <span>
-                المبيعات والإحصائيات
-            </span>
-
+            <h4>التقارير</h4>
+            <span>المبيعات والإحصائيات</span>
         </div>
-
     </a>
 
+    <a href="{% url 'ecommerce:home' store_slug=store.slug %}"
+       class="store-card view-store-card"
+       target="_blank"
+       rel="noopener noreferrer">
+        <div class="card-icon">🛍️</div>
+        <div>
+            <h4>عرض المتجر</h4>
+            <span>شاهد متجرك كما يراه العميل</span>
+        </div>
+    </a>
 
-{% if store and store.slug %}
-
-<a href="{% url 'ecommerce:home' store_slug=store.slug %}"
-   class="store-card view-store-card"
-   target="_blank">
-
-{% else %}
-
-<a href="#"
-   class="store-card view-store-card"
-   onclick="return false;">
-
-{% endif %}
-
-
-    <div class="card-icon">
-        🛍️
-    </div>
-
-    <div>
-
-        <h4>
-            عرض المتجر
-        </h4>
-
-        <span>
-            شاهد متجرك كما يراه العميل
-        </span>
-
-    </div>
-
-
-</a>
-
-<a href="{% url 'ecommerce:dashboard_settings' store_slug=store.slug %}"
-   class="store-card settings-card">
-
-    <div class="card-icon">
-        ⚙️
-    </div>
-
-    <div>
-
-        <h4>
-            إعدادات المتجر
-        </h4>
-
-        <span>
-            التصميم والدفع والشحن
-        </span>
-
-    </div>
-
-</a>
-
+    <a href="{% url 'ecommerce:dashboard_settings' store_slug=store.slug %}"
+       class="store-card settings-card">
+        <div class="card-icon">⚙️</div>
+        <div>
+            <h4>إعدادات المتجر</h4>
+            <span>التصميم والدفع والشحن</span>
+        </div>
+    </a>
 
 </div>
-
 
 
 <style>
+/* =====================================
+   الإطار الأسود الموحد
+===================================== */
 
+.store-dashboard-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    direction: ltr;
 
-.store-dashboard-header{
+    padding: 27px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
 
-    background:#2D3033;
-    color:white;
-    padding:25px;
-    border-radius:15px;
-    margin-bottom:30px;
-}
-
-
-.store-dashboard-header h2{
-
-    margin:0;
-    font-weight:bold;
-
-}
-
-
-.store-dashboard-header p{
-
-    margin-top:10px;
-    opacity:.8;
-
-}
-
-
-
-
-.store-dashboard-cards{
-
-    display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
-
-    gap:25px;
-
-}
-
-
-
-.store-card{
-
-    background:white;
-
-    border-radius:20px;
-
-    padding:30px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:20px;
-
-    text-decoration:none;
-
-    color:#333;
+    color: #fff;
+    background:
+        radial-gradient(
+            circle at 12% 10%,
+            rgba(255,255,255,.075),
+            transparent 34%
+        ),
+        linear-gradient(135deg,#363a3e 0%,#2d3033 55%,#25282b 100%);
 
     box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
-
-    transition:.3s;
-
-    border-right:6px solid #ddd;
-
+        0 12px 30px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.07);
 }
 
+.store-dashboard-header * {
+    box-sizing: border-box;
+}
 
+/* =====================================
+   رابط المتجر: بدون إطار داخلي
+===================================== */
 
-.store-card:hover{
+.store-link-panel {
+    flex: 1 1 440px;
+    min-width: 0;
+    max-width: 680px;
 
-    transform:translateY(-8px);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.store-link-icon {
+    width: 62px;
+    height: 62px;
+    flex: 0 0 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 17px;
+
+    font-size: 30px;
+    background: linear-gradient(145deg,#606a74,#3d444b);
 
     box-shadow:
-    0 15px 35px rgba(0,0,0,.15);
-
+        0 6px 15px rgba(0,0,0,.16),
+        inset 0 1px 0 rgba(255,255,255,.12);
 }
 
-
-
-.card-icon{
-
-    width:70px;
-
-    height:70px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:35px;
-
-    background:#f1f3f5;
-
+.store-link-content {
+    flex: 1;
+    min-width: 0;
 }
 
-
-
-.store-card h4{
-
-    margin:0;
-
-    font-weight:bold;
-
+.store-link-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 11px;
 }
 
-
-.store-card span{
-
-    color:#777;
-
-    font-size:14px;
-
+.store-link-content h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.6;
 }
 
+.store-link-badge {
+    padding: 4px 9px;
+    border-radius: 20px;
 
+    color: #dbe5ed;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
 
-/* ألوان الكروت */
-
-.products-card{
-
-    border-color:#0d6efd;
-
+    font-size: 11px;
+    white-space: nowrap;
 }
 
-
-.orders-card{
-
-    border-color:#198754;
-
+/* الرابط وزر النسخ */
+.store-link-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    min-width: 0;
 }
 
+.store-public-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-.customers-card{
+    flex: 1;
+    min-width: 0;
+    padding: 9px 11px;
 
-    border-color:#ffc107;
+    color: #f1f4f7;
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1.8;
 
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    background: rgba(0,0,0,.13);
+
+    transition: background .2s,border-color .2s;
 }
 
-
-.reports-card{
-
-    border-color:#6f42c1;
-
+.store-public-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.25);
 }
 
-
-.settings-card{
-
-    border-color:#dc3545;
-
+.store-link-chain {
+    flex: 0 0 auto;
+    color: #c5d3df;
+    font-size: 18px;
 }
 
-
-
-
-html[dir="rtl"] .store-card{
-
-    direction:rtl;
-
+.store-link-url {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: left;
 }
 
+.store-copy-button {
+    flex: 0 0 auto;
 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
 
+    padding: 9px 13px;
+    border: 1px solid rgba(255,255,255,.17);
+    border-radius: 10px;
+
+    background: linear-gradient(145deg,#69717a,#454b52);
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 9px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.10);
+
+    transition: background .2s,transform .2s;
+}
+
+.store-copy-button:hover {
+    background: linear-gradient(145deg,#7b858f,#515962);
+    transform: translateY(-1px);
+}
+
+.store-copy-button:active {
+    transform: translateY(0);
+}
+
+.store-copy-button:focus-visible {
+    outline: 2px solid #b8dfff;
+    outline-offset: 3px;
+}
+
+.store-copy-button:disabled {
+    opacity: .7;
+    cursor: wait;
+}
+
+.store-copy-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.store-link-help {
+    margin: 8px 0 0;
+    color: rgba(255,255,255,.68);
+    font-size: 11px;
+    line-height: 1.9;
+    text-align: right;
+}
+
+.store-copy-message {
+    margin-top: 5px;
+    color: #91efc0;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.store-copy-message:empty {
+    display: none;
+}
+
+.store-copy-message.is-success {
+    color: #91efc0;
+}
+
+.store-copy-message.is-error {
+    color: #ffc0bc;
+}
+
+/* =====================================
+   عنوان لوحة التحكم: الجهة اليمنى
+===================================== */
+
+.store-dashboard-heading {
+    flex: 1 1 350px;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+
+    direction: rtl;
+    text-align: right;
+
+    margin-right: 0;
+    margin-left: auto;
+}
+.store-heading-icon {
+    flex: 0 0 auto;
+    font-size: 31px;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,.15));
+}
+
+.store-heading-text {
+    min-width: 0;
+}
+
+.store-dashboard-heading h2 {
+    margin: 0;
+    color: #fff;
+
+    font-size: clamp(21px,2vw,30px);
+    font-weight: 900;
+    line-height: 1.6;
+}
+
+.store-dashboard-heading p {
+    margin: 8px 0 0;
+    color: rgba(255,255,255,.74);
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+/* =====================================
+   بطاقات لوحة التحكم
+===================================== */
+
+.store-dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 22px;
+}
+
+.store-card {
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    padding: 27px;
+    border: 0;
+    border-right: 6px solid #ddd;
+    border-radius: 20px;
+
+    background: linear-gradient(145deg,#fff,#fafbfc);
+    color: #333;
+    text-decoration: none;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.065),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    transition: transform .25s,box-shadow .25s;
+}
+
+.store-card:hover {
+    transform: translateY(-5px);
+    color: #333;
+
+    box-shadow:
+        0 15px 32px rgba(0,0,0,.11),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.card-icon {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    font-size: 33px;
+
+    background: linear-gradient(145deg,#f6f7f9,#e9edf1);
+    box-shadow:
+        inset 0 1px 2px rgba(255,255,255,.9),
+        0 3px 9px rgba(0,0,0,.035);
+}
+
+.store-card h4 {
+    margin: 0 0 5px;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.6;
+}
+
+.store-card span {
+    color: #777;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.products-card { border-color: #0d6efd; }
+.orders-card { border-color: #198754; }
+.customers-card { border-color: #ffc107; }
+.reports-card { border-color: #6f42c1; }
+.settings-card { border-color: #dc3545; }
+
+html[dir="rtl"] .store-card {
+    direction: rtl;
+}
+
+/* =====================================
+   الشاشات الصغيرة
+===================================== */
+
+@media (max-width: 1000px) {
+    .store-dashboard-header {
+        gap: 22px;
+        padding: 21px;
+    }
+
+    .store-dashboard-heading,
+    .store-link-panel {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+
+    .store-dashboard-heading {
+        order: 1;
+    }
+
+    .store-link-panel {
+        order: 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .store-dashboard-header {
+        padding: 15px;
+        gap: 18px;
+        border-radius: 16px;
+    }
+
+    .store-dashboard-heading {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .store-heading-icon {
+        font-size: 25px;
+    }
+
+    .store-dashboard-heading h2 {
+        font-size: 21px;
+    }
+
+    .store-dashboard-heading p {
+        margin-top: 5px;
+        font-size: 12px;
+    }
+
+    .store-link-panel {
+        align-items: flex-start;
+        gap: 11px;
+    }
+
+    .store-link-icon {
+        width: 45px;
+        height: 45px;
+        flex-basis: 45px;
+        border-radius: 12px;
+        font-size: 23px;
+    }
+
+    .store-link-content h3 {
+        font-size: 16px;
+    }
+
+    .store-link-title-row {
+        gap: 7px;
+        margin-bottom: 9px;
+    }
+
+    .store-link-badge {
+        font-size: 10px;
+    }
+
+    .store-link-row {
+        flex-wrap: wrap;
+    }
+
+    .store-public-link {
+        flex-basis: 100%;
+        font-size: 12px;
+    }
+
+    .store-copy-button {
+        padding: 9px 11px;
+    }
+
+    .store-link-help {
+        font-size: 11px;
+    }
+
+    .store-dashboard-cards {
+        grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+        gap: 15px;
+    }
+
+    .store-card {
+        padding: 20px;
+        gap: 14px;
+        border-radius: 17px;
+    }
+
+    .card-icon {
+        width: 55px;
+        height: 55px;
+        flex-basis: 55px;
+        font-size: 28px;
+    }
+
+    .store-card h4 {
+        font-size: 16px;
+    }
+
+    .store-card span {
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .store-card,
+    .store-copy-button {
+        transition: none;
+    }
+}
 </style>
 
+
+<script>
+(function () {
+    const copyButton = document.getElementById("copyStoreLinkButton");
+    const storeLink = document.getElementById("storePublicLink");
+    const message = document.getElementById("storeCopyMessage");
+
+    if (!copyButton || !storeLink || !message) {
+        return;
+    }
+
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = "store-copy-message " + type;
+    }
+
+    async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return;
+        }
+
+        const temporaryInput = document.createElement("textarea");
+        temporaryInput.value = text;
+        temporaryInput.style.position = "fixed";
+        temporaryInput.style.left = "-9999px";
+        temporaryInput.style.top = "0";
+        temporaryInput.setAttribute("readonly", "");
+
+        document.body.appendChild(temporaryInput);
+        temporaryInput.focus();
+        temporaryInput.select();
+        temporaryInput.setSelectionRange(0, temporaryInput.value.length);
+
+        let copied = false;
+
+        try {
+            copied = document.execCommand("copy");
+        } finally {
+            temporaryInput.remove();
+        }
+
+        if (!copied) {
+            throw new Error("تعذر نسخ الرابط");
+        }
+    }
+
+    copyButton.addEventListener("click", async function () {
+        const url = storeLink.href;
+        copyButton.disabled = true;
+
+        try {
+            await copyText(url);
+
+            showMessage("✓ تم نسخ رابط المتجر بنجاح", "is-success");
+
+            const originalText = copyButton.innerHTML;
+            copyButton.innerHTML = "<span>✓</span><span>تم النسخ</span>";
+
+            window.setTimeout(function () {
+                copyButton.innerHTML = originalText;
+            }, 1800);
+
+        } catch (error) {
+            showMessage(
+                "تعذر النسخ تلقائيًا. حدّد الرابط وانسخه يدويًا.",
+                "is-error"
+            );
+        } finally {
+            copyButton.disabled = false;
+        }
+    });
+})();
+</script>
 
 {% endblock %}

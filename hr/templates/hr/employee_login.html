@@ -1,0 +1,213 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الموظفين | تسجيل الدخول</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #eef0f3, #d5d9df);
+            color: #333;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 38px 32px;
+            border-radius: 28px;
+            background: linear-gradient(145deg, #f8f9fa, #e2e5e9);
+            box-shadow:
+                12px 12px 28px rgba(120, 126, 135, 0.22),
+                -12px -12px 28px rgba(255, 255, 255, 0.9);
+        }
+
+        .brand-icon {
+            width: 82px;
+            height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #eeeeee, #d5d8dd);
+            box-shadow:
+                7px 7px 15px #c6c9ce,
+                -7px -7px 15px #ffffff;
+            font-size: 38px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            text-align: center;
+            font-size: 27px;
+            color: #333;
+        }
+
+        .subtitle {
+            margin: 0 0 30px;
+            text-align: center;
+            line-height: 1.9;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            min-height: 52px;
+            padding: 12px 15px;
+            border: 1px solid #d8dbe0;
+            border-radius: 13px;
+            background: #f8f9fa;
+            color: #333;
+            font-size: 16px;
+            outline: none;
+            box-shadow: inset 3px 3px 7px #e0e2e6,
+                        inset -3px -3px 7px #ffffff;
+        }
+
+        input:focus {
+            border-color: #888;
+            box-shadow: 0 0 0 3px rgba(100, 100, 100, 0.12);
+        }
+
+        .login-button {
+            width: 100%;
+            min-height: 54px;
+            margin-top: 8px;
+            border: 0;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #666, #3f3f3f);
+            color: #fff;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 7px 15px rgba(50, 50, 50, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(50, 50, 50, 0.25);
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f5dddd;
+            color: #8a2626;
+            line-height: 1.8;
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 30px 22px;
+                border-radius: 22px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-card">
+        <div class="brand-icon" aria-hidden="true">👤</div>
+
+        <h1>بوابة الموظفين</h1>
+
+        <p class="subtitle">
+            سجّل الدخول للاطلاع على بياناتك الوظيفية
+            والحضور والإجازات والرواتب.
+        </p>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'hr:employee_login' %}">
+            {% csrf_token %}
+
+            <div class="field">
+                <label for="username">اسم المستخدم</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    autocomplete="username"
+                    placeholder="أدخل اسم المستخدم"
+                    required
+                    autofocus
+                >
+            </div>
+
+            <div class="field">
+                <label for="password">كلمة المرور</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="أدخل كلمة المرور"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="login-button">
+                تسجيل الدخول
+            </button>
+        </form>
+
+        <div class="footer">
+            بوابة الموظفين — الدخول مخصص لحسابات الموظفين النشطة
+        </div>
+    </main>
+</body>
+</html>

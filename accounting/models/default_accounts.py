@@ -77,6 +77,7 @@ def create_default_accounts(company):
 
     accounts["suppliers"] = suppliers
 
+
     # ==========================
     # الضرائب
     # ==========================
@@ -87,6 +88,7 @@ def create_default_accounts(company):
         name="الضرائب",
         account_type="LIABILITY",
         nature="CREDIT",
+        parent=liabilities,
         is_group=True,
     )
 

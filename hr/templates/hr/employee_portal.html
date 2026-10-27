@@ -1,0 +1,2732 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}بوابة الموظف{% endblock %}
+
+{% block content %}
+<style>
+/* المستندات والملفات */
+#personal-data .portal-documents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+#personal-data .portal-documents-grid .portal-info-item {
+    min-width: 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* الجوال: كرتان في كل سطر */
+@media (max-width: 650px) {
+    #personal-data .portal-documents-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px;
+    }
+
+    #personal-data .portal-documents-grid .portal-info-item {
+        padding: 12px !important;
+    }
+
+    #personal-data .portal-documents-grid .portal-info-item img {
+        max-width: 100%;
+        height: 120px !important;
+    }
+}
+/* تكبير صورة الموظف داخل المستندات والملفات */
+
+/* المستندات والملفات: 3 كروت بالكمبيوتر وكرتان بالجوال */
+#personal-data .portal-documents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+    width: 100%;
+}
+
+#personal-data .portal-documents-grid .portal-info-item {
+    min-width: 0;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+#personal-data .portal-documents-grid .portal-info-item > span {
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+#personal-data .portal-documents-grid .portal-info-item > strong {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#personal-data .employee-portal-photo {
+    width: 100%;
+    max-width: 220px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #d5d5d5;
+    box-shadow: 4px 4px 8px #c5c5c5, -3px -3px 7px #fff;
+}
+
+#personal-data .portal-document-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 11px;
+    background: linear-gradient(145deg, #666, #383838);
+    color: #fff !important;
+    text-decoration: none !important;
+    font-weight: 800;
+    font-size: 13px;
+    box-shadow: 4px 4px 8px #b8b8b8, -3px -3px 7px #fff;
+}
+
+#personal-data .portal-document-link:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 650px) {
+    #personal-data .portal-documents-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    #personal-data .portal-documents-grid .portal-info-item {
+        min-height: 190px;
+        padding: 12px !important;
+    }
+
+    #personal-data .employee-portal-photo {
+        max-width: 100%;
+        height: 120px;
+    }
+
+    #personal-data .portal-document-link {
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+}
+.employee-portal-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.employee-portal-photo-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    background: #d5d5d5;
+    color: #fff;
+    font-size: 42px;
+}
+.employee-portal,
+.employee-portal * { box-sizing: border-box; }
+
+.employee-portal {
+    direction: rtl;
+    color: #29364d;
+    padding: 22px;
+    margin: 12px auto 30px;
+    max-width: 1600px;
+    font-family: inherit;
+    background: linear-gradient(145deg,#edf1f8,#dce3ee);
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 28px;
+    box-shadow: 12px 12px 28px #c6cedb,-10px -10px 28px #fff;
+}
+
+.portal-topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; padding:18px 22px; margin-bottom:22px;
+    border-radius:20px; background:linear-gradient(145deg,#fff,#e8edf5);
+    box-shadow:6px 6px 15px #cbd2de,-6px -6px 15px #fff;
+}
+.portal-brand { display:flex; align-items:center; gap:13px; font-size:21px; font-weight:900; }
+.portal-brand-icon {
+    display:flex; align-items:center; justify-content:center;
+    width:48px; height:48px; border-radius:15px; color:#fff; font-size:23px;
+    background:linear-gradient(145deg,#7588a8,#394b69);
+    box-shadow:4px 4px 9px #bec6d4,-3px -3px 8px #fff;
+}
+.portal-topbar small { display:block; margin-top:5px; color:#77849a; font-size:12px; font-weight:500; }
+.portal-date {
+    padding:11px 16px; border-radius:13px; background:#e9eef6;
+    box-shadow:inset 3px 3px 6px #ccd3df,inset -3px -3px 6px #fff;
+    color:#596983; font-size:13px;
+}
+
+.portal-welcome {
+    display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:22px;
+    align-items:center; padding:25px; margin-bottom:25px; border-radius:24px;
+    background:linear-gradient(125deg,#fff,#e4eaf4);
+    box-shadow:8px 8px 20px #cbd3e0,-8px -8px 20px #fff;
+}
+.portal-welcome h2 { margin:0 0 10px; color:#263752; font-size:27px; font-weight:900; }
+.portal-welcome p { margin:0; color:#718099; line-height:1.9; }
+.portal-employee-summary { display:flex; align-items:center; gap:16px; }
+.portal-avatar {
+    flex:0 0 78px; width:78px; height:78px; display:flex;
+    justify-content:center; align-items:center; border-radius:50%;
+    color:#fff; font-size:31px; background:linear-gradient(145deg,#899bb9,#425574);
+    border:5px solid #f4f7fc; box-shadow:5px 5px 12px #c4ccda,-4px -4px 10px #fff;
+}
+.portal-employee-summary strong { display:block; font-size:17px; font-weight:900; overflow-wrap:anywhere; }
+.portal-employee-summary span { display:block; color:#7a879b; font-size:13px; margin-top:7px; }
+
+.portal-cards {
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:18px; margin-bottom:28px;
+}
+.portal-card {
+    min-width:0; padding:20px; border-radius:23px;
+    background:linear-gradient(145deg,#fff,#e8edf5);
+    border:1px solid rgba(255,255,255,.95);
+    box-shadow:8px 8px 17px #c7cfdd,-7px -7px 17px #fff;
+    transition:transform .2s ease,box-shadow .2s ease,outline .2s ease;
+    cursor:pointer;
+}
+.portal-card:hover { transform:translateY(-4px); box-shadow:11px 11px 22px #c1cad9,-8px -8px 20px #fff; }
+.portal-card:focus-visible { outline:3px solid #7586a2; outline-offset:3px; }
+.portal-card.is-active { outline:3px solid rgba(88,105,141,.45); }
+.portal-card-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:18px; }
+.portal-card-icon {
+    width:58px; height:58px; flex:0 0 58px; display:flex;
+    align-items:center; justify-content:center; color:#fff; border-radius:18px;
+    font-size:25px; text-shadow:0 2px 4px rgba(0,0,0,.15);
+    box-shadow:4px 5px 9px rgba(48,65,90,.18),-3px -3px 7px #fff;
+}
+.portal-icon-person { background:linear-gradient(145deg,#8797bb,#58698d); }
+.portal-icon-attendance { background:linear-gradient(145deg,#59a8f4,#2872d3); }
+.portal-icon-leave { background:linear-gradient(145deg,#56cbb1,#209b81); }
+.portal-icon-salary { background:linear-gradient(145deg,#9c91d9,#6555a5); }
+.portal-icon-request { background:linear-gradient(145deg,#e0a35e,#b66b28); }
+.portal-icon-requests { background:linear-gradient(145deg,#6a9b9c,#386d70); }
+.portal-icon-evaluation { background:linear-gradient(145deg,#d5b65f,#a17d20); }
+.portal-icon-evaluations { background:linear-gradient(145deg,#9b83c5,#69518e); }
+
+.portal-card-label { color:#728098; font-size:13px; font-weight:700; }
+.portal-card h3 { margin:7px 0 12px; color:#2d3c56; font-size:20px; font-weight:900; overflow-wrap:anywhere; }
+.portal-card-description { min-height:38px; color:#8290a5; font-size:12px; line-height:1.8; }
+.portal-card-link {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:10px 15px; margin-top:12px; border-radius:12px; color:#fff!important;
+    text-decoration:none!important; font-size:12px; font-weight:800;
+    background:linear-gradient(145deg,#666,#444);
+    box-shadow:4px 4px 8px #c4ccda,-3px -3px 7px #fff;
+}
+.portal-card-link:hover { color:#fff!important; filter:brightness(1.08); }
+
+.portal-section {
+    display:none; margin-top:24px; padding:23px; border-radius:22px;
+    background:linear-gradient(145deg,#fff,#e9eef6);
+    border:1px solid rgba(255,255,255,.95);
+    box-shadow:7px 7px 17px #c9d1df,-7px -7px 17px #fff;
+    scroll-margin-top:25px;
+}
+.portal-section.is-active { display:block; }
+.portal-section-title {
+    display:flex; align-items:center; gap:12px; margin-bottom:20px;
+    padding-bottom:15px; border-bottom:1px solid #dce2ec;
+}
+.portal-section-icon {
+    display:flex; align-items:center; justify-content:center;
+    width:43px; height:43px; flex:0 0 43px; border-radius:14px;
+    color:#fff; background:linear-gradient(145deg,#7587a6,#425674);
+    box-shadow:4px 4px 8px #c8d0dd,-3px -3px 7px #fff;
+}
+.portal-section-title h3 { margin:0; font-size:19px; font-weight:900; color:#2d3c56; }
+.portal-section-title p { margin:5px 0 0; color:#8490a4; font-size:12px; }
+.portal-section-close {
+    margin-right:auto; padding:9px 14px; border:0; border-radius:11px;
+    color:#fff; background:linear-gradient(145deg,#666,#444);
+    box-shadow:3px 3px 7px #c9d1df,-2px -2px 6px #fff;
+    font-family:inherit; font-size:12px; font-weight:800; cursor:pointer;
+    white-space:nowrap;
+}
+.portal-info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.portal-info-item {
+    padding:17px; min-width:0; border-radius:16px;
+    background:linear-gradient(145deg,#f5f8fc,#e5eaf3);
+    border:1px solid #fff;
+    box-shadow:inset 2px 2px 5px #d9dfe9,inset -2px -2px 5px #fff;
+    overflow-wrap:anywhere;
+}
+.portal-info-item span { display:block; color:#8290a5; font-size:12px; margin-bottom:9px; }
+.portal-info-item strong { color:#34435d; font-size:14px; font-weight:800; }
+.portal-table-wrapper { width:100%; overflow-x:auto; border-radius:15px; border:1px solid #e1e6ef; }
+.portal-table { width:100%; min-width:650px; border-collapse:separate; border-spacing:0; background:rgba(255,255,255,.55); }
+.portal-table th,.portal-table td {
+    padding:14px 13px; text-align:right; border-bottom:1px solid #e4e9f1;
+    white-space:nowrap; font-size:13px;
+}
+.portal-table th { color:#fff; font-weight:800; background:linear-gradient(145deg,#7585a0,#465773); }
+.portal-table tbody tr:nth-child(even) { background:rgba(226,233,243,.55); }
+.portal-table tbody tr:hover { background:#e2eaf5; }
+.portal-table tbody tr:last-child td { border-bottom:0; }
+.portal-status { display:inline-block; padding:6px 12px; border-radius:10px; background:#e0f3eb; color:#208263; font-size:12px; font-weight:800; }
+.portal-empty { padding:23px; text-align:center; border-radius:15px; background:#edf1f7; color:#7b879a; border:1px dashed #cbd4e2; }
+.portal-error { padding:20px; border-radius:16px; background:linear-gradient(145deg,#fff0f0,#f8dddd); color:#922f3b; box-shadow:5px 5px 12px #e4d1d4,-4px -4px 10px #fff; font-weight:800; }
+
+/* النافذة المنبثقة لإضافة طلب */
+.portal-modal {
+    display:none; position:fixed; inset:0; z-index:100000;
+    padding:20px; background:rgba(25,35,52,.62);
+    align-items:center; justify-content:center;
+}
+.portal-modal.is-open { display:flex; }
+.portal-modal-dialog {
+    width:100%; max-width:720px; max-height:90vh; overflow:auto;
+    padding:25px; border-radius:23px; background:linear-gradient(145deg,#fff,#e8edf5);
+    box-shadow:12px 12px 30px rgba(0,0,0,.25);
+}
+.portal-modal-header {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding-bottom:15px; margin-bottom:18px; border-bottom:1px solid #dce2ec;
+}
+.portal-modal-header h3 { margin:0; color:#2d3c56; font-size:21px; font-weight:900; }
+.portal-modal-x {
+    border:0; border-radius:10px; width:38px; height:38px;
+    background:#e1e6ef; color:#465773; font-size:23px; cursor:pointer;
+}
+.portal-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+.portal-form-field { min-width:0; }
+.portal-form-field.full { grid-column:1/-1; }
+.portal-form-field label { display:block; margin-bottom:7px; color:#53627a; font-size:13px; font-weight:800; }
+.portal-form-field input,
+.portal-form-field select,
+.portal-form-field textarea {
+    display:block; width:100%; min-height:44px; padding:10px 12px;
+    border:1px solid #d5dce7; border-radius:11px; background:#fff;
+    color:#29364d; font-family:inherit; font-size:14px;
+}
+.portal-form-field textarea { min-height:100px; resize:vertical; }
+.portal-form-field input:focus,
+.portal-form-field select:focus,
+.portal-form-field textarea:focus {
+    outline:2px solid #9baac2; border-color:#7586a2;
+}
+.portal-modal-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+.portal-btn {
+    padding:11px 18px; border:0; border-radius:11px; color:#fff;
+    background:linear-gradient(145deg,#666,#444); font-family:inherit;
+    font-size:13px; font-weight:800; cursor:pointer;
+}
+.portal-btn.secondary { color:#465773; background:linear-gradient(145deg,#f4f6fa,#dce3ed); }
+.portal-form-note {
+    display:none; margin-top:15px; padding:12px; border-radius:10px;
+    background:#fff3df; color:#815a1d; font-size:13px; line-height:1.8;
+}
+.portal-form-note.is-visible { display:block; }
+.portal-placeholder { line-height:2; color:#718099; }
+
+/* زر عرض تفاصيل الحضور */
+.portal-attendance-eye {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 11px;
+    color: #fff;
+    background: linear-gradient(145deg, #666, #444);
+    box-shadow: 3px 3px 7px #c9d1df, -2px -2px 6px #fff;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.portal-attendance-eye:hover {
+    filter: brightness(1.15);
+}
+
+.portal-attendance-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.portal-attendance-details .portal-info-item {
+    min-width: 0;
+}
+
+.portal-attendance-details .full {
+    grid-column: 1 / -1;
+}
+
+.portal-attendance-log {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f5f8fc, #e5eaf3);
+    border: 1px solid #fff;
+    color: #465773;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+/* ترقيم صفحات سجل الحضور والانصراف */
+.portal-attendance-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 15px;
+    direction: rtl;
+}
+
+.portal-attendance-pagination button {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 11px;
+    background: linear-gradient(145deg, #fafafa, #d5d5d5);
+    color: #333;
+    font-family: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 3px 3px 6px #c4c4c4, -3px -3px 6px #fff;
+}
+
+.portal-attendance-pagination button.active,
+.portal-attendance-pagination button:hover {
+    color: #fff;
+    background: linear-gradient(145deg, #666, #383838);
+}
+
+.portal-attendance-pagination button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.portal-attendance-page-info {
+    width: 100%;
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+@media (max-width: 650px) {
+    .portal-attendance-details {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .portal-attendance-details .full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width:1100px) {
+    .portal-cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .portal-welcome { grid-template-columns:minmax(0,1fr) 250px; }
+    .portal-info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:650px) {
+    .employee-portal { padding:13px; margin:8px; border-radius:20px; }
+    .portal-topbar { padding:14px; }
+    .portal-brand { font-size:17px; }
+    .portal-welcome { grid-template-columns:minmax(0,1fr); padding:18px; }
+    .portal-welcome h2 { font-size:22px; }
+    .portal-cards { grid-template-columns:minmax(0,1fr); gap:14px; }
+    .portal-card { padding:17px; }
+    .portal-info-grid { grid-template-columns:minmax(0,1fr); }
+    .portal-section { padding:15px; }
+    .portal-section-title h3 { font-size:17px; }
+    .portal-section-close { padding:8px 10px; font-size:11px; }
+    .portal-modal { padding:10px; }
+    .portal-modal-dialog { padding:17px; max-height:94vh; }
+    .portal-form-grid { grid-template-columns:minmax(0,1fr); }
+    .portal-form-field.full { grid-column:auto; }
+}
+
+/* =====================================================
+   تصميم بوابة الموظف 3D — رمادي بارز وموحد
+   ===================================================== */
+
+.employee-portal {
+    background: linear-gradient(145deg, #ededed, #d1d1d1) !important;
+    color: #333 !important;
+    border: 1px solid #fff !important;
+    border-radius: 28px !important;
+    box-shadow:
+        12px 12px 25px #bcbcbc,
+        -12px -12px 25px #fff !important;
+}
+
+.portal-topbar,
+.portal-welcome,
+.portal-card,
+.portal-section,
+.portal-modal-dialog {
+    background: linear-gradient(145deg, #fafafa, #d9d9d9) !important;
+    border: 1px solid #fff !important;
+    box-shadow:
+        8px 8px 17px #bdbdbd,
+        -8px -8px 17px #fff !important;
+}
+
+.portal-topbar,
+.portal-welcome,
+.portal-card,
+.portal-section,
+.portal-modal-dialog,
+.portal-info-item,
+.portal-card-link,
+.portal-section-close,
+.portal-btn,
+.portal-attendance-eye {
+    transition:
+        box-shadow .25s ease,
+        transform .25s ease,
+        background .25s ease !important;
+}
+
+.portal-brand-icon,
+.portal-avatar,
+.portal-card-icon,
+.portal-section-icon {
+    background: linear-gradient(145deg, #777, #414141) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,.8);
+    box-shadow:
+        5px 5px 10px #bcbcbc,
+        -4px -4px 9px #fff !important;
+}
+
+.portal-card {
+    cursor: pointer;
+    border-radius: 22px !important;
+    padding: 22px !important;
+}
+
+.portal-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow:
+        12px 12px 22px #b5b5b5,
+        -9px -9px 19px #fff !important;
+}
+
+.portal-card.is-active {
+    outline: 2px solid #777 !important;
+    outline-offset: 3px;
+    background: linear-gradient(145deg, #e2e2e2, #f8f8f8) !important;
+}
+
+.portal-card-label,
+.portal-card-description,
+.portal-info-item span,
+.portal-date {
+    color: #666 !important;
+}
+
+.portal-card h3,
+.portal-welcome h2,
+.portal-section-title h3,
+.portal-info-item strong,
+.portal-brand {
+    color: #333 !important;
+}
+
+.portal-card-link,
+.portal-section-close,
+.portal-btn,
+.portal-attendance-eye {
+    background: linear-gradient(145deg, #666, #383838) !important;
+    color: #fff !important;
+    border: 1px solid #777 !important;
+    border-radius: 12px !important;
+    box-shadow:
+        4px 4px 8px #b8b8b8,
+        -3px -3px 7px #fff !important;
+    font-weight: 800 !important;
+}
+
+.portal-card-link:hover,
+.portal-section-close:hover,
+.portal-btn:hover,
+.portal-attendance-eye:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        6px 6px 12px #aaa,
+        -4px -4px 9px #fff !important;
+}
+
+.portal-btn.secondary {
+    color: #333 !important;
+    background: linear-gradient(145deg, #fff, #d0d0d0) !important;
+}
+
+.portal-section {
+    border-radius: 24px !important;
+    padding: 25px !important;
+}
+
+.portal-section-title {
+    border-bottom: 2px solid #d0d0d0 !important;
+    padding-bottom: 17px !important;
+}
+
+.portal-section-title h3 {
+    font-size: 21px !important;
+    font-weight: 900 !important;
+}
+
+.portal-info-grid {
+    gap: 17px !important;
+}
+
+.portal-info-item {
+    background: linear-gradient(145deg, #f7f7f7, #dedede) !important;
+    border: 1px solid #fff !important;
+    border-radius: 17px !important;
+    padding: 19px !important;
+    box-shadow:
+        5px 5px 10px #c5c5c5,
+        -5px -5px 10px #fff !important;
+}
+
+.portal-info-item:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        inset 2px 2px 5px #c5c5c5,
+        inset -2px -2px 5px #fff !important;
+}
+
+.portal-info-item span {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+}
+
+.portal-info-item strong {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    overflow-wrap: anywhere;
+}
+
+.portal-section h4 {
+    padding: 13px 17px !important;
+    border-radius: 13px !important;
+    color: #333 !important;
+    background: linear-gradient(145deg, #f5f5f5, #d1d1d1) !important;
+    border: 1px solid #fff !important;
+    box-shadow:
+        4px 4px 8px #c4c4c4,
+        -3px -3px 7px #fff !important;
+}
+
+.portal-table-wrapper {
+    border: 1px solid #fff !important;
+    border-radius: 16px !important;
+    box-shadow:
+        6px 6px 13px #c3c3c3,
+        -5px -5px 12px #fff !important;
+}
+
+.portal-table {
+    background: #eeeeee !important;
+}
+
+.portal-table th {
+    color: #fff !important;
+    background: linear-gradient(145deg, #696969, #393939) !important;
+    border-bottom: 1px solid #888 !important;
+}
+
+.portal-table td {
+    color: #383838 !important;
+    border-bottom: 1px solid #d3d3d3 !important;
+}
+
+.portal-table tbody tr:nth-child(even) {
+    background: #e0e0e0 !important;
+}
+
+.portal-table tbody tr:hover {
+    background: #d0d0d0 !important;
+}
+
+.portal-status {
+    color: #333 !important;
+    background: linear-gradient(145deg, #fff, #d2d2d2) !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 2px 2px 4px #c6c6c6 !important;
+}
+
+.portal-empty {
+    color: #555 !important;
+    background: linear-gradient(145deg, #f5f5f5, #dedede) !important;
+    border: 1px dashed #aaa !important;
+    border-radius: 16px !important;
+    box-shadow:
+        inset 3px 3px 6px #d0d0d0,
+        inset -3px -3px 6px #fff !important;
+}
+
+.portal-date {
+    background: linear-gradient(145deg, #f8f8f8, #d6d6d6) !important;
+    box-shadow:
+        inset 3px 3px 6px #c5c5c5,
+        inset -3px -3px 6px #fff !important;
+}
+
+.portal-modal {
+    backdrop-filter: blur(6px);
+}
+
+.portal-modal-dialog {
+    border-radius: 24px !important;
+}
+
+.portal-modal-header {
+    border-bottom: 2px solid #d0d0d0 !important;
+}
+
+.portal-form-field input,
+.portal-form-field select,
+.portal-form-field textarea {
+    background: linear-gradient(145deg, #fff, #ededed) !important;
+    border: 1px solid #ccc !important;
+    border-radius: 12px !important;
+    box-shadow:
+        inset 3px 3px 6px #ddd,
+        inset -3px -3px 6px #fff !important;
+}
+
+.portal-form-field input:focus,
+.portal-form-field select:focus,
+.portal-form-field textarea:focus {
+    outline: 2px solid #888 !important;
+    border-color: #777 !important;
+}
+
+.portal-attendance-log {
+    background: linear-gradient(145deg, #f5f5f5, #dedede) !important;
+    color: #444 !important;
+    border: 1px solid #fff !important;
+    border-radius: 13px !important;
+    box-shadow:
+        4px 4px 8px #c8c8c8,
+        -3px -3px 7px #fff !important;
+}
+
+.portal-error {
+    background: linear-gradient(145deg, #f5f5f5, #ddd) !important;
+    color: #444 !important;
+    border: 1px solid #fff !important;
+    box-shadow:
+        6px 6px 13px #c0c0c0,
+        -5px -5px 12px #fff !important;
+}
+
+@media (max-width: 650px) {
+    .portal-section {
+        padding: 15px !important;
+    }
+
+    .portal-info-item {
+        padding: 15px !important;
+    }
+
+    .portal-card {
+        padding: 18px !important;
+    }
+}
+/* إظهار أسماء جميع كروت المستندات */
+#personal-data .portal-documents-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+#personal-data .portal-documents-grid .portal-info-item {
+    min-width: 0;
+    min-height: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+#personal-data .portal-documents-grid .portal-info-item > span {
+    display: block;
+    width: 100%;
+    margin-bottom: 14px;
+    color: #555;
+    font-weight: 800;
+}
+
+#personal-data .portal-documents-grid .portal-info-item > strong {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+}
+
+#personal-data .portal-document-link {
+    display: inline-block;
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #666, #383838);
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 12px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 650px) {
+    #personal-data .portal-documents-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px;
+    }
+
+    #personal-data .portal-documents-grid .portal-info-item {
+        min-height: 170px;
+        padding: 12px !important;
+    }
+
+    #personal-data .portal-documents-grid .employee-portal-photo {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+    }
+
+    #personal-data .portal-document-link {
+        padding: 9px 6px;
+        font-size: 11px;
+    }
+}
+
+/* تنسيق زر طلب الإجازة */
+.portal-leave-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.portal-leave-header #open-employee-leave-modal {
+    margin-right: auto;
+    margin-left: 0;
+    flex-shrink: 0;
+    order: 0;
+    transform: translateX(-500px);
+}
+
+/* إظهار الزر في الجوال */
+@media screen and (max-width: 768px) {
+    .portal-section-title.portal-leave-header {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        overflow: visible !important;
+    }
+
+    .portal-section-title.portal-leave-header #open-employee-leave-modal {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        right: auto !important;
+        left: auto !important;
+        transform: none !important;
+        order: 0 !important;
+        margin: 12px 0 0 0 !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        flex-shrink: 0 !important;
+       transform: translateX(-520px) !important;
+    }
+}
+
+/* إظهار زر طلب الإجازة في الجوال */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+    .portal-section-title.portal-leave-header {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        overflow: visible !important;
+    }
+
+    .portal-section-title.portal-leave-header #open-employee-leave-modal {
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        transform: translateX(-285px) !important;
+        order: 0 !important;
+        margin: 12px 0 0 0 !important;
+        max-width: 100% !important;
+        width: auto !important;
+        white-space: normal !important;
+        flex-shrink: 0 !important;
+        z-index: 999 !important;
+    }
+}
+
+</style>
+<div class="employee-portal">
+{% if portal_error %}
+    <div class="portal-error">{{ portal_error }}</div>
+{% else %}
+
+    <div class="portal-topbar">
+        <div class="portal-brand">
+            <div class="portal-brand-icon">♟</div>
+            <div>بوابة الموظف<small>الخدمات الذاتية للموظفين</small></div>
+        </div>
+        <div class="portal-date">مرحبًا بك في حسابك الوظيفي</div>
+    </div>
+
+    <div class="portal-welcome">
+        <div>
+            <h2>مرحبًا بك في بوابة الموظف</h2>
+            <p>يمكنك الاطلاع على بياناتك الوظيفية وسجلات الحضور والإجازات والرواتب، ومتابعة طلباتك من مكان واحد.</p>
+        </div>
+        <div class="portal-employee-summary">
+            {% if employee.photo %}
+    <img src="{{ employee.photo.url }}"
+         alt="صورة الموظف"
+         style="width:78px;height:78px;object-fit:cover;border-radius:50%;border:5px solid #f4f7fc;box-shadow:5px 5px 12px #c4ccda,-4px -4px 10px #fff;">
+{% else %}
+    <div class="portal-avatar">♟</div>
+{% endif %}
+            <div>
+                <strong>{{ employee.first_name_ar }} {{ employee.last_name_ar }}</strong>
+                <span>الرقم الوظيفي: {{ employee.employee_number|default:"—" }}</span>
+                <span>{% if employee.active %}على رأس العمل{% else %}غير نشط{% endif %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- كروت الخدمات -->
+    <div class="portal-cards">
+
+        <!-- الكرت الأول: البيانات الشخصية -->
+        <div class="portal-card" data-target="personal-data" role="button" tabindex="0" aria-controls="personal-data" aria-expanded="false">
+            <div class="portal-card-head">
+                <div>
+                    <div class="portal-card-label">ملفي الوظيفي</div>
+                    <h3>البيانات الشخصية</h3>
+                </div>
+                <div class="portal-card-icon portal-icon-person">♟</div>
+            </div>
+            <div class="portal-card-description">بياناتك الشخصية والقسم والفرع والمسمى الوظيفي.</div>
+            <a href="#personal-data" class="portal-card-link">عرض التفاصيل ←</a>
+        </div>
+
+        <!-- الكرت الثاني: بصمة الموظف -->
+        <div class="portal-card portal-fingerprint-card"
+             data-target="fingerprint-data"
+             role="button"
+             tabindex="0"
+             aria-controls="fingerprint-data"
+             aria-expanded="false">
+            <div class="portal-card-head">
+                <div>
+                    <div class="portal-card-label">تسجيل الدوام</div>
+                    <h3>بصمة الموظف</h3>
+                </div>
+
+                <div class="portal-card-icon portal-icon-attendance">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="48"
+                         height="48"
+                         viewBox="0 0 64 64"
+                         fill="none"
+                         stroke="white"
+                         stroke-width="3"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         aria-label="بصمة الإصبع">
+                        <path d="M20 25 C20 12 44 12 44 25"/>
+                        <path d="M14 27 C14 7 50 7 50 27"/>
+                        <path d="M26 25 C26 19 38 19 38 25"/>
+                        <path d="M20 31 C20 25 23 22 27 21"/>
+                        <path d="M44 31 C44 25 41 22 37 21"/>
+                        <path d="M26 29 C26 25 38 25 38 29"/>
+                        <path d="M32 32 L32 43"/>
+                        <path d="M20 36 C20 45 17 51 13 55"/>
+                        <path d="M44 36 C44 45 47 51 51 55"/>
+                        <path d="M26 38 C26 47 23 53 20 57"/>
+                        <path d="M38 38 C38 47 41 53 44 57"/>
+                        <path d="M32 48 C32 52 31 55 30 58"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="portal-card-description">
+                تسجيل الحضور والانصراف وفتح صفحة البصمة المعتمدة في الموارد البشرية.
+            </div>
+
+            <span class="portal-card-link">
+                فتح صفحة البصمة ←
+            </span>
+        </div>
+
+        <!-- بقية الكروت دون تغيير -->
+        <div class="portal-card" data-target="attendance-data" role="button" tabindex="0" aria-controls="attendance-data" aria-expanded="false">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">سجل الدوام</div><h3>الحضور والانصراف</h3></div>
+                <div class="portal-card-icon portal-icon-attendance">◷</div>
+            </div>
+            <div class="portal-card-description">مراجعة سجلات الحضور والتأخير وساعات العمل.</div>
+            <a href="#attendance-data" class="portal-card-link">عرض التفاصيل ←</a>
+        </div>
+
+        <div class="portal-card" data-target="leave-data" role="button" tabindex="0" aria-controls="leave-data" aria-expanded="false">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">رصيد الطلبات</div><h3>الإجازات</h3></div>
+                <div class="portal-card-icon portal-icon-leave">▦</div>
+            </div>
+            <div class="portal-card-description">الاطلاع على طلبات الإجازات وحالاتها المسجلة.</div>
+            <a href="#leave-data" class="portal-card-link">عرض التفاصيل ←</a>
+        </div>
+
+        <div class="portal-card" data-target="salary-data" role="button" tabindex="0" aria-controls="salary-data" aria-expanded="false">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">المستحقات المالية</div><h3>الرواتب</h3></div>
+<div class="portal-card-icon portal-icon-salary">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="34" height="34"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="#ffffff"
+         stroke-width="1.7"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         aria-hidden="true">
+        <rect x="2" y="5" width="20" height="14" rx="2"/>
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M5 8h1M18 16h1"/>
+        <path d="M12 10v4M10.5 11h2a1 1 0 0 1 0 2h-1"/>
+    </svg>
+</div>
+            </div>
+            <div class="portal-card-description">مراجعة سجلات الرواتب المعتمدة والمصروفة.</div>
+            <a href="#salary-data" class="portal-card-link">عرض التفاصيل ←</a>
+        </div>
+
+        <!-- كرت واحد لجميع أنواع الطلبات -->
+        <div class="portal-card" data-action="add-request" role="button" tabindex="0">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">الخدمات الذاتية</div><h3>إضافة طلب</h3></div>
+                <div class="portal-card-icon portal-icon-request">＋</div>
+            </div>
+            <div class="portal-card-description">تقديم طلب سلفة أو تذكرة أو ترقية أو نقل أو تغيير وردية.</div>
+            <a href="#add-request" class="portal-card-link">إضافة طلب جديد ←</a>
+        </div>
+
+        <div class="portal-card" data-target="my-requests" role="button" tabindex="0" aria-controls="my-requests" aria-expanded="false">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">المتابعة</div><h3>طلباتي</h3></div>
+                <div class="portal-card-icon portal-icon-requests">☷</div>
+            </div>
+            <div class="portal-card-description">متابعة حالة الطلبات والاطلاع على نتائجها بعد ربط النظام.</div>
+            <a href="#my-requests" class="portal-card-link">متابعة الطلبات ←</a>
+        </div>
+
+        <div class="portal-card" data-target="add-evaluation" role="button" tabindex="0" aria-controls="add-evaluation" aria-expanded="false">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">التطوير الوظيفي</div><h3>إضافة تقييم</h3></div>
+                <div class="portal-card-icon portal-icon-evaluation">★</div>
+            </div>
+            <div class="portal-card-description">الوصول إلى نموذج التقييم وفق صلاحيات الموظف.</div>
+            <a href="#add-evaluation" class="portal-card-link">عرض التفاصيل ←</a>
+        </div>
+
+        <div class="portal-card" data-target="my-evaluations" role="button" tabindex="0" aria-controls="my-evaluations" aria-expanded="false">
+            <div class="portal-card-head">
+                <div><div class="portal-card-label">السجل الوظيفي</div><h3>تقييماتي</h3></div>
+                <div class="portal-card-icon portal-icon-evaluations">✓</div>
+            </div>
+            <div class="portal-card-description">الاطلاع على التقييمات المسجلة ونتائجها بعد ربط السجلات.</div>
+            <a href="#my-evaluations" class="portal-card-link">عرض التقييمات ←</a>
+        </div>
+
+    </div>
+
+    <!-- البيانات الشخصية --> 
+
+<!-- البيانات الشخصية والوظيفية -->
+<div class="portal-section" id="personal-data">
+    <div class="portal-section-title">
+        <div class="portal-section-icon">♟</div>
+        <div>
+            <h3>البيانات الشخصية والوظيفية</h3>
+            <p>معلومات ملفك الوظيفي المسجلة في النظام — للعرض فقط</p>
+        </div>
+    </div>
+
+    <!-- البيانات الأساسية -->
+    <h4 style="margin:20px 0 14px;font-weight:900;color:#34435d;">
+        البيانات الأساسية
+    </h4>
+    <div class="portal-info-grid">
+        <div class="portal-info-item">
+            <span>الرقم الوظيفي</span>
+            <strong>{{ employee.employee_number|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الاسم الأول بالعربية</span>
+            <strong>{{ employee.first_name_ar|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>اسم العائلة بالعربية</span>
+            <strong>{{ employee.last_name_ar|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الاسم الأول بالإنجليزية</span>
+            <strong>{{ employee.first_name_en|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>اسم العائلة بالإنجليزية</span>
+            <strong>{{ employee.last_name_en|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>البريد الإلكتروني</span>
+            <strong>{{ employee.email|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>رقم الجوال</span>
+            <strong>{{ employee.phone|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الجنس</span>
+            <strong>{{ employee.get_gender_display|default:employee.gender|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الحالة الوظيفية</span>
+            <strong>
+                {% if employee.active %}على رأس العمل{% else %}غير نشط{% endif %}
+            </strong>
+        </div>
+    </div>
+
+    <!-- البيانات الوظيفية -->
+    <h4 style="margin:25px 0 14px;font-weight:900;color:#34435d;">
+        البيانات الوظيفية
+    </h4>
+    <div class="portal-info-grid">
+        <div class="portal-info-item">
+            <span>القسم</span>
+            <strong>{{ employee.department.name|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الفرع</span>
+            <strong>{{ employee.branch.name|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>المسمى الوظيفي</span>
+            <strong>{{ employee.job_title|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>نوع الموظف</span>
+            <strong>{{ employee.get_employee_type_display|default:employee.employee_type|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>المشرف المباشر</span>
+            <strong>{{ employee.supervisor|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>تاريخ التعيين</span>
+            <strong>{{ employee.hire_date|date:"Y-m-d"|default:"—" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>مدة فترة التجربة بالأيام</span>
+            <strong>{{ employee.probation_days|default:"0" }}</strong>
+        </div>
+    </div>
+
+    <!-- الراتب والبدلات -->
+    <h4 style="margin:25px 0 14px;font-weight:900;color:#34435d;">
+        الراتب والبدلات
+    </h4>
+    <div class="portal-info-grid">
+        <div class="portal-info-item">
+            <span>الراتب الأساسي</span>
+            <strong>{{ employee.base_salary|default:"0.00" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>بدل السكن</span>
+            <strong>{{ employee.housing_allowance|default:"0.00" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>بدل النقل</span>
+            <strong>{{ employee.transport_allowance|default:"0.00" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>بدل الملابس</span>
+            <strong>{{ employee.clothing_allowance|default:"0.00" }}</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>بدلات أخرى</span>
+            <strong>{{ employee.other_allowances|default:"0.00" }}</strong>
+        </div>
+    </div>
+
+    <!-- أرصدة الإجازات -->
+    <h4 style="margin:25px 0 14px;font-weight:900;color:#34435d;">
+        أرصدة الإجازات
+    </h4>
+    <div class="portal-info-grid">
+        <div class="portal-info-item">
+            <span>استحقاق الإجازة السنوية</span>
+            <strong>{{ employee.annual_leave_entitlement|default:"0" }} يوم</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الرصيد السنوي الحالي</span>
+            <strong>{{ employee.current_annual_leave|default:"0" }} يوم</strong>
+        </div>
+        <div class="portal-info-item">
+            <span>الإجازات التعويضية</span>
+            <strong>{{ employee.compensatory_leave|default:"0" }} يوم</strong>
+        </div>
+    </div>
+
+    <!-- المستندات والملفات -->
+    <h4 style="margin:25px 0 14px;font-weight:900;color:#34435d;">
+        المستندات والملفات
+    </h4>
+
+    <div class="portal-documents-grid">
+
+        <!-- الكرت الأول: صورة الموظف -->
+        <div class="portal-info-item">
+            <span>صورة الموظف</span>
+            <strong>
+                {% if employee.photo %}
+                    <a href="{{ employee.photo.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <img src="{{ employee.photo.url }}"
+                             alt="صورة الموظف"
+                             class="employee-portal-photo">
+                    </a>
+                {% else %}
+                    لا توجد صورة مسجلة
+                {% endif %}
+            </strong>
+        </div>
+
+        <!-- الكرت الثاني: الهوية الوطنية -->
+        <div class="portal-info-item">
+            <span>ملف الهوية الوطنية</span>
+            <strong>
+                {% if employee.national_id_file %}
+                    <a class="portal-document-link"
+                       href="{{ employee.national_id_file.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">عرض ملف الهوية الوطنية</a>
+                {% else %}
+                    لا يوجد ملف
+                {% endif %}
+            </strong>
+        </div>
+
+        <!-- الكرت الثالث: جواز السفر -->
+        <div class="portal-info-item">
+            <span>ملف جواز السفر</span>
+            <strong>
+                {% if employee.passport_file %}
+                    <a class="portal-document-link"
+                       href="{{ employee.passport_file.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">عرض ملف جواز السفر</a>
+                {% else %}
+                    لا يوجد ملف
+                {% endif %}
+            </strong>
+        </div>
+
+        <!-- الكرت الرابع: العقد -->
+        <div class="portal-info-item">
+            <span>ملف العقد</span>
+            <strong>
+                {% if employee.contract_file %}
+                    <a class="portal-document-link"
+                       href="{{ employee.contract_file.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">عرض ملف العقد</a>
+                {% else %}
+                    لا يوجد ملف
+                {% endif %}
+            </strong>
+        </div>
+
+        <!-- الكرت الخامس: ملفات أخرى -->
+        <div class="portal-info-item">
+            <span>ملفات أخرى</span>
+            <strong>
+                {% if employee.other_files %}
+                    <a class="portal-document-link"
+                       href="{{ employee.other_files.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">عرض الملفات الأخرى</a>
+                {% else %}
+                    لا توجد ملفات أخرى
+                {% endif %}
+            </strong>
+        </div>
+
+    </div>
+</div>
+    <!-- قسم بصمة الموظف -->
+    <div class="portal-section" id="fingerprint-data">
+        <div class="portal-section-title">
+            <div class="portal-section-icon">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="28" height="28"
+                     viewBox="0 0 64 64"
+                     fill="none" stroke="white"
+                     stroke-width="3"
+                     stroke-linecap="round">
+                    <path d="M20 25 C20 12 44 12 44 25"/>
+                    <path d="M14 27 C14 7 50 7 50 27"/>
+                    <path d="M26 29 C26 25 38 25 38 29"/>
+                    <path d="M32 32 L32 43"/>
+                    <path d="M20 36 C20 45 17 51 13 55"/>
+                    <path d="M44 36 C44 45 47 51 51 55"/>
+                    <path d="M26 38 C26 47 23 53 20 57"/>
+                    <path d="M38 38 C38 47 41 53 44 57"/>
+                </svg>
+            </div>
+            <div>
+                <h3>بصمة الموظف</h3>
+                <p>تسجيل الحضور والانصراف</p>
+            </div>
+        </div>
+
+        <div id="fingerprint-attendance-content">
+            <div class="portal-empty">
+                <p>جاري تجهيز صفحة البصمة...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- الحضور والانصراف -->
+    <div class="portal-section" id="attendance-data">
+        <div class="portal-section-title">
+            <div class="portal-section-icon">◷</div>
+            <div>
+                <h3>سجل الحضور والانصراف</h3>
+                <p>سجلات الحضور المسجلة باسمك، اضغط على العين لعرض التفاصيل</p>
+            </div>
+        </div>
+
+        {% if attendance_records %}
+        <div class="portal-table-wrapper">
+            <table class="portal-table">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الحضور</th>
+                        <th>الانصراف</th>
+                        <th>الحالة</th>
+                        <th>دقائق التأخير</th>
+                        <th>دقائق الخروج المبكر</th>
+                        <th>دقائق العمل</th>
+                        <th>التفاصيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.date|date:"Y-m-d" }}</td>
+                        <td>
+                            {% if record.portal_first_check_in %}
+                                {{ record.portal_first_check_in|date:"H:i" }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.portal_last_check_out %}
+                                {{ record.portal_last_check_out|date:"H:i" }}
+                            {% else %}
+                                {% if record.portal_current_session_minutes != None %}
+                                    <span class="portal-status">دوام مفتوح</span>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="portal-status">
+                                {% if record.status == "completed" %}
+                                    مكتمل
+                                {% elif record.status == "present" %}
+                                    حاضر
+                                {% elif record.status == "late" %}
+                                    متأخر
+                                {% elif record.status == "absent" %}
+                                    غائب
+                                {% elif record.status == "early_leave" %}
+                                    انصراف مبكر
+                                {% else %}
+                                    {{ record.get_status_display }}
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ record.portal_late_minutes }}</td>
+                        <td>{{ record.portal_early_leave_minutes }}</td>
+                        <td>
+                            {% if record.portal_current_session_minutes != None %}
+                                {{ record.portal_worked_minutes|add:record.portal_current_session_minutes }}
+                            {% else %}
+                                {{ record.portal_worked_minutes }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button
+                                type="button"
+                                class="portal-attendance-eye"
+                                title="عرض تفاصيل الحضور"
+                                aria-label="عرض تفاصيل حضور {{ record.date|date:'Y-m-d' }}"
+                                data-attendance-details="attendance-details-{{ record.id }}"
+                            >&#128065;</button>
+                        </td>
+                    </tr>
+
+                    <tr hidden id="attendance-details-{{ record.id }}">
+                        <td colspan="8" style="white-space:normal; padding:18px;">
+                            <div class="portal-attendance-details">
+                                <div class="portal-info-item">
+                                    <span>تاريخ الحضور</span>
+                                    <strong>{{ record.date|date:"Y-m-d" }}</strong>
+                                </div>
+
+                                <div class="portal-info-item">
+                                    <span>الوردية</span>
+                                    <strong>
+                                        {% if record.shift %}
+                                            {{ record.shift.shift_name }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <div class="portal-info-item">
+                                    <span>أول حضور</span>
+                                    <strong>
+                                        {% if record.portal_first_check_in %}
+                                            {{ record.portal_first_check_in|date:"Y-m-d H:i:s" }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <div class="portal-info-item">
+                                    <span>آخر انصراف</span>
+                                    <strong>
+                                        {% if record.portal_last_check_out %}
+                                            {{ record.portal_last_check_out|date:"Y-m-d H:i:s" }}
+                                        {% else %}
+                                            لم يسجل بعد
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <div class="portal-info-item">
+                                    <span>إجمالي دقائق التأخير المسجلة</span>
+                                    <strong>{{ record.portal_late_minutes }} دقيقة</strong>
+                                </div>
+
+                                <div class="portal-info-item">
+                                    <span>دقائق الخروج المبكر المسجلة</span>
+                                    <strong>{{ record.portal_early_leave_minutes }} دقيقة</strong>
+                                </div>
+
+                                <div class="portal-info-item">
+                                    <span>دقائق العمل المسجلة</span>
+                                    <strong>{{ record.portal_worked_minutes }} دقيقة</strong>
+                                </div>
+
+                                {% if record.portal_current_session_minutes != None %}
+                                <div class="portal-info-item">
+                                    <span>مدة جلسة الحضور المفتوحة حتى الآن</span>
+                                    <strong>{{ record.portal_current_session_minutes }} دقيقة</strong>
+                                </div>
+                                {% endif %}
+
+                                <div class="portal-info-item full">
+                                    <span>موقع العمل المعتمد للسجل</span>
+                                    <strong>
+                                        {% if record.work_location %}
+                                            {{ record.work_location.name }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </strong>
+                                </div>
+
+                                <div class="portal-info-item full">
+                                    <span>تفاصيل عمليات البصمة</span>
+                                    {% if record.portal_logs %}
+                                        {% for log in record.portal_logs %}
+                                        <div class="portal-attendance-log">
+                                            <strong>
+                                                {% if log.action == "check_in" %}
+                                                    تسجيل حضور
+                                                {% else %}
+                                                    تسجيل انصراف
+                                                {% endif %}
+                                            </strong>
+                                            <br>
+                                            الوقت: {{ log.timestamp|date:"Y-m-d H:i:s" }}
+                                            <br>
+                                            موقع العملية:
+                                            {% if log.work_location %}
+                                                {{ log.work_location.name }}
+                                            {% else %}
+                                                غير محدد
+                                            {% endif %}
+
+                                            {% if log.location_verified %}
+                                                <br>التحقق من الموقع: تم التحقق
+                                            {% else %}
+                                                <br>التحقق من الموقع: غير مؤكد
+                                            {% endif %}
+
+                                            {% if log.distance_from_workplace != None %}
+                                                <br>
+                                                المسافة من موقع العمل:
+                                                {{ log.distance_from_workplace }} متر
+                                            {% endif %}
+
+                                            {% if log.location_note %}
+                                                <br>
+                                                ملاحظة الموقع: {{ log.location_note }}
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="portal-empty">
+                                            لا توجد عمليات بصمة مرتبطة بهذا السجل.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="portal-empty">لا توجد سجلات حضور لعرضها.</div>
+        {% endif %}
+    </div>
+
+<!-- الإجازات -->
+<div class="portal-section" id="leave-data">
+
+    <div class="portal-section-title portal-leave-header">
+        <div class="portal-section-icon">▦</div>
+
+        <div class="portal-leave-heading">
+            <h3>طلبات الإجازات</h3>
+            <p>تفاصيل طلبات الإجازات وحالاتها</p>
+        </div>
+
+<button type="button"
+        class="portal-section-close portal-add-leave-btn"
+        id="open-employee-leave-modal"
+        title="إنشاء طلب إجازة"
+        aria-label="إنشاء طلب إجازة">
+    + طلب إجازة جديد
+</button>
+    </div>
+
+    {% if leave_records %}
+    <div class="portal-table-wrapper">
+        <table class="portal-table">
+            <thead>
+                <tr>
+                    <th>نوع الإجازة</th>
+                    <th>من تاريخ</th>
+                    <th>إلى تاريخ</th>
+                    <th>السبب</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for leave in leave_records %}
+                <tr>
+                    <td>{{ leave.get_leave_type_display|default:leave.leave_type }}</td>
+                    <td>{{ leave.start_date|date:"Y-m-d" }}</td>
+                    <td>{{ leave.end_date|date:"Y-m-d" }}</td>
+                    <td>{{ leave.reason|default:"—" }}</td>
+                    <td>
+                        <span class="portal-status">
+                            {{ leave.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="portal-empty">لا توجد طلبات إجازات لعرضها.</div>
+    {% endif %}
+
+</div>
+
+    <!-- الرواتب -->
+    <div class="portal-section" id="salary-data">
+        <div class="portal-section-title">
+            <div class="portal-section-icon">ر</div>
+            <div>
+                <h3>سجل الرواتب</h3>
+                <p>الرواتب ضمن المسيرات المعتمدة أو المصروفة</p>
+            </div>
+        </div>
+
+        {% if payroll_records %}
+        <div class="portal-table-wrapper">
+            <table class="portal-table">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الراتب الأساسي</th>
+                        <th>البدلات</th>
+                        <th>الخصومات</th>
+                        <th>صافي الراتب</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payroll in payroll_records %}
+                    <tr>
+                        <td>{{ payroll.date|date:"Y-m-d" }}</td>
+                        <td>{{ payroll.base_salary|floatformat:2 }}</td>
+                        <td>{{ payroll.allowances|floatformat:2 }}</td>
+                        <td>{{ payroll.absence_deduction|add:payroll.advance_deduction|add:payroll.other_deductions|floatformat:2 }}</td>
+                        <td><strong>{{ payroll.net_salary|floatformat:2 }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="portal-empty">لا توجد رواتب معتمدة لعرضها.</div>
+        {% endif %}
+    </div>
+
+
+    <!-- طلباتي -->
+    <div class="portal-section" id="my-requests">
+        <div class="portal-section-title">
+            <div class="portal-section-icon">☷</div>
+            <div>
+                <h3>طلباتي وحالة الطلبات</h3>
+                <p>متابعة الطلبات المقدمة من حسابك</p>
+            </div>
+        </div>
+
+        {% if employee_requests %}
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:18px;">
+                {% for item in employee_requests %}
+                    <div style="background:#f5f5f5;border:1px solid #d5d5d5;border-radius:12px;padding:18px;box-shadow:3px 3px 8px rgba(0,0,0,.07);">
+
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+                            <strong style="color:#222;font-size:17px;">
+                                {{ item.get_request_type_display }}
+                            </strong>
+
+                            <span style="background:#e5e5e5;color:#222;padding:6px 12px;border-radius:8px;font-weight:700;">
+                                {{ item.get_status_display }}
+                            </span>
+                        </div>
+
+                        <div style="margin-bottom:10px;color:#333;">
+                            <strong>تاريخ الطلب:</strong>
+                            {{ item.request_date|date:"Y-m-d" }}
+                        </div>
+
+                        <div style="margin-bottom:10px;color:#333;overflow-wrap:anywhere;">
+                            <strong>سبب الطلب:</strong>
+                            {{ item.reason|default:"غير محدد" }}
+                        </div>
+
+                        {% if item.attachment %}
+                            <div style="margin-bottom:10px;">
+                                <a href="{{ item.attachment.url }}" target="_blank" rel="noopener noreferrer" style="color:#222;font-weight:700;text-decoration:underline;">
+                                    عرض المرفق
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        {% if item.reviewer_notes %}
+                            <div style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;color:#333;overflow-wrap:anywhere;">
+                                <strong>ملاحظات المراجع:</strong>
+                                {{ item.reviewer_notes }}
+                            </div>
+                        {% endif %}
+
+                        <div style="margin-top:14px;padding-top:10px;border-top:1px solid #ddd;color:#666;font-size:12px;">
+                            تاريخ التسجيل:
+                            {{ item.created_at|date:"Y-m-d H:i" }}
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="portal-empty">
+                لا توجد طلبات حتى الآن. ستظهر طلباتك هنا بعد إرسالها.
+            </div>
+        {% endif %}
+    </div>
+
+<!-- سجلات تقييم الموظف الحالي -->
+<div class="portal-section" id="my-evaluations">
+
+    <div class="portal-section-title">
+        <div class="portal-section-icon">✓</div>
+        <div>
+            <h3>📒 سجلات التقييم</h3>
+            <p>سجلات التقييم والدرجات والملاحظات الخاصة بك</p>
+        </div>
+    </div>
+
+    {% if my_evaluation_records %}
+    <div class="portal-table-wrapper" style="overflow-x:auto;">
+
+        <table class="portal-table" style="min-width:1250px;">
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>التقييم</th>
+                    <th>المعيار</th>
+                    <th>الدرجة</th>
+                    <th>المقيّم</th>
+                    <th>الدور</th>
+                    <th>الملاحظات</th>
+                    <th>المرفقات</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for r in my_evaluation_records %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td style="font-weight:800;">
+                        {{ r.target.evaluation.name }}
+                    </td>
+
+                    <td>
+                        {{ r.criteria.name|default:"—" }}
+                    </td>
+
+                    <td>
+                        <strong>{{ r.value|default_if_none:"—" }}</strong>
+                    </td>
+
+                    <td>
+                        {% if r.evaluator %}
+                            {{ r.evaluator.first_name_ar }}
+                            {{ r.evaluator.last_name_ar }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if r.role == "peer" %}
+                            زميل
+                        {% elif r.role == "manager" %}
+                            مدير
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                    <td style="white-space:normal;min-width:220px;text-align:right;">
+                        {{ r.notes|default:"—" }}
+                    </td>
+
+                    <td>
+                        {% with attachments=r.attachments.all %}
+                            {% for attachment in attachments %}
+                                {% if attachment.file %}
+                                    <a
+                                        href="{{ attachment.file.url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style="display:inline-block;margin:3px;color:#222;font-weight:700;"
+                                    >
+                                        عرض المرفق {{ forloop.counter }}
+                                    </a>
+                                {% endif %}
+                            {% empty %}
+                                —
+                            {% endfor %}
+                        {% endwith %}
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+    <div class="portal-empty">
+        لا توجد سجلات تقييم مسجلة لك حتى الآن.
+    </div>
+    {% endif %}
+
+</div>
+<!-- إضافة تقييم -->
+<div class="portal-section" id="add-evaluation">
+    <div class="portal-section-title">
+        <div class="portal-section-icon">★</div>
+        <div>
+            <h3>إضافة تقييم</h3>
+            <p>التقييمات الوظيفية</p>
+        </div>
+    </div>
+
+    <div class="portal-empty">
+        <p style="margin-bottom: 16px;">
+            إنشاء تقييم وظيفي باستخدام نموذج الموارد البشرية الموجود في النظام.
+        </p>
+
+        <button
+            type="button"
+            id="open-evaluation-modal"
+            class="portal-btn"
+            style="cursor:pointer; border:0;"
+        >
+            ＋ إضافة تقييم
+        </button>
+    </div>
+</div>
+
+
+<!-- نافذة نموذج إضافة التقييم -->
+<div
+    class="portal-modal"
+    id="employee-evaluation-modal"
+    aria-hidden="true"
+>
+    <div
+        class="portal-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="employee-evaluation-title"
+        style="width:min(1400px,96vw);max-width:1400px;height:90vh;max-height:90vh;"
+    >
+        <div class="portal-modal-header">
+            <h3 id="employee-evaluation-title">إضافة تقييم وظيفي</h3>
+
+            <button
+                type="button"
+                class="portal-modal-x"
+                id="close-evaluation-modal"
+                aria-label="إغلاق"
+            >×</button>
+        </div>
+
+        <iframe
+            id="employee-evaluation-frame"
+            title="نموذج إضافة تقييم وظيفي"
+            src="about:blank"
+            style="display:block;width:100%;height:calc(90vh - 75px);border:0;background:#fff;border-radius:0 0 12px 12px;"
+        ></iframe>
+    </div>
+</div>
+
+<!-- نافذة طلب الإجازة -->
+<div class="portal-modal" id="employee-leave-modal" aria-hidden="true">
+    <div class="portal-modal-dialog" role="dialog"
+         aria-modal="true" aria-labelledby="employee-leave-title">
+
+        <div class="portal-modal-header">
+            <h3 id="employee-leave-title">تقديم طلب إجازة</h3>
+            <button type="button" class="portal-modal-x"
+                    id="employee-leave-close" aria-label="إغلاق">×</button>
+        </div>
+
+        <form method="post" action="{% url 'hr:employee_portal_leave_request' %}">
+            {% csrf_token %}
+
+            <div class="portal-form-grid">
+                <div class="portal-form-field full">
+                    <label for="employee-leave-type">نوع الإجازة *</label>
+                    <select id="employee-leave-type" name="leave_type" required>
+                        <option value="">اختر نوع الإجازة</option>
+                        <option value="annual">إجازة سنوية</option>
+                        <option value="sick">إجازة مرضية</option>
+                        <option value="compensatory">إجازة تعويضية</option>
+                        <option value="other">إجازة أخرى</option>
+                    </select>
+                </div>
+
+                <div class="portal-form-field">
+                    <label for="employee-leave-start">تاريخ البداية *</label>
+                    <input type="date" id="employee-leave-start"
+                           name="start_date" required>
+                </div>
+
+                <div class="portal-form-field">
+                    <label for="employee-leave-end">تاريخ النهاية *</label>
+                    <input type="date" id="employee-leave-end"
+                           name="end_date" required>
+                </div>
+
+                <div class="portal-form-field full">
+                    <label for="employee-leave-reason">سبب الإجازة</label>
+                    <textarea id="employee-leave-reason" name="reason"
+                              rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="portal-modal-actions">
+                <button type="submit" class="portal-btn">
+                    إرسال طلب الإجازة
+                </button>
+                <button type="button" class="portal-btn secondary"
+                        id="employee-leave-cancel">
+                    إلغاء
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="portal-modal" id="request-modal" aria-hidden="true">
+    <div class="portal-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="request-modal-title">
+        <div class="portal-modal-header">
+            <h3 id="request-modal-title">إضافة طلب جديد</h3>
+            <button type="button" class="portal-modal-x" id="request-modal-close" aria-label="إغلاق">×</button>
+        </div>
+
+        <form
+    id="employee-request-form"
+    action="{% url 'hr:employee_portal_request_submit' %}"
+    method="post"
+    enctype="multipart/form-data"
+>
+            {% csrf_token %}
+            <div class="portal-form-grid">
+                <div class="portal-form-field full">
+                    <label for="request-type">نوع الطلب *</label>
+                    <select id="request-type" name="request_type" required>
+                        <option value="">اختر نوع الطلب</option>
+                        <option value="advance">سلفة مالية</option>
+                        <option value="ticket">تذكرة سفر</option>
+                        <option value="promotion">ترقية</option>
+                        <option value="transfer">نقل إلى قسم أو فرع آخر</option>
+                        <option value="shift">تغيير وردية</option>
+                        <option value="other">طلب آخر</option>
+                    </select>
+                </div>
+
+                <div class="portal-form-field">
+                    <label for="request-date">تاريخ الطلب *</label>
+                    <input type="date" id="request-date" name="request_date" required>
+                </div>
+
+                <!-- حقول السلفة -->
+                <div class="portal-request-fields portal-form-field full" data-request-fields="advance" hidden>
+                    <div class="portal-form-grid">
+                        <div class="portal-form-field">
+                            <label for="advance-amount">المبلغ المطلوب *</label>
+                            <input type="number" id="advance-amount" name="advance_amount" min="0.01" step="0.01" data-required="true">
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="advance-installments">عدد الأقساط المقترح</label>
+                            <input type="number" id="advance-installments" name="advance_installments" min="1" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- حقول التذكرة -->
+                <div class="portal-request-fields portal-form-field full" data-request-fields="ticket" hidden>
+                    <div class="portal-form-grid">
+                        <div class="portal-form-field">
+                            <label for="ticket-destination">الوجهة *</label>
+                            <input type="text" id="ticket-destination" name="ticket_destination" data-required="true" placeholder="مدينة أو دولة الوصول">
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="ticket-date">تاريخ السفر *</label>
+                            <input type="date" id="ticket-date" name="ticket_date" data-required="true">
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="ticket-type">نوع التذكرة</label>
+                            <select id="ticket-type" name="ticket_type">
+                                <option value="">اختر النوع</option>
+                                <option value="one_way">ذهاب</option>
+                                <option value="round_trip">ذهاب وعودة</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- حقول الترقية -->
+                <div class="portal-request-fields portal-form-field full" data-request-fields="promotion" hidden>
+                    <div class="portal-form-grid">
+                        <div class="portal-form-field">
+                            <label for="current-job-title">المسمى الحالي</label>
+                            <input type="text" id="current-job-title" name="current_job_title" value="{{ employee.job_title|default:'' }}" readonly>
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="requested-job-title">المسمى المطلوب *</label>
+                            <input type="text" id="requested-job-title" name="requested_job_title" data-required="true">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- حقول النقل -->
+                <div class="portal-request-fields portal-form-field full" data-request-fields="transfer" hidden>
+                    <div class="portal-form-grid">
+                        <div class="portal-form-field">
+                            <label for="current-department">القسم الحالي</label>
+                            <input type="text" id="current-department" name="current_department" value="{{ employee.department.name|default:'' }}" readonly>
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="requested-department">القسم المطلوب</label>
+                            <input type="text" id="requested-department" name="requested_department">
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="current-branch">الفرع الحالي</label>
+                            <input type="text" id="current-branch" name="current_branch" value="{{ employee.branch.name|default:'' }}" readonly>
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="requested-branch">الفرع المطلوب</label>
+                            <input type="text" id="requested-branch" name="requested_branch">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- حقول تغيير الوردية -->
+                <div class="portal-request-fields portal-form-field full" data-request-fields="shift" hidden>
+                    <div class="portal-form-grid">
+                        <div class="portal-form-field">
+                            <label for="requested-shift">الوردية المطلوبة *</label>
+                            <input type="text" id="requested-shift" name="requested_shift" data-required="true" placeholder="اسم الوردية أو وقتها">
+                        </div>
+                        <div class="portal-form-field">
+                            <label for="shift-start-date">تاريخ بدء الوردية المطلوبة</label>
+                            <input type="date" id="shift-start-date" name="shift_start_date">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- حقول الطلب الآخر -->
+                <div class="portal-request-fields portal-form-field full" data-request-fields="other" hidden>
+                    <label for="other-request-title">عنوان الطلب *</label>
+                    <input type="text" id="other-request-title" name="other_request_title" data-required="true">
+                </div>
+
+                <div class="portal-form-field full">
+                    <label for="request-reason">السبب والتفاصيل *</label>
+                    <textarea id="request-reason" name="reason" required placeholder="اكتب سبب الطلب والتفاصيل التي تساعد الإدارة على مراجعته"></textarea>
+                </div>
+
+                <div class="portal-form-field full">
+                    <label for="request-attachment">المرفق (اختياري)</label>
+                    <input type="file" id="request-attachment" name="attachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                    <small style="display:block;margin-top:6px;color:#8290a5">الملفات المسموح بها: PDF وWord والصور. سيتم تفعيل رفع المرفقات عند ربط الحفظ بالخادم.</small>
+                </div>
+            </div>
+
+            <div class="portal-form-note" id="request-form-note" role="status">
+                جاهز لاستقبال طلبك. اضغط على «إرسال الطلب» لحفظه.
+            </div>
+
+            <div class="portal-modal-actions">
+                <button type="submit" class="portal-btn">إرسال الطلب</button>
+                <button type="button" class="portal-btn secondary" id="request-modal-cancel">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const portal = document.querySelector(".employee-portal");
+
+    if (!portal) return;
+
+    // ترقيم سجلات الحضور: 31 سجلًا في كل صفحة
+    const attendanceSection = document.getElementById("attendance-data");
+    const attendanceTable = attendanceSection
+        ? attendanceSection.querySelector(".portal-table")
+        : null;
+
+    if (attendanceTable) {
+        const attendanceBody = attendanceTable.querySelector("tbody");
+        const pagination = document.createElement("div");
+
+        pagination.className = "portal-attendance-pagination";
+        pagination.setAttribute("aria-label", "صفحات سجل الحضور");
+
+        const pageInfo = document.createElement("div");
+        pageInfo.className = "portal-attendance-page-info";
+
+        const rows = Array.from(attendanceBody.querySelectorAll("tr"))
+            .filter(function (row) {
+                return !row.hasAttribute("hidden") ||
+                    row.id.startsWith("attendance-details-");
+            });
+
+        const records = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+
+            if (row.id.startsWith("attendance-details-")) continue;
+
+            const detailsRow = row.nextElementSibling;
+            records.push({
+                main: row,
+                details: detailsRow &&
+                    detailsRow.id.startsWith("attendance-details-")
+                    ? detailsRow
+                    : null
+            });
+        }
+
+        const pageSize = 31;
+        let currentPage = 1;
+        const pageCount = Math.ceil(records.length / pageSize);
+
+        function showAttendancePage(page) {
+            currentPage = page;
+
+            records.forEach(function (item, index) {
+                const visible =
+                    index >= (page - 1) * pageSize &&
+                    index < page * pageSize;
+
+                item.main.hidden = !visible;
+
+                if (item.details) {
+                    item.details.hidden = true;
+                }
+            });
+
+            pagination.innerHTML = "";
+
+            function addPageButton(label, targetPage, disabled, active) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = label;
+                button.disabled = disabled;
+
+                if (active) button.classList.add("active");
+
+                button.addEventListener("click", function () {
+                    showAttendancePage(targetPage);
+                });
+
+                pagination.appendChild(button);
+            }
+
+            addPageButton("‹", currentPage - 1, currentPage === 1, false);
+
+            for (let p = 1; p <= pageCount; p++) {
+                addPageButton(String(p), p, false, p === currentPage);
+            }
+
+            addPageButton(
+                "›",
+                currentPage + 1,
+                currentPage === pageCount || pageCount === 0,
+                false
+            );
+
+            pageInfo.textContent =
+                "صفحة " + currentPage + " من " + Math.max(pageCount, 1) +
+                " — عدد السجلات: " + records.length;
+        }
+
+        attendanceTable.parentElement.after(pagination);
+        pagination.after(pageInfo);
+
+        if (records.length > 0) {
+            showAttendancePage(1);
+        } else {
+            pagination.remove();
+            pageInfo.remove();
+        }
+    }
+
+    // فتح وإغلاق تفاصيل سجل الحضور عند الضغط على زر العين
+    portal.addEventListener("click", function (event) {
+        const eyeButton = event.target.closest("[data-attendance-details]");
+        if (!eyeButton) return;
+
+        const detailsId = eyeButton.getAttribute("data-attendance-details");
+        const detailsRow = document.getElementById(detailsId);
+        if (!detailsRow) return;
+
+        const willOpen = detailsRow.hidden;
+        detailsRow.hidden = !willOpen;
+        eyeButton.setAttribute("aria-expanded", String(willOpen));
+        eyeButton.title = willOpen ? "إخفاء تفاصيل الحضور" : "عرض تفاصيل الحضور";
+    });
+
+    const cards = portal.querySelectorAll(".portal-card[data-target]");
+    const sections = portal.querySelectorAll(".portal-section");
+    const cardsContainer = portal.querySelector(".portal-cards");
+
+    function closeAllSections() {
+        sections.forEach(function (section) {
+            section.classList.remove("is-active");
+        });
+        cards.forEach(function (card) {
+            card.classList.remove("is-active");
+            card.setAttribute("aria-expanded", "false");
+        });
+    }
+
+    let fingerprintAttendanceLoaded = false;
+    let fingerprintAttendanceLoading = false;
+
+    function loadFingerprintAttendance(forceReload = false) {
+        const container = document.getElementById("fingerprint-attendance-content");
+
+        if (!container) return;
+        if (fingerprintAttendanceLoading) return;
+        if (fingerprintAttendanceLoaded && !forceReload) return;
+
+        fingerprintAttendanceLoading = true;
+        container.innerHTML = '<div class="portal-empty">جاري تحميل صفحة البصمة...</div>';
+
+        fetch("{% url 'hr:attendance_check_page' %}?embed=1", {
+            method: "GET",
+            credentials: "same-origin",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("تعذر تحميل صفحة البصمة");
+            }
+            return response.text();
+        })
+        .then(function (html) {
+            container.innerHTML = html;
+            fingerprintAttendanceLoaded = true;
+
+            if (typeof window.initializeAttendancePartial === "function") {
+                window.initializeAttendancePartial(container);
+            }
+        })
+        .catch(function () {
+            container.innerHTML =
+                '<div class="portal-empty">تعذر تحميل صفحة البصمة. يرجى تحديث الصفحة والمحاولة مجددًا.</div>';
+        })
+        .finally(function () {
+            fingerprintAttendanceLoading = false;
+        });
+    }
+
+    window.loadFingerprintAttendance = loadFingerprintAttendance;
+
+    function initializeAttendancePartial(root) {
+        const form = root.querySelector("#attendance-form");
+        const button = root.querySelector("#attendance-btn");
+
+        if (!form || !button || form.dataset.initialized === "1") return;
+        form.dataset.initialized = "1";
+
+        const lat = root.querySelector("#form-latitude");
+        const lon = root.querySelector("#form-longitude");
+        const accuracy = root.querySelector("#form-accuracy");
+        const status = root.querySelector("#gps-status");
+        const statusText = root.querySelector("#gps-status-text");
+        const statusIcon = root.querySelector("#gps-status-icon");
+        const accuracyText = root.querySelector("#gps-accuracy");
+        const buttonText = root.querySelector("#attendance-btn-text");
+        const buttonIcon = root.querySelector("#attendance-icon");
+        const manualButton = root.querySelector("#manual-location-btn");
+        const refreshButton = root.querySelector("#attendance-refresh-btn");
+
+        let locationReady = false;
+
+        function gpsStatus(type, message, meters) {
+            if (status) status.className = "gps-status mb-3 " + type;
+            if (statusText) statusText.textContent = message;
+
+            if (accuracyText) {
+                accuracyText.textContent = meters != null
+                    ? "دقة الموقع: " + Math.round(meters) + " متر"
+                    : "";
+            }
+
+            if (statusIcon) {
+                statusIcon.className = type === "success"
+                    ? "fas fa-location-dot me-2 ms-2"
+                    : type === "danger"
+                        ? "fas fa-location-xmark me-2 ms-2"
+                        : "fas fa-location-crosshairs me-2 ms-2";
+            }
+        }
+
+        function getLocation() {
+            locationReady = false;
+            button.disabled = true;
+
+            if (buttonText) buttonText.textContent = "جاري تحديد الموقع...";
+
+            if (!navigator.geolocation) {
+                gpsStatus("danger", "المتصفح لا يدعم تحديد الموقع.");
+                if (buttonText) buttonText.textContent = "تعذر تحديد الموقع";
+                return;
+            }
+
+            if (!window.isSecureContext) {
+                gpsStatus("danger", "تحديد الموقع يتطلب HTTPS أو localhost.");
+                if (buttonText) buttonText.textContent = "تحقق من الاتصال";
+                return;
+            }
+
+            gpsStatus("loading", "جاري تحديد موقعك...");
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    lat.value = position.coords.latitude;
+                    lon.value = position.coords.longitude;
+                    accuracy.value = position.coords.accuracy;
+                    locationReady = true;
+
+                    gpsStatus("success", "تم تحديد موقعك بنجاح.", position.coords.accuracy);
+
+                    const action = root.querySelector("#attendance-action");
+                    if (buttonText) {
+                        buttonText.textContent =
+                            action && action.value === "check_out"
+                                ? " الانصراف"
+                                : " الحضور";
+                    }
+
+                    if (buttonIcon) buttonIcon.className = "fas fa-fingerprint mb-2";
+                    button.disabled = false;
+                },
+                function (error) {
+                    lat.value = "";
+                    lon.value = "";
+                    accuracy.value = "";
+
+                    let message = "تعذر تحديد موقعك.";
+
+                    if (error.code === 1) {
+                        message = "صلاحية الموقع مرفوضة. اسمح للمتصفح باستخدام موقعك.";
+                    } else if (error.code === 2) {
+                        message = "تعذر الحصول على موقعك. تحقق من إعدادات الموقع.";
+                    } else if (error.code === 3) {
+                        message = "انتهت مهلة تحديد الموقع. حاول مرة أخرى.";
+                    }
+
+                    gpsStatus("danger", message);
+                    if (buttonText) buttonText.textContent = "إعادة تحديد الموقع";
+                    if (buttonIcon) buttonIcon.className = "fas fa-location-crosshairs mb-2";
+                    button.disabled = true;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        if (manualButton) manualButton.addEventListener("click", getLocation);
+        if (refreshButton) refreshButton.addEventListener("click", getLocation);
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            if (!locationReady || !lat.value || !lon.value) {
+                gpsStatus("danger", "حدد موقعك أولًا قبل تسجيل الحضور أو الانصراف.");
+                getLocation();
+                return;
+            }
+
+            button.disabled = true;
+            if (buttonText) buttonText.textContent = "جاري التسجيل...";
+
+            try {
+                const response = await fetch(form.getAttribute("action"), {
+                    method: "POST",
+                    body: new FormData(form),
+                    credentials: "same-origin",
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+
+                if (!response.ok) {
+                    throw new Error("تعذر تسجيل العملية. حاول مرة أخرى.");
+                }
+
+                const html = await response.text();
+                root.innerHTML = html;
+                initializeAttendancePartial(root);
+            } catch (error) {
+                gpsStatus("danger", error.message || "حدث خطأ أثناء التسجيل.");
+                button.disabled = !locationReady;
+                if (buttonText) buttonText.textContent = "إعادة المحاولة";
+            }
+        });
+
+        const clock = root.querySelector("#live-clock");
+
+        if (clock) {
+            function updateClock() {
+                clock.textContent = new Date().toLocaleTimeString("en-GB", {
+                    hour12: false
+                });
+            }
+
+            updateClock();
+
+            if (clock.dataset.timerStarted !== "1") {
+                clock.dataset.timerStarted = "1";
+                setInterval(updateClock, 1000);
+            }
+        }
+
+        getLocation();
+    }
+
+    window.initializeAttendancePartial = initializeAttendancePartial;
+
+    function openCard(card) {
+        const targetId = card.getAttribute("data-target");
+        const targetSection = document.getElementById(targetId);
+
+        if (!targetSection || !portal.contains(targetSection)) return;
+
+        closeAllSections();
+
+        targetSection.classList.add("is-active");
+        card.classList.add("is-active");
+        card.setAttribute("aria-expanded", "true");
+
+        if (targetId === "fingerprint-data") {
+            loadFingerprintAttendance();
+        }
+
+        targetSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    cards.forEach(function (card) {
+        card.addEventListener("click", function (event) {
+            if (event.target.closest(".portal-card-link")) {
+                event.preventDefault();
+            }
+
+            const targetSection = document.getElementById(card.getAttribute("data-target"));
+
+            if (targetSection && targetSection.classList.contains("is-active")) {
+                closeAllSections();
+
+                if (cardsContainer) {
+                    cardsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+
+                return;
+            }
+
+            openCard(card);
+        });
+
+        card.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                card.click();
+            }
+        });
+    });
+
+    sections.forEach(function (section) {
+        const title = section.querySelector(".portal-section-title");
+        if (!title) return;
+
+        const closeButton = document.createElement("button");
+        closeButton.type = "button";
+        closeButton.className = "portal-section-close";
+        closeButton.textContent = "إغلاق التفاصيل";
+        closeButton.setAttribute("aria-label", "إغلاق تفاصيل هذا القسم");
+
+        closeButton.addEventListener("click", function () {
+            closeAllSections();
+
+            if (cardsContainer) {
+                cardsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+
+        title.appendChild(closeButton);
+    });
+
+    /* النافذة المنبثقة */
+    const modal = document.getElementById("request-modal");
+    const requestForm = document.getElementById("employee-request-form");
+    const requestType = document.getElementById("request-type");
+    const requestDate = document.getElementById("request-date");
+    const note = document.getElementById("request-form-note");
+
+    function openRequestModal() {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+
+        if (!requestDate.value) {
+            const today = new Date();
+            const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+                .toISOString().slice(0, 10);
+            requestDate.value = localDate;
+        }
+
+        requestType.focus();
+    }
+
+    function closeRequestModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+    }
+
+    function updateRequestFields() {
+        const selectedType = requestType.value;
+
+        modal.querySelectorAll("[data-request-fields]").forEach(function (group) {
+            const show = group.getAttribute("data-request-fields") === selectedType;
+            group.hidden = !show;
+
+            group.querySelectorAll("input, select, textarea").forEach(function (field) {
+                field.disabled = !show;
+                field.required = show && field.dataset.required === "true";
+            });
+        });
+
+        note.classList.remove("is-visible");
+    }
+
+    portal.querySelectorAll('[data-action="add-request"]').forEach(function (card) {
+        card.addEventListener("click", function (event) {
+            if (event.target.closest(".portal-card-link")) {
+                event.preventDefault();
+            }
+            openRequestModal();
+        });
+
+        card.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openRequestModal();
+            }
+        });
+    });
+
+    requestType.addEventListener("change", updateRequestFields);
+    document.getElementById("request-modal-close").addEventListener("click", closeRequestModal);
+    document.getElementById("request-modal-cancel").addEventListener("click", closeRequestModal);
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) closeRequestModal();
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+            closeRequestModal();
+        }
+    });
+
+
+requestForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    if (!requestForm.reportValidity()) return;
+
+    const submitButton = requestForm.querySelector(
+        'button[type="submit"], input[type="submit"]'
+    );
+
+    if (submitButton) {
+        submitButton.disabled = true;
+    }
+
+    note.textContent = "جارٍ إرسال الطلب...";
+    note.classList.add("is-visible");
+
+    try {
+        const response = await fetch(requestForm.action, {
+            method: "POST",
+            body: new FormData(requestForm),
+            credentials: "same-origin",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "تعذر حفظ الطلب. يرجى المحاولة مرة أخرى."
+            );
+        }
+
+        note.textContent = result.message || "تم إرسال الطلب بنجاح.";
+
+        setTimeout(function () {
+            window.location.reload();
+        }, 1000);
+
+    } catch (error) {
+        note.textContent = error.message || "حدث خطأ أثناء إرسال الطلب.";
+        note.classList.add("is-visible");
+
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+    }
+});
+
+    updateRequestFields();
+    closeAllSections();
+});
+
+    // فتح وإغلاق نافذة طلب الإجازة
+    const employeeLeaveModal = document.getElementById("employee-leave-modal");
+    const openEmployeeLeaveButton = document.getElementById("open-employee-leave-modal");
+
+    function closeEmployeeLeaveModal() {
+        employeeLeaveModal.classList.remove("is-open");
+        employeeLeaveModal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+    }
+
+    if (employeeLeaveModal && openEmployeeLeaveButton) {
+        openEmployeeLeaveButton.addEventListener("click", function () {
+            employeeLeaveModal.classList.add("is-open");
+            employeeLeaveModal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        });
+
+        document.getElementById("employee-leave-close")
+            .addEventListener("click", closeEmployeeLeaveModal);
+
+        document.getElementById("employee-leave-cancel")
+            .addEventListener("click", closeEmployeeLeaveModal);
+
+        employeeLeaveModal.addEventListener("click", function (event) {
+            if (event.target === employeeLeaveModal) {
+                closeEmployeeLeaveModal();
+            }
+        });
+    }
+
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const openButton = document.getElementById("open-evaluation-modal");
+    const modal = document.getElementById("employee-evaluation-modal");
+    const closeButton = document.getElementById("close-evaluation-modal");
+    const frame = document.getElementById("employee-evaluation-frame");
+
+    if (!openButton || !modal || !closeButton || !frame) {
+        return;
+    }
+
+    const evaluationUrl = "{% url 'hr:evaluation_record_start' %}?portal=1";
+
+
+
+function openEvaluationModal() {
+    modal.classList.add("is-open");
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+
+    frame.onload = function () {
+    console.log("تم تحميل صفحة التقييم داخل النافذة:", frame.src);
+};
+
+frame.onerror = function () {
+    console.error("تعذر تحميل صفحة التقييم داخل النافذة:", frame.src);
+};
+
+frame.src = evaluationUrl;
+}
+
+function closeEvaluationModal() {
+    modal.classList.remove("is-open");
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+    frame.src = "about:blank";
+    document.body.style.overflow = "";
+}
+
+    openButton.addEventListener("click", openEvaluationModal);
+    closeButton.addEventListener("click", closeEvaluationModal);
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            closeEvaluationModal();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (
+            event.key === "Escape" &&
+            modal.getAttribute("aria-hidden") === "false"
+        ) {
+            closeEvaluationModal();
+        }
+    });
+});
+</script>
+{% endif %}
+
+{% endblock %}

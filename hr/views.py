@@ -23,8 +23,9 @@ from math import radians, sin, cos, sqrt, atan2
 from django.shortcuts import get_object_or_404
 import json
 from datetime import date, datetime, time
+from django.utils.dateparse import parse_date
 import calendar
-
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from accounts.models import Company
 from .models import (
     Employee,
@@ -277,7 +278,550 @@ def _create_or_update_employee_user(employee, use_user_account, username="", pas
 
     return user, created_user, False
 
+
+def employee_login(request):
+    from django.contrib import messages
+    from django.contrib.auth import authenticate, login
+    from django.shortcuts import render, redirect
+    from .models import Employee
+
+    # إذا كان الموظف قد سجل الدخول بالفعل، افتح بوابته
+    if request.user.is_authenticated:
+        employee_exists = Employee.objects.filter(
+            user=request.user,
+            use_user_account=True,
+            active=True,
+            company__isnull=False,
+        ).exists()
+
+        if employee_exists:
+            return redirect("hr:employee_portal")
+
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+
+        if user is not None:
+            employee_exists = Employee.objects.filter(
+                user=user,
+                use_user_account=True,
+                active=True,
+                company__isnull=False,
+            ).exists()
+
+            if employee_exists:
+                login(request, user)
+                return redirect("hr:employee_portal")
+
+        messages.error(
+            request,
+            "بيانات الدخول غير صحيحة، أو لا يوجد ملف موظف نشط مرتبط بهذا الحساب.",
+        )
+
+    return render(request, "hr/employee_login.html")
+
+
+@login_required
+@hr_permission_required("view_user")
+def employee_portal_manage(request):
+    company = _company_required(request)
+
+    if not company:
+        return redirect("accounts:login")
+
+    employees = (
+        Employee.objects
+        .filter(
+            company=company,
+            use_user_account=True,
+        )
+        .select_related("user")
+        .order_by("first_name_ar", "last_name_ar")
+    )
+
+    portal_login_url = request.build_absolute_uri(
+        reverse("hr:employee_login")
+    )
+
+    context = {
+        "employees": employees,
+        "portal_login_url": portal_login_url,
+    }
+
+    return render(
+        request,
+        "hr/employee_portal_manage.html",
+        context,
+    )
+
 # ==========================
+# بوابة الموظفين
+# ==========================
+@login_required
+# ==========================
+# بوابة الموظف
+# ==========================
+
+
+
+@login_required
+
+
+def employee_portal(request):
+    from django.shortcuts import render
+    from django.utils import timezone
+    from .models import (
+    Employee,
+    Attendance,
+    AttendanceLog,
+    Leave,
+    Payroll,
+    EmployeeRequest,
+)
+
+    # البحث عن الموظف المرتبط بحساب الدخول
+    try:
+        employee = Employee.objects.select_related(
+            "company",
+            "department",
+            "branch",
+            "work_location",
+        ).get(
+            user=request.user,
+            use_user_account=True,
+            active=True,
+        )
+    except Employee.DoesNotExist:
+        return render(
+            request,
+            "hr/employee_portal.html",
+            {
+                "portal_error": (
+                    "لا يوجد ملف موظف نشط مرتبط بحسابك. "
+                    "يرجى مراجعة إدارة الموارد البشرية."
+                )
+            },
+            status=403,
+        )
+
+    if not employee.company_id:
+        return render(
+            request,
+            "hr/employee_portal.html",
+            {
+                "portal_error": (
+                    "ملفك الوظيفي غير مرتبط بشركة. "
+                    "يرجى مراجعة إدارة الموارد البشرية."
+                )
+            },
+            status=403,
+        )
+
+    # سجلات حضور الموظف الحالي فقط
+    attendance_records = list(
+        Attendance.objects.filter(
+            employee_id=employee.id,
+            company_id=employee.company_id,
+        )
+        .select_related("shift", "work_location")
+        .order_by("-date")[:30]
+    )
+
+    attendance_ids = [record.id for record in attendance_records]
+
+    # عمليات البصمة المسجلة فعليًا
+    logs = AttendanceLog.objects.filter(
+        employee_id=employee.id,
+        company_id=employee.company_id,
+        attendance_id__in=attendance_ids,
+    ).select_related(
+        "work_location"
+    ).order_by("timestamp", "id")
+
+    logs_by_attendance = {}
+
+    for log in logs:
+        logs_by_attendance.setdefault(
+            log.attendance_id, []
+        ).append(log)
+
+    for record in attendance_records:
+        record.portal_logs = logs_by_attendance.get(record.id, [])
+
+        check_ins = [
+            log for log in record.portal_logs
+            if log.action == "check_in"
+        ]
+
+        check_outs = [
+            log for log in record.portal_logs
+            if log.action == "check_out"
+        ]
+
+        record.portal_first_check_in = (
+            check_ins[0].timestamp if check_ins else None
+        )
+
+        record.portal_last_check_out = (
+            check_outs[-1].timestamp if check_outs else None
+        )
+
+        # القيم المحفوظة أصلًا في سجل الحضور
+        record.portal_late_minutes = record.late_minutes or 0
+        record.portal_early_leave_minutes = (
+            record.early_leave_minutes or 0
+        )
+        record.portal_worked_minutes = record.worked_minutes or 0
+
+        # تحديد آخر عملية بصمة لمعرفة هل الدوام ما زال مفتوحًا
+        last_log = record.portal_logs[-1] if record.portal_logs else None
+
+        if last_log and last_log.action == "check_in":
+            elapsed_minutes = max(
+                0,
+                int(
+                    (
+                        timezone.now() - last_log.timestamp
+                    ).total_seconds() // 60
+                ),
+            )
+            record.portal_current_session_minutes = elapsed_minutes
+        else:
+            record.portal_current_session_minutes = None
+
+    leave_records = Leave.objects.filter(
+        employee_id=employee.id,
+        company_id=employee.company_id,
+    ).order_by("-start_date")[:30]
+    employee_requests = EmployeeRequest.objects.filter(
+        employee_id=employee.id,
+        company_id=employee.company_id,
+    ).order_by("-created_at")
+    payroll_records = Payroll.objects.filter(
+        employee_id=employee.id,
+        company_id=employee.company_id,
+        payroll_run__status__in=["approved", "paid"],
+    ).select_related(
+        "payroll_run"
+    ).order_by("-date")[:24]
+    my_evaluations = Evaluation.objects.filter(
+        company_id=employee.company_id,
+        targets__employee_id=employee.id,
+    ).select_related(
+        "evaluation_type",
+        "department",
+    ).annotate(
+        targets_count=Count("targets")
+    ).distinct().order_by("-id")
+    my_evaluation_records = (
+        EvaluationScore.objects
+        .filter(
+            company=employee.company,
+            target__employee=employee,
+        )
+        .select_related(
+            "target__evaluation",
+            "target__employee",
+            "criteria",
+            "evaluator",
+        )
+        .prefetch_related(
+            "attachments",
+        )
+        .order_by("-id")
+    )
+    context = {
+        "employee": employee,
+        "attendance_records": attendance_records,
+        "leave_records": leave_records,
+        "payroll_records": payroll_records,
+        "my_evaluations": my_evaluations,
+        "my_evaluation_records": my_evaluation_records,
+        "employee_requests": employee_requests,
+    }
+    return render(
+        request,
+        "hr/employee_portal.html",
+        context,
+    )
+
+@login_required
+def employee_portal_request_submit(request):
+    from django.http import JsonResponse
+    from django.utils.dateparse import parse_date
+    from decimal import Decimal, InvalidOperation
+    from .models import Employee, EmployeeRequest
+
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "طريقة الطلب غير مسموحة.",
+        }, status=405)
+
+    # تحديد الموظف من حساب الدخول نفسه
+    try:
+        employee = Employee.objects.get(
+            user=request.user,
+            use_user_account=True,
+            active=True,
+        )
+    except Employee.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "لا يوجد ملف موظف نشط مرتبط بحسابك.",
+        }, status=403)
+
+    if not employee.company_id:
+        return JsonResponse({
+            "success": False,
+            "message": "ملف الموظف غير مرتبط بشركة.",
+        }, status=403)
+
+    data = request.POST
+    request_type = data.get("request_type", "").strip()
+    request_date = parse_date(data.get("request_date", ""))
+    reason = data.get("reason", "").strip()
+
+    allowed_types = {
+        "advance", "ticket", "promotion",
+        "transfer", "shift", "other",
+    }
+
+    if request_type not in allowed_types:
+        return JsonResponse({
+            "success": False,
+            "message": "نوع الطلب غير صحيح.",
+        }, status=400)
+
+    if not request_date:
+        return JsonResponse({
+            "success": False,
+            "message": "يرجى تحديد تاريخ الطلب.",
+        }, status=400)
+
+    if not reason:
+        return JsonResponse({
+            "success": False,
+            "message": "يرجى كتابة سبب الطلب.",
+        }, status=400)
+
+    # التحقق من المرفق
+    attachment = request.FILES.get("attachment")
+
+    if attachment:
+        allowed_extensions = {
+            ".pdf", ".jpg", ".jpeg",
+            ".png", ".doc", ".docx",
+        }
+        import os
+
+        extension = os.path.splitext(attachment.name)[1].lower()
+
+        if extension not in allowed_extensions:
+            return JsonResponse({
+                "success": False,
+                "message": "نوع الملف المرفق غير مسموح.",
+            }, status=400)
+
+        if attachment.size > 5 * 1024 * 1024:
+            return JsonResponse({
+                "success": False,
+                "message": "حجم المرفق يجب ألا يتجاوز 5 ميجابايت.",
+            }, status=400)
+
+    fields = {
+        "company": employee.company,
+        "employee": employee,
+        "request_type": request_type,
+        "request_date": request_date,
+        "reason": reason,
+        "attachment": attachment,
+        "status": "pending",
+    }
+
+    # حقول طلب السلفة
+    if request_type == "advance":
+        try:
+            amount = Decimal(data.get("advance_amount", ""))
+            installments = int(data.get("advance_installments", ""))
+        except (InvalidOperation, ValueError, TypeError):
+            return JsonResponse({
+                "success": False,
+                "message": "يرجى إدخال مبلغ السلفة وعدد الأقساط بصورة صحيحة.",
+            }, status=400)
+
+        if amount <= 0 or installments <= 0:
+            return JsonResponse({
+                "success": False,
+                "message": "مبلغ السلفة وعدد الأقساط يجب أن يكونا أكبر من صفر.",
+            }, status=400)
+
+        fields["advance_amount"] = amount
+        fields["advance_installments"] = installments
+
+    # حقول طلب التذكرة
+    elif request_type == "ticket":
+        fields["ticket_destination"] = data.get(
+            "ticket_destination", ""
+        ).strip()
+        fields["ticket_date"] = parse_date(
+            data.get("ticket_date", "")
+        )
+        fields["ticket_type"] = data.get(
+            "ticket_type", ""
+        ).strip()
+
+        if not all([
+            fields["ticket_destination"],
+            fields["ticket_date"],
+            fields["ticket_type"],
+        ]):
+            return JsonResponse({
+                "success": False,
+                "message": "يرجى استكمال بيانات طلب التذكرة.",
+            }, status=400)
+
+    # حقول طلب الترقية
+    elif request_type == "promotion":
+        fields["current_job_title"] = data.get(
+            "current_job_title", ""
+        ).strip()
+        fields["requested_job_title"] = data.get(
+            "requested_job_title", ""
+        ).strip()
+
+        if not fields["requested_job_title"]:
+            return JsonResponse({
+                "success": False,
+                "message": "يرجى تحديد المسمى الوظيفي المطلوب.",
+            }, status=400)
+
+    # حقول طلب النقل
+    elif request_type == "transfer":
+        fields["current_department"] = data.get(
+            "current_department", ""
+        ).strip()
+        fields["requested_department"] = data.get(
+            "requested_department", ""
+        ).strip()
+        fields["current_branch"] = data.get(
+            "current_branch", ""
+        ).strip()
+        fields["requested_branch"] = data.get(
+            "requested_branch", ""
+        ).strip()
+
+        if not (
+            fields["requested_department"]
+            or fields["requested_branch"]
+        ):
+            return JsonResponse({
+                "success": False,
+                "message": "يرجى تحديد الإدارة أو الفرع المطلوب.",
+            }, status=400)
+
+    # حقول طلب تغيير الوردية
+    elif request_type == "shift":
+        fields["requested_shift"] = data.get(
+            "requested_shift", ""
+        ).strip()
+        fields["shift_start_date"] = parse_date(
+            data.get("shift_start_date", "")
+        )
+
+        if not fields["requested_shift"] or not fields["shift_start_date"]:
+            return JsonResponse({
+                "success": False,
+                "message": "يرجى تحديد الوردية وتاريخ بدء تطبيقها.",
+            }, status=400)
+
+    # حقول الطلب الآخر
+    elif request_type == "other":
+        fields["other_request_title"] = data.get(
+            "other_request_title", ""
+        ).strip()
+
+        if not fields["other_request_title"]:
+            return JsonResponse({
+                "success": False,
+                "message": "يرجى كتابة عنوان الطلب.",
+            }, status=400)
+
+    EmployeeRequest.objects.create(**fields)
+
+    return JsonResponse({
+        "success": True,
+        "message": "تم إرسال الطلب بنجاح.",
+    })
+
+# ==========================================
+# طلب إجازة من بوابة الموظف
+# ==========================================
+@login_required
+def employee_portal_leave_request(request):
+    from django.contrib import messages
+    from django.shortcuts import redirect
+    from .models import Employee, Leave
+
+    if request.method != "POST":
+        return redirect("hr:employee_portal")
+
+    # تحديد الموظف من حساب الدخول، وليس من بيانات النموذج
+    try:
+        employee = Employee.objects.get(
+            user=request.user,
+            use_user_account=True,
+            active=True,
+        )
+    except Employee.DoesNotExist:
+        messages.error(request, "لا يوجد ملف موظف نشط مرتبط بحسابك.")
+        return redirect("hr:employee_portal")
+
+    if not employee.company_id:
+        messages.error(request, "ملف الموظف غير مرتبط بشركة.")
+        return redirect("hr:employee_portal")
+
+    leave_type = request.POST.get("leave_type", "").strip()
+    start_date = parse_date(request.POST.get("start_date", ""))
+    end_date = parse_date(request.POST.get("end_date", ""))
+    reason = request.POST.get("reason", "").strip()
+
+    allowed_types = dict(Leave.LEAVE_TYPES)
+
+    if leave_type not in allowed_types:
+        messages.error(request, "يرجى اختيار نوع إجازة صحيح.")
+        return redirect("hr:employee_portal")
+
+    if not start_date or not end_date:
+        messages.error(request, "يرجى إدخال تاريخ البداية والنهاية.")
+        return redirect("hr:employee_portal")
+
+    if end_date < start_date:
+        messages.error(request, "تاريخ نهاية الإجازة يجب ألا يسبق تاريخ بدايتها.")
+        return redirect("hr:employee_portal")
+
+    Leave.objects.create(
+        company=employee.company,
+        employee=employee,
+        leave_type=leave_type,
+        start_date=start_date,
+        end_date=end_date,
+        reason=reason,
+        status="pending",
+    )
+
+    messages.success(
+        request,
+        "تم إرسال طلب الإجازة بنجاح، والطلب الآن قيد المراجعة."
+    )
+    return redirect("hr:employee_portal")
+
 # ==========================
 # عرض قائمة الموظفين
 # ==========================
@@ -1979,21 +2523,10 @@ def calculate_distance_meters(
     return earth_radius * c
 @login_required
 @hr_permission_required("attendance_check")
+
 def attendance_check_page(request):
     """
-    صفحة الحضور والانصراف
-
-    تعتمد على:
-    Attendance     = سجل اليوم
-    AttendanceLog  = عمليات الحضور والانصراف
-
-    تدعم:
-    - حضور وانصراف متعدد في نفس اليوم
-    - GPS
-    - latitude / longitude
-    - accuracy
-    - الشفت
-    - موقع العمل
+    صفحة الحضور والانصراف، مع دعم العرض داخل بوابة الموظف.
     """
 
     company = _company_required(request)
@@ -2004,10 +2537,19 @@ def attendance_check_page(request):
     today = timezone.localdate()
     now = timezone.now()
 
-    # ==========================================================
-    # الموظف الحالي
-    # ==========================================================
+    # تحديد القالب حسب طريقة فتح الصفحة
+    embed_attendance = (
+        request.GET.get("embed") == "1"
+        or request.POST.get("embed") == "1"
+    )
 
+    attendance_template = (
+        "hr/attendance_check_partial.html"
+        if embed_attendance
+        else "hr/attendance_check.html"
+    )
+
+    # الموظف الحالي
     employee = (
         Employee.objects
         .filter(
@@ -2025,7 +2567,7 @@ def attendance_check_page(request):
     if not employee:
         return render(
             request,
-            "hr/attendance_check.html",
+            attendance_template,
             {
                 "employee": None,
                 "company": company,
@@ -2041,10 +2583,7 @@ def attendance_check_page(request):
             },
         )
 
-    # ==========================================================
     # شفت الموظف لهذا اليوم
-    # ==========================================================
-
     schedule = (
         EmployeeSchedule.objects
         .filter(
@@ -2057,17 +2596,9 @@ def attendance_check_page(request):
     )
 
     shift = schedule.shift if schedule else None
-
-    # ==========================================================
-    # موقع العمل
-    # ==========================================================
-
     work_location = employee.work_location
 
-    # ==========================================================
-    # سجل Attendance الخاص باليوم
-    # ==========================================================
-
+    # سجل الحضور الرئيسي لهذا اليوم
     attendance = (
         Attendance.objects
         .filter(
@@ -2082,10 +2613,7 @@ def attendance_check_page(request):
         .first()
     )
 
-    # ==========================================================
-    # إنشاء Attendance لليوم إذا لم يكن موجودًا
-    # ==========================================================
-
+    # إنشاء سجل اليوم عند عدم وجوده، كما في السلوك السابق
     if not attendance:
         attendance = Attendance.objects.create(
             company=company,
@@ -2096,127 +2624,118 @@ def attendance_check_page(request):
             status="present",
         )
 
-    # ==========================================================
-    # جميع عمليات اليوم
-    # ==========================================================
-
-    today_logs = list(
-        AttendanceLog.objects
-        .filter(
-            company=company,
-            employee=employee,
-            attendance=attendance,
+    # تجهيز حالة الحضور الحالية من سجلات العمليات
+    def get_attendance_state():
+        logs = list(
+            AttendanceLog.objects
+            .filter(
+                company=company,
+                employee=employee,
+                attendance=attendance,
+            )
+            .order_by(
+                "timestamp",
+                "id",
+            )
         )
-        .order_by(
-            "timestamp",
-            "id",
+
+        latest_log = logs[-1] if logs else None
+
+        is_open = (
+            latest_log is not None
+            and latest_log.action == "check_in"
         )
-    )
 
-    # ==========================================================
-    # تحديد آخر عملية
-    # ==========================================================
+        if is_open:
+            action_value = "check_out"
+            action_label = "تسجيل الانصراف"
+        else:
+            action_value = "check_in"
+            action_label = "تسجيل الحضور"
 
-    last_log = (
-        today_logs[-1]
-        if today_logs
-        else None
-    )
+        return (
+            logs,
+            latest_log,
+            is_open,
+            action_value,
+            action_label,
+        )
 
-    # ==========================================================
-    # هل يوجد حضور مفتوح؟
-    # ==========================================================
+    # بناء استجابة الصفحة أو إعادة التوجيه عند التسجيل
+    def attendance_result_response():
+        if not embed_attendance:
+            return redirect("hr:attendance_check_page")
 
-    has_open_attendance = (
-        last_log is not None
-        and last_log.action == "check_in"
-    )
+        (
+            current_logs,
+            current_last_log,
+            current_is_open,
+            current_action,
+            current_label,
+        ) = get_attendance_state()
 
-    # ==========================================================
-    # العملية القادمة
-    # ==========================================================
+        return render(
+            request,
+            attendance_template,
+            {
+                "employee": employee,
+                "company": company,
+                "today_attendances": [attendance],
+                "last_attendance": attendance,
+                "attendance": (
+                    attendance
+                    if current_is_open
+                    else None
+                ),
+                "next_action": current_action,
+                "next_action_label": current_label,
+                "last_log": current_last_log,
+                "today_logs": current_logs,
+                "shift": shift,
+                "work_location": work_location,
+                "today": today,
+                "now": timezone.now(),
+            },
+        )
 
-    if has_open_attendance:
-        next_action = "check_out"
-        next_action_label = "تسجيل الانصراف"
-    else:
-        next_action = "check_in"
-        next_action_label = "تسجيل الحضور"
+    (
+        today_logs,
+        last_log,
+        has_open_attendance,
+        next_action,
+        next_action_label,
+    ) = get_attendance_state()
 
-    # ==========================================================
-    # POST
-    # ==========================================================
-
+    # معالجة تسجيل الحضور والانصراف
     if request.method == "POST":
 
-        action = request.POST.get(
-            "action",
-            "",
-        ).strip()
+        action = request.POST.get("action", "").strip()
+        latitude_raw = request.POST.get("latitude", "").strip()
+        longitude_raw = request.POST.get("longitude", "").strip()
+        accuracy_raw = request.POST.get("accuracy", "").strip()
 
-        latitude_raw = request.POST.get(
-            "latitude",
-            "",
-        ).strip()
-
-        longitude_raw = request.POST.get(
-            "longitude",
-            "",
-        ).strip()
-
-        accuracy_raw = request.POST.get(
-            "accuracy",
-            "",
-        ).strip()
-
-        # ======================================================
-        # التحقق من العملية
-        # ======================================================
-
-        if action not in (
-            "check_in",
-            "check_out",
-        ):
+        # التحقق من نوع العملية
+        if action not in ("check_in", "check_out"):
             messages.error(
                 request,
                 "❌ عملية الحضور أو الانصراف غير صحيحة.",
             )
+            return attendance_result_response()
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # التحقق من وجود موقع العمل
-        # ======================================================
-
+        # التحقق من موقع العمل
         if not work_location:
             messages.error(
                 request,
                 "❌ لا يوجد موقع عمل مرتبط بك. يرجى مراجعة إدارة الموارد البشرية.",
             )
-
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # التحقق من أن موقع العمل فعال
-        # ======================================================
+            return attendance_result_response()
 
         if not work_location.active:
             messages.error(
                 request,
                 "موقع العمل المرتبط بك غير فعال حاليًا. لا يمكن تسجيل الحضور أو الانصراف.",
             )
-
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # التحقق من إحداثيات موقع العمل
-        # ======================================================
+            return attendance_result_response()
 
         if (
             work_location.latitude is None
@@ -2226,80 +2745,42 @@ def attendance_check_page(request):
                 request,
                 "إحداثيات موقع العمل غير مكتملة. يرجى مراجعة إدارة الموارد البشرية.",
             )
+            return attendance_result_response()
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # التحقق من GPS
-        # ======================================================
-
+        # التحقق من بيانات GPS
         if not latitude_raw or not longitude_raw:
             messages.error(
                 request,
                 "📍 يجب السماح بتحديد الموقع قبل تسجيل الحضور أو الانصراف.",
             )
-
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # تحويل GPS
-        # ======================================================
+            return attendance_result_response()
 
         try:
             latitude = float(latitude_raw)
             longitude = float(longitude_raw)
-
             accuracy = (
                 float(accuracy_raw)
                 if accuracy_raw
                 else None
             )
-
-        except (
-            TypeError,
-            ValueError,
-        ):
+        except (TypeError, ValueError):
             messages.error(
                 request,
                 "بيانات الموقع غير صحيحة.",
             )
+            return attendance_result_response()
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # التحقق من الإحداثيات
-        # ======================================================
-
-        if not -90 <= latitude <= 90:
+        if (
+            not -90 <= latitude <= 90
+            or not -180 <= longitude <= 180
+        ):
             messages.error(
                 request,
-                "خط العرض غير صحيح.",
+                "إحداثيات الموقع غير صحيحة.",
             )
+            return attendance_result_response()
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        if not -180 <= longitude <= 180:
-            messages.error(
-                request,
-                "خط الطول غير صحيح.",
-            )
-
-            return redirect(
-                "hr:attendance_check_page"
-            )
-
-        # ======================================================
-        # حساب المسافة عن موقع العمل
-        # ======================================================
-
+        # حساب المسافة من موقع العمل
         distance_from_workplace = calculate_distance_meters(
             latitude,
             longitude,
@@ -2307,17 +2788,9 @@ def attendance_check_page(request):
             float(work_location.longitude),
         )
 
-        # ======================================================
-        # نصف قطر السماح
-        # ======================================================
-
         allowed_radius = float(
             work_location.allowed_radius or 0
         )
-
-        # ======================================================
-        # رفض التبصيم خارج الموقع
-        # ======================================================
 
         if distance_from_workplace > allowed_radius:
             messages.error(
@@ -2329,56 +2802,32 @@ def attendance_check_page(request):
                     f"النطاق المسموح {round(allowed_radius)} متر."
                 ),
             )
+            return attendance_result_response()
 
-            return redirect(
-                "hr:attendance_check_page"
+        # قراءة آخر عملية مرة أخرى لمنع التكرار
+        last_log = (
+            AttendanceLog.objects
+            .filter(
+                company=company,
+                employee=employee,
+                attendance=attendance,
             )
+            .order_by(
+                "-timestamp",
+                "-id",
+            )
+            .first()
+        )
 
-        # ======================================================
-        # CHECK IN
-        # ======================================================
-
+        # تسجيل الحضور
         if action == "check_in":
 
-            # ----------------------------------------------
-            # إعادة قراءة آخر عملية من قاعدة البيانات
-            # ----------------------------------------------
-
-            last_log = (
-                AttendanceLog.objects
-                .filter(
-                    company=company,
-                    employee=employee,
-                    attendance=attendance,
-                )
-                .order_by(
-                    "-timestamp",
-                    "-id",
-                )
-                .first()
-            )
-
-            # ----------------------------------------------
-            # إذا آخر عملية حضور
-            # يوجد حضور مفتوح
-            # ----------------------------------------------
-
-            if (
-                last_log
-                and last_log.action == "check_in"
-            ):
+            if last_log and last_log.action == "check_in":
                 messages.warning(
                     request,
                     "يوجد حضور مفتوح بالفعل. يجب تسجيل الانصراف أولاً.",
                 )
-
-                return redirect(
-                    "hr:attendance_check_page"
-                )
-
-            # ----------------------------------------------
-            # إنشاء عملية الحضور
-            # ----------------------------------------------
+                return attendance_result_response()
 
             AttendanceLog.objects.create(
                 company=company,
@@ -2394,21 +2843,15 @@ def attendance_check_page(request):
                 location_verified=True,
                 work_location=work_location,
                 location_note=(
-                    f"تم التحقق من الموقع - "
+                    "تم التحقق من الموقع - "
                     f"المسافة {round(distance_from_workplace)} متر"
                 ),
                 device_info=request.META.get(
                     "HTTP_USER_AGENT",
-                    ""
+                    "",
                 )[:500],
-                ip_address=request.META.get(
-                    "REMOTE_ADDR"
-                ),
+                ip_address=request.META.get("REMOTE_ADDR"),
             )
-
-            # ----------------------------------------------
-            # تحديث Attendance
-            # ----------------------------------------------
 
             attendance.shift = shift
             attendance.work_location = work_location
@@ -2428,37 +2871,10 @@ def attendance_check_page(request):
                 "✅ تم تسجيل الحضور بنجاح. يمكنك الآن تسجيل الانصراف.",
             )
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
+            return attendance_result_response()
 
-        # ======================================================
-        # CHECK OUT
-        # ======================================================
-
+        # تسجيل الانصراف
         if action == "check_out":
-
-            # ----------------------------------------------
-            # آخر عملية
-            # ----------------------------------------------
-
-            last_log = (
-                AttendanceLog.objects
-                .filter(
-                    company=company,
-                    employee=employee,
-                    attendance=attendance,
-                )
-                .order_by(
-                    "-timestamp",
-                    "-id",
-                )
-                .first()
-            )
-
-            # ----------------------------------------------
-            # لا يوجد حضور مفتوح
-            # ----------------------------------------------
 
             if (
                 not last_log
@@ -2468,14 +2884,7 @@ def attendance_check_page(request):
                     request,
                     "لا يوجد حضور مفتوح لتسجيل الانصراف.",
                 )
-
-                return redirect(
-                    "hr:attendance_check_page"
-                )
-
-            # ----------------------------------------------
-            # إنشاء عملية الانصراف
-            # ----------------------------------------------
+                return attendance_result_response()
 
             checkout_log = AttendanceLog.objects.create(
                 company=company,
@@ -2491,41 +2900,28 @@ def attendance_check_page(request):
                 location_verified=True,
                 work_location=work_location,
                 location_note=(
-                    f"تم التحقق من الموقع - "
+                    "تم التحقق من الموقع - "
                     f"المسافة {round(distance_from_workplace)} متر"
                 ),
                 device_info=request.META.get(
                     "HTTP_USER_AGENT",
-                    ""
+                    "",
                 )[:500],
-                ip_address=request.META.get(
-                    "REMOTE_ADDR"
-                ),
+                ip_address=request.META.get("REMOTE_ADDR"),
             )
 
-            # ----------------------------------------------
-            # حساب مدة الفترة الحالية
-            # ----------------------------------------------
-
             worked_seconds = (
-                checkout_log.timestamp
-                - last_log.timestamp
+                checkout_log.timestamp - last_log.timestamp
             ).total_seconds()
 
             worked_minutes = max(
                 0,
-                int(worked_seconds // 60)
+                int(worked_seconds // 60),
             )
-
-            # ----------------------------------------------
-            # إضافة مدة الفترة إلى إجمالي اليوم
-            # ----------------------------------------------
 
             attendance.worked_minutes = (
-                attendance.worked_minutes
-                + worked_minutes
+                attendance.worked_minutes + worked_minutes
             )
-
             attendance.status = "completed"
 
             attendance.save(
@@ -2541,61 +2937,33 @@ def attendance_check_page(request):
                 "✅ تم تسجيل الانصراف بنجاح.",
             )
 
-            return redirect(
-                "hr:attendance_check_page"
-            )
+            return attendance_result_response()
 
-    # ==========================================================
-    # تجهيز بيانات القالب
-    # ==========================================================
-
-    last_attendance = attendance
-
-    # ==========================================================
-    # GET
-    # ==========================================================
-
+    # عرض الصفحة عند فتحها لأول مرة
     return render(
         request,
-        "hr/attendance_check.html",
+        attendance_template,
         {
             "employee": employee,
             "company": company,
-
-            # سجل اليوم
             "today_attendances": [attendance],
-
-            # سجل اليوم الرئيسي
-            "last_attendance": last_attendance,
-
-            # Attendance المفتوح
+            "last_attendance": attendance,
             "attendance": (
                 attendance
                 if has_open_attendance
                 else None
             ),
-
-            # العملية التالية
             "next_action": next_action,
             "next_action_label": next_action_label,
-
-            # آخر عملية
             "last_log": last_log,
-
-            # جميع عمليات اليوم
             "today_logs": today_logs,
-
-            # الشفت
             "shift": shift,
-
-            # موقع العمل
             "work_location": work_location,
-
-            # التاريخ والوقت
             "today": today,
             "now": now,
         },
     )
+
 # ==========================================================
 # تقرير الحضور والانصراف
 # ==========================================================
@@ -2859,13 +3227,13 @@ def evaluation_list(request):
     return render(request, "hr/evaluation_list.html", {"evaluations": evaluations})
 
 
+@xframe_options_sameorigin
 @login_required
 @hr_permission_required("add_evaluation")
 def add_evaluation(request):
     company = _company_required(request)
     if not company:
         return redirect("accounts:login")
-
     if request.method == "POST":
         evaluation_type_id = request.POST.get("evaluation_type") or None
         department_id = request.POST.get("department") or None
@@ -2938,10 +3306,28 @@ def add_evaluation(request):
                 weight=w
             )
 
+        if request.GET.get("portal") == "1":
+            from django.http import HttpResponse
+
+            return HttpResponse("""
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>تم حفظ التقييم</title>
+                </head>
+                <body>
+                    <script>
+                        window.parent.location.reload();
+                    </script>
+                    تم حفظ التقييم بنجاح.
+                </body>
+                </html>
+            """)
+
         return redirect("hr:evaluations")
 
     ensure_default_evaluation_types(company)
-
     return render(request, "hr/add_evaluation.html", {
         "departments": Department.objects.filter(company=company).order_by("name"),
         "employees": Employee.objects.filter(company=company, active=True).order_by("employee_number"),
@@ -3067,6 +3453,8 @@ def evaluation_edit(request, eval_id):
     })
 
 
+
+@xframe_options_sameorigin
 @login_required
 @hr_permission_required("change_evaluation")
 def evaluation_fill_peer(request, eval_id, target_id):
@@ -3283,14 +3671,20 @@ def evaluation_fill_peer(request, eval_id, target_id):
                     file=attachment
                 )
 
+
         messages.success(
             request,
             "✅ تم حفظ تقييم الزميل بنجاح."
         )
 
-        return redirect(
-            "hr:evaluation_records_list"
-        )
+        if request.GET.get("portal") == "1" or request.POST.get("portal") == "1":
+            return render(
+                request,
+                "hr/evaluation_saved.html",
+                {"portal_mode": True}
+            )
+
+        return redirect("hr:evaluation_records_list")
 
     # =====================================================
     # عرض الصفحة
@@ -3307,6 +3701,10 @@ def evaluation_fill_peer(request, eval_id, target_id):
             "existing_notes": existing_notes,
             "existing_attachments": existing_attachments,
             "role_label": "تقييم زميل",
+            "portal_mode": (
+                request.GET.get("portal") == "1"
+                or request.POST.get("portal") == "1"
+            ),
         }
     )
 # =========================================================
@@ -3510,6 +3908,8 @@ def hr_report_detail_items(request, employee_id, evaluation_id):
             "detail_items": detail_items,
         }
     )
+
+@xframe_options_sameorigin
 @login_required
 @hr_permission_required("change_evaluation")
 def evaluation_fill_manager(request, eval_id, target_id):
@@ -3616,9 +4016,18 @@ def evaluation_fill_manager(request, eval_id, target_id):
 
         if not is_department_manager:
 
+
             messages.error(
                 request,
                 "لا يوجد لديك صلاحية مدير."
+            )
+
+            return redirect(
+                f"{reverse('hr:evaluation_record_start')}?"
+                f"portal={'1' if request.GET.get('portal') == '1' else ''}"
+                f"&evaluation={evaluation.id}"
+                f"&role=manager"
+                f"&employee={target.employee_id}"
             )
 
             return redirect(
@@ -3642,9 +4051,18 @@ def evaluation_fill_manager(request, eval_id, target_id):
                 != target.employee.department_id
             ):
 
+
                 messages.error(
                     request,
                     "غير مسموح تقييم موظف خارج قسمك كمدير."
+                )
+
+                return redirect(
+                    f"{reverse('hr:evaluation_record_start')}?"
+                    f"portal={'1' if request.GET.get('portal') == '1' else ''}"
+                    f"&evaluation={evaluation.id}"
+                    f"&role=manager"
+                    f"&employee={target.employee_id}"
                 )
 
                 return redirect(
@@ -3836,14 +4254,20 @@ def evaluation_fill_manager(request, eval_id, target_id):
                     file=attachment
                 )
 
+
         messages.success(
             request,
             "✅ تم حفظ تقييم المدير بنجاح."
         )
 
-        return redirect(
-            "hr:evaluation_records_list"
-        )
+        if request.GET.get("portal") == "1" or request.POST.get("portal") == "1":
+            return render(
+                request,
+                "hr/evaluation_saved.html",
+                {"portal_mode": True}
+            )
+
+        return redirect("hr:evaluation_records_list")
 
     # =====================================================
     # عرض صفحة التقييم
@@ -3860,6 +4284,10 @@ def evaluation_fill_manager(request, eval_id, target_id):
             "existing_notes": existing_notes,
             "existing_attachments": existing_attachments,
             "role_label": "تقييم مدير",
+            "portal_mode": (
+                request.GET.get("portal") == "1"
+                or request.POST.get("portal") == "1"
+            ),
         }
     )
 
@@ -4141,10 +4569,10 @@ def evaluation_detail(request, eval_id):
 # سجل التقييمات
 # ==========================
 
+@xframe_options_sameorigin
 @login_required
 @hr_permission_required("view_evaluation")
 def evaluation_record_start(request):
-
     company = _company_required(request)
 
     if not company:
@@ -4303,30 +4731,38 @@ def evaluation_record_start(request):
                 else None
             )
         )
-        if role not in [
-            "peer",
-            "manager"
-        ]:
-
-            role = "peer"
 
         if role == "peer":
 
-            return redirect(
+            fill_url = reverse(
                 "hr:evaluation_fill_peer",
-                eval_id=evaluation.id,
-                target_id=target.id
+                kwargs={
+                    "eval_id": evaluation.id,
+                    "target_id": target.id,
+                },
             )
 
-        return redirect(
-            "hr:evaluation_fill_manager",
-            eval_id=evaluation.id,
-            target_id=target.id
-        )
+        else:
+
+            fill_url = reverse(
+                "hr:evaluation_fill_manager",
+                kwargs={
+                    "eval_id": evaluation.id,
+                    "target_id": target.id,
+                },
+            )
+
+        if request.GET.get("portal") == "1":
+
+            fill_url = f"{fill_url}?portal=1"
+
+        return redirect(fill_url)
+
+    template_name = "hr/evaluation_record_start.html"
 
     return render(
         request,
-        "hr/evaluation_record_start.html",
+        template_name,
         {
             "evaluations": evaluations,
             "selected_eval_id": (
@@ -4343,8 +4779,12 @@ def evaluation_record_start(request):
                 if selected_employee_id.isdigit()
                 else None
             ),
+            "portal_mode": request.GET.get("portal") == "1",
         }
     )
+
+
+
 
 @login_required
 @hr_permission_required("view_evaluation")
@@ -4357,35 +4797,23 @@ def evaluation_records_list(request):
 
     records = (
         EvaluationScore.objects
-        .filter(
-            company=company
-        )
+        .filter(company=company)
         .select_related(
             "target__evaluation",
             "target__employee",
             "criteria",
             "evaluator"
         )
-        .prefetch_related(
-            "attachments"
-        )
-        .order_by(
-            "-id"
-        )
+        .prefetch_related("attachments")
+        .order_by("-id")
     )
-    return render(
-        request,
-        "hr/evaluation_records_list.html",
-        {
-            "records": records
-        }
-    )
-    # =====================================================
+
+    # تشخيص سبب عدم ظهور السجلات
+    print("DEBUG EVALUATION RECORDS - COMPANY:", company.id)
+    print("DEBUG EVALUATION RECORDS - COUNT:", records.count())
+
     # جلب المرفقات لكل درجة
-    # =====================================================
-
     for record in records:
-
         record.saved_attachments = (
             EvaluationScoreAttachment.objects.filter(
                 company=company,

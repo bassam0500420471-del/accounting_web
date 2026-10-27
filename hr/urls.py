@@ -1,9 +1,43 @@
+
 from django.urls import path
 from . import views
 
 app_name = "hr"
 
 urlpatterns = [
+
+
+    # ==========================
+    # بوابة الموظفين
+    # ==========================
+    path(
+        'employee-login/',
+        views.employee_login,
+        name='employee_login'
+    ),
+    path(
+        'employee-portal/',
+        views.employee_portal,
+        name='employee_portal'
+    ),
+
+    path(
+        'employee-portal/leave-request/',
+        views.employee_portal_leave_request,
+        name='employee_portal_leave_request'
+    ),
+
+    path(
+        'employee-portal/requests/submit/',
+        views.employee_portal_request_submit,
+        name='employee_portal_request_submit'
+    ),
+
+    path(
+        'employee-portal/manage/',
+        views.employee_portal_manage,
+        name='employee_portal_manage'
+    ),
 
     # ==========================
     # إدارة الموظفين
@@ -13,7 +47,6 @@ urlpatterns = [
     path('employees/edit/<int:emp_id>/', views.edit_employee, name='edit_employee'),
     path('employees/delete/<int:emp_id>/', views.delete_employee, name='delete_employee'),
 
-    # ==========================
     # ==========================
     # إدارة الأقسام
     # ==========================
@@ -59,45 +92,14 @@ urlpatterns = [
     path('leaves/reject/<int:leave_id>/', views.reject_leave, name='reject_leave'),
 
     # ==========================
-# ==========================
-# مسيرات الرواتب
-# ==========================
-
-path(
-    'payrolls/',
-    views.payroll_list,
-    name='payrolls'
-),
-
-path(
-    'payrolls/add/',
-    views.add_payroll,
-    name='add_payroll'
-),
-
-path(
-    'payrolls/<int:payroll_run_id>/',
-    views.payroll_detail,
-    name='payroll_detail'
-),
-
-path(
-    'payrolls/<int:payroll_run_id>/edit/',
-    views.payroll_edit,
-    name='payroll_edit'
-),
-
-path(
-    'payrolls/<int:payroll_run_id>/approve/',
-    views.payroll_approve,
-    name='payroll_approve'
-),
-
-path(
-    'payrolls/<int:payroll_run_id>/delete/',
-    views.payroll_delete,
-    name='payroll_delete'
-),
+    # مسيرات الرواتب
+    # ==========================
+    path('payrolls/', views.payroll_list, name='payrolls'),
+    path('payrolls/add/', views.add_payroll, name='add_payroll'),
+    path('payrolls/<int:payroll_run_id>/', views.payroll_detail, name='payroll_detail'),
+    path('payrolls/<int:payroll_run_id>/edit/', views.payroll_edit, name='payroll_edit'),
+    path('payrolls/<int:payroll_run_id>/approve/', views.payroll_approve, name='payroll_approve'),
+    path('payrolls/<int:payroll_run_id>/delete/', views.payroll_delete, name='payroll_delete'),
 
     # ==========================
     # التقييمات
@@ -108,7 +110,6 @@ path(
     path('evaluations/<int:eval_id>/', views.evaluation_detail, name='evaluation_detail'),
     path('evaluations/edit/<int:eval_id>/', views.evaluation_edit, name='evaluation_edit'),
     path('evaluations/close/<int:eval_id>/', views.evaluation_close, name='evaluation_close'),
-
     path('evaluations/<int:eval_id>/peer/<int:target_id>/', views.evaluation_fill_peer, name='evaluation_fill_peer'),
     path('evaluations/<int:eval_id>/manager/<int:target_id>/', views.evaluation_fill_manager, name='evaluation_fill_manager'),
 
@@ -128,41 +129,20 @@ path(
     # الحضور والانصراف
     # ==========================
     path('attendance/', views.attendance_page, name='attendance_page'),
-
-    path(
-        'attendance/report/',
-        views.attendance_report_page,
-        name='attendance_report_page'
-    ),
-
-    path(
-        'attendance/check-in/<int:employee_id>/',
-        views.attendance_check_in_ajax,
-        name='attendance_check_in_ajax'
-    ),
-
-    path(
-        'attendance/check-out/<int:attendance_id>/',
-        views.attendance_check_out_ajax,
-        name='attendance_check_out_ajax'
-    ),
-
+    path('attendance/report/', views.attendance_report_page, name='attendance_report_page'),
+    path('attendance/check-in/<int:employee_id>/', views.attendance_check_in_ajax, name='attendance_check_in_ajax'),
+    path('attendance/check-out/<int:attendance_id>/', views.attendance_check_out_ajax, name='attendance_check_out_ajax'),
 
     # ==========================
     # صفحة تسجيل الدخول والخروج السريع
     # ==========================
-    path(
-        'attendance/check/',
-        views.attendance_check_page,
-        name='attendance_check_page'
-    ),
+    path('attendance/check/', views.attendance_check_page, name='attendance_check_page'),
+
     # ==========================
     # إدارة الصلاحيات والقيود
     # ==========================
-    path("permissions/", views.hr_permissions_users, name="hr_permissions_users"),
-    path("permissions/<int:user_id>/", views.hr_permissions_page, name="hr_permissions_page"),
-
-    # إدارة قيود صلاحيات موظف معين
+    path('permissions/', views.hr_permissions_users, name='hr_permissions_users'),
+    path('permissions/<int:user_id>/', views.hr_permissions_page, name='hr_permissions_page'),
     path('employees/<int:employee_id>/manage-restrictions/', views.manage_user_permissions, name='manage_user_permissions'),
 
     # ==========================

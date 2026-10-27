@@ -10,8 +10,44 @@
 {% endblock %}
 
 
-{% block extra_css %}
 
+{% block extra_css %}
+{% if request.GET.portal == "1" %}
+<style>
+    /* إخفاء عناصر النظام العام داخل نافذة تقييم بوابة الموظف فقط */
+    .sidebar,
+    .profile-float,
+    .profile-panel,
+    .gpt-float,
+    .gpt-chat-box,
+    #notificationBell,
+    .notification-float,
+    .notification-panel {
+        display: none !important;
+    }
+
+    /* استخدام مساحة الصفحة كاملة داخل النافذة */
+    .layout {
+        display: block !important;
+        width: 100% !important;
+        height: 100vh !important;
+    }
+
+    .content-wrapper {
+        width: 100% !important;
+        height: 100vh !important;
+        padding: 10px !important;
+        overflow-y: auto !important;
+    }
+
+    .page-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: calc(100vh - 20px) !important;
+        margin: 0 !important;
+    }
+</style>
+{% endif %}
 <style>
 
 /* =========================================================

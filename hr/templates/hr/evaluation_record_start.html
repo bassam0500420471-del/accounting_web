@@ -1,3 +1,4 @@
+
 {% extends "layout/base.html" %}
 {% load i18n %}
 
@@ -5,615 +6,300 @@
     {% trans "Create Evaluation Record" %}
 {% endblock %}
 
-
 {% block extra_css %}
-
 <style>
-
 /* =========================================================
    Evaluation Record Start - 3D Gray Design
 ========================================================= */
 
 .evaluation-page {
-
     background: #eeeeee;
-
     min-height: calc(100vh - 120px);
-
     padding: 25px;
-
     border-radius: 20px;
-
 }
-
-
-/* =========================
-   البطاقة الرئيسية
-========================= */
 
 .evaluation-card {
-
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #dddddd
-    );
-
+    background: linear-gradient(145deg, #ffffff, #dddddd);
     border-radius: 20px;
-
     padding: 25px;
-
-    box-shadow:
-
-        8px 8px 20px #c5c5c5,
-
-        -8px -8px 20px #ffffff;
-
+    box-shadow: 8px 8px 20px #c5c5c5,
+                -8px -8px 20px #ffffff;
 }
-
-
-/* =========================
-   العنوان
-========================= */
 
 .evaluation-title {
-
     font-weight: 800;
-
     color: #444;
-
     margin: 0 0 25px;
-
 }
-
-
-/* =========================
-   مجموعات الحقول
-========================= */
 
 .form-section {
-
-    background: linear-gradient(
-        145deg,
-        #f8f8f8,
-        #dddddd
-    );
-
+    background: linear-gradient(145deg, #f8f8f8, #dddddd);
     border-radius: 15px;
-
     padding: 18px;
-
     height: 100%;
-
-    box-shadow:
-
-        inset 2px 2px 5px #cccccc,
-
-        inset -2px -2px 5px #ffffff;
-
+    box-shadow: inset 2px 2px 5px #cccccc,
+                inset -2px -2px 5px #ffffff;
 }
 
-
-/* =========================
-   العناوين
-========================= */
-
-.form-label {
-
+.evaluation-page .form-label {
     color: #444;
-
     font-weight: 800;
-
     margin-bottom: 8px;
-
+    display: block;
 }
 
-
-/* =========================
-   الحقول
-========================= */
-
-.form-control {
-
+.evaluation-page .form-control {
     border-radius: 11px;
-
     border: 1px solid #cccccc;
-
     background: #f8f8f8;
-
     color: #333;
-
     min-height: 43px;
-
-    box-shadow:
-
-        inset 2px 2px 5px #d0d0d0,
-
-        inset -2px -2px 5px #ffffff;
-
+    width: 100%;
+    box-shadow: inset 2px 2px 5px #d0d0d0,
+                inset -2px -2px 5px #ffffff;
 }
 
-
-.form-control:focus {
-
+.evaluation-page .form-control:focus {
     border-color: #777;
-
-    box-shadow:
-
-        0 0 0 3px rgba(100,100,100,.15),
-
-        inset 2px 2px 5px #d0d0d0;
-
+    box-shadow: 0 0 0 3px rgba(100,100,100,.15),
+                inset 2px 2px 5px #d0d0d0;
 }
-
-
-/* =========================
-   التنبيه
-========================= */
 
 .criteria-warning {
-
-    background: linear-gradient(
-        145deg,
-        #fff5f5,
-        #eadada
-    );
-
+    background: linear-gradient(145deg, #fff5f5, #eadada);
     color: #a33;
-
     border-radius: 10px;
-
     padding: 10px 12px;
-
     margin-top: 10px;
-
     font-size: 13px;
-
     font-weight: bold;
-
 }
-
-
-/* =========================
-   الأزرار
-========================= */
 
 .evaluation-btn {
-
     border: none;
-
     border-radius: 13px;
-
     padding: 11px 22px;
-
     font-weight: 800;
-
     text-decoration: none;
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 7px;
-
     transition: .25s ease;
-
-    box-shadow:
-
-        5px 5px 10px #c5c5c5,
-
-        -5px -5px 10px #ffffff;
-
+    box-shadow: 5px 5px 10px #c5c5c5,
+                -5px -5px 10px #ffffff;
 }
-
-
-/* زر البدء */
 
 .btn-start {
-
-    background: linear-gradient(
-        145deg,
-        #666666,
-        #444444
-    );
-
+    background: linear-gradient(145deg, #666666, #444444);
     color: white;
-
 }
-
 
 .btn-start:hover {
-
     color: white;
-
     transform: translateY(-2px);
-
 }
-
-
-/* زر الرجوع */
 
 .btn-back {
-
-    background: linear-gradient(
-        145deg,
-        #eeeeee,
-        #cccccc
-    );
-
+    background: linear-gradient(145deg, #eeeeee, #cccccc);
     color: #444;
-
 }
-
 
 .btn-back:hover {
-
     color: #222;
-
     transform: translateY(-2px);
-
 }
-
-
-/* الزر المعطل */
 
 .evaluation-btn:disabled {
-
     opacity: .5;
-
     cursor: not-allowed;
-
     transform: none;
-
     box-shadow: none;
-
 }
 
+/* تنسيق صفحة التقييم عند فتحها بوضع بوابة الموظف */
+body.portal-evaluation-mode {
+    background: #eeeeee !important;
+}
 
-/* =========================
-   الجوال
-========================= */
+body.portal-evaluation-mode .sidebar,
+body.portal-evaluation-mode #sidebar,
+body.portal-evaluation-mode .main-sidebar,
+body.portal-evaluation-mode .sidebar-wrapper,
+body.portal-evaluation-mode .sidebar-container {
+    display: none !important;
+}
+
+body.portal-evaluation-mode .main-content,
+body.portal-evaluation-mode .content-wrapper,
+body.portal-evaluation-mode .page-content {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
 
 @media (max-width: 768px) {
-
     .evaluation-page {
-
         padding: 15px;
-
     }
 
     .evaluation-card {
-
         padding: 18px;
-
     }
 
     .form-section {
-
         margin-bottom: 15px;
-
     }
-
 }
-
 </style>
-
 {% endblock %}
-
 
 {% block content %}
 
+{% if portal_mode %}
+<script>
+    document.body.classList.add("portal-evaluation-mode");
+</script>
+{% endif %}
+
 <div class="container-fluid mt-4">
-
     <div class="evaluation-page">
-
-
-        <!-- =================================================
-             العنوان
-        ================================================= -->
-
         <div class="evaluation-card">
 
-
             <h3 class="evaluation-title">
-
                 ➕ {% trans "Create Evaluation Record" %}
-
             </h3>
 
-
-            <!-- =================================================
-                 النموذج
-            ================================================= -->
-
             <form method="post">
-
                 {% csrf_token %}
-
 
                 <div class="row g-4">
 
-
-                    <!-- =========================
-                         اختيار التقييم
-                    ========================= -->
-
+                    <!-- اختيار التقييم -->
                     <div class="col-md-4">
-
                         <div class="form-section">
-
-
                             <label class="form-label">
-
                                 {% trans "Select Evaluation" %}
-
                             </label>
 
-
                             <select
-
                                 name="evaluation"
-
                                 class="form-control"
-
-                                onchange="window.location.href='?evaluation=' + this.value + '&role={{ role }}&employee={{ selected_employee_id|default:'' }}'">
-
+                                onchange="window.location.href='?portal={% if portal_mode %}1{% endif %}&evaluation=' + encodeURIComponent(this.value) + '&role={{ role|urlencode }}&employee={{ selected_employee_id|default:'' }}'">
 
                                 <option value="">
-
                                     {% trans "— Select —" %}
-
                                 </option>
-
 
                                 {% for e in evaluations %}
-
                                     <option
-
                                         value="{{ e.id }}"
-
-                                        {% if selected_eval_id == e.id %}
-
-                                            selected
-
-                                        {% endif %}>
-
+                                        {% if selected_eval_id == e.id %}selected{% endif %}>
                                         {{ e.name }}
-
-                                        ({{ e.start_date }}
-
-                                        →
-
-                                        {{ e.end_date }})
-
+                                        ({{ e.start_date }} → {{ e.end_date }})
                                     </option>
-
                                 {% endfor %}
-
-
                             </select>
-
-
                         </div>
-
                     </div>
 
-
-                    <!-- =========================
-                         اختيار الموظف
-                    ========================= -->
-
+                    <!-- اختيار الموظف -->
                     <div class="col-md-4">
-
                         <div class="form-section">
-
-
                             <label class="form-label">
-
                                 {% trans "Select Employee" %}
-
                             </label>
 
-
                             <select
-
                                 name="employee"
-
                                 class="form-control"
-
-                                {% if not selected_eval_id %}
-
-                                    disabled
-
-                                {% endif %}
-
-                                onchange="window.location.href='?evaluation={{ selected_eval_id|default:'' }}&role={{ role }}&employee=' + this.value">
-
+                                {% if not selected_eval_id %}disabled{% endif %}
+                                onchange="window.location.href='?portal={% if portal_mode %}1{% endif %}&evaluation={{ selected_eval_id|default:'' }}&role={{ role|urlencode }}&employee=' + encodeURIComponent(this.value)">
 
                                 <option value="">
-
                                     {% trans "— Select —" %}
-
                                 </option>
-
 
                                 {% for emp in employees %}
-
                                     <option
-
                                         value="{{ emp.id }}"
-
-                                        {% if selected_employee_id == emp.id %}
-
-                                            selected
-
-                                        {% endif %}>
-
+                                        {% if selected_employee_id == emp.id %}selected{% endif %}>
                                         {{ emp.first_name_ar }}
-
                                         {{ emp.last_name_ar }}
-
                                         {% if emp.department %}
-
                                             - {{ emp.department }}
-
                                         {% endif %}
-
                                     </option>
-
                                 {% empty %}
-
                                     <option value="">
-
                                         {% trans "No employees available for this evaluation" %}
-
                                     </option>
-
                                 {% endfor %}
-
-
                             </select>
-
 
                             {% if selected_eval_id and not criteria %}
-
                                 <div class="criteria-warning">
-
                                     ⚠️
-
                                     {% trans "There are no criteria for this evaluation." %}
-
                                 </div>
-
                             {% endif %}
-
-
                         </div>
-
                     </div>
 
-
-                    <!-- =========================
-                         نوع المقيم
-                    ========================= -->
-
+                    <!-- نوع المقيم -->
                     <div class="col-md-4">
-
                         <div class="form-section">
-
-
                             <label class="form-label">
-
                                 {% trans "Evaluator Type" %}
-
                             </label>
 
-
                             <select
-
                                 name="role"
-
                                 class="form-control"
-
-                                onchange="window.location.href='?evaluation={{ selected_eval_id|default:'' }}&role=' + this.value + '&employee={{ selected_employee_id|default:'' }}'">
-
+                                onchange="window.location.href='?portal={% if portal_mode %}1{% endif %}&evaluation={{ selected_eval_id|default:'' }}&role=' + encodeURIComponent(this.value) + '&employee={{ selected_employee_id|default:'' }}'">
 
                                 <option
-
                                     value="peer"
-
-                                    {% if role == "peer" %}
-
-                                        selected
-
-                                    {% endif %}>
-
+                                    {% if role == "peer" %}selected{% endif %}>
                                     {% trans "Peer Evaluation" %}
-
                                 </option>
-
 
                                 <option
-
                                     value="manager"
-
-                                    {% if role == "manager" %}
-
-                                        selected
-
-                                    {% endif %}>
-
+                                    {% if role == "manager" %}selected{% endif %}>
                                     {% trans "Manager Evaluation" %}
-
                                 </option>
-
-
                             </select>
-
-
                         </div>
-
                     </div>
 
-
                 </div>
 
-
-                <!-- =================================================
-                     الأزرار
-                ================================================= -->
-
+                <!-- الأزرار -->
                 <div class="mt-4 pt-3 d-flex gap-3 flex-wrap">
 
-
                     <button
-
                         type="submit"
-
                         class="evaluation-btn btn-start"
-
-                        {% if not selected_eval_id or not selected_employee_id or not criteria %}
-
-                            disabled
-
-                        {% endif %}>
-
-
+                        {% if not selected_eval_id or not selected_employee_id or not criteria %}disabled{% endif %}>
                         ▶️
-
                         {% trans "Start Entering Scores" %}
-
-
                     </button>
 
-
                     <a
-
                         href="{% url 'hr:evaluations' %}"
-
                         class="evaluation-btn btn-back">
-
-
                         ↩
-
                         {% trans "Back" %}
-
-
                     </a>
 
-
                 </div>
-
-
             </form>
 
-
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}

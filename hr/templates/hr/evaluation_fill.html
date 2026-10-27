@@ -2,7 +2,15 @@
 {% load hr_extras %}
 {% load i18n %}
 
+
 {% block title %}{{ role_label }}{% endblock %}
+
+{% block extra_head %}
+{% if request.GET.portal == "1" %}
+<meta name="evaluation-portal-mode" content="1">
+{% endif %}
+{% endblock %}
+
 
 
 {% block extra_css %}
@@ -670,13 +678,36 @@
 
 }
 
+/* إخفاء القائمة الجانبية عند فتح التقييم من بوابة الموظف */
+body.portal-evaluation-mode .sidebar,
+body.portal-evaluation-mode #sidebar,
+body.portal-evaluation-mode .main-sidebar,
+body.portal-evaluation-mode .sidebar-wrapper,
+body.portal-evaluation-mode .sidebar-container {
+    display: none !important;
+}
+
+body.portal-evaluation-mode .main-content,
+body.portal-evaluation-mode .content-wrapper,
+body.portal-evaluation-mode .page-content {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+
 </style>
 
 {% endblock %}
 
 
 {% block content %}
-
+{% if portal_mode %}
+<script>
+    document.body.classList.add("portal-evaluation-mode");
+</script>
+{% endif %}
 <div class="container-fluid mt-4">
 
     <div class="evaluation-page">
@@ -827,13 +858,17 @@
              إدخال الدرجات
         ================================================= -->
 
-        <form
-            method="post"
-            enctype="multipart/form-data"
-            class="evaluation-card"
-        >
 
-            {% csrf_token %}
+<form
+    method="post"
+    enctype="multipart/form-data"
+    class="evaluation-card"
+>
+    {% csrf_token %}
+
+    {% if portal_mode %}
+        <input type="hidden" name="portal" value="1">
+    {% endif %}
 
 
             <h5 class="section-title">
@@ -1222,6 +1257,34 @@
     </div>
 
 </div>
+
+{% if portal_mode %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector(
+        "form.evaluation-card"
+    );
+
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener("submit", function () {
+        const portalField = form.querySelector(
+            'input[name="portal"]'
+        );
+
+        if (!portalField) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "portal";
+            input.value = "1";
+            form.appendChild(input);
+        }
+    });
+});
+</script>
+{% endif %}
 
 
 {% endblock %}

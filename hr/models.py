@@ -1697,3 +1697,156 @@ class HRPermission(models.Model):
 
     def __str__(self):
         return f"{_('HR Permissions')} - {self.user.username}"
+
+
+# ==========================================
+# طلبات الموظفين من بوابة الموظف
+# ==========================================
+
+class EmployeeRequest(models.Model):
+
+    REQUEST_TYPES = (
+        ("advance", "سلفة مالية"),
+        ("ticket", "تذكرة سفر"),
+        ("promotion", "ترقية"),
+        ("transfer", "نقل إلى قسم أو فرع آخر"),
+        ("shift", "تغيير وردية"),
+        ("other", "طلب آخر"),
+    )
+
+    STATUS_CHOICES = (
+        ("pending", "قيد المراجعة"),
+        ("approved", "مقبول"),
+        ("rejected", "مرفوض"),
+    )
+
+    TICKET_TYPES = (
+        ("one_way", "ذهاب"),
+        ("round_trip", "ذهاب وعودة"),
+    )
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="employee_requests",
+    )
+
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="submitted_requests",
+    )
+
+    request_type = models.CharField(
+        max_length=20,
+        choices=REQUEST_TYPES,
+    )
+
+    request_date = models.DateField()
+
+    advance_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+
+    advance_installments = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    ticket_destination = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+
+    ticket_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+
+    ticket_type = models.CharField(
+        max_length=20,
+        choices=TICKET_TYPES,
+        blank=True,
+    )
+
+    current_job_title = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    requested_job_title = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    current_department = models.CharField(
+        max_length=150,
+        blank=True,
+    )
+
+    requested_department = models.CharField(
+        max_length=150,
+        blank=True,
+    )
+
+    current_branch = models.CharField(
+        max_length=150,
+        blank=True,
+    )
+
+    requested_branch = models.CharField(
+        max_length=150,
+        blank=True,
+    )
+
+    requested_shift = models.CharField(
+        max_length=150,
+        blank=True,
+    )
+
+    shift_start_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+
+    other_request_title = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+
+    reason = models.TextField()
+
+    attachment = models.FileField(
+        upload_to="employee_requests/%Y/%m/",
+        blank=True,
+        null=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+    )
+
+    reviewer_notes = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        verbose_name = "طلب موظف"
+        verbose_name_plural = "طلبات الموظفين"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.employee} - {self.get_request_type_display()}"
