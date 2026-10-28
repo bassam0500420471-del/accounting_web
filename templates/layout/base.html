@@ -2012,14 +2012,15 @@ html[dir="ltr"] .gpt-float {
         <!-- بوابة الموظف -->
         <div class="menu-btn d-flex align-items-center justify-content-between">
 
-            <a href="{% url 'hr:employee_portal' %}">
-                <i class="fas fa-user-circle"></i>
-                <span>بوابة الموظف</span>
-            </a>
+
+<a href="{% url 'hr:employee_portal_share' %}">
+    <i class="fas fa-user-circle"></i>
+    <span>بوابة الموظف</span>
+</a>
 
             <button
                 class="add-icon-btn"
-                onclick="goAdd('{% url 'hr:employee_portal' %}')"
+                onclick="goAdd('{% url 'hr:employee_portal_share' %}')"
             >
                 +
             </button>

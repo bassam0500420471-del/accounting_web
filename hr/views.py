@@ -6202,3 +6202,8 @@ def payroll_edit(request, payroll_run_id):
             "employee_payrolls": employee_payrolls,
         }
     )
+def employee_portal_share(request):
+    return render(
+        request,
+        'hr/employee_portal_share.html'
+    )

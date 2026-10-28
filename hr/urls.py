@@ -20,7 +20,11 @@ urlpatterns = [
         views.employee_portal,
         name='employee_portal'
     ),
-
+    path(
+        'employee-portal/share/',
+        views.employee_portal_share,
+        name='employee_portal_share'
+    ),
     path(
         'employee-portal/leave-request/',
         views.employee_portal_leave_request,

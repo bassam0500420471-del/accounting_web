@@ -1,0 +1,217 @@
+
+{% extends "layout/base.html" %}
+
+{% block title %}مشاركة رابط بوابة الموظفين{% endblock %}
+
+{% block content %}
+<style>
+
+.employee-share-page {
+    direction: rtl;
+
+    /* شغل كامل عرض منطقة المحتوى */
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    /* إلغاء المسافة العلوية والجانبية */
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+.employee-share-card {
+    /* العرض الكامل */
+    width: 100%;
+    max-width: none;
+
+    /* التحكم في الارتفاع */
+    min-height: 260px;
+
+    /* المسافة الداخلية */
+    padding: 50px;
+
+    border-radius: 0;
+    background: linear-gradient(145deg, #f8f8f8, #d8d8d8);
+    border: 1px solid #fff;
+
+    box-shadow: 10px 10px 24px #bcbcbc,
+                -7px -7px 20px #fff;
+
+    box-sizing: border-box;
+}
+.employee-share-heading {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.employee-share-icon {
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #444, #202020);
+    color: white;
+    font-size: 30px;
+    box-shadow: 5px 5px 12px #aaa,
+                -3px -3px 8px white;
+}
+
+.employee-share-heading h2 {
+    margin: 0 0 8px;
+    color: #222;
+    font-weight: 900;
+}
+
+.employee-share-heading p {
+    margin: 0;
+    color: #555;
+    line-height: 1.8;
+}
+
+.employee-share-link {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 15px;
+    background: #e5e5e5;
+    box-shadow: inset 4px 4px 9px #c3c3c3,
+                inset -3px -3px 8px white;
+}
+
+.employee-share-link input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #fff;
+    color: #222;
+    direction: ltr;
+    text-align: left;
+    font-size: 14px;
+}
+
+.employee-share-link button {
+    padding: 12px 20px;
+    border: 1px solid #555;
+    border-radius: 11px;
+    background: linear-gradient(145deg, #555, #292929);
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 4px 4px 8px #aaa,
+                -2px -2px 5px white;
+}
+
+.employee-share-link button:hover {
+    background: #111;
+    transform: translateY(-1px);
+}
+
+#employeeShareMessage {
+    display: none;
+    margin-top: 18px;
+    padding: 13px;
+    border-radius: 10px;
+    background: #d7f1df;
+    color: #175c30;
+    font-weight: 800;
+}
+
+@media (max-width: 650px) {
+    .employee-share-card {
+        padding: 20px;
+    }
+
+    .employee-share-link {
+        flex-direction: column;
+    }
+
+    .employee-share-link button {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="employee-share-page">
+    <div class="employee-share-card">
+
+        <div class="employee-share-heading">
+            <div class="employee-share-icon">🔗</div>
+            <div>
+                <h2>رابط بوابة الموظفين</h2>
+                <p>
+                    انسخ الرابط وأرسله للموظف ليتمكن من الدخول إلى
+                    بوابته بعد تسجيل الدخول بحسابه.
+                </p>
+            </div>
+        </div>
+
+        <div class="employee-share-link">
+            <input
+                type="text"
+                id="employeeShareUrl"
+                value="{{ request.scheme }}://{{ request.get_host }}{% url 'hr:employee_portal' %}"
+                readonly
+            >
+
+            <button type="button" onclick="copyEmployeeShareUrl()">
+                📋 نسخ الرابط
+            </button>
+
+            <button
+                type="button"
+                onclick="window.location.href='{% url 'hr:employee_portal' %}'"
+            >
+                ↗ فتح البوابة
+            </button>
+        </div>
+
+        <div id="employeeShareMessage">
+            ✓ تم نسخ الرابط بنجاح، يمكنك إرساله للموظف.
+        </div>
+
+    </div>
+</div>
+
+<script>
+function copyEmployeeShareUrl() {
+    const input = document.getElementById("employeeShareUrl");
+    const message = document.getElementById("employeeShareMessage");
+
+    if (!input || !message) return;
+
+    const fallbackCopy = () => {
+        input.select();
+        input.setSelectionRange(0, input.value.length);
+
+        try {
+            if (document.execCommand("copy")) {
+                message.style.display = "block";
+            } else {
+                alert("تعذر النسخ تلقائيًا. انسخ الرابط يدويًا.");
+            }
+        } catch (error) {
+            alert("تعذر النسخ تلقائيًا. انسخ الرابط يدويًا.");
+        }
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(input.value)
+            .then(() => {
+                message.style.display = "block";
+            })
+            .catch(fallbackCopy);
+    } else {
+        fallbackCopy();
+    }
+}
+</script>
+{% endblock %}
