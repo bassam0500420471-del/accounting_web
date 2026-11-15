@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load journal_translation %}
 {% block content %}
 
 <div class="container-fluid invoices-page mt-4">
@@ -146,7 +146,7 @@
 
                         <td class="description-cell">
 
-                            {{ e.description }}
+                            {{ e.description|journal_description }}
 
                         </td>
 

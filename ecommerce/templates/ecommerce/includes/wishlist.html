@@ -1,9 +1,9 @@
 {% extends "ecommerce/base_store.html" %}
-{% load static %}
+{% load static i18n %}
 
 
 {% block title %}
-المفضلة
+{% trans "Wishlist" %}
 {% endblock %}
 
 
@@ -19,14 +19,14 @@
 <div class="section-title">
 
     <h2>
-        ❤️ المنتجات المفضلة
+        ❤️ {% trans "Wishlist Products" %}
     </h2>
 
 
     <button class="view-all toggle-products"
             data-target="wishlistProducts">
 
-        عرض الكل
+        {% trans "View All" %}
 
     </button>
 
@@ -60,7 +60,7 @@
 
 
     <p>
-        لا توجد منتجات في المفضلة.
+        {% trans "No products in wishlist." %}
     </p>
 
 

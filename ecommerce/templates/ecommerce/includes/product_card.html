@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n store_translation %}
 
 <div class="product-card wishlist-card">
 
@@ -6,16 +6,15 @@
 {% if wishlist_page %}
 
     <button
-        type="button"
-        class="wishlist-remove"
-        data-product-id="{{ product.id }}"
-        title="إزالة من المفضلة"
-        aria-label="إزالة من المفضلة">
+    type="button"
+    class="wishlist-remove"
+    data-product-id="{{ product.id }}"
+    title="{% trans 'Remove from Wishlist' %}"
+    aria-label="{% trans 'Remove from Wishlist' %}">
 
-        ×
+    ×
 
-    </button>
-
+</button>
 {% endif %}
 
 
@@ -71,11 +70,11 @@
              لا توجد أي صورة
         =================================================== -->
 
-        {% if not product.image and not product.images.all %}
+        {% if not product.image and not product.images.exists %}
 
             <img
                 src="{% static 'ecommerce/images/no-image.png' %}"
-                alt="لا توجد صورة"
+                alt="{% trans 'No image available' %}"
                 class="product-gallery-image active-image"
             >
 
@@ -92,7 +91,7 @@
     <button
         type="button"
         class="gallery-arrow gallery-prev"
-        aria-label="الصورة السابقة">
+        aria-label="{% trans 'Previous image' %}">
 
         <i class="bi bi-chevron-right"></i>
 
@@ -102,7 +101,7 @@
     <button
         type="button"
         class="gallery-arrow gallery-next"
-        aria-label="الصورة التالية">
+        aria-label="{% trans 'Next image' %}">
 
         <i class="bi bi-chevron-left"></i>
 
@@ -119,7 +118,7 @@
 
             <span
                 class="gallery-dot active"
-                aria-label="الصورة الرئيسية">
+                aria-label="{% trans 'Main image' %}">
             </span>
 
         {% endif %}
@@ -131,7 +130,7 @@
 
                 <span
                     class="gallery-dot"
-                    aria-label="صورة إضافية">
+                    aria-label="{% trans 'Additional image' %}">
                 </span>
 
             {% endif %}
@@ -149,7 +148,7 @@
 
         <span class="product-badge">
 
-            خصم
+            {% trans "Discount" %}
 
         </span>
 
@@ -164,7 +163,7 @@
 
         <span class="product-badge product-new">
 
-            جديد
+            {% trans "New" %}
 
         </span>
 
@@ -184,7 +183,7 @@
             href="javascript:void(0)"
             class="wishlist-btn"
             data-product="{{ product.id }}"
-            title="إضافة للمفضلة">
+            title="{% trans 'Add to Wishlist' %}">
 
             <i class="bi bi-heart"></i>
 
@@ -197,7 +196,7 @@
 
             <a
                 href="{% url 'ecommerce:product_detail' store.slug product.slug %}"
-                title="عرض المنتج">
+                title="{% trans 'View Product' %}">
 
                 <i class="bi bi-eye"></i>
 
@@ -207,7 +206,7 @@
 
             <a
                 href="javascript:void(0)"
-                title="المنتج لا يملك رابطاً">
+                title="{% trans 'Product link is unavailable' %}">
 
                 <i class="bi bi-eye-slash"></i>
 
@@ -222,7 +221,7 @@
             href="javascript:void(0)"
             class="compare-btn"
             data-product="{{ product.id }}"
-            title="مقارنة">
+            title="{% trans 'Compare' %}">
 
             <i class="bi bi-arrow-left-right"></i>
 
@@ -248,7 +247,7 @@
 
         <div class="product-category">
 
-            {{ product.category.name }}
+            {{ product.category|store_category_name }}
 
         </div>
 
@@ -261,12 +260,12 @@
 
     <div
         class="product-name product-name-tooltip"
-        data-full-name="{{ product.get_name|escape }}"
+        data-full-name="{{ product|store_product_name|escape }}"
         tabindex="0"
         role="button"
-        aria-label="عرض اسم المنتج بالكامل">
+        aria-label="{% trans 'Show full product name' %}">
 
-        {{ product.get_name }}
+        {{ product|store_product_name }}
 
     </div>
 
@@ -334,7 +333,7 @@
 
         <i class="bi bi-cart-plus"></i>
 
-        إضافة إلى السلة
+        {% trans "Add to Cart" %}
 
     </button>
 
@@ -362,7 +361,7 @@
         <button
             type="button"
             class="product-image-lightbox-close"
-            aria-label="إغلاق">
+            aria-label="{% trans 'Close' %}">
 
             ×
 
@@ -374,7 +373,7 @@
         <button
             type="button"
             class="product-lightbox-arrow product-lightbox-prev"
-            aria-label="الصورة السابقة">
+            aria-label="{% trans 'Previous image' %}">
 
             ‹
 
@@ -385,7 +384,7 @@
 
         <img
             src=""
-            alt="صورة المنتج">
+            alt="{% trans 'Product image' %}">
 
 
         <!-- الصورة التالية -->
@@ -393,7 +392,7 @@
         <button
             type="button"
             class="product-lightbox-arrow product-lightbox-next"
-            aria-label="الصورة التالية">
+            aria-label="{% trans 'Next image' %}">
 
             ›
 
@@ -1649,7 +1648,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         lightboxImage.alt =
             image.alt ||
-            "صورة المنتج";
+            "{% trans 'Product image' %}";
 
 
         if (lightboxDots) {

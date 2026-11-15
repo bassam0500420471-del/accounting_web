@@ -1,9 +1,10 @@
+
 {% extends "layout/base.html" %}
 {% load i18n %}
 {% load static %}
 
 {% block title %}
-لوحة الحضور والانصراف
+{% if request.GET.lang == "en" %}Attendance Dashboard{% else %}لوحة الحضور والانصراف{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -156,631 +157,745 @@
 
 <div class="attendance-page">
 
-<!-- ============================= -->
-<!-- شريط الحالة -->
-<!-- ============================= -->
+    <!-- شريط الحالة -->
+    <div class="d-flex justify-content-between align-items-center
+                px-3 py-2 text-white mb-3 rounded-pill shadow-sm"
+         style="background:linear-gradient(135deg,#374151 0%,#1f2937 100%);
+                font-size:11px;">
 
-<div class="d-flex justify-content-between align-items-center
-            px-3 py-2 text-white mb-3 rounded-pill shadow-sm"
-     style="background:linear-gradient(135deg,#374151 0%,#1f2937 100%);
-            font-size:11px;">
+        <span class="fw-bold" id="live-clock">--:--</span>
 
-    <span class="fw-bold" id="live-clock">
-        --:--
-    </span>
+        <div class="d-flex gap-2 align-items-center">
+            <i class="fas fa-location-arrow"
+               id="top-gps-icon"
+               title="حالة الموقع"></i>
 
-    <div class="d-flex gap-2 align-items-center">
-
-        <i class="fas fa-location-arrow"
-           id="top-gps-icon"
-           title="حالة الموقع"></i>
-
-        <i class="fas fa-wifi"></i>
-
-        <i class="fas fa-battery-full"></i>
-
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
     </div>
 
-</div>
+    <!-- الهيدر -->
+    <header class="d-flex align-items-center justify-content-between
+                   px-3 py-3 mb-3 shadow-sm rounded-4"
+            style="background:#fff;border:1px solid #e5e7eb;">
 
+        <div class="d-flex align-items-center gap-2
+                    text-secondary fw-bold"
+             style="font-size:14px;">
 
-<!-- ============================= -->
-<!-- الهيدر -->
-<!-- ============================= -->
+            <i class="fas fa-fingerprint text-dark"></i>
 
-<header class="d-flex align-items-center justify-content-between
-               px-3 py-3 mb-3 shadow-sm rounded-4"
-        style="background:#fff;border:1px solid #e5e7eb;">
-
-    <div class="d-flex align-items-center gap-2
-                text-secondary fw-bold"
-         style="font-size:14px;">
-
-        <i class="fas fa-fingerprint text-dark"></i>
-
-        <span>
-            الحضور والانصراف
-        </span>
-
-    </div>
-
-    <div class="d-flex align-items-center gap-3">
-
-        <i class="fas fa-location-crosshairs text-secondary"
-           id="manual-location-btn"
-           title="تحديد الموقع"
-           style="cursor:pointer;"></i>
-
-        <i class="fas fa-redo-alt text-dark"
-           onclick="location.reload();"
-           style="cursor:pointer;"
-           title="تحديث"></i>
-
-    </div>
-
-</header>
-
-
-<!-- ============================= -->
-<!-- بطاقة الموظف -->
-<!-- ============================= -->
-
-<div class="profile-card card mb-3 p-3 position-relative overflow-hidden"
-     style="background:linear-gradient(to right,#fff,#f9fafb);
-            border-right:5px solid #4b5563 !important;">
-
-    <div class="row align-items-center g-2">
-
-        <div class="col-3 text-center">
-
-            {% if employee and employee.photo and employee.photo.url %}
-
-                <img src="{{ employee.photo.url }}"
-                     alt="{{ employee.get_full_name }}"
-                     class="rounded-circle shadow border border-2 border-white"
-                     style="width:60px;height:60px;object-fit:cover;">
-
-            {% else %}
-
-                <div class="rounded-circle shadow border border-2 border-white
-                            d-flex align-items-center justify-content-center
-                            text-white fw-bold mx-auto"
-                     style="width:60px;height:60px;
-                            background:linear-gradient(135deg,#4b5563,#1f2937);
-                            font-size:20px;">
-
-                    {{ employee.get_full_name|slice:":2"|default:"مو" }}
-
-                </div>
-
-            {% endif %}
-
+            <span>الحضور والانصراف</span>
         </div>
 
-        <div class="col-9" style="font-size:14px;">
+        <div class="d-flex align-items-center gap-3">
 
-            <div>
+            <i class="fas fa-location-crosshairs text-secondary"
+               id="manual-location-btn"
+               title="تحديد الموقع"
+               style="cursor:pointer;"></i>
 
-                <span id="dynamic-greeting"
-                      class="fw-bold"
-                      style="color:#4b5563;font-size:16px;">
-                    أهلاً بك
-                </span>
-
-                <span class="fw-bold text-dark">
-                    {{ employee.get_full_name|default:"زائر" }}
-                </span>
-
-            </div>
-
-            <div class="text-muted mt-1"
-                 style="font-size:12px;">
-
-                {{ employee.department.name|default:"" }}
-
-            </div>
-
+            <i class="fas fa-redo-alt text-dark"
+               onclick="location.reload();"
+               style="cursor:pointer;"
+               title="تحديث"></i>
         </div>
+    </header>
 
-    </div>
+    <!-- بطاقة الموظف -->
+    <div class="profile-card card mb-3 p-3 position-relative overflow-hidden"
+         style="background:linear-gradient(to right,#fff,#f9fafb);
+                border-right:5px solid #4b5563 !important;">
 
-</div>
+        <div class="row align-items-center g-2">
 
+            <div class="col-3 text-center">
 
-<!-- ============================= -->
-<!-- شعار الشركة -->
-<!-- ============================= -->
+                {% if employee and employee.photo and employee.photo.url %}
 
-<div class="logo-card card mb-3 p-4 text-center"
-     style="background:rgba(255,255,255,.95);">
+                    <img src="{{ employee.photo.url }}"
+                         alt="{{ employee.get_full_name }}"
+                         class="rounded-circle shadow border border-2 border-white"
+                         style="width:60px;height:60px;object-fit:cover;">
 
-    <div class="d-flex justify-content-center
-                align-items-center flex-column">
+                {% else %}
 
-        {% if company and company.logo and company.logo.url %}
-
-            <img src="{{ company.logo.url }}"
-                 alt="{{ company.name_ar|default:'شعار الشركة' }}"
-                 style="width:95px;
-                        height:95px;
-                        object-fit:cover;
-                        border-radius:50%;
-                        border:3px solid #e5e7eb;
-                        filter:drop-shadow(0 4px 6px rgba(0,0,0,.1));">
-
-        {% elif company and company.logo_url %}
-
-            <img src="{{ company.logo_url }}"
-                 alt="{{ company.name_ar|default:'شعار الشركة' }}"
-                 style="max-width:120px;
-                        height:auto;
-                        max-height:70px;
-                        object-fit:contain;">
-
-        {% else %}
-
-            <div class="fw-bold text-secondary"
-                 style="font-size:30px;">
-
-                {{ company.name_ar|slice:":4"|default:"شركة" }}
-
-            </div>
-
-        {% endif %}
-
-        <h5 class="mt-2 mb-0 fw-bold text-dark">
-
-            {{ company.name_ar|default:company.name|default:"لوحة العمل" }}
-
-        </h5>
-
-    </div>
-
-</div>
-
-
-<!-- ============================= -->
-<!-- بطاقة تسجيل الحضور -->
-<!-- ============================= -->
-
-<div class="attendance-card card p-3 p-md-4 mb-3"
-     style="background:#fff;">
-
-    <div class="text-center mb-3">
-
-        <div class="section-title mb-2">
-            تسجيل العملية
-        </div>
-
-<div id="operation-label"
-     class="text-muted"
-     style="font-size:12px;">
-
-    {% if next_action == "check_out" %}
-
-        سيتم تسجيل الانصراف
-
-    {% else %}
-
-        سيتم تسجيل الحضور
-
-    {% endif %}
-
-</div>
-    </div>
-
-
-    <!-- ============================= -->
-    <!-- GPS -->
-    <!-- ============================= -->
-
-    <div id="gps-status"
-         class="gps-status warning mb-3">
-
-        <div class="d-flex align-items-center">
-
-            <i class="fas fa-location-dot me-2 ms-2"
-               id="gps-status-icon"></i>
-
-            <span id="gps-status-text">
-                جاري تحديد موقعك...
-            </span>
-
-        </div>
-
-        <div id="gps-accuracy"
-             class="mt-1"
-             style="font-size:10px;">
-        </div>
-
-    </div>
-
-
-    <!-- ============================= -->
-    <!-- نموذج الحضور -->
-    <!-- ============================= -->
-
-    <div class="d-flex justify-content-center
-                align-items-center py-2">
-
-        <form method="post"
-              id="attendance-form"
-              action="">
-
-            {% csrf_token %}
-
-
-            <!-- الموقع -->
-
-            <input type="hidden"
-                   name="latitude"
-                   id="form-latitude">
-
-            <input type="hidden"
-                   name="longitude"
-                   id="form-longitude">
-
-            <input type="hidden"
-                   name="accuracy"
-                   id="form-accuracy">
-
-
-            <!-- نوع العملية -->
-
-<input type="hidden"
-       name="action"
-       id="attendance-action"
-       value="{{ next_action }}">
-
-            <button type="submit"
-                    id="attendance-btn"
-                    class="attendance-main-btn d-flex flex-column
-                           align-items-center justify-content-center
-                           text-center mx-auto"
-                    disabled>
-
-                <i id="attendance-icon"
-                   class="fas fa-location-crosshairs mb-2"
-                   style="font-size:32px;"></i>
-
-<span id="attendance-btn-text"
-      style="font-size:17px;font-weight:800;">
-
-    {% if next_action == "check_out" %}
-
-        تسجيل الانصراف
-
-    {% else %}
-
-        تسجيل الحضور
-
-    {% endif %}
-
-</span>
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- رسالة أمان -->
-
-    <div class="text-center mt-3">
-
-        <small class="text-muted">
-
-            <i class="fas fa-shield-halved me-1 ms-1"></i>
-
-            سيتم تسجيل موقعك مع كل عملية حضور أو انصراف
-
-        </small>
-
-    </div>
-
-</div>
-
-
-<!-- ============================= -->
-<!-- سجل عمليات اليوم -->
-<!-- ============================= -->
-
-<div class="history-card card p-3 mb-3">
-
-    <div class="d-flex justify-content-between
-                align-items-center mb-3">
-
-        <span class="section-title">
-            سجل عمليات اليوم
-        </span>
-
-        <span class="location-badge">
-
-            <i class="fas fa-calendar-day me-1 ms-1"></i>
-
-            اليوم
-
-        </span>
-
-    </div>
-
-
-    {% if today_attendances %}
-
-        {% for attendance in today_attendances %}
-
-            <div class="operation-item">
-
-                <div class="d-flex align-items-center
-                            justify-content-between">
-
-                    <div class="d-flex align-items-center">
-
-                        <div class="operation-icon me-2 ms-2">
-
-                            {% if attendance.check_out %}
-
-                                <i class="fas fa-arrow-right-from-bracket"></i>
-
-                            {% else %}
-
-                                <i class="fas fa-arrow-right-to-bracket"></i>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div>
-
-                            {% if attendance.check_out %}
-
-                                <div class="fw-bold text-dark"
-                                     style="font-size:13px;">
-
-                                    حضور وانصراف
-
-                                </div>
-
-                                <div class="text-muted"
-                                     style="font-size:11px;">
-
-                                    {{ attendance.check_in|date:"H:i:s" }}
-
-                                    -
-
-                                    {{ attendance.check_out|date:"H:i:s" }}
-
-                                </div>
-
-                            {% else %}
-
-                                <div class="fw-bold text-dark"
-                                     style="font-size:13px;">
-
-                                    تسجيل حضور
-
-                                </div>
-
-                                <div class="text-muted"
-                                     style="font-size:11px;">
-
-                                    {{ attendance.check_in|date:"H:i:s" }}
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- الموقع -->
-
-                    <div class="text-end">
-
-                        {% if attendance.latitude and attendance.longitude %}
-
-                            <span class="location-badge valid">
-
-                                <i class="fas fa-location-dot"></i>
-
-                                موقع مسجل
-
-                            </span>
-
-                        {% else %}
-
-                            <span class="location-badge invalid">
-
-                                بدون موقع
-
-                            </span>
-
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-
-                <!-- معلومات إضافية للموقع -->
-
-                {% if attendance.latitude and attendance.longitude %}
-
-                    <div class="mt-2 pt-2 border-top"
-                         style="font-size:10px;color:#6b7280;">
-
-                        <i class="fas fa-location-dot me-1 ms-1"></i>
-
-                        تم تسجيل الموقع مع هذه العملية
-
-                        {% if attendance.accuracy %}
-
-                            — دقة تقريبية:
-                            {{ attendance.accuracy|floatformat:0 }}
-                            متر
-
-                        {% endif %}
-
+                    <div class="rounded-circle shadow border border-2 border-white
+                                d-flex align-items-center justify-content-center
+                                text-white fw-bold mx-auto"
+                         style="width:60px;height:60px;
+                                background:linear-gradient(135deg,#4b5563,#1f2937);
+                                font-size:20px;">
+                        {{ employee.get_full_name|slice:":2"|default:"مو" }}
                     </div>
 
                 {% endif %}
 
             </div>
 
-        {% endfor %}
+            <div class="col-9" style="font-size:14px;">
 
-    {% else %}
+                <div>
+                    <span id="dynamic-greeting"
+                          class="fw-bold"
+                          style="color:#4b5563;font-size:16px;">
+                        أهلاً بك
+                    </span>
 
-        <div class="text-center py-4 text-muted">
+                    <span class="fw-bold text-dark">
+                        {{ employee.get_full_name|default:"زائر" }}
+                    </span>
+                </div>
 
-            <i class="fas fa-calendar-xmark mb-2"
-               style="font-size:28px;"></i>
+                <div class="text-muted mt-1" style="font-size:12px;">
+                    {{ employee.department.name|default:"" }}
+                </div>
 
-            <div style="font-size:13px;">
+            </div>
+        </div>
+    </div>
 
-                لا توجد عمليات مسجلة اليوم
+    <!-- شعار الشركة -->
+    <div class="logo-card card mb-3 p-4 text-center"
+         style="background:rgba(255,255,255,.95);">
+
+        <div class="d-flex justify-content-center
+                    align-items-center flex-column">
+
+            {% if company and company.logo and company.logo.url %}
+
+                <img src="{{ company.logo.url }}"
+                     alt="{{ company.name_ar|default:'شعار الشركة' }}"
+                     style="width:95px;height:95px;object-fit:cover;
+                            border-radius:50%;border:3px solid #e5e7eb;
+                            filter:drop-shadow(0 4px 6px rgba(0,0,0,.1));">
+
+            {% elif company and company.logo_url %}
+
+                <img src="{{ company.logo_url }}"
+                     alt="{{ company.name_ar|default:'شعار الشركة' }}"
+                     style="max-width:120px;height:auto;max-height:70px;
+                            object-fit:contain;">
+
+            {% else %}
+
+                <div class="fw-bold text-secondary" style="font-size:30px;">
+                    {{ company.name_ar|slice:":4"|default:"شركة" }}
+                </div>
+
+            {% endif %}
+
+            <h5 class="mt-2 mb-0 fw-bold text-dark">
+
+                {% if request.GET.lang == "en" and company.name_en %}
+                    {{ company.name_en }}
+                {% elif company.name_ar %}
+                    {{ company.name_ar }}
+                {% else %}
+                    {{ company.name|default:"لوحة العمل" }}
+                {% endif %}
+
+            </h5>
+        </div>
+    </div>
+
+    <!-- بطاقة تسجيل الحضور -->
+    <div class="attendance-card card p-3 p-md-4 mb-3"
+         style="background:#fff;">
+
+        <div class="text-center mb-3">
+
+            <div class="section-title mb-2">
+                تسجيل العملية
+            </div>
+
+            <div id="operation-label"
+                 class="text-muted"
+                 style="font-size:12px;">
+
+                {% if next_action == "check_out" %}
+                    سيتم تسجيل الانصراف
+                {% else %}
+                    سيتم تسجيل الحضور
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- GPS -->
+        <div id="gps-status" class="gps-status warning mb-3">
+
+            <div class="d-flex align-items-center">
+
+                <i class="fas fa-location-dot me-2 ms-2"
+                   id="gps-status-icon"></i>
+
+                <span id="gps-status-text">
+                    جاري تحديد موقعك...
+                </span>
 
             </div>
 
+            <div id="gps-accuracy" class="mt-1" style="font-size:10px;"></div>
         </div>
 
-    {% endif %}
+        <!-- نموذج الحضور -->
+        <div class="d-flex justify-content-center
+                    align-items-center py-2">
 
-</div>
+            <form method="post" id="attendance-form" action="">
 
+                {% csrf_token %}
 
-<!-- ============================= -->
-<!-- رسائل النظام -->
-<!-- ============================= -->
+                <input type="hidden" name="latitude" id="form-latitude">
+                <input type="hidden" name="longitude" id="form-longitude">
+                <input type="hidden" name="accuracy" id="form-accuracy">
 
-<div id="alert-container" class="mb-4">
+                <input type="hidden"
+                       name="action"
+                       id="attendance-action"
+                       value="{{ next_action }}">
 
-    {% if not employee %}
+                <button type="submit"
+                        id="attendance-btn"
+                        class="attendance-main-btn d-flex flex-column
+                               align-items-center justify-content-center
+                               text-center mx-auto"
+                        disabled>
 
-        <div class="alert alert-danger text-center
-                    shadow-sm rounded-3 py-2"
-             style="font-size:13px;">
+                    <i id="attendance-icon"
+                       class="fas fa-location-crosshairs mb-2"
+                       style="font-size:32px;"></i>
 
-            الموظف غير مرتبط بحساب مستخدم.
+                    <span id="attendance-btn-text"
+                          style="font-size:17px;font-weight:800;">
 
+                        {% if next_action == "check_out" %}
+                            تسجيل الانصراف
+                        {% else %}
+                            تسجيل الحضور
+                        {% endif %}
+
+                    </span>
+                </button>
+            </form>
         </div>
 
-    {% endif %}
+        <!-- رسالة أمان -->
+        <div class="text-center mt-3">
 
-
-    {% if message %}
-
-        <div class="alert alert-warning text-center
-                    shadow-sm rounded-3 py-2"
-             style="font-size:13px;">
-
-            {{ message }}
+            <small class="text-muted">
+                <i class="fas fa-shield-halved me-1 ms-1"></i>
+                سيتم تسجيل موقعك مع كل عملية حضور أو انصراف
+            </small>
 
         </div>
+    </div>
 
-    {% endif %}
+    <!-- سجل عمليات اليوم -->
+    <div class="history-card card p-3 mb-3">
 
+        <div class="d-flex justify-content-between
+                    align-items-center mb-3">
 
-    {% if messages %}
+            <span class="section-title">
+                سجل عمليات اليوم
+            </span>
 
-        {% for msg in messages %}
+            <span class="location-badge">
+                <i class="fas fa-calendar-day me-1 ms-1"></i>
+                اليوم
+            </span>
+        </div>
 
-            <div class="alert alert-{{ msg.tags|default:'info' }}
-                        text-center shadow-sm rounded-3 py-2"
+        {% if today_attendances %}
+
+            {% for attendance in today_attendances %}
+
+                <div class="operation-item">
+
+                    <div class="d-flex align-items-center
+                                justify-content-between">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="operation-icon me-2 ms-2">
+
+                                {% if attendance.check_out %}
+                                    <i class="fas fa-arrow-right-from-bracket"></i>
+                                {% else %}
+                                    <i class="fas fa-arrow-right-to-bracket"></i>
+                                {% endif %}
+
+                            </div>
+
+                            <div>
+
+                                {% if attendance.check_out %}
+
+                                    <div class="fw-bold text-dark"
+                                         style="font-size:13px;">
+                                        حضور وانصراف
+                                    </div>
+
+                                    <div class="text-muted"
+                                         style="font-size:11px;">
+                                        {{ attendance.check_in|date:"H:i:s" }}
+                                        -
+                                        {{ attendance.check_out|date:"H:i:s" }}
+                                    </div>
+
+                                {% else %}
+
+                                    <div class="fw-bold text-dark"
+                                         style="font-size:13px;">
+                                        تسجيل حضور
+                                    </div>
+
+                                    <div class="text-muted"
+                                         style="font-size:11px;">
+                                        {{ attendance.check_in|date:"H:i:s" }}
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+                        </div>
+
+                        <!-- الموقع -->
+                        <div class="text-end">
+
+                            {% if last_log and last_log.latitude != None and last_log.longitude != None %}
+
+                                <span class="location-badge valid">
+                                    <i class="fas fa-location-dot"></i>
+                                    موقع مسجل
+                                </span>
+
+                            {% else %}
+
+                                <span class="location-badge invalid">
+                                    بدون موقع
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <!-- معلومات إضافية للموقع -->
+                    {% if last_log and last_log.latitude != None and last_log.longitude != None %}
+
+                        <div class="mt-2 pt-2 border-top"
+                             style="font-size:10px;color:#6b7280;">
+
+                            <i class="fas fa-location-dot me-1 ms-1"></i>
+
+                            تم تسجيل الموقع مع هذه العملية
+
+                            {% if attendance.accuracy %}
+                                — دقة تقريبية:
+                                {{ attendance.accuracy|floatformat:0 }}
+                                متر
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-center py-4 text-muted">
+
+                <i class="fas fa-calendar-xmark mb-2"
+                   style="font-size:28px;"></i>
+
+                <div style="font-size:13px;">
+                    لا توجد عمليات مسجلة اليوم
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- رسائل النظام -->
+    <div id="alert-container" class="mb-4">
+
+        {% if not employee %}
+
+            <div class="alert alert-danger text-center
+                        shadow-sm rounded-3 py-2"
                  style="font-size:13px;">
-
-                {{ msg }}
-
+                الموظف غير مرتبط بحساب مستخدم.
             </div>
 
-        {% endfor %}
+        {% endif %}
 
-    {% endif %}
+        {% if message %}
+
+            <div class="alert alert-warning text-center
+                        shadow-sm rounded-3 py-2"
+                 style="font-size:13px;">
+                {{ message }}
+            </div>
+
+        {% endif %}
+
+        {% if messages %}
+
+            {% for msg in messages %}
+
+                <div class="alert alert-{{ msg.tags|default:'info' }}
+                            text-center shadow-sm rounded-3 py-2"
+                     style="font-size:13px;">
+                    {{ msg }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    </div>
 
 </div>
-
-</div>
-
-<!-- ============================= -->
 
 <!-- الشريط السفلي -->
-
-<!-- ============================= -->
-
 <footer class="app-footer fixed-bottom
                d-flex justify-content-around
                align-items-center py-2 shadow-lg"
-        style="background:#111827;
-               color:#9ca3af;
+        style="background:#111827;color:#9ca3af;
                border-top:1px solid #374151;
                backdrop-filter:blur(5px);">
 
+    <a href="#"
+       class="nav-item text-center text-decoration-none"
+       style="color:inherit;">
 
-<a href="#"
-   class="nav-item text-center text-decoration-none"
-   style="color:inherit;">
+        <i class="fas fa-cog fa-lg d-block mb-1"></i>
 
-    <i class="fas fa-cog fa-lg d-block mb-1"></i>
+        <span style="font-size:10px;">الإعدادات</span>
+    </a>
 
-    <span style="font-size:10px;">
-        الإعدادات
-    </span>
+    <a href="#"
+       class="nav-item text-center text-decoration-none"
+       style="color:inherit;">
 
-</a>
+        <i class="far fa-star fa-lg d-block mb-1"></i>
 
+        <span style="font-size:10px;">الطلبات</span>
+    </a>
 
-<a href="#"
-   class="nav-item text-center text-decoration-none"
-   style="color:inherit;">
+    <a href="#"
+       class="nav-item text-center text-decoration-none active"
+       style="color:#60a5fa;">
 
-    <i class="far fa-star fa-lg d-block mb-1"></i>
+        <i class="fas fa-list-check fa-lg d-block mb-1"></i>
 
-    <span style="font-size:10px;">
-        الطلبات
-    </span>
+        <span style="font-size:10px;">السجل</span>
+    </a>
 
-</a>
+    <a href="#"
+       class="nav-item text-center text-decoration-none"
+       style="color:inherit;">
 
+        <i class="fas fa-house fa-lg d-block mb-1"></i>
 
-<a href="#"
-   class="nav-item text-center text-decoration-none active"
-   style="color:#60a5fa;">
-
-    <i class="fas fa-list-check fa-lg d-block mb-1"></i>
-
-    <span style="font-size:10px;">
-        السجل
-    </span>
-
-</a>
-
-
-<a href="#"
-   class="nav-item text-center text-decoration-none"
-   style="color:inherit;">
-
-    <i class="fas fa-house fa-lg d-block mb-1"></i>
-
-    <span style="font-size:10px;">
-        الرئيسية
-    </span>
-
-</a>
-
+        <span style="font-size:10px;">الرئيسية</span>
+    </a>
 
 </footer>
 
-<!-- ============================= -->
+<script>
+(function () {
 
-<!-- JavaScript -->
+    const translations = {
+        "لوحة الحضور والانصراف": "Attendance Dashboard",
+        "حالة الموقع": "Location Status",
+        "تحديد الموقع": "Get Location",
+        "تحديث": "Refresh",
+        "الحضور والانصراف": "Attendance & Departure",
+        "أهلاً بك": "Welcome",
+        "زائر": "Visitor",
+        "شركة": "Company",
+        "شعار الشركة": "Company Logo",
+        "لوحة العمل": "Work Dashboard",
+        "تسجيل العملية": "Record Attendance",
+        "سيتم تسجيل الانصراف": "Departure will be recorded",
+        "سيتم تسجيل الحضور": "Attendance will be recorded",
+        "جاري تحديد موقعك...": "Locating you...",
+        "تحديد الموقع...": "Locating...",
+        "تسجيل الانصراف": "Check Out",
+        "تسجيل الحضور": "Check In",
+        "سيتم تسجيل موقعك مع كل عملية حضور أو انصراف":
+            "Your location will be recorded with every check-in or check-out",
+        "سجل عمليات اليوم": "Today's Attendance Records",
+        "اليوم": "Today",
+        "حضور وانصراف": "Check-in & Check-out",
+        "موقع مسجل": "Location Recorded",
+        "بدون موقع": "No Location",
+        "تسجيل حضور": "Check In",
+        "تم تسجيل الموقع مع هذه العملية": "Location recorded with this operation",
+        "دقة تقريبية:": "Approximate accuracy:",
+        "متر": "meters",
+        "لا توجد عمليات مسجلة اليوم": "No records today",
+        "الموظف غير مرتبط بحساب مستخدم.":
+            "The employee is not linked to a user account.",
+        "الإعدادات": "Settings",
+        "الطلبات": "Requests",
+        "السجل": "Records",
+        "الرئيسية": "Home",
+        "دقة الموقع:": "Location accuracy:",
+        "المتصفح لا يدعم تحديد الموقع.":
+            "Your browser does not support geolocation.",
+        "تم تحديد موقعك بنجاح.": "Your location was detected successfully.",
+        "تعذر تحديد موقعك.": "Unable to determine your location.",
+        "تم رفض صلاحية الموقع. اسمح للموقع من إعدادات المتصفح.":
+            "Location permission denied. Please allow location access in your browser settings.",
+        "تعذر الحصول على موقعك الحالي.":
+            "Unable to retrieve your current location.",
+        "انتهت مهلة تحديد الموقع. حاول مرة أخرى.":
+            "Location request timed out. Please try again.",
+        "يجب تحديد موقعك أولاً قبل تسجيل الحضور.":
+            "You must determine your location before checking in.",
+        "هل تريد تسجيل الحضور الآن؟":
+            "Do you want to check in now?",
+        "هل تريد تسجيل الانصراف الآن؟":
+            "Do you want to check out now?",
+        "جاري التسجيل...": "Recording...",
+        "مو": "EM",
+        "موظف": "Employee"
+    };
 
-<!-- ============================= -->
+function getLanguage() {
+
+    const urlLanguage = new URLSearchParams(
+        window.location.search
+    ).get("lang");
+
+    const pageLanguage = document.documentElement.lang;
+
+    return (
+        urlLanguage ||
+        pageLanguage ||
+        localStorage.getItem("employee_portal_language") ||
+        localStorage.getItem("LANGUAGE_KEY") ||
+        window.employeePortalLanguage ||
+        "ar"
+    ).toLowerCase().startsWith("en") ? "en" : "ar";
+}
+    window.employeePortalLanguage = getLanguage();
+
+    function tr(value) {
+        return getLanguage() === "en"
+            ? (translations[value] || value)
+            : value;
+    }
+
+    // الاحتفاظ بالنص الأصلي حتى يمكن الرجوع للعربية عند تبديل اللغة
+    const originalTexts = new WeakMap();
+    const originalAttributes = new WeakMap();
+
+    function translatePage(root) {
+
+        const lang = getLanguage();
+
+        const walker = document.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode(node) {
+                    const parent = node.parentElement;
+
+                    if (!parent ||
+                        parent.closest("script, style, textarea, input")) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            }
+        );
+
+        let node;
+
+        while ((node = walker.nextNode())) {
+
+            const currentText = node.nodeValue;
+
+            if (!currentText.trim()) {
+                continue;
+            }
+
+            if (!originalTexts.has(node)) {
+                originalTexts.set(node, currentText);
+            }
+
+            const original = originalTexts.get(node);
+            const trimmed = original.trim();
+
+            if (lang === "en" && translations[trimmed]) {
+
+                node.nodeValue = original.replace(
+                    trimmed,
+                    translations[trimmed]
+                );
+
+            } else if (lang === "ar") {
+
+                node.nodeValue = original;
+            }
+        }
+
+        if (root.querySelectorAll) {
+
+            root.querySelectorAll("[title], [alt]").forEach(function (element) {
+
+                ["title", "alt"].forEach(function (attr) {
+
+                    if (!element.hasAttribute(attr)) {
+                        return;
+                    }
+
+                    let saved = originalAttributes.get(element);
+
+                    if (!saved) {
+                        saved = {};
+                        originalAttributes.set(element, saved);
+                    }
+
+                    if (saved[attr] === undefined) {
+                        saved[attr] = element.getAttribute(attr);
+                    }
+
+                    const original = saved[attr];
+
+                    element.setAttribute(
+                        attr,
+                        lang === "en"
+                            ? (translations[original] || original)
+                            : original
+                    );
+                });
+            });
+        }
+
+        if (root === document) {
+            document.title = lang === "en"
+                ? "Attendance Dashboard"
+                : "لوحة الحضور والانصراف";
+        }
+    }
+
+    window.attendanceTranslate = tr;
+    window.translateAttendancePage = translatePage;
+
+    function applyLanguage() {
+
+        const lang = getLanguage();
+
+        window.employeePortalLanguage = lang;
+
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        document.body.dir = lang === "ar" ? "rtl" : "ltr";
+
+        translatePage(document);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        applyLanguage();
+
+        // ترجمة العناصر التي تظهر لاحقًا دون تكرار الترجمة
+        const observer = new MutationObserver(function (mutations) {
+
+            mutations.forEach(function (mutation) {
+
+                if (mutation.type === "characterData") {
+
+                    const node = mutation.target;
+
+                    if (!originalTexts.has(node)) {
+                        originalTexts.set(node, node.nodeValue);
+                    }
+
+                    const original = originalTexts.get(node);
+                    const trimmed = original.trim();
+
+                    if (getLanguage() === "en" && translations[trimmed]) {
+                        node.nodeValue = original.replace(
+                            trimmed,
+                            translations[trimmed]
+                        );
+                    } else if (getLanguage() === "ar") {
+                        node.nodeValue = original;
+                    }
+                }
+
+                mutation.addedNodes.forEach(function (node) {
+
+                    if (node.nodeType === Node.TEXT_NODE) {
+
+                        if (!originalTexts.has(node)) {
+                            originalTexts.set(node, node.nodeValue);
+                        }
+
+                        const original = originalTexts.get(node);
+                        const trimmed = original.trim();
+
+                        if (getLanguage() === "en" && translations[trimmed]) {
+                            node.nodeValue = original.replace(
+                                trimmed,
+                                translations[trimmed]
+                            );
+                        }
+
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+
+                        translatePage(node);
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    });
+
+    // استقبال تغيير اللغة من بوابة الموظف
+    window.addEventListener("message", function (event) {
+
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+
+        if (!event.data ||
+            event.data.type !== "employee-portal-language") {
+            return;
+        }
+
+        const lang = event.data.language === "en" ? "en" : "ar";
+
+        localStorage.setItem("employee_portal_language", lang);
+        window.employeePortalLanguage = lang;
+
+        applyLanguage();
+    });
+
+})();
+</script>
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
     const form = document.getElementById("attendance-form");
@@ -803,52 +918,45 @@ document.addEventListener("DOMContentLoaded", function () {
     const manualLocationBtn =
         document.getElementById("manual-location-btn");
 
+    function currentLanguage() {
+        return window.employeePortalLanguage || "ar";
+    }
 
-    /* ============================= */
+    function translated(value) {
+        return window.attendanceTranslate
+            ? window.attendanceTranslate(value)
+            : value;
+    }
+
     /* الساعة */
-    /* ============================= */
-
     function updateClock() {
 
         const now = new Date();
 
-        const hours =
-            String(now.getHours()).padStart(2, "0");
-
-        const minutes =
-            String(now.getMinutes()).padStart(2, "0");
-
-        const seconds =
-            String(now.getSeconds()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        const seconds = String(now.getSeconds()).padStart(2, "0");
 
         document.getElementById("live-clock").textContent =
             hours + ":" + minutes + ":" + seconds;
     }
 
     updateClock();
-
     setInterval(updateClock, 1000);
 
-
-    /* ============================= */
     /* حالة GPS */
-    /* ============================= */
-
     function setGpsStatus(type, text, accuracy = null) {
 
-        gpsStatus.className =
-            "gps-status mb-3 " + type;
-
-        gpsStatusText.textContent = text;
+        gpsStatus.className = "gps-status mb-3 " + type;
+        gpsStatusText.textContent = translated(text);
 
         gpsAccuracy.textContent = "";
 
         if (accuracy !== null) {
-
             gpsAccuracy.textContent =
-                "دقة الموقع: " +
-                Math.round(accuracy) +
-                " متر";
+                translated("دقة الموقع:") + " " +
+                Math.round(accuracy) + " " +
+                translated("متر");
         }
 
         if (type === "success") {
@@ -877,11 +985,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
-    /* ============================= */
     /* الحصول على الموقع */
-    /* ============================= */
-
     function getLocation() {
 
         if (!navigator.geolocation) {
@@ -892,15 +996,10 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             button.disabled = true;
-
             return;
         }
 
-
-        setGpsStatus(
-            "loading",
-            "جاري تحديد موقعك..."
-        );
+        setGpsStatus("loading", "جاري تحديد موقعك...");
 
         button.disabled = true;
 
@@ -908,32 +1007,21 @@ document.addEventListener("DOMContentLoaded", function () {
             "fas fa-spinner fa-spin mb-2";
 
         buttonText.textContent =
-            "تحديد الموقع...";
-
+            currentLanguage() === "en"
+                ? "Locating..."
+                : "تحديد الموقع...";
 
         navigator.geolocation.getCurrentPosition(
 
             function (position) {
 
-                const latitude =
-                    position.coords.latitude;
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
 
-                const longitude =
-                    position.coords.longitude;
-
-                const accuracy =
-                    position.coords.accuracy;
-
-
-                latitudeInput.value =
-                    latitude;
-
-                longitudeInput.value =
-                    longitude;
-
-                accuracyInput.value =
-                    accuracy;
-
+                latitudeInput.value = latitude;
+                longitudeInput.value = longitude;
+                accuracyInput.value = accuracy;
 
                 setGpsStatus(
                     "success",
@@ -941,30 +1029,29 @@ document.addEventListener("DOMContentLoaded", function () {
                     accuracy
                 );
 
-
                 button.disabled = false;
 
                 buttonIcon.className =
                     "fas fa-fingerprint mb-2";
 
-
-                const action =
-                    document.getElementById(
-                        "attendance-action"
-                    ).value;
-
+                const action = document.getElementById(
+                    "attendance-action"
+                ).value;
 
                 if (action === "check_out") {
 
                     buttonText.textContent =
-                        "تسجيل الانصراف";
+                        currentLanguage() === "en"
+                            ? "Check Out"
+                            : "تسجيل الانصراف";
 
                 } else {
 
                     buttonText.textContent =
-                        "تسجيل الحضور";
+                        currentLanguage() === "en"
+                            ? "Check In"
+                            : "تسجيل الحضور";
                 }
-
             },
 
             function (error) {
@@ -973,19 +1060,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 longitudeInput.value = "";
                 accuracyInput.value = "";
 
-
                 button.disabled = true;
 
                 buttonIcon.className =
                     "fas fa-location-crosshairs mb-2";
 
                 buttonText.textContent =
-                    "تحديد الموقع";
+                    currentLanguage() === "en"
+                        ? "Get Location"
+                        : "تحديد الموقع";
 
-
-                let message =
-                    "تعذر تحديد موقعك.";
-
+                let message = "تعذر تحديد موقعك.";
 
                 if (error.code === 1) {
 
@@ -1003,12 +1088,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         "انتهت مهلة تحديد الموقع. حاول مرة أخرى.";
                 }
 
-
-                setGpsStatus(
-                    "danger",
-                    message
-                );
-
+                setGpsStatus("danger", message);
             },
 
             {
@@ -1019,110 +1099,55 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
-
-    /* ============================= */
     /* تحديد الموقع عند فتح الصفحة */
-    /* ============================= */
-
     getLocation();
 
-
-    /* ============================= */
     /* زر إعادة تحديد الموقع */
-    /* ============================= */
-
     if (manualLocationBtn) {
 
-        manualLocationBtn.addEventListener(
-            "click",
-            function () {
-
-                getLocation();
-
-            }
-        );
+        manualLocationBtn.addEventListener("click", function () {
+            getLocation();
+        });
     }
 
-
-    /* ============================= */
     /* إرسال الحضور */
-    /* ============================= */
+    form.addEventListener("submit", function (event) {
 
-    form.addEventListener(
-        "submit",
-        function (event) {
+        event.preventDefault();
 
-            event.preventDefault();
+        const latitude = latitudeInput.value;
+        const longitude = longitudeInput.value;
 
+        if (!latitude || !longitude) {
 
-            const latitude =
-                latitudeInput.value;
+            setGpsStatus(
+                "danger",
+                "يجب تحديد موقعك أولاً قبل تسجيل الحضور."
+            );
 
-            const longitude =
-                longitudeInput.value;
-
-            const accuracy =
-                accuracyInput.value;
-
-
-            if (!latitude || !longitude) {
-
-                setGpsStatus(
-                    "danger",
-                    "يجب تحديد موقعك أولاً قبل تسجيل الحضور."
-                );
-
-                getLocation();
-
-                return;
-            }
-
-
-            const action =
-                document.getElementById(
-                    "attendance-action"
-                ).value;
-
-
-            let confirmed = true;
-
-
-            if (action === "check_in") {
-
-                confirmed = confirm(
-                    "هل تريد تسجيل الحضور الآن؟"
-                );
-
-            } else {
-
-                confirmed = confirm(
-                    "هل تريد تسجيل الانصراف الآن؟"
-                );
-            }
-
-
-            if (!confirmed) {
-                return;
-            }
-
-
-            button.disabled = true;
-
-
-            buttonIcon.className =
-                "fas fa-spinner fa-spin mb-2";
-
-            buttonText.textContent =
-                "جاري التسجيل...";
-
-
-            form.submit();
-
+            getLocation();
+            return;
         }
-    );
+
+        const action = document.getElementById(
+            "attendance-action"
+        ).value;
+
+let confirmed = true;
+        button.disabled = true;
+
+        buttonIcon.className =
+            "fas fa-spinner fa-spin mb-2";
+
+        buttonText.textContent =
+            currentLanguage() === "en"
+                ? "Recording..."
+                : "جاري التسجيل...";
+
+        form.submit();
+    });
 
 });
-
 </script>
 
 {% endblock %}

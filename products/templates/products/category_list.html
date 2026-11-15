@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Category Management" %}
 {% endblock %}
@@ -182,14 +182,13 @@
 
                             <i class="fa-solid fa-folder"></i>
 
-                            <span
-                                class="category-name-text"
-                                title="{{ cat.name }}">
+<span
+    class="category-name-text"
+    title="{{ cat.name|category_display_name }}">
 
-                                {{ cat.name }}
+    {{ cat.name|category_display_name }}
 
-                            </span>
-
+</span>
                         </td>
 
 
@@ -255,7 +254,7 @@
 
                                             <i class="fa-solid fa-box"></i>
 
-                                            {{ product.name }}
+                                            {{ product|product_display_name }}
 
                                         </span>
 

@@ -1,8 +1,10 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block sidebar %}
 {% endblock sidebar %}
 {% block title %}
-طلبات المتجر
+{% trans "Store Orders" %}
+
 {% endblock %}
 
 
@@ -22,18 +24,20 @@
             <div>
 
                 <h2>
-                    🛒 إدارة الطلبات
+                    🛒 {% trans "Orders Management" %}
+
                 </h2>
 
                 <p>
-                    إدارة ومتابعة جميع طلبات المتجر وحالاتها
+                    {% trans "Manage and track all store orders and their statuses" %}
+
                 </p>
 
             </div>
 
             <div class="orders-header-badge">
 
-                📦 إجمالي الطلبات
+                📦 {% trans "Total Orders" %}
 
                 <strong>
                     {{ statistics.total }}
@@ -62,7 +66,7 @@
                 <div class="stat-content">
 
                     <span>
-                        كل الطلبات
+                        {% trans "All Orders" %}
                     </span>
 
                     <strong>
@@ -85,7 +89,7 @@
                 <div class="stat-content">
 
                     <span>
-                        بانتظار المراجعة
+                        {% trans "Pending Review" %}
                     </span>
 
                     <strong>
@@ -108,7 +112,7 @@
                 <div class="stat-content">
 
                     <span>
-                        مؤكد
+                        {% trans "Confirmed" %}
                     </span>
 
                     <strong>
@@ -131,7 +135,7 @@
                 <div class="stat-content">
 
                     <span>
-                        قيد التجهيز
+                        {% trans "Processing" %}
                     </span>
 
                     <strong>
@@ -154,7 +158,7 @@
                 <div class="stat-content">
 
                     <span>
-                        تم الشحن
+                        {% trans "Shipped" %}
                     </span>
 
                     <strong>
@@ -177,7 +181,7 @@
                 <div class="stat-content">
 
                     <span>
-                        تم التسليم
+                        {% trans "Delivered" %}
                     </span>
 
                     <strong>
@@ -202,7 +206,7 @@
 
             <div class="section-title-3d">
 
-                📋 قائمة طلبات المتجر
+                📋 {% trans "Store Orders List" %}
 
             </div>
 
@@ -218,12 +222,12 @@
                 <div class="filters-grid-3d">
 
 
-                    <!-- رقم الطلب -->
+                    <!-- {% trans "Order Number" %} -->
 
                     <div class="filter-item-3d">
 
                         <label>
-                            🛒 رقم الطلب
+                            🛒 {% trans "Order Number" %}
                         </label>
 
                         <div class="filter-input-box">
@@ -231,7 +235,7 @@
                             <input
                                 id="f_order"
                                 type="text"
-                                placeholder="رقم الطلب"
+                                placeholder="{% trans 'Order Number' %}"
                                 onkeyup="filterOrders()"
                             >
 
@@ -248,12 +252,12 @@
 
 
 
-                    <!-- العميل -->
+                    <!-- {% trans "Customer" %} -->
 
                     <div class="filter-item-3d">
 
                         <label>
-                            👤 العميل
+                            👤 {% trans "Customer" %}
                         </label>
 
                         <div class="filter-input-box">
@@ -261,7 +265,7 @@
                             <input
                                 id="f_customer"
                                 type="text"
-                                placeholder="اسم العميل"
+                                placeholder="{% trans "Customer Name" %}"
                                 onkeyup="filterOrders()"
                             >
 
@@ -278,12 +282,12 @@
 
 
 
-                    <!-- عدد المنتجات -->
+                    <!-- {% trans "Number of Products" %} -->
 
                     <div class="filter-item-3d">
 
                         <label>
-                            🛍️ عدد المنتجات
+                            🛍️ {% trans "Number of Products" %}
                         </label>
 
                         <div class="filter-input-box">
@@ -291,7 +295,7 @@
                             <input
                                 id="f_items"
                                 type="number"
-                                placeholder="العدد"
+                                placeholder="{% trans "Quantity" %}"
                                 onkeyup="filterOrders()"
                             >
 
@@ -308,12 +312,12 @@
 
 
 
-                    <!-- الإجمالي -->
+                    <!-- {% trans "Total" %} -->
 
                     <div class="filter-item-3d">
 
                         <label>
-                            💰 الإجمالي
+                            💰 {% trans "Total" %}
                         </label>
 
                         <div class="filter-input-box">
@@ -322,7 +326,7 @@
                                 id="f_total"
                                 type="number"
                                 step="0.01"
-                                placeholder="الإجمالي"
+                                placeholder="{% trans 'Total' %}"
                                 onkeyup="filterOrders()"
                             >
 
@@ -339,12 +343,12 @@
 
 
 
-                    <!-- طريقة الدفع -->
+                    <!-- {% trans "Payment Method" %} -->
 
                     <div class="filter-item-3d">
 
                         <label>
-                            💳 طريقة الدفع
+                            💳 {% trans "Payment Method" %}
                         </label>
 
                         <select
@@ -353,23 +357,23 @@
                         >
 
                             <option value="">
-                                كل طرق الدفع
+                                {% trans "All Payment Methods" %}
                             </option>
 
                             <option value="نقدي">
-                                نقدي
+                                {% trans "Cash" %}
                             </option>
 
                             <option value="بطاقة">
-                                بطاقة
+                                {% trans "Card" %}
                             </option>
 
                             <option value="تحويل بنكي">
-                                تحويل بنكي
+                                {% trans "Bank Transfer" %}
                             </option>
 
                             <option value="الدفع عند الاستلام">
-                                الدفع عند الاستلام
+                                {% trans "Cash on Delivery" %}
                             </option>
 
                         </select>
@@ -383,7 +387,7 @@
                     <div class="filter-item-3d">
 
                         <label>
-                            📦 حالة الطلب
+                            📦 {% trans "Order Status" %}
                         </label>
 
                         <select
@@ -392,49 +396,48 @@
                         >
 
                             <option value="">
-                                كل الحالات
+                                {% trans "All Statuses" %}
                             </option>
 
-                            <option value="بانتظار المراجعة">
-                                بانتظار المراجعة
-                            </option>
+<option value="بانتظار المراجعة">
+    {% trans "Pending Review" %}
+</option>
 
-                            <option value="مؤكد">
-                                مؤكد
-                            </option>
+<option value="مؤكد">
+    {% trans "Confirmed" %}
+</option>
 
-                            <option value="قيد التجهيز">
-                                قيد التجهيز
-                            </option>
+<option value="قيد التجهيز">
+    {% trans "Processing" %}
+</option>
 
-                            <option value="جاهز للاستلام">
-                                جاهز للاستلام
-                            </option>
+<option value="جاهز للاستلام">
+    {% trans "Ready for Pickup" %}
+</option>
 
-                            <option value="تم الشحن">
-                                تم الشحن
-                            </option>
+<option value="تم الشحن">
+    {% trans "Shipped" %}
+</option>
 
-                            <option value="تم التسليم">
-                                تم التسليم
-                            </option>
+<option value="تم التسليم">
+    {% trans "Delivered" %}
+</option>
 
-                            <option value="ملغي">
-                                ملغي
-                            </option>
-
+<option value="ملغي">
+    {% trans "Cancelled" %}
+</option>
                         </select>
 
                     </div>
 
 
 
-                    <!-- التاريخ -->
+                    <!-- {% trans "Date" %} -->
 
                     <div class="filter-item-3d">
 
                         <label>
-                            📅 التاريخ
+                            📅 {% trans "Date" %}
                         </label>
 
                         <div class="filter-input-box">
@@ -458,7 +461,7 @@
 
 
 
-                    <!-- زر البحث -->
+                    <!-- {% trans "Search" %} -->
 
                     <div class="filter-item-3d filter-search">
 
@@ -472,7 +475,7 @@
                             onclick="filterOrders()"
                         >
 
-                            🔍 بحث
+                            🔍 {% trans "Search" %}
 
                         </button>
 
@@ -499,35 +502,35 @@
                         <tr>
 
                             <th>
-                                🛒 رقم الطلب
+                                🛒 {% trans "Order Number" %}
                             </th>
 
                             <th>
-                                👤 العميل
+                                👤 {% trans "Customer" %}
                             </th>
 
                             <th>
-                                🛍️ المنتجات
+                                🛍️ {% trans "Products" %}
                             </th>
 
                             <th>
-                                💰 الإجمالي
+                                💰 {% trans "Total" %}
                             </th>
 
                             <th>
-                                💳 الدفع
+                                💳 {% trans "Payment" %}
                             </th>
 
                             <th>
-                                📦 الحالة
+                                📦 {% trans "Status" %}
                             </th>
 
                             <th>
-                                📅 التاريخ
+                                📅 {% trans "Date" %}
                             </th>
 
                             <th>
-                                ⚙️ إجراء
+                                ⚙️ {% trans "Action" %}
                             </th>
 
                         </tr>
@@ -610,7 +613,7 @@
                                     {{ order.total }}
 
                                     <small>
-                                        ر.س
+                                        SAR
                                     </small>
 
                                 </strong>
@@ -627,7 +630,7 @@
 
                                     <span class="payment-badge-3d">
 
-                                        {{ order.payment_method }}
+                                        {% trans order.payment_method.name %}
 
                                     </span>
 
@@ -649,7 +652,7 @@
 
                                 <span class="status-badge-table">
 
-                                    {{ order.get_status_display }}
+                                    {% trans order.get_status_display %}
 
                                 </span>
 
@@ -680,7 +683,7 @@
                                     href="{% url 'ecommerce:order_detail' store_slug=store.slug pk=order.id %}"
                                 >
 
-                                    👁 عرض التفاصيل
+                                    👁 {% trans "View Details" %}
 
                                 </a>
 
@@ -700,7 +703,7 @@
                                 class="empty-orders-3d"
                             >
 
-                                🛒 لا توجد طلبات حالياً
+                                🛒 {% trans "No orders available at the moment" %}
 
                             </td>
 
@@ -735,7 +738,7 @@
                     class="pagination-btn-3d"
                 >
 
-                    → السابق
+                    → {% trans "Previous" %}
 
                 </a>
 
@@ -745,13 +748,13 @@
 
             <span class="pagination-current-3d">
 
-                صفحة
+                {% trans "Page" %}
 
                 <strong>
                     {{ orders.number }}
                 </strong>
 
-                من
+                {% trans "of" %}
 
                 <strong>
                     {{ orders.paginator.num_pages }}
@@ -768,7 +771,7 @@
                     class="pagination-btn-3d"
                 >
 
-                    التالي ←
+                    {% trans "Next" %} ←
 
                 </a>
 
@@ -2005,7 +2008,7 @@ function filterOrders(){
 
 
 
-        /* رقم الطلب */
+        /* الطلب */
 
         if(
             order &&
@@ -2018,7 +2021,7 @@ function filterOrders(){
 
 
 
-        /* العميل */
+        /* {% trans "Customer" %} */
 
         if(
             customer &&
@@ -2031,7 +2034,7 @@ function filterOrders(){
 
 
 
-        /* عدد المنتجات */
+        /* {% trans "Products" %} */
 
         if(
             items &&
@@ -2044,7 +2047,7 @@ function filterOrders(){
 
 
 
-        /* الإجمالي */
+        /* {% trans "Total" %} */
 
         if(total){
 

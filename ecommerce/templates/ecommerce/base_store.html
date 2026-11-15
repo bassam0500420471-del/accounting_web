@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n store_translation %}
 
 <!DOCTYPE html>
 
@@ -14,7 +14,7 @@
 
 <title>
     {% block title %}
-        {{ store.name|default:"المتجر الإلكتروني" }}
+        {{ store.name|store_display_name|default:_("Online Store") }}
     {% endblock %}
 </title>
 
@@ -1263,7 +1263,7 @@ if (!header || !navbar || !main) {
 
 main.style.setProperty(
     "padding-top",
-    (headerHeight + navbarHeight - 90) + "px",
+    (headerHeight + navbarHeight) + "px",
     "important"
 );
     }

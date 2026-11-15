@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Point of Sale" %}
 {% endblock %}
@@ -745,15 +745,14 @@ main,
 
 <div class="pos-search-wrapper barcode-search-wrapper">
 
-    <input
-        type="text"
-        id="barcode-search"
-        class="form-control"
-        placeholder="امسح الباركود هنا"
-        autocomplete="off"
-        inputmode="numeric"
-    >
-
+<input
+    type="text"
+    id="barcode-search"
+    class="form-control"
+    placeholder="{% if CURRENT_LANGUAGE == 'ar' %}امسح الباركود هنا{% else %}Scan barcode here{% endif %}"
+    autocomplete="off"
+    inputmode="numeric"
+>
 </div>
 
             <!-- PRODUCT SEARCH -->
@@ -846,7 +845,7 @@ main,
 
                     <img
                         src="{{ cat.image.url }}"
-                        alt="{{ cat.name }}"
+                        alt="{{ cat.name|category_display_name }}"
                     >
 
                     {% else %}
@@ -858,7 +857,7 @@ main,
                     <div class="category-name">
 
                         <h6 class="mb-0">
-                            {{ cat.name }}
+                            {{ cat.name|category_display_name }}
                         </h6>
 
                     </div>
@@ -912,14 +911,13 @@ data-scale-code="{{ p.scale_code|default:'' }}"
 
                         <div class="product-info">
 
-                            <h6
-                                class="product-name"
-                                data-full-name="{{ p.get_name }}"
-                                style="font-size:13px; margin:2px 0;"
-                            >
-                                {{ p.get_name }}
-                            </h6>
-
+<h6
+    class="product-name"
+    data-full-name="{{ p.get_name }}"
+    style="font-size:13px; margin:2px 0;"
+>
+    {{ p|product_display_name }}
+</h6>
                             <p style="font-size:12px; margin:0;">
                                 {{ p.sale_price }}
                                 {% trans "SAR" %}
@@ -1108,7 +1106,9 @@ function loadInvoicesState(){
 
                 createInvoice(
                     Number(id),
-                    "فاتورة " + id,
+(document.documentElement.lang.startsWith("ar")
+    ? "فاتورة "
+    : "Invoice ") + id,
                     false
                 );
 
@@ -1428,10 +1428,9 @@ function createInvoice(
                             {% trans "Item" %}
                         </th>
 
-                        <th>
-                            الكمية
-                        </th>
-
+<th>
+    {% trans "Quantity" %}
+</th>
                         <th>
                             {% trans "Price" %}
                         </th>
@@ -3782,11 +3781,12 @@ function updateAllProductsButton(){
     }
 
 
-    if(allProductsShown){
+if(allProductsShown){
 
-        text.innerText =
-            "عرض أقل";
-
+    text.innerText =
+        document.documentElement.lang.startsWith("ar")
+            ? "عرض أقل"
+            : "Show Less";
 
         button.classList.remove(
             "btn-outline-primary"

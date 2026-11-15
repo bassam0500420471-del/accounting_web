@@ -1,5 +1,7 @@
 {% extends "layout/base.html" %}
-{% block title %}لوحة تحكم المتجر{% endblock %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% block title %}{% trans "لوحة تحكم المتجر" %}{% endblock %}
 
 {% block content %}
 
@@ -7,15 +9,15 @@
 <div class="store-dashboard-header">
 
     <!-- رابط المتجر في اليسار -->
-    <div class="store-link-panel" dir="rtl">
+    <div class="store-link-panel" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
         <div class="store-link-icon">🏪</div>
 
         <div class="store-link-content">
 
             <div class="store-link-title-row">
-                <h3>رابط متجرك الإلكتروني</h3>
-                <span class="store-link-badge">رابط المشاركة</span>
+                <h3>{% trans "رابط متجرك الإلكتروني" %}</h3>
+                <span class="store-link-badge">{% trans "رابط المشاركة" %}</span>
             </div>
 
             {% if store and store.slug %}
@@ -28,7 +30,7 @@
                     rel="noopener noreferrer"
                     class="store-public-link"
                     id="storePublicLink"
-                    title="فتح المتجر الإلكتروني"
+                    title="{% trans "فتح المتجر الإلكتروني" %}"
                 >
                     <span class="store-link-chain">↗</span>
                     <span class="store-link-url">{{ request.scheme }}://{{ request.get_host }}{% url 'ecommerce:home' store_slug=store.slug %}</span>
@@ -40,13 +42,13 @@
                     id="copyStoreLinkButton"
                 >
                     <span class="store-copy-icon">▢</span>
-                    <span>نسخ الرابط</span>
+                    <span>{% trans "نسخ الرابط" %}</span>
                 </button>
 
             </div>
 
             <p class="store-link-help">
-                شارك رابط متجرك مع عملائك ليتصفحوا المنتجات ويطلبوا مباشرة.
+                {% trans "شارك رابط متجرك مع عملائك ليتصفحوا المنتجات ويطلبوا مباشرة." %}
             </p>
 
             <div
@@ -59,7 +61,7 @@
             {% else %}
 
             <p class="store-link-help">
-                رابط المتجر غير متاح حاليًا.
+                {% trans "رابط المتجر غير متاح حاليًا." %}
             </p>
 
             {% endif %}
@@ -69,13 +71,12 @@
 
 
     <!-- عنوان لوحة التحكم في اليمين -->
-    <div class="store-dashboard-heading">
-
+<div class="store-dashboard-heading" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
         <div class="store-heading-icon">🛒</div>
 
         <div class="store-heading-text">
-            <h2>لوحة تحكم المتجر الإلكتروني</h2>
-            <p>إدارة المنتجات والطلبات والعملاء وإعدادات المتجر</p>
+            <h2>{% trans "لوحة تحكم المتجر الإلكتروني" %}</h2>
+            <p>{% trans "إدارة المنتجات والطلبات والعملاء وإعدادات المتجر" %}</p>
         </div>
 
     </div>
@@ -90,8 +91,8 @@
        class="store-card products-card">
         <div class="card-icon">📦</div>
         <div>
-            <h4>المنتجات</h4>
-            <span>إدارة المنتجات والتصنيفات</span>
+            <h4>{% trans "المنتجات" %}</h4>
+            <span>{% trans "إدارة المنتجات والتصنيفات" %}</span>
         </div>
     </a>
 
@@ -99,8 +100,8 @@
        class="store-card orders-card">
         <div class="card-icon">🛒</div>
         <div>
-            <h4>الطلبات</h4>
-            <span>متابعة طلبات العملاء</span>
+            <h4>{% trans "الطلبات" %}</h4>
+            <span>{% trans "متابعة طلبات العملاء" %}</span>
         </div>
     </a>
 
@@ -108,8 +109,8 @@
        class="store-card customers-card">
         <div class="card-icon">👥</div>
         <div>
-            <h4>العملاء</h4>
-            <span>بيانات عملاء المتجر</span>
+            <h4>{% trans "العملاء" %}</h4>
+            <span>{% trans "بيانات عملاء المتجر" %}</span>
         </div>
     </a>
 
@@ -117,8 +118,8 @@
        class="store-card reports-card">
         <div class="card-icon">📊</div>
         <div>
-            <h4>التقارير</h4>
-            <span>المبيعات والإحصائيات</span>
+            <h4>{% trans "التقارير" %}</h4>
+            <span>{% trans "المبيعات والإحصائيات" %}</span>
         </div>
     </a>
 
@@ -128,8 +129,8 @@
        rel="noopener noreferrer">
         <div class="card-icon">🛍️</div>
         <div>
-            <h4>عرض المتجر</h4>
-            <span>شاهد متجرك كما يراه العميل</span>
+            <h4>{% trans "عرض المتجر" %}</h4>
+            <span>{% trans "شاهد متجرك كما يراه العميل" %}</span>
         </div>
     </a>
 
@@ -137,8 +138,8 @@
        class="store-card settings-card">
         <div class="card-icon">⚙️</div>
         <div>
-            <h4>إعدادات المتجر</h4>
-            <span>التصميم والدفع والشحن</span>
+            <h4>{% trans "إعدادات المتجر" %}</h4>
+            <span>{% trans "التصميم والدفع والشحن" %}</span>
         </div>
     </a>
 
@@ -641,6 +642,23 @@ html[dir="rtl"] .store-card {
         transition: none;
     }
 }
+/* English direction */
+html[dir="ltr"] .store-card {
+    direction: ltr;
+    text-align: left;
+    border-right: 0;
+    border-left: 6px solid #ddd;
+}
+
+html[dir="ltr"] .store-link-help,
+html[dir="ltr"] .store-copy-message {
+    text-align: left;
+}
+
+html[dir="ltr"] .store-dashboard-heading {
+    direction: ltr;
+    text-align: left;
+}
 </style>
 
 
@@ -686,7 +704,7 @@ html[dir="rtl"] .store-card {
         }
 
         if (!copied) {
-            throw new Error("تعذر نسخ الرابط");
+            throw new Error("{% trans 'تعذر نسخ الرابط' %}");
         }
     }
 
@@ -697,10 +715,10 @@ html[dir="rtl"] .store-card {
         try {
             await copyText(url);
 
-            showMessage("✓ تم نسخ رابط المتجر بنجاح", "is-success");
+            showMessage("✓ {% trans 'تم نسخ رابط المتجر بنجاح' %}", "is-success");
 
             const originalText = copyButton.innerHTML;
-            copyButton.innerHTML = "<span>✓</span><span>تم النسخ</span>";
+            copyButton.innerHTML = "<span>✓</span><span>{% trans 'تم النسخ' %}</span>";
 
             window.setTimeout(function () {
                 copyButton.innerHTML = originalText;
@@ -708,7 +726,7 @@ html[dir="rtl"] .store-card {
 
         } catch (error) {
             showMessage(
-                "تعذر النسخ تلقائيًا. حدّد الرابط وانسخه يدويًا.",
+                "{% trans 'تعذر النسخ تلقائيًا. حدّد الرابط وانسخه يدويًا.' %}",
                 "is-error"
             );
         } finally {

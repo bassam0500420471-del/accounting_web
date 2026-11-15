@@ -1,8 +1,10 @@
 {% extends "ecommerce/base_store.html" %}
-{% load static %}
+{% load static i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
 {% block title %}
-    العملاء
+    {% trans "Customers" %}
+
 {% endblock %}
 
 {% block content %}
@@ -15,7 +17,7 @@
 
     .customers-page {
 
-        direction: rtl;
+        direction: {% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %};
 
         background: #eeeeee;
 
@@ -129,7 +131,7 @@
 
         padding: 15px;
 
-        text-align: right;
+        text-align: start;
 
         border-bottom: 2px solid #dddddd;
 
@@ -199,7 +201,7 @@
 
         direction: ltr;
 
-        text-align: right;
+        text-align: start;
 
     }
 
@@ -313,13 +315,13 @@
 
             <h1 class="customers-title">
 
-                👥 العملاء
+                👥 {% trans "Customers" %}
 
             </h1>
 
             <div class="customers-count">
 
-                إجمالي العملاء:
+                {% trans "Total Customers" %}:
                 {{ customers|length }}
 
             </div>
@@ -346,23 +348,23 @@
                             </th>
 
                             <th>
-                                العميل
+                                {% trans "Customer" %}
                             </th>
 
                             <th>
-                                البريد الإلكتروني
+                                {% trans "Email Address" %}
                             </th>
 
                             <th>
-                                عدد الطلبات
+                                {% trans "Number of Orders" %}
                             </th>
 
                             <th>
-                                إجمالي المشتريات
+                                {% trans "Total Purchases" %}
                             </th>
 
                             <th>
-                                آخر طلب
+                                {% trans "Last Order" %}
                             </th>
 
                         </tr>
@@ -421,7 +423,7 @@
 
                                         {% else %}
 
-                                            لا يوجد بريد
+                                            {% trans "No email" %}
 
                                         {% endif %}
 
@@ -438,7 +440,7 @@
 
                                     </span>
 
-                                    طلب
+                                    {% trans "Orders" %}
 
                                 </td>
 
@@ -451,7 +453,7 @@
 
                                     </span>
 
-                                    ريال
+                                    {% trans "SAR" %}
 
                                 </td>
 
@@ -492,13 +494,13 @@
 
                 <div class="empty-customers-title">
 
-                    لا يوجد عملاء
+                    {% trans "No Customers" %}
 
                 </div>
 
                 <div class="empty-customers-text">
 
-                    لا توجد طلبات مرتبطة بعملاء في هذا المتجر حتى الآن.
+                    {% trans "There are no customer orders in this store yet." %}
 
                 </div>
 

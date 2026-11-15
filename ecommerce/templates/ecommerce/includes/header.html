@@ -1,3 +1,4 @@
+{% load i18n store_translation %}
 <!-- ==========================================================
      TOP ANNOUNCEMENT BAR
 ========================================================== -->
@@ -15,13 +16,13 @@
         {% for announcement in store.announcements.all %}
 
             <div class="announcement-item {% if forloop.first %}active{% endif %}">
-                📢 {{ announcement.text }}
+                📢 {{ announcement.text|store_translate }}
             </div>
 
         {% empty %}
 
             <div class="announcement-item active">
-                📢 لا توجد إعلانات
+                📢 {% trans "No announcements" %}
             </div>
 
         {% endfor %}
@@ -60,26 +61,20 @@
                                 class="store-logo-img"
                             >
 
-                        {% endif %}
+{% endif %}
 
 <span class="store-name">
 
-    <span class="store-type">متجر</span>
+    <span class="store-type">{% trans "Store" %}</span>
 
     <span class="store-title">
-        {% if store.name|slice:":5" == "متجر " %}
-            {{ store.name|slice:"5:" }}
-        {% else %}
-            {{ store.name }}
-        {% endif %}
+        {{ store.name|store_display_name }}
     </span>
 
 </span>
-                    </a>
+</a>
 
-                </div>
-
-
+</div>
                 <!-- ==================================================
                      Search
                 =================================================== -->
@@ -107,7 +102,7 @@
                         <a
                             href="{% url 'ecommerce:cart' store.slug %}"
                             class="action-item"
-                            title="السلة"
+                            title="{% trans "Cart" %}"
                         >
 
                             <div class="action-icon-wrapper">
@@ -124,7 +119,8 @@
                             </div>
 
                             <span class="action-label">
-                                السلة
+                                {% trans "Cart" %}
+
                             </span>
 
                         </a>
@@ -137,7 +133,7 @@
                         <a
                             href="{% url 'ecommerce:wishlist' store.slug %}"
                             class="action-item"
-                            title="المفضلة"
+                            title="{% trans "Wishlist" %}"
                         >
 
                             <div class="action-icon-wrapper">
@@ -154,7 +150,8 @@
                             </div>
 
                             <span class="action-label">
-                                المفضلة
+                                {% trans "Wishlist" %}
+
                             </span>
 
                         </a>
@@ -169,7 +166,7 @@
                             <a
                                 href="{% url 'ecommerce:account' store.slug %}"
                                 class="action-item"
-                                title="حسابي"
+                                title="{% trans "My Account" %}"
                             >
 
                                 <div class="action-icon-wrapper">
@@ -179,7 +176,8 @@
                                 </div>
 
                                 <span class="action-label">
-                                    حسابي
+                                    {% trans "My Account" %}
+
                                 </span>
 
                             </a>
@@ -189,7 +187,7 @@
                             <a
                                 href="{% url 'ecommerce:customer_login' store.slug %}"
                                 class="action-item"
-                                title="تسجيل دخول العميل"
+                                title="{% trans "Customer Login" %}"
                             >
 
                                 <div class="action-icon-wrapper">
@@ -199,7 +197,8 @@
                                 </div>
 
                                 <span class="action-label">
-                                    حسابي
+                                        {% trans "Customer Login" %}
+
                                 </span>
 
                             </a>
@@ -1278,25 +1277,32 @@ min-height: 75px !important;
     }
 
 
-    html.mobile-store-device .store-actions .action-label {
+html.mobile-store-device .store-actions .action-label {
 
-        display: block !important;
+    display: block !important;
 
-        width: auto !important;
-        min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
 
-        margin: 0 !important;
-        padding: 0 !important;
+    min-width: 0 !important;
 
-        font-size: 38px !important;
+    margin: 0 !important;
+    padding: 0 2px !important;
 
-        font-weight: 900 !important;
+    box-sizing: border-box !important;
 
-        line-height: 1.1 !important;
+    font-size: 24px !important;
 
-        white-space: nowrap !important;
-    }
+    font-weight: 900 !important;
 
+    line-height: 1.3 !important;
+
+    text-align: center !important;
+
+    white-space: normal !important;
+
+    overflow-wrap: break-word !important;
+}
 
     html.mobile-store-device .store-actions .action-count {
 

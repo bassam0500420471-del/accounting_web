@@ -1,10 +1,12 @@
 {% extends "layout/base.html" %}
-
+{% load i18n %}
+{% load store_translation %}
 {% block sidebar %}
 {% endblock sidebar %}
 
 {% block title %}
-إدارة منتجات المتجر
+{% trans "Store Products Management" %}
+
 {% endblock %}
 
 {% block content %}
@@ -35,7 +37,7 @@
    ========================================================== */
 
 .store-products-page {
-    direction: rtl;
+        direction: inherit;
     padding: 25px;
     background: #eeeeee;
     min-height: calc(100vh - 100px);
@@ -1259,7 +1261,8 @@
 </style>
 
 
-<div class="store-products-page">
+<div class="store-products-page"
+     dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
 
     <!-- ======================================================
@@ -1269,11 +1272,11 @@
     <div class="products-header">
 
         <h2>
-            🛒 إدارة منتجات المتجر
+            🛒 {% trans "Store Products Management" %}
         </h2>
 
         <p>
-            التحكم في المنتجات والتصنيفات والأقسام الخاصة بالمتجر
+{% trans "Manage store products, categories and special sections" %}
         </p>
 
     </div>
@@ -1287,7 +1290,7 @@
 
 
         <!-- ==================================================
-             العروض
+             {% trans "Offers" %}
              ================================================== -->
 
         <div class="special-section">
@@ -1295,7 +1298,7 @@
             <div class="special-section-header">
 
                 <h3>
-                    🏷️ العروض
+    🏷️ {% trans "Offers" %}
                 </h3>
 
                 <button
@@ -1327,7 +1330,7 @@
                         </button>
 
                         <div class="special-product-name">
-                            {{ item.product.get_name }}
+                            {{ item.product                |store_product_name }}
                         </div>
 
                     </div>
@@ -1336,7 +1339,7 @@
 
                     <div class="special-empty">
 
-                        لا توجد منتجات في العروض
+                        {% trans "No products in offers" %}
 
                     </div>
 
@@ -1348,7 +1351,7 @@
 
 
         <!-- ==================================================
-             المنتجات المميزة
+             {% trans "Featured Products" %}
              ================================================== -->
 
         <div class="special-section">
@@ -1356,7 +1359,8 @@
             <div class="special-section-header">
 
                 <h3>
-                    ⭐ المنتجات المميزة
+                    ⭐ {% trans "Featured Products" %}
+
                 </h3>
 
                 <button
@@ -1388,7 +1392,7 @@
                         </button>
 
                         <div class="special-product-name">
-                            {{ item.product.get_name }}
+                            {{ item.product                |store_product_name }}
                         </div>
 
                     </div>
@@ -1397,7 +1401,7 @@
 
                     <div class="special-empty">
 
-                        لا توجد منتجات مميزة
+                        {% trans "No featured products" %}
 
                     </div>
 
@@ -1409,7 +1413,7 @@
 
 
         <!-- ==================================================
-             وصل حديثًا
+             {% trans "New Arrivals" %}
              ================================================== -->
 
         <div class="special-section">
@@ -1417,7 +1421,8 @@
             <div class="special-section-header">
 
                 <h3>
-                    🆕 وصل حديثًا
+                    🆕 {% trans "New Arrivals" %}
+
                 </h3>
 
                 <button
@@ -1449,7 +1454,7 @@
                         </button>
 
                         <div class="special-product-name">
-                            {{ item.product.get_name }}
+                            {{ item.product                |store_product_name }}
                         </div>
 
                     </div>
@@ -1458,7 +1463,7 @@
 
                     <div class="special-empty">
 
-                        لا توجد منتجات في هذا القسم
+                        {% trans "No products in this section" %}
 
                     </div>
 
@@ -1497,7 +1502,7 @@
 
                             📁
 
-                            {{ item.category.name }}
+                            {{ item.category                |store_category_name }}
 
                         </h3>
 
@@ -1506,7 +1511,7 @@
 
                             {{ item.products|length }}
 
-                            منتج
+                            {% trans "Product" %}
 
                         </span>
 
@@ -1564,7 +1569,7 @@
 
                                     <img
                                         src="{{ item_product.product.image.url }}"
-                                        alt="{{ item_product.product.get_name }}"
+                                        alt="{{ item_product.product                |store_product_name }}"
                                     >
 
                                 {% else %}
@@ -1583,9 +1588,9 @@
 
                             <div
                                 class="product-name"
-                                title="{{ item_product.product.get_name }}"
+                                title="{{ item_product.product                |store_product_name }}"
                             >
-                                {{ item_product.product.get_name }}
+                                {{ item_product.product                |store_product_name }}
                             </div>
 
 
@@ -1600,13 +1605,13 @@
                                     <!-- السعر الأصلي -->
 
                                     <div class="old-price">
-                                        {{ item_product.product.sale_price }} ريال
+                                        {{ item_product.product.sale_price }} {% trans "SAR" %}
                                     </div>
 
                                     <!-- سعر العرض -->
 
                                     <div class="offer-price">
-                                        {{ item_product.offer_price }} ريال
+                                        {{ item_product.offer_price }} {% trans "SAR" %}
                                     </div>
 
                                     <!-- نسبة الخصم -->
@@ -1614,7 +1619,7 @@
                                     {% if item_product.discount_percentage %}
 
                                         <div class="discount-percentage">
-                                            خصم {{ item_product.discount_percentage }}%
+                                            {% trans "Discount" %} {{ item_product.discount_percentage }}%
                                         </div>
 
                                     {% endif %}
@@ -1623,7 +1628,7 @@
 
                                     <!-- السعر العادي -->
 
-                                    {{ item_product.product.sale_price }} ريال
+                                    {{ item_product.product.sale_price }} {% trans "SAR" %}
 
                                 {% endif %}
 
@@ -1636,7 +1641,7 @@
 
 
                                 <span>
-                                    ظهور المنتج
+                                    {% trans "Product Visibility" %}
                                 </span>
 
 
@@ -1667,7 +1672,7 @@
 
                         <div class="special-empty">
 
-                            لا توجد منتجات في هذا التصنيف.
+                            {% trans "No products in this category." %}
 
                         </div>
 
@@ -1688,7 +1693,7 @@
 
                 <div class="special-empty">
 
-                    لا توجد تصنيفات للمنتجات.
+                    {% trans "No product categories." %}
 
                 </div>
 
@@ -1702,7 +1707,7 @@
 
 
     <!-- ======================================================
-         منتجات بدون تصنيف
+         {% trans "Uncategorized Products" %}
          ====================================================== -->
 
     {% if uncategorized_products %}
@@ -1715,7 +1720,7 @@
                 <div class="category-title">
 
                     <h3>
-                        📦 منتجات بدون تصنيف
+                        📦 {% trans "Uncategorized Products" %}
                     </h3>
 
                 </div>
@@ -1743,7 +1748,7 @@
 
                                 <img
                                     src="{{ item_product.product.image.url }}"
-                                    alt="{{ item_product.product.get_name }}"
+                                    alt="{{ item_product.product                |store_product_name }}"
                                 >
 
                             {% else %}
@@ -1759,9 +1764,9 @@
 
                         <div
                             class="product-name"
-                            title="{{ item_product.product.get_name }}"
+                            title="{{ item_product.product                |store_product_name }}"
                         >
-                            {{ item_product.product.get_name }}
+                            {{ item_product.product                |store_product_name }}
                         </div>
 
 
@@ -1775,7 +1780,8 @@
                         <div class="product-controls">
 
                             <span>
-                                ظهور المنتج
+                                {% trans "Product Visibility" %}
+
                             </span>
 
 
@@ -1815,7 +1821,7 @@
 
 
 <!-- ==========================================================
-     نافذة اختيار التصنيف
+{% trans "Select Category" %}
      ========================================================== -->
 
 <div
@@ -1830,7 +1836,8 @@
         <div class="modal-header">
 
             <h3 id="modalTitle">
-                اختيار التصنيف
+                {% trans "Select Category" %}
+
             </h3>
 
 
@@ -1866,13 +1873,14 @@
                         <br>
 
                         <strong>
-                            {{ item.category.name }}
+                            {{ item.category                |store_category_name }}
                         </strong>
 
                         <br>
 
                         <small>
-                            {{ item.products|length }} منتج
+                            {{ item.products|length }} {% trans "Product" %}
+
                         </small>
 
                     </div>
@@ -1894,7 +1902,7 @@
 
 
 <!-- ==========================================================
-     نافذة منتجات التصنيف
+{% trans "Category Products" %}
      ========================================================== -->
 
 <div
@@ -1909,7 +1917,8 @@
         <div class="modal-header">
 
             <h3 id="categoryProductsModalTitle">
-                منتجات التصنيف
+                {% trans "Category Products" %}
+
             </h3>
 
 
@@ -1932,7 +1941,7 @@
                 class="back-to-categories"
                 onclick="backToCategories()"
             >
-                ← الرجوع للتصنيفات
+                ← {% trans "Back to Categories" %}
             </button>
 
 
@@ -1942,7 +1951,7 @@
 
                 <div class="products-loading">
 
-                    اختر تصنيفًا لعرض المنتجات
+                    {% trans "Select a category to view products" %}
 
                 </div>
 
@@ -1956,7 +1965,30 @@
 
 
 </div>
-
+<script>
+const STORE_PRODUCTS_I18N = {
+    selectCategory: "{% trans 'Select Category'|escapejs %}",
+    selectOffersCategory: "{% trans 'Select a category for offers'|escapejs %}",
+    selectFeaturedCategory: "{% trans 'Select a category for featured products'|escapejs %}",
+    selectNewCategory: "{% trans 'Select a category for new arrivals'|escapejs %}",
+    loading: "{% trans 'Loading products...'|escapejs %}",
+    loadError: "{% trans 'An error occurred while loading products.'|escapejs %}",
+    noProducts: "{% trans 'No products in this category.'|escapejs %}",
+    saveProducts: "{% trans 'Save Products to Section'|escapejs %}",
+    saving: "{% trans 'Saving...'|escapejs %}",
+    selectOneProduct: "{% trans 'Please select at least one product.'|escapejs %}",
+    sectionNotSelected: "{% trans 'No section has been selected.'|escapejs %}",
+    saveError: "{% trans 'An error occurred while saving.'|escapejs %}",
+    connectionError: "{% trans 'A server connection error occurred.'|escapejs %}",
+    removeConfirm: "{% trans 'Do you want to remove this product from this section?'|escapejs %}",
+    removeError: "{% trans 'Could not remove the product from the section.'|escapejs %}",
+    updateProductError: "{% trans 'Could not update the product.'|escapejs %}",
+    updateCategoryError: "{% trans 'Could not update the category.'|escapejs %}",
+    productUpdateError: "{% trans 'An error occurred while updating the product.'|escapejs %}",
+    categoryUpdateError: "{% trans 'An error occurred while updating the category.'|escapejs %}",
+    categoryProducts: "{% trans 'Category Products'|escapejs %}"
+};
+</script>
 
 <script>
 
@@ -2029,36 +2061,31 @@ function openProductSelector(section) {
         );
 
 
-    if (section === "offer") {
+if (section === "offer") {
 
-        title.textContent =
-            "اختيار تصنيف للعروض";
+    title.textContent =
+        STORE_PRODUCTS_I18N.selectOffersCategory;
 
-    }
+}
 
-    else if (section === "featured") {
+else if (section === "featured") {
 
-        title.textContent =
-            "اختيار تصنيف للمنتجات المميزة";
+    title.textContent =
+        STORE_PRODUCTS_I18N.selectFeaturedCategory;
 
-    }
+}
 
-    else if (section === "new") {
+else if (section === "new") {
 
-        title.textContent =
-            "اختيار تصنيف للمنتجات الجديدة";
+    title.textContent =
+        STORE_PRODUCTS_I18N.selectNewCategory;
 
-    }
+}
 
-    else {
+else {
 
-        title.textContent =
-            "اختيار التصنيف";
-
-    }
-
-
-    modal.classList.add("show");
+    title.textContent =
+        STORE_PRODUCTS_I18N.selectCategory;
 
 }
 
@@ -2153,7 +2180,7 @@ function loadCategoryProducts(
 
         <div class="products-loading">
 
-            جاري تحميل المنتجات...
+            ${STORE_PRODUCTS_I18N.loading}
 
         </div>
 
@@ -2220,7 +2247,7 @@ function loadCategoryProducts(
 
                 <div class="special-empty">
 
-                    لا توجد منتجات في هذا التصنيف.
+                    {% trans "No products in this category." %}
 
                 </div>
 
@@ -2387,7 +2414,7 @@ function loadCategoryProducts(
 
 
         saveButton.textContent =
-            "حفظ المنتجات في القسم";
+            STORE_PRODUCTS_I18N.saveProducts;
 
 
         saveButton.addEventListener(

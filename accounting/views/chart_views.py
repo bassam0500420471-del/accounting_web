@@ -1,9 +1,9 @@
+
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.utils.translation import get_language, gettext as _
-
+from django.utils.translation import get_language, gettext
 from accounting.models import Account
-from accounts.models import Company, UserProfile
+from accounts.models import UserProfile
 
 
 def get_request_company(request):
@@ -27,6 +27,7 @@ def get_request_company(request):
 
     return None
 
+
 # ==================================================
 # 🌳 صفحة شجرة الحسابات
 # ==================================================
@@ -37,12 +38,16 @@ def chart_tree_page(request):
 # ==================================================
 # 🌳 API شجرة الحسابات (jsTree)
 # ==================================================
+
 def chart_tree_api(request):
     company = get_request_company(request)
     parent_id = request.GET.get("id")
 
     if not company:
         return JsonResponse([], safe=False)
+
+    language = (get_language() or "ar").lower()
+    is_english = language.startswith("en")
 
     # جلب الحسابات حسب المستوى
     if parent_id and parent_id != "#":
@@ -58,9 +63,6 @@ def chart_tree_api(request):
             is_active=True
         ).order_by("code")
 
-    lang = get_language()
-    is_ar = lang == "ar"
-
     data = []
 
     for account in accounts:
@@ -70,21 +72,16 @@ def chart_tree_api(request):
             is_active=True
         ).exists()
 
-        # الاسم الأصلي
-        name = account.name
-
-        # ترجمة الأسماء الأساسية
-        mapping = {
-            "مركز التكلفة": _("Cost Center"),
-            "شجرة مركز التكلفة": _("Cost Center Tree"),
-        }
-
-        if not is_ar:
-            name = mapping.get(account.name, account.name)
-
+        # اختيار اسم الحساب حسب اللغة
+        if is_english and account.name_en:
+            name = account.name_en
+        else:
+            # ترجمة أسماء الحسابات النظامية عبر نظام Django المركزي
+            name = gettext(account.name)
         data.append({
             "id": str(account.id),
             "text": f"{account.code} - {name}",
+            "code": account.code,
             "children": has_children
         })
 

@@ -1,10 +1,10 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
+{% get_current_language as CURRENT_LANGUAGE %}
 {% block title %}
-    إدارة طرق الدفع
+    {% trans "إدارة طرق الدفع" %}
 {% endblock %}
-
 {% block content %}
 
 <div class="container-fluid payment-methods-page mt-4">
@@ -15,19 +15,18 @@
         <div class="page-header">
 
             <div>
-                <h3>
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-                    إدارة طرق الدفع
-                </h3>
+<h3>
+    <i class="fa-solid fa-money-bill-transfer"></i>
+    {% trans "إدارة طرق الدفع" %}
+</h3>
 
-                <p>عرض وإدارة طرق الدفع والحسابات المحاسبية المرتبطة بها</p>
+<p>{% trans "عرض وإدارة طرق الدفع والحسابات المحاسبية المرتبطة بها" %}</p>
             </div>
 
-            <a href="{% url 'pos:pos_home' %}" class="add-btn">
-                <i class="fa-solid fa-arrow-right"></i>
-                العودة إلى نقاط البيع
-            </a>
-
+<a href="{% url 'pos:pos_home' %}" class="add-btn">
+    <i class="fa-solid fa-arrow-right"></i>
+    {% trans "العودة إلى نقاط البيع" %}
+</a>
         </div>
 
         {% if messages %}
@@ -38,6 +37,7 @@
             {% endfor %}
         {% endif %}
 
+
         <!-- تفاصيل طريقة الدفع -->
         {% if page_mode == "detail" %}
 
@@ -45,16 +45,16 @@
 
                 <h4>
                     <i class="fa-solid fa-circle-info"></i>
-                    تفاصيل طريقة الدفع
+                    {% trans "تفاصيل طريقة الدفع" %}
                 </h4>
 
                 <div class="detail-row">
-                    <strong>اسم طريقة الدفع</strong>
-                    <span>{{ payment_method.name }}</span>
+                    <strong>{% trans "اسم طريقة الدفع" %}</strong>
+                    <span>{% translate payment_method.name %}</span>
                 </div>
 
                 <div class="detail-row">
-                    <strong>رقم الحساب</strong>
+                    <strong>{% trans "رقم الحساب" %}</strong>
                     <span>
                         {% if payment_method.account %}
                             {{ payment_method.account.code|default:"—" }}
@@ -65,12 +65,12 @@
                 </div>
 
                 <div class="detail-row">
-                    <strong>الحساب المحاسبي</strong>
+                    <strong>{% trans "الحساب المحاسبي" %}</strong>
                     <span>
                         {% if payment_method.account %}
-                            {{ payment_method.account.name }}
+                            {% translate payment_method.account.name %}
                         {% else %}
-                            غير مرتبط بحساب
+                            {% trans "غير مرتبط بحساب" %}
                         {% endif %}
                     </span>
                 </div>
@@ -79,12 +79,12 @@
                     <a class="add-btn"
                        href="{% url 'pos:payment_method_edit' payment_method.pk %}">
                         <i class="fa-solid fa-pen"></i>
-                        تعديل
+                        {% trans "تعديل" %}
                     </a>
 
                     <a class="secondary-btn"
                        href="{% url 'pos:payment_methods_list' %}">
-                        العودة للقائمة
+                        {% trans "العودة للقائمة" %}
                     </a>
                 </div>
 
@@ -97,14 +97,14 @@
 
                 <h4>
                     <i class="fa-solid fa-pen-to-square"></i>
-                    تعديل طريقة الدفع
+                    {% trans "تعديل طريقة الدفع" %}
                 </h4>
 
                 <form method="post" class="payment-edit-form">
                     {% csrf_token %}
 
                     <label for="payment-method-name">
-                        اسم طريقة الدفع
+                        {% trans "اسم طريقة الدفع" %}
                     </label>
 
                     <input
@@ -116,36 +116,36 @@
                         required
                     >
 
-                    <label>الحساب المحاسبي المرتبط</label>
+                    <label>{% trans "الحساب المحاسبي المرتبط" %}</label>
 
-                    <div class="account-info">
-                        {% if payment_method.account %}
-                            {{ payment_method.account.code|default:"—" }}
-                            - {{ payment_method.account.name }}
-                        {% else %}
-                            لا يوجد حساب مرتبط
-                        {% endif %}
-                    </div>
-
+<div class="account-info">
+    {% if payment_method.account %}
+        {{ payment_method.account.code|default:"—" }}
+        - {% translate payment_method.account.name %}
+    {% else %}
+        {% trans "لا يوجد حساب مرتبط" %}
+    {% endif %}
+</div>
                     <p class="edit-note">
-                        يتم الحفاظ على الحساب المحاسبي الحالي لضمان سلامة القيود السابقة.
+                        {% trans "يتم الحفاظ على الحساب المحاسبي الحالي لضمان سلامة القيود السابقة." %}
                     </p>
 
                     <div class="detail-actions">
                         <button type="submit" class="add-btn">
                             <i class="fa-solid fa-floppy-disk"></i>
-                            حفظ التعديلات
+                            {% trans "حفظ التعديلات" %}
                         </button>
 
                         <a class="secondary-btn"
                            href="{% url 'pos:payment_methods_list' %}">
-                            إلغاء
+                            {% trans "إلغاء" %}
                         </a>
                     </div>
 
                 </form>
 
             </div>
+
 
         <!-- قائمة طرق الدفع -->
         {% else %}
@@ -163,7 +163,7 @@
                                 <input
                                     type="text"
                                     class="filter-input"
-                                    placeholder="بحث بالرقم"
+                                    placeholder="{% trans 'بحث بالرقم' %}"
                                     data-column="0"
                                 >
                             </th>
@@ -172,7 +172,7 @@
                                 <input
                                     type="text"
                                     class="filter-input"
-                                    placeholder="بحث باسم الطريقة"
+                                    placeholder="{% trans 'بحث باسم الطريقة' %}"
                                     data-column="1"
                                 >
                             </th>
@@ -181,7 +181,7 @@
                                 <input
                                     type="text"
                                     class="filter-input"
-                                    placeholder="بحث برقم الحساب"
+                                    placeholder="{% trans 'بحث برقم الحساب' %}"
                                     data-column="2"
                                 >
                             </th>
@@ -190,7 +190,7 @@
                                 <input
                                     type="text"
                                     class="filter-input"
-                                    placeholder="بحث بالحساب المحاسبي"
+                                    placeholder="{% trans 'بحث بالحساب المحاسبي' %}"
                                     data-column="3"
                                 >
                             </th>
@@ -201,10 +201,10 @@
 
                         <tr class="header-row">
                             <th>#</th>
-                            <th>اسم طريقة الدفع</th>
-                            <th>رقم الحساب</th>
-                            <th>الحساب المحاسبي</th>
-                            <th>الإجراءات</th>
+                            <th>{% trans "اسم طريقة الدفع" %}</th>
+<th>{% trans "رقم الحساب" %}</th>
+<th>{% trans "الحساب المحاسبي" %}</th>
+<th>{% trans "الإجراءات" %}</th>
                         </tr>
 
                     </thead>
@@ -223,7 +223,7 @@
 
                                 <td class="method-name">
                                     <i class="fa-solid fa-money-bill-wave"></i>
-                                    {{ method.name }}
+                                    {{ method.name|category_display_name }}
                                 </td>
 
                                 <td>
@@ -238,7 +238,7 @@
 
                                 <td class="account-name">
                                     {% if method.account %}
-                                        {{ method.account.name }}
+                                        {{ method.account.name|category_display_name }}
                                     {% else %}
                                         غير مرتبط بحساب
                                     {% endif %}
@@ -253,7 +253,7 @@
                                             class="action-btn options-button"
                                         >
                                             <i class="fa-solid fa-gear"></i>
-                                            الإجراءات
+                                            {% trans "الإجراءات" %}
                                         </button>
 
                                         <ul class="dropdown-menu custom-menu text-end">
@@ -264,7 +264,7 @@
                                                     href="{% url 'pos:payment_method_detail' method.pk %}"
                                                 >
                                                     <i class="fa-solid fa-eye"></i>
-                                                    عرض
+                                                    {% trans "عرض" %}
                                                 </a>
                                             </li>
 
@@ -274,7 +274,7 @@
                                                     href="{% url 'pos:payment_method_edit' method.pk %}"
                                                 >
                                                     <i class="fa-solid fa-pen-to-square"></i>
-                                                    تعديل
+                                                    {% trans "تعديل" %}
                                                 </a>
                                             </li>
 
@@ -282,7 +282,7 @@
                                                 <form
                                                     method="post"
                                                     action="{% url 'pos:payment_method_delete' method.pk %}"
-                                                    onsubmit="return confirm('هل أنت متأكد من حذف طريقة الدفع؟');"
+                                                    onsubmit="return confirm('{% trans "هل أنت متأكد من حذف طريقة الدفع؟" %}');"
                                                 >
                                                     {% csrf_token %}
 
@@ -291,7 +291,7 @@
                                                         class="dropdown-item delete-option"
                                                     >
                                                         <i class="fa-solid fa-trash"></i>
-                                                        حذف
+                                                        {% trans "حذف" %}
                                                     </button>
                                                 </form>
                                             </li>
@@ -309,7 +309,7 @@
                             <tr>
                                 <td colspan="5" class="empty">
                                     <i class="fa-solid fa-money-bill-transfer"></i>
-                                    <div>لا توجد طرق دفع مضافة حتى الآن</div>
+                                    <div>{% trans "لا توجد طرق دفع مضافة حتى الآن" %}</div>
                                 </td>
                             </tr>
 
@@ -339,7 +339,7 @@ body {
 /* الصفحة */
 
 .payment-methods-page {
-    direction: rtl;
+    direction: {% if CURRENT_LANGUAGE == "ar" %}rtl{% else %}ltr{% endif %};
     background: linear-gradient(135deg, #f8f8f8, #d5d5d5);
     min-height: 90vh;
     padding: 25px;

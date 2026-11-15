@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block content %}
 
 <div class="container-fluid quotations-page mt-4">
@@ -208,14 +208,13 @@
                         <!-- العميل -->
                         <!-- ============================= -->
 
-                        <td class="customer-name">
+<td class="customer-name">
 
-                            <i class="fa-solid fa-user"></i>
+    <i class="fa-solid fa-user"></i>
 
-                            {{ q.customer.name }}
+    {{ q.customer.name|category_display_name }}
 
-                        </td>
-
+</td>
 
                         <!-- ============================= -->
                         <!-- التاريخ -->

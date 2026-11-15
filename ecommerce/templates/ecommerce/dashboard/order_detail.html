@@ -1,10 +1,9 @@
 {% extends "layout/base.html" %}
-
+{% load i18n %}
 
 {% block title %}
-تفاصيل الطلب
+{% trans "Order Details" %}
 {% endblock %}
-
 
 {% block content %}
 
@@ -23,11 +22,11 @@
             <div>
 
                 <h2>
-                    🛒 تفاصيل الطلب
+                    🛒 {% trans "Order Details" %}
                 </h2>
 
                 <p>
-                    عرض جميع تفاصيل الطلب وبيانات المستلم والشحن
+                    {% trans "View all order details, recipient and shipping information" %}
                 </p>
 
             </div>
@@ -35,7 +34,7 @@
 
             <div class="order-number-3d">
 
-                🛒 رقم الطلب
+                🛒 {% trans "Order Number" %}
 
                 <strong>
                     {{ order.order_no }}
@@ -54,19 +53,19 @@
         <div class="section-card-3d">
 
             <div class="section-title-3d">
-                📋 بيانات الطلب
+                📋 {% trans "Order Information" %}
             </div>
 
 
             <div class="info-grid">
 
 
-                <!-- العميل -->
+                <!-- {% trans "Customer" %} -->
 
                 <div class="info-box-3d">
 
                     <span class="info-label">
-                        👤 العميل
+                        👤 {% trans "Customer" %}
                     </span>
 
                     <span class="info-value">
@@ -77,12 +76,13 @@
 
 
 
-                <!-- رقم الطلب -->
+                <!-- {% trans "Order Number" %} -->
 
                 <div class="info-box-3d">
 
                     <span class="info-label">
-                        🛒 رقم الطلب
+                        🛒 {% trans "Order Number" %}
+
                     </span>
 
                     <span class="info-value">
@@ -98,7 +98,7 @@
                 <div class="info-box-3d">
 
                     <span class="info-label">
-                        📅 تاريخ الطلب
+                        📅 {% trans "Order Date" %}
                     </span>
 
                     <span class="info-value">
@@ -115,19 +115,19 @@
 
 
 
-                <!-- حالة الطلب -->
+                <!-- {% trans "Order Status" %} -->
 
                 <div class="info-box-3d">
 
                     <span class="info-label">
-                        📦 حالة الطلب
+                        📦 {% trans "Order Status" %}
                     </span>
 
                     <span
                         id="order-status"
                         class="status-badge-3d">
 
-                        {{ order.get_status_display }}
+                        {% trans order.get_status_display %}
 
                     </span>
 
@@ -135,12 +135,12 @@
 
 
 
-                <!-- حالة الدفع -->
+                <!-- {% trans "Payment Status" %} -->
 
                 <div class="info-box-3d">
 
                     <span class="info-label">
-                        💳 حالة الدفع
+                        💳 {% trans "Payment Status" %}
                     </span>
 
                     <span id="payment-status">
@@ -149,42 +149,42 @@
                         {% if order.payment_status == "paid" %}
 
                             <span class="status-badge-3d success">
-                                ✅ مدفوع
+                                ✅ {% trans "Paid" %}
                             </span>
 
 
                         {% elif order.payment_status == "bank_transfer" %}
 
                             <span class="status-badge-3d warning">
-                                🏦 تحويل بنكي
+                                🏦 {% trans "Bank Transfer" %}
                             </span>
 
 
                         {% elif order.payment_status == "cash_on_delivery" %}
 
                             <span class="status-badge-3d info">
-                                💵 الدفع عند الاستلام
+                                💵 {% trans "Cash on Delivery" %}
                             </span>
 
 
                         {% elif order.payment_status == "unpaid" %}
 
                             <span class="status-badge-3d danger">
-                                ❌ غير مدفوع
+                                ❌ {% trans "Unpaid" %}
                             </span>
 
 
                         {% elif order.payment_status == "partial" %}
 
                             <span class="status-badge-3d warning">
-                                💰 دفع جزئي
+                                💰 {% trans "Partial Payment" %}
                             </span>
 
 
                         {% elif order.payment_status == "refunded" %}
 
                             <span class="status-badge-3d secondary">
-                                ↩️ مسترجع
+                                ↩️ {% trans "Refunded" %}
                             </span>
 
 
@@ -208,7 +208,7 @@
                 <div class="info-box-3d total-box">
 
                     <span class="info-label">
-                        💰 إجمالي الطلب
+                        💰 {% trans "Order Total" %}
                     </span>
 
                     <span class="total-value">
@@ -237,7 +237,7 @@
         <div class="section-card-3d shipping-section">
 
             <div class="section-title-3d">
-                📦 بيانات المستلم والشحن
+                📦 {% trans "Recipient and Shipping Information" %}
             </div>
 
 
@@ -246,7 +246,7 @@
                 <div class="shipping-grid-3d">
 
 
-                    <!-- اسم المستلم -->
+                    <!-- {% trans "Recipient Name" %} -->
 
                     <div class="shipping-box-3d">
 
@@ -257,7 +257,7 @@
                         <div>
 
                             <span class="info-label">
-                                اسم المستلم
+                                {% trans "Recipient Name" %}
                             </span>
 
                             <span class="info-value">
@@ -281,7 +281,7 @@
                         <div>
 
                             <span class="info-label">
-                                رقم التواصل
+                                {% trans "Contact Number" %}
                             </span>
 
                             <span class="info-value">
@@ -305,7 +305,7 @@
                         <div>
 
                             <span class="info-label">
-                                عنوان المستلم
+                                {% trans "Recipient Address" %}
                             </span>
 
                             <span class="info-value">
@@ -329,18 +329,18 @@
                         <div>
 
                             <span class="info-label">
-                                طريقة الاستلام
+                                {% trans "Delivery Method" %}
                             </span>
 
                             <span class="info-value">
 
                                 {% if order.delivery_type == "pickup" %}
 
-                                    📦 استلام من المتجر
+                                    📦 {% trans "Store Pickup" %}
 
                                 {% else %}
 
-                                    🚚 توصيل للعميل
+                                    🚚 {% trans "Home Delivery" %}
 
                                 {% endif %}
 
@@ -358,7 +358,7 @@
 
                 <div class="shipping-empty-3d">
 
-                    ⚠️ لا توجد بيانات شحن محفوظة لهذا الطلب.
+                    ⚠️ {% trans "No shipping information is saved for this order." %}
 
                 </div>
 
@@ -377,7 +377,7 @@
         <div class="section-card-3d">
 
             <div class="section-title-3d">
-                🏦 إيصال التحويل البنكي
+                🏦 {% trans "Bank Transfer Receipt" %}
             </div>
 
 
@@ -386,7 +386,7 @@
                 class="receipt-button-3d"
                 onclick="openReceipt()">
 
-                📎 عرض إيصال التحويل
+                📎 {% trans "View Transfer Receipt" %}
 
             </button>
 
@@ -431,7 +431,7 @@
 
             <div class="section-title-3d">
 
-                🚚 تحديث حالة الطلب
+                🚚 {% trans "Update Order Status" %}
 
             </div>
 
@@ -467,7 +467,7 @@
                             data-status="confirmed"
                             onclick="updateStatus('confirmed', this)">
 
-                            ✅ تأكيد الطلب
+                            ✅ {% trans "Confirm Order" %}
 
                         </button>
 
@@ -480,7 +480,7 @@
                             data-status="processing"
                             onclick="updateStatus('processing', this)">
 
-                            🔧 بدء التجهيز
+                            🔧 {% trans "Start Processing" %}
 
                         </button>
 
@@ -496,7 +496,7 @@
                                 data-status="ready_pickup"
                                 onclick="updateStatus('ready_pickup', this)">
 
-                                📦 جاهز للاستلام
+                                📦 {% trans "Ready for Pickup" %}
 
                             </button>
 
@@ -508,7 +508,7 @@
                                 data-status="shipped"
                                 onclick="updateStatus('shipped', this)">
 
-                                🚚 تم الشحن
+                                🚚 {% trans "Shipped" %}
 
                             </button>
 
@@ -523,7 +523,7 @@
                             data-status="delivered"
                             onclick="updateStatus('delivered', this)">
 
-                            ✅ تم التسليم
+                            ✅ {% trans "Delivered" %}
 
                         </button>
 
@@ -536,7 +536,7 @@
                             data-status="delivered"
                             onclick="updateStatus('delivered', this)">
 
-                            ✅ تم التسليم
+                            ✅ {% trans "Delivered" %}
 
                         </button>
 
@@ -566,7 +566,7 @@
                             data-status="cancelled"
                             onclick="updateStatus('cancelled', this)">
 
-                            ❌ إلغاء الطلب
+                            ❌ {% trans "Cancel Order" %}
 
                         </button>
 
@@ -579,7 +579,7 @@
                             data-status="cancelled"
                             onclick="updateStatus('cancelled', this)">
 
-                            ❌ إلغاء الطلب
+                            ❌ {% trans "Cancel Order" %}
 
                         </button>
 
@@ -608,7 +608,7 @@
 
             <div class="section-title-3d">
 
-                🛍️ منتجات الطلب
+                🛍️ {% trans "Order Products" %}
 
             </div>
 
@@ -623,19 +623,19 @@
                         <tr>
 
                             <th>
-                                المنتج
+                                {% trans "Product" %}
                             </th>
 
                             <th>
-                                الكمية
+                                {% trans "Quantity" %}
                             </th>
 
                             <th>
-                                السعر
+                                {% trans "Price" %}
                             </th>
 
                             <th>
-                                الإجمالي
+                                {% trans "Total" %}
                             </th>
 
                         </tr>
@@ -654,7 +654,8 @@
                             <td>
 
                                 <strong>
-                                    {{ item.product }}
+                                    {{ item.product.name }}
+
                                 </strong>
 
                             </td>
@@ -707,7 +708,7 @@
                                 colspan="4"
                                 class="empty-products">
 
-                                لا توجد منتجات في هذا الطلب.
+                                {% trans "There are no products in this order." %}
 
                             </td>
 
@@ -730,7 +731,7 @@
             <div class="products-total-3d">
 
                 <span>
-                    💰 إجمالي الطلب
+                    💰 {% trans "Order Total" %}
                 </span>
 
                 <strong>

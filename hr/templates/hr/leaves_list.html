@@ -735,7 +735,7 @@ body {
 
                         <strong>
 
-                            {{ leave.employee }}
+                            {{ leave.employee.get_full_name }}
 
                         </strong>
 
@@ -853,7 +853,7 @@ body {
 
                                         <i class="fa-solid fa-check"></i>
 
-                                        {% trans "موافقة" %}
+                                        {% trans "Approve" %}
 
                                     </a>
 
@@ -871,7 +871,7 @@ body {
 
                                         <i class="fa-solid fa-xmark"></i>
 
-                                        {% trans "رفض" %}
+                                        {% trans "Reject" %}
 
                                     </a>
 

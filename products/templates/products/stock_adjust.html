@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Manual Stock Adjustment" %}
 {% endblock %}
@@ -184,7 +184,7 @@
                                     value="{{ p.id }}"
                                     data-stock="{{ p.current_stock }}">
 
-                                    {{ p.name }}
+                                    {{ p|product_display_name }}
 
                                 </option>
 
@@ -480,20 +480,19 @@ $(document).ready(function () {
        Product Select2
     ========================================================= */
 
-    $('#product_id').select2({
+$('#product_id').select2({
 
-        placeholder: "{% trans 'ابحث عن المنتج...' %}",
+    placeholder: "{% trans 'Search for products' %}",
 
-        allowClear: true,
+    allowClear: true,
 
-        width: '100%',
+    width: '100%',
 
-        dir: 'rtl',
+    dir: "{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}",
 
-        minimumInputLength: 0
+    minimumInputLength: 0
 
-    });
-
+});
 
     /* =========================================================
        Product Change

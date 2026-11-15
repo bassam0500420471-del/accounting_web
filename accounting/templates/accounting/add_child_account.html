@@ -607,10 +607,9 @@
                         for="name"
                         class="form-label">
 
-                        {% trans "Account Name" %}
+                        {% trans "Account Name (Arabic)" %}
 
                     </label>
-
 
                     <input
                         type="text"
@@ -620,6 +619,30 @@
 
                 </div>
 
+
+                <!-- =============================================
+                     اسم الحساب بالإنجليزية
+                ============================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="name_en"
+                        class="form-label">
+
+                        {% trans "Account Name (English)" %}
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name_en"
+                        name="name_en"
+                        dir="ltr"
+                        style="text-align: left;"
+                        required>
+
+                </div>
 
                 <!-- =============================================
                      نوع الحساب

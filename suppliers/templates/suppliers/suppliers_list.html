@@ -1,7 +1,7 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 {% block content %}
-
+{% load product_translation %}
 <div class="container-fluid suppliers-page mt-4">
 
     <div class="supplier-card">
@@ -154,14 +154,13 @@
                         </td>
 
 
-                        <td class="supplier-name">
+<td class="supplier-name">
 
-                            <i class="fa-solid fa-building"></i>
+    <i class="fa-solid fa-building"></i>
 
-                            {{ s.commercial_name }}
+    {{ s.commercial_name|category_display_name }}
 
-                        </td>
-
+</td>
 
                         <td>
 

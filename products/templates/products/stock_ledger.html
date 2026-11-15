@@ -1,8 +1,13 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% get_current_language as CURRENT_LANGUAGE %}
+{% load product_translation %}
 {% block title %}
-{% trans "سجل حركات المخزون" %}
+{% if CURRENT_LANGUAGE == 'ar' %}
+    سجل حركات المخزون
+{% else %}
+    Stock Movement Ledger
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -19,9 +24,7 @@
         margin: 30px auto;
     }
 
-    /* =========================================================
-       Main Card
-    ========================================================= */
+    /* Main Card */
 
     .main-card {
         background: #fff;
@@ -31,9 +34,7 @@
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
     }
 
-    /* =========================================================
-       Header
-    ========================================================= */
+    /* Header */
 
     .page-header {
         background: linear-gradient(135deg, #6c757d, #495057);
@@ -48,9 +49,7 @@
         font-weight: bold;
     }
 
-    /* =========================================================
-       Toolbar
-    ========================================================= */
+    /* Toolbar */
 
     .toolbar {
         padding: 20px 25px;
@@ -76,9 +75,7 @@
         box-shadow: 0 0 0 0.15rem rgba(108, 117, 125, 0.15);
     }
 
-    /* =========================================================
-       Buttons
-    ========================================================= */
+    /* Buttons */
 
     .btn-grey {
         background: #6c757d !important;
@@ -104,22 +101,21 @@
         color: #fff !important;
     }
 
-    /* =========================================================
-       Table
-    ========================================================= */
+    /* Table */
 
     .table-wrapper {
         padding: 0 25px 25px 25px;
         overflow: visible;
     }
 
-.inventory-table {
-    width: 100%;
-    margin-bottom: 0;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: fixed;
-}
+    .inventory-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
+
     .inventory-table thead th {
         background: #f1f3f5;
         color: #495057;
@@ -214,23 +210,22 @@
         color: #6c757d;
     }
 
+    /* Note */
 
-/* Note */
+    .inventory-table th:nth-child(7),
+    .inventory-table td:nth-child(7) {
+        width: 280px;
+    }
 
-.inventory-table th:nth-child(7),
-.inventory-table td:nth-child(7) {
-    width: 280px;
-}
-
-.note-value {
-    width: 280px;
-    max-width: 280px;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    word-break: normal;
-    line-height: 1.7;
-    vertical-align: middle;
-}
+    .note-value {
+        width: 280px;
+        max-width: 280px;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        line-height: 1.7;
+        vertical-align: middle;
+    }
 
     /* Actions */
 
@@ -240,9 +235,7 @@
         white-space: nowrap;
     }
 
-    /* =========================================================
-       Dropdown
-    ========================================================= */
+    /* Dropdown */
 
     .dropdown-menu {
         z-index: 2000 !important;
@@ -256,7 +249,7 @@
     .dropdown-item {
         border-radius: 6px;
         padding: 8px 12px;
-        text-align: right;
+        text-align: {% if CURRENT_LANGUAGE == 'ar' %}right{% else %}left{% endif %};
     }
 
     .dropdown-item:hover {
@@ -267,9 +260,7 @@
         background: #f8d7da;
     }
 
-    /* =========================================================
-       Empty
-    ========================================================= */
+    /* Empty */
 
     .empty-row {
         padding: 35px !important;
@@ -277,9 +268,7 @@
         text-align: center;
     }
 
-    /* =========================================================
-       Responsive
-    ========================================================= */
+    /* Responsive */
 
     @media (max-width: 1100px) {
 
@@ -320,22 +309,22 @@
 
 <div class="main-card">
 
-    <!-- =====================================================
-         Header
-    ====================================================== -->
+    <!-- Header -->
 
     <div class="page-header">
 
         <h4>
-            {% trans "سجل حركات المخزون" %}
+            {% if CURRENT_LANGUAGE == 'ar' %}
+                سجل حركات المخزون
+            {% else %}
+                Stock Movement Ledger
+            {% endif %}
         </h4>
 
     </div>
 
 
-    <!-- =====================================================
-         Toolbar
-    ====================================================== -->
+    <!-- Toolbar -->
 
     <div class="toolbar">
 
@@ -346,28 +335,38 @@
             <a href="{% url 'products:stock_adjust' %}"
                class="btn btn-grey px-4">
 
-                ➕ {% trans "تسوية المخزون" %}
+                ➕
+                {% if CURRENT_LANGUAGE == 'ar' %}
+                    تسوية المخزون
+                {% else %}
+                    Stock Adjustment
+                {% endif %}
 
             </a>
 
 
             <!-- Search -->
 
-            <form method="get"
-                  class="search-form mb-0">
+            <form method="get" class="search-form mb-0">
 
                 <input
                     type="text"
                     name="q"
-                    placeholder="{% trans 'البحث باسم المنتج أو رقم المرجع أو الملاحظة...' %}"
+                    placeholder="{% if CURRENT_LANGUAGE == 'ar' %}البحث باسم المنتج أو رقم المرجع أو الملاحظة...{% else %}Search by product name, reference number or note...{% endif %}"
                     value="{{ q }}"
-                    class="form-control search-input">
+                    class="form-control search-input"
+                >
 
                 <button
                     type="submit"
                     class="btn btn-grey px-4">
 
-                    🔍 {% trans "بحث" %}
+                    🔍
+                    {% if CURRENT_LANGUAGE == 'ar' %}
+                        بحث
+                    {% else %}
+                        Search
+                    {% endif %}
 
                 </button>
 
@@ -378,9 +377,7 @@
     </div>
 
 
-    <!-- =====================================================
-         Table
-    ====================================================== -->
+    <!-- Table -->
 
     <div class="table-wrapper">
 
@@ -393,35 +390,35 @@
                     <tr>
 
                         <th>
-                            {% trans "المنتج" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}المنتج{% else %}Product{% endif %}
                         </th>
 
                         <th>
-                            {% trans "نوع الحركة" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}نوع الحركة{% else %}Movement Type{% endif %}
                         </th>
 
                         <th>
-                            {% trans "المرجع" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}المرجع{% else %}Reference{% endif %}
                         </th>
 
                         <th class="text-center">
-                            {% trans "التغيير" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}التغيير{% else %}Change{% endif %}
                         </th>
 
                         <th class="text-center">
-                            {% trans "المخزون بعد الحركة" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}المخزون بعد الحركة{% else %}Stock After Movement{% endif %}
                         </th>
 
                         <th>
-                            {% trans "التاريخ" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}التاريخ{% else %}Date{% endif %}
                         </th>
 
                         <th>
-                            {% trans "الملاحظة" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}الملاحظة{% else %}Note{% endif %}
                         </th>
 
                         <th class="actions-column">
-                            {% trans "الإجراءات" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}الإجراءات{% else %}Actions{% endif %}
                         </th>
 
                     </tr>
@@ -435,18 +432,13 @@
 
                     <tr>
 
-                        <!-- =================================================
-                             Product
-                        ================================================== -->
+                        <!-- Product -->
 
-                        <td class="product-name">
-                            {{ move.product.get_name }}
-                        </td>
+<td class="product-name">
+    {{ move.product|product_display_name }}
+</td>
 
-
-                        <!-- =================================================
-                             Type
-                        ================================================== -->
+                        <!-- Type -->
 
                         <td class="movement-type">
 
@@ -455,50 +447,72 @@
                                 {% if move.ref_app == "ecommerce" %}
 
                                     <span class="store-sale-badge">
-                                        🛒 {% trans "بيع من المتجر" %}
+                                        🛒
+                                        {% if CURRENT_LANGUAGE == 'ar' %}
+                                            بيع من المتجر
+                                        {% else %}
+                                            Online Store Sale
+                                        {% endif %}
                                     </span>
 
                                 {% elif move.ref_app == "pos" %}
 
                                     <span class="normal-sale-badge">
-                                        🧾 {% trans "بيع من نقاط البيع" %}
+                                        🧾
+                                        {% if CURRENT_LANGUAGE == 'ar' %}
+                                            بيع من نقاط البيع
+                                        {% else %}
+                                            POS Sale
+                                        {% endif %}
                                     </span>
 
                                 {% else %}
 
                                     <span class="normal-sale-badge">
-                                        🧾 {% trans "بيع" %}
+                                        🧾
+                                        {% if CURRENT_LANGUAGE == 'ar' %}بيع{% else %}Sale{% endif %}
                                     </span>
 
                                 {% endif %}
 
+
                             {% elif move.move_type == "PURCHASE" %}
 
-                                🛒 {% trans "مشتريات" %}
+                                🛒
+                                {% if CURRENT_LANGUAGE == 'ar' %}مشتريات{% else %}Purchase{% endif %}
+
 
                             {% elif move.move_type == "RETURN" %}
 
-                                ↩️ {% trans "مرتجع" %}
+                                ↩️
+                                {% if CURRENT_LANGUAGE == 'ar' %}مرتجع{% else %}Return{% endif %}
+
 
                             {% elif move.move_type == "GIFT" %}
 
-                                🎁 {% trans "هدية" %}
+                                🎁
+                                {% if CURRENT_LANGUAGE == 'ar' %}هدية{% else %}Gift{% endif %}
+
 
                             {% elif move.move_type == "DAMAGED" %}
 
-                                ⚠️ {% trans "تالف" %}
+                                ⚠️
+                                {% if CURRENT_LANGUAGE == 'ar' %}تالف{% else %}Damaged{% endif %}
+
 
                             {% elif move.move_type == "ADJUST" %}
 
                                 {% if move.reason %}
                                     {{ move.reason.name }}
                                 {% else %}
-                                    {% trans "تسوية مخزون" %}
+                                    {% if CURRENT_LANGUAGE == 'ar' %}تسوية مخزون{% else %}Stock Adjustment{% endif %}
                                 {% endif %}
+
 
                             {% elif move.move_type == "OTHER" %}
 
-                                {% trans "أخرى" %}
+                                {% if CURRENT_LANGUAGE == 'ar' %}أخرى{% else %}Other{% endif %}
+
 
                             {% else %}
 
@@ -509,9 +523,7 @@
                         </td>
 
 
-                        <!-- =================================================
-                             Reference
-                        ================================================== -->
+                        <!-- Reference -->
 
                         <td class="reference-value">
 
@@ -522,13 +534,23 @@
                                 {% if move.ref_app == "ecommerce" %}
 
                                     <span class="reference-label">
-                                        🛒 {% trans "طلب متجر" %}
+                                        🛒
+                                        {% if CURRENT_LANGUAGE == 'ar' %}
+                                            طلب متجر
+                                        {% else %}
+                                            Store Order
+                                        {% endif %}
                                     </span>
 
                                 {% elif move.ref_app == "pos" %}
 
                                     <span class="reference-label">
-                                        🧾 {% trans "فاتورة نقاط البيع" %}
+                                        🧾
+                                        {% if CURRENT_LANGUAGE == 'ar' %}
+                                            فاتورة نقاط البيع
+                                        {% else %}
+                                            POS Invoice
+                                        {% endif %}
                                     </span>
 
                                 {% endif %}
@@ -542,9 +564,7 @@
                         </td>
 
 
-                        <!-- =================================================
-                             Change
-                        ================================================== -->
+                        <!-- Change -->
 
                         <td class="change-value">
 
@@ -565,42 +585,30 @@
                         </td>
 
 
-                        <!-- =================================================
-                             Stock After
-                        ================================================== -->
+                        <!-- Stock After -->
 
                         <td class="stock-value">
-
                             {{ move.stock_after }}
-
                         </td>
 
 
-                        <!-- =================================================
-                             Date
-                        ================================================== -->
+                        <!-- Date -->
 
                         <td class="date-value">
-
                             {{ move.created_at|date:"Y-m-d H:i" }}
-
                         </td>
 
 
-                        <!-- =================================================
-                             Note
-                        ================================================== -->
+                        <!-- Note -->
 
-                        <td class="note-value">
-
-                            {{ move.note|default:"-" }}
-
-                        </td>
-
-
-                        <!-- =================================================
-                             Actions
-                        ================================================== -->
+<td class="note-value">
+    {% if move.note %}
+        {{ move.note|category_display_name }}
+    {% else %}
+        -
+    {% endif %}
+</td>
+                        <!-- Actions -->
 
                         <td class="actions-column">
 
@@ -616,7 +624,7 @@
                                         aria-expanded="false"
                                         data-bs-auto-close="true">
 
-                                        {% trans "الإجراءات" %}
+                                        {% if CURRENT_LANGUAGE == 'ar' %}الإجراءات{% else %}Actions{% endif %}
 
                                     </button>
 
@@ -633,7 +641,8 @@
                                                 class="dropdown-item"
                                                 href="{% url 'products:stock_adjust_view' move.id %}">
 
-                                                👁️ {% trans "عرض" %}
+                                                👁️
+                                                {% if CURRENT_LANGUAGE == 'ar' %}عرض{% else %}View{% endif %}
 
                                             </a>
 
@@ -648,7 +657,8 @@
                                                 class="dropdown-item"
                                                 href="{% url 'products:stock_adjust_edit' move.id %}">
 
-                                                ✏️ {% trans "تعديل" %}
+                                                ✏️
+                                                {% if CURRENT_LANGUAGE == 'ar' %}تعديل{% else %}Edit{% endif %}
 
                                             </a>
 
@@ -667,9 +677,10 @@
                                             <a
                                                 class="dropdown-item text-danger"
                                                 href="{% url 'products:stock_adjust_delete' move.id %}"
-                                                onclick="return confirm('{% trans "هل أنت متأكد من حذف هذه الحركة؟" %}');">
+                                                onclick="return confirm('{% if CURRENT_LANGUAGE == 'ar' %}هل أنت متأكد من حذف هذه الحركة؟{% else %}Are you sure you want to delete this movement?{% endif %}');">
 
-                                                🗑️ {% trans "حذف" %}
+                                                🗑️
+                                                {% if CURRENT_LANGUAGE == 'ar' %}حذف{% else %}Delete{% endif %}
 
                                             </a>
 
@@ -685,7 +696,12 @@
                                     href="{% url 'products:stock_adjust_view' move.id %}"
                                     class="btn btn-sm btn-grey">
 
-                                    👁️ {% trans "عرض فقط" %}
+                                    👁️
+                                    {% if CURRENT_LANGUAGE == 'ar' %}
+                                        عرض فقط
+                                    {% else %}
+                                        View Only
+                                    {% endif %}
 
                                 </a>
 
@@ -700,11 +716,13 @@
 
                     <tr>
 
-                        <td
-                            colspan="8"
-                            class="empty-row">
+                        <td colspan="8" class="empty-row">
 
-                            {% trans "لا توجد بيانات متاحة" %}
+                            {% if CURRENT_LANGUAGE == 'ar' %}
+                                لا توجد بيانات متاحة
+                            {% else %}
+                                No data available
+                            {% endif %}
 
                         </td>
 
@@ -722,10 +740,10 @@
 
 </div>
 
-
 </div>
 
 {% endblock %}
+
 
 {% block scripts %}
 
@@ -748,7 +766,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 {% endblock %}
-
-راجعت كذلك منطق العرض بحيث لو كانت حركة `SALE` من `pos` تظهر **بيع من نقاط البيع**، ولو كانت من `ecommerce` تظهر **بيع من المتجر**، وأي بيع آخر يظهر **بيع**.
-
-ولو تريد، بعد ذلك نراجع **البحث** لأن `ref_no` موجود في الجدول لكن دالة `stock_ledger` التي عندنا تحتاج إضافة البحث برقم المرجع حتى يعمل البحث فعليًا برقم فاتورة POS أو رقم طلب المتجر.

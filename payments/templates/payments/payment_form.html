@@ -1,5 +1,5 @@
 {% extends "layout/base.html" %}
-{% load static i18n %}
+{% load static i18n product_translation %}
 
 {% block title %}{% trans "Payment Voucher" %}{% endblock %}
 
@@ -664,7 +664,7 @@ body {
 
                                 <label for="partyType">
 
-                                    {% trans "نوع الجهة" %}
+                                    {% trans "Party Type" %}
 
                                 </label>
 
@@ -680,7 +680,7 @@ body {
 
                                     <option value="">
 
-                                        {% trans "-- أختر --" %}
+                                        {% trans "-- Select --" %}
 
                                     </option>
 
@@ -760,7 +760,7 @@ body {
 
 
 <!-- =================================================
-     طريقة الدفع
+     {% trans "Payment Method" %}
 ================================================= -->
 
 <tr>
@@ -786,7 +786,7 @@ body {
 
             <option value="">
 
-                -- اختر طريقة الدفع --
+                {% trans "-- Select Payment Method --" %}
 
             </option>
 
@@ -794,7 +794,7 @@ body {
 
                 <option value="{{ method.id }}">
 
-                    {{ method.name }}
+                    {{ method.name|category_display_name }}
 
                 </option>
 

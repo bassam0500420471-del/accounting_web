@@ -1,8 +1,13 @@
+
 {% extends "layout/base.html" %}
 {% load static %}
-
+{% load supplier_translation %}
 {% block title %}
-    إدارة مواقع العمل
+    {% if CURRENT_LANGUAGE == "en" %}
+        Work Locations Management
+    {% else %}
+        إدارة مواقع العمل
+    {% endif %}
 {% endblock %}
 
 
@@ -16,628 +21,270 @@
    ========================================================= */
 
 .work-locations-page {
-
     background: #eeeeee;
-
     min-height: calc(100vh - 80px);
-
     padding: 25px;
-
     border-radius: 20px;
-
-    direction: rtl;
-
+    direction: {% if CURRENT_LANGUAGE == "en" %}ltr{% else %}rtl{% endif %};
 }
-
-
-/* =========================================================
-   الكرت الرئيسي
-   ========================================================= */
 
 .work-locations-card {
-
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #dddddd
-    );
-
+    background: linear-gradient(145deg, #ffffff, #dddddd);
     border-radius: 22px;
-
     padding: 25px;
-
-    box-shadow:
-
-        8px 8px 20px #c5c5c5,
-
-        -8px -8px 20px #ffffff;
-
+    box-shadow: 8px 8px 20px #c5c5c5, -8px -8px 20px #ffffff;
 }
-
-
-/* =========================================================
-   رأس الصفحة
-   ========================================================= */
 
 .work-locations-header {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     gap: 15px;
-
     margin-bottom: 25px;
-
     flex-wrap: wrap;
-
 }
-
 
 .work-locations-title {
-
     margin: 0;
-
     font-size: 25px;
-
     font-weight: 800;
-
     color: #444;
-
 }
-
 
 .work-locations-subtitle {
-
     margin-top: 7px;
-
     color: #777;
-
     font-size: 14px;
-
 }
-
-
-/* =========================================================
-   زر الإضافة
-   ========================================================= */
 
 .work-location-add-btn {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 7px;
-
     padding: 11px 20px;
-
     border-radius: 13px;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: #fff !important;
-
     text-decoration: none;
-
     font-family: Tahoma, Arial, sans-serif;
-
     font-size: 14px;
-
     font-weight: 700;
-
-    box-shadow:
-
-        5px 5px 12px rgba(0,0,0,.20),
-
-        inset 0 1px 0 rgba(255,255,255,.15);
-
+    box-shadow: 5px 5px 12px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.15);
     transition: .25s;
-
 }
-
 
 .work-location-add-btn:hover {
-
     color: #fff !important;
-
     transform: translateY(-2px);
-
-    box-shadow:
-
-        7px 7px 15px rgba(0,0,0,.25),
-
-        inset 0 1px 0 rgba(255,255,255,.15);
-
+    box-shadow: 7px 7px 15px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.15);
 }
-
-
-/* =========================================================
-   كرت المواقع
-   ========================================================= */
 
 .work-locations-list-card {
-
     background: #ffffff;
-
     border-radius: 18px;
-
     padding: 20px;
-
-    box-shadow:
-
-        0 7px 18px rgba(0,0,0,.08),
-
-        inset 0 1px 0 rgba(255,255,255,.8);
-
+    box-shadow: 0 7px 18px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.8);
 }
-
-
-/* =========================================================
-   عنوان القسم
-   ========================================================= */
 
 .work-locations-section-title {
-
     margin: 0 0 20px;
-
     font-size: 18px;
-
     font-weight: 800;
-
     color: #444;
-
     padding-bottom: 14px;
-
     border-bottom: 1px solid #eeeeee;
-
 }
-
-
-/* =========================================================
-   شبكة المواقع
-   ========================================================= */
 
 .work-locations-grid {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(280px, 1fr)
-        );
-
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
-
 }
-
-
-/* =========================================================
-   كرت موقع العمل
-   ========================================================= */
 
 .work-location-box {
-
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #e1e1e1
-    );
-
+    background: linear-gradient(145deg, #ffffff, #e1e1e1);
     border-radius: 18px;
-
     padding: 20px;
-
     min-height: 240px;
-
     display: flex;
-
     flex-direction: column;
-
-    box-shadow:
-
-        6px 6px 14px rgba(0,0,0,.12),
-
-        -5px -5px 12px rgba(255,255,255,.8);
-
+    box-shadow: 6px 6px 14px rgba(0,0,0,.12), -5px -5px 12px rgba(255,255,255,.8);
     border: 1px solid #dddddd;
-
     transition: .25s;
-
 }
-
 
 .work-location-box:hover {
-
     transform: translateY(-4px);
-
-    box-shadow:
-
-        8px 10px 20px rgba(0,0,0,.16),
-
-        -5px -5px 12px rgba(255,255,255,.9);
-
+    box-shadow: 8px 10px 20px rgba(0,0,0,.16), -5px -5px 12px rgba(255,255,255,.9);
 }
-
-
-/* =========================================================
-   عنوان الموقع
-   ========================================================= */
 
 .work-location-title {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
     font-size: 17px;
-
     font-weight: 800;
-
     color: #444;
-
     margin-bottom: 18px;
-
     padding-bottom: 12px;
-
     border-bottom: 1px solid #cccccc;
-
 }
-
 
 .work-location-title i {
-
     width: 38px;
-
     height: 38px;
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     border-radius: 11px;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: white;
-
-    box-shadow:
-
-        3px 3px 7px rgba(0,0,0,.20);
-
+    box-shadow: 3px 3px 7px rgba(0,0,0,.20);
 }
-
-
-/* =========================================================
-   معلومات الموقع
-   ========================================================= */
 
 .work-location-info {
-
     flex: 1;
-
 }
-
 
 .work-location-info p {
-
     display: flex;
-
     align-items: center;
-
     gap: 9px;
-
     margin-bottom: 12px;
-
     color: #666;
-
     font-size: 13px;
-
     line-height: 1.7;
-
 }
-
 
 .work-location-info p i {
-
     width: 24px;
-
     text-align: center;
-
     color: #666;
-
 }
-
-
-/* =========================================================
-   حالة الموقع
-   ========================================================= */
 
 .work-location-status {
-
     display: inline-flex;
-
     align-items: center;
-
     gap: 6px;
-
     width: fit-content;
-
     padding: 6px 12px;
-
     border-radius: 20px;
-
     font-size: 12px;
-
     font-weight: 800;
-
     margin-bottom: 15px;
-
-    box-shadow:
-
-        2px 2px 5px rgba(0,0,0,.12);
-
+    box-shadow: 2px 2px 5px rgba(0,0,0,.12);
 }
-
 
 .work-location-status.active {
-
-    background: linear-gradient(
-        145deg,
-        #d9f7df,
-        #bde8c5
-    );
-
+    background: linear-gradient(145deg, #d9f7df, #bde8c5);
     color: #166534;
-
 }
-
 
 .work-location-status.inactive {
-
-    background: linear-gradient(
-        145deg,
-        #eeeeee,
-        #cccccc
-    );
-
+    background: linear-gradient(145deg, #eeeeee, #cccccc);
     color: #666;
-
 }
-
 
 .work-location-status i {
-
     font-size: 8px;
-
 }
-
-
-/* =========================================================
-   أزرار الإجراءات
-   ========================================================= */
 
 .work-location-actions {
-
     display: flex;
-
     gap: 8px;
-
     padding-top: 15px;
-
     border-top: 1px solid #cccccc;
-
 }
-
 
 .work-location-action-btn {
-
     flex: 1;
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 6px;
-
     padding: 9px 12px;
-
     border-radius: 11px;
-
     text-decoration: none;
-
     font-family: Tahoma, Arial, sans-serif;
-
     font-size: 12px;
-
     font-weight: 800;
-
     transition: .25s;
-
 }
-
 
 .work-location-edit-btn {
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #555
-    );
-
+    background: linear-gradient(145deg, #777, #555);
     color: white !important;
-
-    box-shadow:
-
-        3px 3px 7px rgba(0,0,0,.18);
-
+    box-shadow: 3px 3px 7px rgba(0,0,0,.18);
 }
-
 
 .work-location-edit-btn:hover {
-
     color: white !important;
-
     transform: translateY(-2px);
-
 }
-
 
 .work-location-delete-btn {
-
-    background: linear-gradient(
-        145deg,
-        #eeeeee,
-        #d0d0d0
-    );
-
+    background: linear-gradient(145deg, #eeeeee, #d0d0d0);
     color: #555 !important;
-
     border: 1px solid #c5c5c5;
-
-    box-shadow:
-
-        3px 3px 7px rgba(0,0,0,.12);
-
+    box-shadow: 3px 3px 7px rgba(0,0,0,.12);
 }
-
 
 .work-location-delete-btn:hover {
-
     color: #333 !important;
-
     transform: translateY(-2px);
-
 }
-
-
-/* =========================================================
-   حالة عدم وجود مواقع
-   ========================================================= */
 
 .work-location-empty {
-
     grid-column: 1 / -1;
-
     padding: 55px 20px;
-
     text-align: center;
-
-    background: linear-gradient(
-        145deg,
-        #f8f8f8,
-        #e1e1e1
-    );
-
+    background: linear-gradient(145deg, #f8f8f8, #e1e1e1);
     border-radius: 18px;
-
     color: #999;
-
     font-size: 15px;
-
     font-weight: 700;
-
-    box-shadow:
-
-        inset 2px 2px 5px rgba(0,0,0,.07),
-
-        inset -2px -2px 5px rgba(255,255,255,.8);
-
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,.07), inset -2px -2px 5px rgba(255,255,255,.8);
 }
-
 
 .work-location-empty-icon {
-
     font-size: 42px;
-
     margin-bottom: 12px;
-
     color: #aaa;
-
 }
-
-
-/* =========================================================
-   Responsive
-   ========================================================= */
 
 @media (max-width: 992px) {
-
     .work-locations-page {
-
         padding: 15px;
-
     }
-
 
     .work-locations-card {
-
         padding: 20px;
-
         border-radius: 18px;
-
     }
-
 
     .work-locations-title {
-
         font-size: 22px;
-
     }
-
 }
 
-
 @media (max-width: 768px) {
-
     .work-locations-header {
-
         display: block;
-
     }
-
 
     .work-location-add-btn {
-
         margin-top: 15px;
-
         width: 100%;
-
     }
-
 
     .work-locations-grid {
-
         grid-template-columns: 1fr;
-
     }
-
 
     .work-location-actions {
-
         display: flex;
-
     }
-
 }
 
 </style>
@@ -645,280 +292,228 @@
 {% endblock %}
 
 
-
 {% block content %}
 
 <div class="container-fluid work-locations-page">
 
-
     <div class="work-locations-card">
 
-
-        <!-- =================================================
-             رأس الصفحة
-             ================================================= -->
+        <!-- رأس الصفحة -->
 
         <div class="work-locations-header">
-
 
             <div>
 
                 <h3 class="work-locations-title">
-
                     📍
-
-                    إدارة مواقع العمل
-
+                    {% if CURRENT_LANGUAGE == "en" %}
+                        Work Locations Management
+                    {% else %}
+                        إدارة مواقع العمل
+                    {% endif %}
                 </h3>
 
-
                 <div class="work-locations-subtitle">
-
-                    إدارة مواقع وفروع العمل التابعة للشركة
-
+                    {% if CURRENT_LANGUAGE == "en" %}
+                        Manage the company's work locations and branches
+                    {% else %}
+                        إدارة مواقع وفروع العمل التابعة للشركة
+                    {% endif %}
                 </div>
 
             </div>
 
-
             <a
-
                 href="{% url 'hr:add_work_location' %}"
-
                 class="work-location-add-btn"
-
             >
-
                 <i class="fa-solid fa-plus"></i>
 
-                إضافة موقع عمل
-
+                {% if CURRENT_LANGUAGE == "en" %}
+                    Add Work Location
+                {% else %}
+                    إضافة موقع عمل
+                {% endif %}
             </a>
-
 
         </div>
 
 
-
-        <!-- =================================================
-             قائمة المواقع
-             ================================================= -->
+        <!-- قائمة المواقع -->
 
         <div class="work-locations-list-card">
 
-
             <h2 class="work-locations-section-title">
-
                 📍
-
-                مواقع العمل
-
+                {% if CURRENT_LANGUAGE == "en" %}
+                    Work Locations
+                {% else %}
+                    مواقع العمل
+                {% endif %}
             </h2>
-
 
             <div class="work-locations-grid">
 
-
                 {% for location in work_locations %}
-
 
                     <div class="work-location-box">
 
+<!-- عنوان الموقع -->
+<div class="work-location-title">
+    <i class="fa-solid fa-location-dot"></i>
+<span>
+    {{ location.name|supplier_name }}
+</span>
+</div>
 
-                        <!-- عنوان الموقع -->
+<!-- معلومات الموقع -->
+<div class="work-location-info">
+    <p>
+        <i class="fa-solid fa-map-pin"></i>
+        <span>
+{% if location.city %}
+    {{ location.city|supplier_name }}
 
-                        <div class="work-location-title">
+    {% if location.district %}
+        - {{ location.district|supplier_name }}
+    {% endif %}
+            {% else %}
+                {% if CURRENT_LANGUAGE == "en" %}
+                    No address available
+                {% else %}
+                    لا يوجد عنوان
+                {% endif %}
+            {% endif %}
+        </span>
+    </p>
 
-                            <i class="fa-solid fa-location-dot"></i>
+    <p>
+        <i class="fa-solid fa-ruler-combined"></i>
+        <span>
+            {% if CURRENT_LANGUAGE == "en" %}
+                Allowed radius:
+            {% else %}
+                نصف القطر:
+            {% endif %}
 
-                            <span>
+            <strong>{{ location.allowed_radius }}</strong>
 
-                                {{ location.name }}
-
-                            </span>
-
-                        </div>
-
-
-
-                        <!-- معلومات الموقع -->
-
-                        <div class="work-location-info">
-
-
-                            <!-- المدينة والمنطقة -->
-
-                            <p>
-
-                                <i class="fa-solid fa-map-pin"></i>
-
-
-                                <span>
-
-                                    {% if location.city %}
-
-                                        {{ location.city }}
-
-
-                                        {% if location.district %}
-
-                                            - {{ location.district }}
-
-                                        {% endif %}
-
-                                    {% else %}
-
-                                        لا يوجد عنوان
-
-                                    {% endif %}
-
-                                </span>
-
-                            </p>
-
-
-
-                            <!-- نصف القطر -->
-
-                            <p>
-
-                                <i class="fa-solid fa-ruler-combined"></i>
-
-
-                                <span>
-
-                                    نصف القطر:
-
-                                    <strong>
-
-                                        {{ location.allowed_radius }}
-
-                                    </strong>
-
-                                    متر
-
-                                </span>
-
-                            </p>
-
-
-                        </div>
-
+            {% if CURRENT_LANGUAGE == "en" %}
+                meters
+            {% else %}
+                متر
+            {% endif %}
+        </span>
+    </p>
+</div>
 
 
                         <!-- الحالة -->
 
                         {% if location.active %}
 
-
                             <span class="work-location-status active">
 
                                 <i class="fa-solid fa-circle"></i>
 
-                                فعال
+                                {% if CURRENT_LANGUAGE == "en" %}
+                                    Active
+                                {% else %}
+                                    فعال
+                                {% endif %}
 
                             </span>
 
-
                         {% else %}
-
 
                             <span class="work-location-status inactive">
 
                                 <i class="fa-solid fa-circle"></i>
 
-                                غير فعال
+                                {% if CURRENT_LANGUAGE == "en" %}
+                                    Inactive
+                                {% else %}
+                                    غير فعال
+                                {% endif %}
 
                             </span>
-
 
                         {% endif %}
 
 
-
-                        <!-- =================================================
-                             الإجراءات
-                             ================================================= -->
+                        <!-- الإجراءات -->
 
                         <div class="work-location-actions">
 
-
                             <a
-
                                 href="{% url 'hr:edit_work_location' location.id %}"
-
                                 class="work-location-action-btn work-location-edit-btn"
-
                             >
 
                                 <i class="fa-solid fa-pen"></i>
 
-                                تعديل
+                                {% if CURRENT_LANGUAGE == "en" %}
+                                    Edit
+                                {% else %}
+                                    تعديل
+                                {% endif %}
 
                             </a>
 
 
-
                             <a
-
                                 href="{% url 'hr:delete_work_location' location.id %}"
-
                                 class="work-location-action-btn work-location-delete-btn"
-
-                                onclick="return confirm('هل تريد حذف موقع العمل؟');"
-
+                                onclick="return confirm('{% if CURRENT_LANGUAGE == "en" %}Are you sure you want to delete this work location?{% else %}هل تريد حذف موقع العمل؟{% endif %}');"
                             >
 
                                 <i class="fa-solid fa-trash"></i>
 
-                                حذف
+                                {% if CURRENT_LANGUAGE == "en" %}
+                                    Delete
+                                {% else %}
+                                    حذف
+                                {% endif %}
 
                             </a>
 
-
                         </div>
 
-
                     </div>
-
 
                 {% empty %}
 
-
                     <div class="work-location-empty">
 
-
                         <div class="work-location-empty-icon">
-
                             📍
-
                         </div>
 
-
-                        لا توجد مواقع عمل
-
+                        {% if CURRENT_LANGUAGE == "en" %}
+                            No work locations found
+                        {% else %}
+                            لا توجد مواقع عمل
+                        {% endif %}
 
                         <div style="margin-top:8px; font-size:13px; font-weight:600;">
 
-                            لم يتم إضافة أي مواقع عمل حتى الآن.
+                            {% if CURRENT_LANGUAGE == "en" %}
+                                No work locations have been added yet.
+                            {% else %}
+                                لم يتم إضافة أي مواقع عمل حتى الآن.
+                            {% endif %}
 
                         </div>
 
-
                     </div>
-
 
                 {% endfor %}
 
-
             </div>
-
 
         </div>
 
-
     </div>
-
 
 </div>
 

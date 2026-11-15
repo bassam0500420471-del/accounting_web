@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block content %}
 
 <div class="container-fluid invoices-page mt-4">
@@ -161,7 +161,7 @@
 
                             <i class="fa-solid fa-truck-field"></i>
 
-                            {{ p.supplier.commercial_name }}
+                            {{ p.supplier.commercial_name|category_display_name }}
 
                         </td>
 

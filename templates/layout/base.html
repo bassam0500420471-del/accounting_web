@@ -794,7 +794,7 @@ html[dir="rtl"] .gpt-float {
 html[dir="ltr"] .profile-float,
 html[dir="ltr"] .gpt-float {
 
-    right: 150px;
+    right: 20px;
 
     left: auto;
 }
@@ -2009,23 +2009,30 @@ html[dir="ltr"] .gpt-float {
 
     <div class="submenu">
 
-        <!-- بوابة الموظف -->
-        <div class="menu-btn d-flex align-items-center justify-content-between">
 
+<!-- بوابة الموظف -->
+<div class="menu-btn d-flex align-items-center justify-content-between">
 
-<a href="{% url 'hr:employee_portal_share' %}">
-    <i class="fas fa-user-circle"></i>
-    <span>بوابة الموظف</span>
-</a>
+    <a href="{% url 'hr:employee_portal_share' %}">
+        <i class="fas fa-user-circle"></i>
 
-            <button
-                class="add-icon-btn"
-                onclick="goAdd('{% url 'hr:employee_portal_share' %}')"
-            >
-                +
-            </button>
+        <span>
+            {% if CURRENT_LANGUAGE == "ar" %}
+                بوابة الموظف
+            {% else %}
+                Employee Portal
+            {% endif %}
+        </span>
+    </a>
 
-        </div>
+    <button
+        class="add-icon-btn"
+        onclick="goAdd('{% url 'hr:employee_portal_share' %}')"
+    >
+        +
+    </button>
+
+</div>
 
 
         <div class="menu-btn d-flex align-items-center justify-content-between">
@@ -2172,21 +2179,24 @@ html[dir="ltr"] .gpt-float {
         </div>
 
 
-        <div class="menu-btn d-flex align-items-center justify-content-between">
+<div class="menu-btn d-flex align-items-center justify-content-between">
 
-            <a href="{% url 'hr:work_locations' %}">
-                {% trans "موقع العمل" %}
-            </a>
+    <a href="{% url 'hr:work_locations' %}">
+        {% if CURRENT_LANGUAGE == "ar" %}
+            موقع العمل
+        {% else %}
+            Work Location
+        {% endif %}
+    </a>
 
-            <button
-                class="add-icon-btn"
-                onclick="goAdd('{% url 'hr:add_work_location' %}')"
-            >
-                +
-            </button>
+    <button
+        class="add-icon-btn"
+        onclick="goAdd('{% url 'hr:add_work_location' %}')"
+    >
+        +
+    </button>
 
-        </div>
-
+</div>
 
         <div class="menu-btn">
 
@@ -2242,7 +2252,11 @@ html[dir="ltr"] .gpt-float {
 <button class="menu-btn menu-toggle">
 
     <span>
-        إضافة طريقة دفع
+        {% if CURRENT_LANGUAGE == "ar" %}
+            إضافة طريقة دفع
+        {% else %}
+            Add Payment Method
+        {% endif %}
     </span>
 
     <span class="menu-arrow">
@@ -2255,20 +2269,25 @@ html[dir="ltr"] .gpt-float {
 
     <div class="menu-btn">
 
-<a href="{% url 'pos:payment_methods_list' %}">
-     طريقة الدفع
-</a>
-<button
-    type="button"
-    class="add-icon-btn"
-    onclick="openPaymentMethodModal(event)"
->
-    +
-</button>
+        <a href="{% url 'pos:payment_methods_list' %}">
+            {% if CURRENT_LANGUAGE == "ar" %}
+                طريقة الدفع
+            {% else %}
+                Payment Method
+            {% endif %}
+        </a>
+
+        <button
+            type="button"
+            class="add-icon-btn"
+            onclick="openPaymentMethodModal(event)"
+        >
+            +
+        </button>
+
     </div>
 
 </div>
-
 <!-- =================================================
      Sales
      ================================================= -->
@@ -3129,22 +3148,35 @@ document.addEventListener(
         </div>
 
 
-        <a
-            href="/settings/"
-            class="btn btn-primary w-100 mb-2"
-        >
 
-            {% if CURRENT_LANGUAGE == "ar" %}
+{% if request.resolver_match.view_name == 'hr:employee_portal' %}
 
-                الإعدادات
+<button
+    type="button"
+    class="btn btn-primary w-100 mb-2"
+    onclick="alert('ليس لديك صلاحية الوصول إلى هذه الصفحة')"
+>
+    {% if CURRENT_LANGUAGE == "ar" %}
+        الإعدادات
+    {% else %}
+        Settings
+    {% endif %}
+</button>
 
-            {% else %}
+{% else %}
 
-                Settings
+<a
+    href="/settings/"
+    class="btn btn-primary w-100 mb-2"
+>
+    {% if CURRENT_LANGUAGE == "ar" %}
+        الإعدادات
+    {% else %}
+        Settings
+    {% endif %}
+</a>
 
-            {% endif %}
-
-        </a>
+{% endif %}
 
 
         <a

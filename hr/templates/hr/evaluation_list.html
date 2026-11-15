@@ -1,7 +1,7 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
 {% load static %}
-
+{% load supplier_translation %}
 
 {% block title %}
 {% trans "Evaluations Management" %}
@@ -925,7 +925,7 @@
 
                             <td class="evaluation-name">
 
-                                {{ evaluation.name }}
+                                {{ evaluation.name|supplier_name }}
 
                             </td>
 
@@ -934,7 +934,11 @@
 
                             <td class="evaluation-type">
 
-                                {{ evaluation.evaluation_type }}
+                                {% if evaluation.evaluation_type %}
+    {{ evaluation.evaluation_type.name|supplier_name }}
+{% else %}
+    —
+{% endif %}
 
                             </td>
 
@@ -967,7 +971,11 @@
 
                             <td class="evaluation-department">
 
-                                {{ evaluation.department|default:"—" }}
+                                {% if evaluation.department %}
+    {{ evaluation.department.name|supplier_name }}
+{% else %}
+    —
+{% endif %}
 
                             </td>
 

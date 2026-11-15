@@ -24,34 +24,18 @@ class Department(models.Model):
 
     name = models.CharField(max_length=100)
 
-class Meta:
-    ordering = ["-created_at"]
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "name"],
+                name="hr_uniq_department_name_per_company"
+            )
+        ]
 
-    constraints = [
-        models.UniqueConstraint(
-            fields=[
-                "company",
-                "target",
-                "criteria",
-                "evaluator",
-                "role",
-            ],
-            name="hr_uniq_score_per_company_evaluator",
-        ),
-
-        models.UniqueConstraint(
-            fields=[
-                "company",
-                "target",
-                "criteria",
-                "role",
-            ],
-            condition=models.Q(evaluator__isnull=True),
-            name="hr_uniq_score_without_evaluator",
-        ),
-    ]
     def __str__(self):
         return self.name
+
 
 
 class Branch(models.Model):

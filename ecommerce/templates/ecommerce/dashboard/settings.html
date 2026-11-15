@@ -1,13 +1,11 @@
 {% extends "layout/base.html" %}
-{% load static %}
+{% load static i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
 {% block sidebar %}
 {% endblock sidebar %}
 
-{% block title %}
-إعدادات المتجر
-{% endblock %}
-
+{% block title %}{% trans "إعدادات المتجر" %}{% endblock %}
 {% block extra_css %}
 
 <link rel="stylesheet"
@@ -25,7 +23,7 @@
 }
 
 .settings-page {
-    direction: rtl;
+    direction: {% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %};
     padding: 30px;
     min-height: calc(100vh - 80px);
 
@@ -1752,7 +1750,44 @@
         font-size: 12px;
     }
 }
+/* English layout */
+html[dir="ltr"] .settings-page {
+    direction: ltr;
+}
 
+html[dir="ltr"] .store-top-bar {
+    border-right: 1px solid #bdbdbd;
+    border-left: 5px solid #555555;
+}
+
+html[dir="ltr"] .settings-card::before,
+html[dir="ltr"] .settings-save-area::before {
+    right: auto;
+    left: 0;
+}
+
+html[dir="ltr"] .settings-card::after {
+    right: auto;
+    left: -80px;
+}
+
+html[dir="ltr"] .price-input input {
+    text-align: left;
+}
+
+html[dir="ltr"] .price-input span {
+    border-right: 0;
+    border-left: 1px solid #999999;
+}
+
+html[dir="ltr"] .store-top-bar span {
+    margin-right: 0;
+}
+
+html[dir="ltr"] .social-input-icon {
+    margin-right: 4px;
+    margin-left: 5px;
+}
 </style>
 {% endblock %}
 
@@ -1771,11 +1806,11 @@
     <i class="fa-solid fa-truck-fast"></i>
 
     <strong>
-        إعدادات المتجر
+        {% trans "إعدادات المتجر" %}
     </strong>
 
     <span>
-        تحكم كامل في إعدادات متجرك الإلكتروني
+        {% trans "تحكم كامل في إعدادات متجرك الإلكتروني" %}
     </span>
 
 </div>
@@ -1792,13 +1827,14 @@
         <div class="breadcrumb-nav">
 
             <a href="#">
-                لوحة التحكم
+                {% trans "لوحة التحكم" %}
             </a>
 
             <i class="fa-solid fa-angle-left"></i>
 
             <span>
-                إعدادات المتجر
+                {% trans "إعدادات المتجر" %}
+
             </span>
 
         </div>
@@ -1808,13 +1844,14 @@
 
             <i class="fa-solid fa-gear"></i>
 
-            إعدادات المتجر
+            {% trans "إعدادات المتجر" %}
+
 
         </h1>
 
 
         <p>
-            إدارة إعدادات المتجر والدفع والشحن والسياسات وعنوان المتجر
+            {% trans "إدارة إعدادات المتجر والدفع والشحن والسياسات وعنوان المتجر" %}
         </p>
 
     </div>
@@ -1847,7 +1884,7 @@
 
 
 <!-- =================================================
-     الشريط العلوي
+     {% trans "الشريط العلوي" %}
 ================================================= -->
 
 <div class="premium-card settings-card announcement-card">
@@ -1861,19 +1898,15 @@
 
     <div class="card-title">
 
-        الشريط العلوي
+        {% trans "الشريط العلوي" %}
+
 
     </div>
 
 
-    <p>
-
-        أضف الرسائل التي تظهر أعلى المتجر.
-        سيتم عرض الرسائل النشطة تلقائيًا بشكل متحرك.
-
-    </p>
-
-
+<p>
+    {% trans "أضف الرسائل التي تظهر أعلى المتجر. سيتم عرض الرسائل النشطة تلقائيًا بشكل متحرك." %}
+</p>
     <div
         id="announcementContainer"
         class="announcement-form"
@@ -1888,7 +1921,7 @@
                     name="announcement_text"
                     value="{{ announcement.text }}"
                     class="announcement-input"
-                    placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
+                    placeholder="{% trans 'مثال: 🚚 شحن سريع إلى جميع المناطق' %}"
                     maxlength="255"
                 >
 
@@ -1905,7 +1938,7 @@
                     >
 
                     <span>
-                        نشط
+                        {% trans "نشط" %}
                     </span>
 
                 </label>
@@ -1915,7 +1948,7 @@
                     type="button"
                     class="announcement-delete"
                     onclick="removeAnnouncement(this)"
-                    title="حذف"
+                    title="{% trans 'حذف' %}"
                 >
 
                     <i class="fa-solid fa-trash"></i>
@@ -1932,7 +1965,7 @@
                     type="text"
                     name="announcement_text"
                     class="announcement-input"
-                    placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
+                    placeholder="{% trans 'مثال: 🚚 شحن سريع إلى جميع المناطق' %}"
                     maxlength="255"
                 >
 
@@ -1947,7 +1980,8 @@
                     >
 
                     <span>
-                        نشط
+                        {% trans "نشط" %}
+
                     </span>
 
                 </label>
@@ -1957,7 +1991,7 @@
                     type="button"
                     class="announcement-delete"
                     onclick="removeAnnouncement(this)"
-                    title="حذف"
+                    title="{% trans 'حذف' %}"
                 >
 
                     <i class="fa-solid fa-trash"></i>
@@ -1971,18 +2005,17 @@
     </div>
 
 
-    <button
-        type="button"
-        class="announcement-add-button"
-        onclick="addAnnouncement()"
-    >
-
-        <i class="fa-solid fa-plus"></i>
-
-        إضافة إعلان آخر
-
-    </button>
-
+<button
+    type="button"
+    class="announcement-add-button"
+    onclick="addAnnouncement()"
+    data-placeholder="{% trans 'مثال: 🚚 شحن سريع إلى جميع المناطق' %}"
+    data-active="{% trans 'نشط' %}"
+    data-delete="{% trans 'حذف' %}"
+>
+    <i class="fa-solid fa-plus"></i>
+    {% trans "إضافة إعلان آخر" %}
+</button>
 </div>
 
 
@@ -2001,16 +2034,14 @@
 
     <div class="card-title">
 
-        تابعنا
+        {% trans "تابعنا" %}
 
     </div>
 
 
     <p>
 
-        أضف روابط حسابات متجرك على شبكات التواصل الاجتماعي
-        التي ستظهر للعملاء أسفل المتجر.
-
+{% trans "أضف روابط حسابات متجرك على شبكات التواصل الاجتماعي التي ستظهر للعملاء أسفل المتجر." %}
     </p>
 
 
@@ -2032,7 +2063,8 @@
                 name="facebook_url"
                 class="social-input"
                 value="{{ store.facebook_url|default:'' }}"
-                placeholder="رابط Facebook"
+                placeholder="{% trans 'رابط Facebook' %}"
+
                 autocomplete="off"
             >
 
@@ -2054,7 +2086,8 @@
                 name="instagram_url"
                 class="social-input"
                 value="{{ store.instagram_url|default:'' }}"
-                placeholder="رابط Instagram"
+                placeholder="{% trans 'رابط Instagram' %}"
+
                 autocomplete="off"
             >
 
@@ -2076,7 +2109,8 @@
                 name="twitter_url"
                 class="social-input"
                 value="{{ store.twitter_url|default:'' }}"
-                placeholder="رابط X"
+                placeholder="{% trans 'رابط X' %}"
+
                 autocomplete="off"
             >
 
@@ -2098,7 +2132,8 @@
                 name="whatsapp_url"
                 class="social-input"
                 value="{{ store.whatsapp_url|default:'' }}"
-                placeholder="رابط WhatsApp"
+                placeholder="{% trans 'رابط WhatsApp' %}"
+
                 autocomplete="off"
             >
 
@@ -2120,7 +2155,7 @@
                 name="youtube_url"
                 class="social-input"
                 value="{{ store.youtube_url|default:'' }}"
-                placeholder="رابط YouTube"
+                placeholder="{% trans 'رابط YouTube' %}"
                 autocomplete="off"
             >
 
@@ -2134,7 +2169,7 @@
 
 
 <!-- =================================================
-     عنوان المتجر
+     {% trans "عنوان المتجر" %}
 ================================================= -->
 
 <div class="premium-card settings-card settings-box">
@@ -2148,14 +2183,15 @@
 
     <div class="card-title">
 
-        عنوان المتجر
+        {% trans "عنوان المتجر" %}
+
 
     </div>
 
 
     <p>
 
-        إدارة عنوان المتجر والموقع الذي يظهر للعملاء.
+        {% trans "إدارة عنوان المتجر والموقع الذي يظهر للعملاء." %}
 
     </p>
 
@@ -2165,9 +2201,9 @@
         class="btn btn-primary"
     >
 
-        <i class="fa-solid fa-arrow-left"></i>
+        <i class="fa-solid {% if CURRENT_LANGUAGE == 'ar' %}fa-arrow-left{% else %}fa-arrow-right{% endif %}"></i>
 
-        فتح الإعدادات
+        {% trans "فتح الإعدادات" %}
 
     </a>
 
@@ -2175,7 +2211,7 @@
 
 
 <!-- =================================================
-     طرق الدفع
+     {% trans "طرق الدفع" %}
 ================================================= -->
 
 <div class="premium-card settings-card settings-box">
@@ -2189,14 +2225,15 @@
 
     <div class="card-title">
 
-        طرق الدفع
+        {% trans "طرق الدفع" %}
+
 
     </div>
 
 
     <p>
 
-        إدارة وسائل الدفع التي تظهر للعملاء أثناء إتمام الطلب.
+        {% trans "إدارة وسائل الدفع التي تظهر للعملاء أثناء إتمام الطلب." %}
 
     </p>
 
@@ -2208,7 +2245,7 @@
 
         <i class="fa-solid fa-arrow-left"></i>
 
-        فتح الإعدادات
+        {% trans "فتح الإعدادات" %}
 
     </a>
 
@@ -2216,7 +2253,7 @@
 
 
 <!-- =================================================
-     سعر التوصيل
+     {% trans "سعر التوصيل" %}
 ================================================= -->
 
 <div class="premium-card settings-card settings-box shipping-card">
@@ -2230,14 +2267,15 @@
 
     <div class="card-title">
 
-        سعر التوصيل
+        {% trans "سعر التوصيل" %}
+
 
     </div>
 
 
     <p>
 
-        تحديد رسوم التوصيل التي يدفعها العميل عند إتمام الطلب.
+        {% trans "تحديد رسوم التوصيل التي يدفعها العميل عند إتمام الطلب." %}
 
     </p>
 
@@ -2246,7 +2284,8 @@
 
         <label for="shipping_cost">
 
-            سعر التوصيل
+            {% trans "سعر التوصيل" %}
+
 
         </label>
 
@@ -2266,7 +2305,7 @@
 
             <span>
 
-                ر.س
+                {% if CURRENT_LANGUAGE == 'ar' %}ر.س{% else %}SAR{% endif %}
 
             </span>
 
@@ -2297,14 +2336,14 @@
 
         <div class="card-title">
 
-            سياسة الشحن
+            {% trans "سياسة الشحن" %}
 
         </div>
 
 
         <p>
 
-            النص الذي يظهر للعملاء عند الدخول إلى سياسة الشحن.
+            {% trans "النص الذي يظهر للعملاء عند الدخول إلى سياسة الشحن." %}
 
         </p>
 
@@ -2316,7 +2355,7 @@
                 for="policy_shipping"
             >
 
-                محتوى السياسة
+                {% trans "محتوى السياسة" %}
 
             </label>
 
@@ -2325,7 +2364,8 @@
                 id="policy_shipping"
                 name="policy_shipping"
                 class="policy-textarea"
-                placeholder="اكتب سياسة الشحن الخاصة بمتجرك..."
+                placeholder="{% trans 'اكتب سياسة الشحن الخاصة بمتجرك...' %}"
+
             >{{ policy.content }}</textarea>
 
         </div>
@@ -2348,14 +2388,14 @@
 
         <div class="card-title">
 
-            سياسة الاسترجاع
+            {% trans "سياسة الاسترجاع" %}
 
         </div>
 
 
         <p>
 
-            توضيح شروط ومدة وطريقة استرجاع المنتجات للعملاء.
+            {% trans "توضيح شروط ومدة وطريقة استرجاع المنتجات للعملاء." %}
 
         </p>
 
@@ -2367,8 +2407,7 @@
                 for="policy_return"
             >
 
-                محتوى السياسة
-
+{% trans "محتوى السياسة" %}
             </label>
 
 
@@ -2376,7 +2415,8 @@
                 id="policy_return"
                 name="policy_return"
                 class="policy-textarea"
-                placeholder="اكتب سياسة الاسترجاع الخاصة بمتجرك..."
+                placeholder="{% trans 'اكتب سياسة الاسترجاع الخاصة بمتجرك...' %}"
+
             >{{ policy.content }}</textarea>
 
         </div>
@@ -2399,14 +2439,14 @@
 
         <div class="card-title">
 
-            الشروط والأحكام
+            {% trans "الشروط والأحكام" %}
 
         </div>
 
 
         <p>
 
-            الشروط والقواعد التي يجب أن يوافق عليها العميل عند استخدام المتجر.
+            {% trans "الشروط والقواعد التي يجب أن يوافق عليها العميل عند استخدام المتجر." %}
 
         </p>
 
@@ -2418,8 +2458,7 @@
                 for="policy_terms"
             >
 
-                محتوى السياسة
-
+{% trans "محتوى السياسة" %}
             </label>
 
 
@@ -2427,7 +2466,8 @@
                 id="policy_terms"
                 name="policy_terms"
                 class="policy-textarea"
-                placeholder="اكتب الشروط والأحكام الخاصة بمتجرك..."
+                placeholder="{% trans 'اكتب الشروط والأحكام الخاصة بمتجرك...' %}"
+
             >{{ policy.content }}</textarea>
 
         </div>
@@ -2450,14 +2490,14 @@
 
         <div class="card-title">
 
-            سياسة الخصوصية
+            {% trans "سياسة الخصوصية" %}
 
         </div>
 
 
         <p>
 
-            توضيح كيفية جمع بيانات العملاء واستخدامها وحمايتها.
+            {% trans "توضيح كيفية جمع بيانات العملاء واستخدامها وحمايتها." %}
 
         </p>
 
@@ -2469,7 +2509,7 @@
                 for="policy_privacy"
             >
 
-                محتوى السياسة
+                {% trans "محتوى السياسة" %}
 
             </label>
 
@@ -2478,7 +2518,7 @@
                 id="policy_privacy"
                 name="policy_privacy"
                 class="policy-textarea"
-                placeholder="اكتب سياسة الخصوصية الخاصة بمتجرك..."
+                placeholder="{% trans 'اكتب سياسة الخصوصية الخاصة بمتجرك...' %}"
             >{{ policy.content }}</textarea>
 
         </div>
@@ -2500,14 +2540,9 @@
 
 <div class="settings-save-area">
 
-    <p>
-
-        بعد تعديل سعر التوصيل أو أي سياسة من السياسات،
-        اضغط على زر الحفظ لتطبيق التغييرات.
-
-    </p>
-
-
+<p>
+    {% trans "بعد تعديل سعر التوصيل أو أي سياسة من السياسات، اضغط على زر الحفظ لتطبيق التغييرات." %}
+</p>
     <button
         type="submit"
         class="settings-save-button"
@@ -2515,7 +2550,7 @@
 
         <i class="fa-solid fa-floppy-disk"></i>
 
-        حفظ إعدادات المتجر والسياسات
+        {% trans "حفظ إعدادات المتجر والسياسات" %}
 
     </button>
 
@@ -2547,6 +2582,14 @@ function addAnnouncement() {
 
     const index = rows.length;
 
+const addButton = document.querySelector(
+    ".announcement-add-button"
+);
+
+const placeholder = addButton.dataset.placeholder;
+const activeText = addButton.dataset.active;
+const deleteText = addButton.dataset.delete;
+
 
     const row =
         document.createElement("div");
@@ -2555,44 +2598,41 @@ function addAnnouncement() {
         "announcement-row";
 
 
-    row.innerHTML = `
+row.innerHTML = `
+
+    <input
+        type="text"
+        name="announcement_text"
+        class="announcement-input"
+        placeholder="${placeholder}"
+        maxlength="255"
+    >
+
+    <label class="announcement-check">
 
         <input
-            type="text"
-            name="announcement_text"
-            class="announcement-input"
-            placeholder="مثال: 🚚 شحن سريع إلى جميع المناطق"
-            maxlength="255"
+            type="checkbox"
+            name="announcement_active"
+            value="${index}"
+            checked
         >
 
-        <label class="announcement-check">
+        <span>${activeText}</span>
 
-            <input
-                type="checkbox"
-                name="announcement_active"
-                value="${index}"
-                checked
-            >
+    </label>
 
-            <span>
-                نشط
-            </span>
+    <button
+        type="button"
+        class="announcement-delete"
+        onclick="removeAnnouncement(this)"
+        title="${deleteText}"
+    >
 
-        </label>
+        <i class="fa-solid fa-trash"></i>
 
-        <button
-            type="button"
-            class="announcement-delete"
-            onclick="removeAnnouncement(this)"
-            title="حذف"
-        >
+    </button>
 
-            <i class="fa-solid fa-trash"></i>
-
-        </button>
-
-    `;
-
+`;
 
     container.appendChild(row);
 

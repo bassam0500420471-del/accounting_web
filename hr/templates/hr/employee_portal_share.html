@@ -1,46 +1,34 @@
 
 {% extends "layout/base.html" %}
 
-{% block title %}مشاركة رابط بوابة الموظفين{% endblock %}
+{% block title %}{% if CURRENT_LANGUAGE == "ar" %}مشاركة رابط بوابة الموظفين{% else %}Share Employee Portal Link{% endif %}{% endblock %}
 
 {% block content %}
 <style>
 
 .employee-share-page {
-    direction: rtl;
-
-    /* شغل كامل عرض منطقة المحتوى */
+    direction: {% if CURRENT_LANGUAGE == "ar" %}rtl{% else %}ltr{% endif %};
     width: 100%;
     max-width: none;
     min-width: 0;
-
-    /* إلغاء المسافة العلوية والجانبية */
     margin: 0;
     padding: 0;
-
     box-sizing: border-box;
 }
 
 .employee-share-card {
-    /* العرض الكامل */
     width: 100%;
     max-width: none;
-
-    /* التحكم في الارتفاع */
     min-height: 260px;
-
-    /* المسافة الداخلية */
     padding: 50px;
-
     border-radius: 0;
     background: linear-gradient(145deg, #f8f8f8, #d8d8d8);
     border: 1px solid #fff;
-
     box-shadow: 10px 10px 24px #bcbcbc,
                 -7px -7px 20px #fff;
-
     box-sizing: border-box;
 }
+
 .employee-share-heading {
     display: flex;
     align-items: center;
@@ -146,10 +134,20 @@
         <div class="employee-share-heading">
             <div class="employee-share-icon">🔗</div>
             <div>
-                <h2>رابط بوابة الموظفين</h2>
+                <h2>
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        رابط بوابة الموظفين
+                    {% else %}
+                        Employee Portal Link
+                    {% endif %}
+                </h2>
+
                 <p>
-                    انسخ الرابط وأرسله للموظف ليتمكن من الدخول إلى
-                    بوابته بعد تسجيل الدخول بحسابه.
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        انسخ الرابط وأرسله للموظف ليتمكن من الدخول إلى بوابته بعد تسجيل الدخول بحسابه.
+                    {% else %}
+                        Copy the link and send it to the employee so they can access their portal after signing in to their account.
+                    {% endif %}
                 </p>
             </div>
         </div>
@@ -163,19 +161,31 @@
             >
 
             <button type="button" onclick="copyEmployeeShareUrl()">
-                📋 نسخ الرابط
+                {% if CURRENT_LANGUAGE == "ar" %}
+                    📋 نسخ الرابط
+                {% else %}
+                    📋 Copy Link
+                {% endif %}
             </button>
 
             <button
                 type="button"
                 onclick="window.location.href='{% url 'hr:employee_portal' %}'"
             >
-                ↗ فتح البوابة
+                {% if CURRENT_LANGUAGE == "ar" %}
+                    ↗ فتح البوابة
+                {% else %}
+                    ↗ Open Portal
+                {% endif %}
             </button>
         </div>
 
         <div id="employeeShareMessage">
-            ✓ تم نسخ الرابط بنجاح، يمكنك إرساله للموظف.
+            {% if CURRENT_LANGUAGE == "ar" %}
+                ✓ تم نسخ الرابط بنجاح، يمكنك إرساله للموظف.
+            {% else %}
+                ✓ Link copied successfully. You can now send it to the employee.
+            {% endif %}
         </div>
 
     </div>
@@ -196,10 +206,22 @@ function copyEmployeeShareUrl() {
             if (document.execCommand("copy")) {
                 message.style.display = "block";
             } else {
-                alert("تعذر النسخ تلقائيًا. انسخ الرابط يدويًا.");
+                alert(
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        "تعذر النسخ تلقائيًا. انسخ الرابط يدويًا."
+                    {% else %}
+                        "Unable to copy automatically. Please copy the link manually."
+                    {% endif %}
+                );
             }
         } catch (error) {
-            alert("تعذر النسخ تلقائيًا. انسخ الرابط يدويًا.");
+            alert(
+                {% if CURRENT_LANGUAGE == "ar" %}
+                    "تعذر النسخ تلقائيًا. انسخ الرابط يدويًا."
+                {% else %}
+                    "Unable to copy automatically. Please copy the link manually."
+                {% endif %}
+            );
         }
     };
 

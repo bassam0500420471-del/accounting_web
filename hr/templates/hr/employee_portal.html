@@ -836,79 +836,240 @@
     gap: 14px;
 }
 
-.portal-leave-header #open-employee-leave-modal {
-    margin-right: auto;
-    margin-left: 0;
+/* ضبط زر طلب الإجازة داخل حدود الصفحة */
+.portal-section-title.portal-leave-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible !important;
+}
+
+.portal-leave-heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.portal-section-title.portal-leave-header #open-employee-leave-modal {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    position: static !important;
+    transform: none !important;
+    margin: 0 !important;
+    order: 0 !important;
+    flex-shrink: 0 !important;
+    max-width: 100% !important;
+    width: auto !important;
+    white-space: normal !important;
+    box-sizing: border-box;
+}
+<style>
+.employee-portal-share {
+    direction: rtl;
+    margin: 0 0 22px;
+    padding: 24px;
+    border-radius: 22px;
+    color: #fff;
+    background: linear-gradient(145deg, #303438, #17191b);
+    border: 1px solid #555;
+    box-shadow: 9px 9px 20px #bcbcbc,
+                -5px -5px 14px #fff;
+}
+
+.employee-portal-share-heading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.employee-portal-share-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
     flex-shrink: 0;
-    order: 0;
-    transform: translateX(-500px);
+    border-radius: 16px;
+    background: linear-gradient(145deg, #555b60, #292d30);
+    box-shadow: 4px 4px 9px #111,
+                -2px -2px 6px #60666b;
+    font-size: 25px;
 }
 
-/* إظهار الزر في الجوال */
-@media screen and (max-width: 768px) {
-    .portal-section-title.portal-leave-header {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: flex-start !important;
-        align-items: center !important;
-        overflow: visible !important;
-    }
-
-    .portal-section-title.portal-leave-header #open-employee-leave-modal {
-        display: inline-flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative !important;
-        right: auto !important;
-        left: auto !important;
-        transform: none !important;
-        order: 0 !important;
-        margin: 12px 0 0 0 !important;
-        max-width: 100% !important;
-        white-space: normal !important;
-        flex-shrink: 0 !important;
-       transform: translateX(-520px) !important;
-    }
+.employee-portal-share h3 {
+    margin: 0 0 7px;
+    color: #fff;
+    font-weight: 900;
+    font-size: 21px;
 }
 
-/* إظهار زر طلب الإجازة في الجوال */
-@media (hover: none) and (pointer: coarse), (max-width: 768px) {
-    .portal-section-title.portal-leave-header {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        overflow: visible !important;
-    }
-
-    .portal-section-title.portal-leave-header #open-employee-leave-modal {
-        display: inline-flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative !important;
-        transform: translateX(-285px) !important;
-        order: 0 !important;
-        margin: 12px 0 0 0 !important;
-        max-width: 100% !important;
-        width: auto !important;
-        white-space: normal !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-    }
+.employee-portal-share p {
+    margin: 0;
+    color: #c8cdd1;
+    line-height: 1.8;
 }
 
+.employee-portal-share-link {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    padding: 10px;
+    border-radius: 15px;
+    background: #222527;
+    box-shadow: inset 4px 4px 8px #111,
+                inset -2px -2px 5px #414548;
+}
+
+.employee-portal-share-link input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #505559;
+    border-radius: 10px;
+    background: #34383b;
+    color: #fff;
+    font-size: 14px;
+}
+
+.employee-portal-share-link button {
+    padding: 12px 20px;
+    border: 1px solid #777;
+    border-radius: 11px;
+    color: #fff;
+    background: linear-gradient(145deg, #666, #363636);
+    box-shadow: 4px 4px 8px #111,
+                -2px -2px 5px #555;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.employee-portal-share-link button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(145deg, #777, #444);
+}
+
+#employeePortalCopyMessage {
+    margin-top: 14px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    background: #174c36;
+    color: #b9f6d5;
+    font-weight: 800;
+}
+
+@media (max-width: 650px) {
+    .employee-portal-share {
+        padding: 16px;
+    }
+
+    .employee-portal-share-link {
+        flex-direction: column;
+    }
+
+    .employee-portal-share-link button {
+        width: 100%;
+    }
+}
+/* مفتاح تبديل اللغة - تصميم 3D رمادي */
+.portal-language-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #e5e5e5, #c9c9c9);
+    box-shadow:
+        inset 3px 3px 6px #bcbcbc,
+        inset -3px -3px 6px #fff;
+    direction: ltr;
+    flex-shrink: 0;
+}
+
+.portal-language-switch button {
+    min-width: 66px;
+    padding: 9px 13px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #555;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.portal-language-switch button.active {
+    color: #fff;
+    background: linear-gradient(145deg, #686868, #383838);
+    box-shadow:
+        4px 4px 8px #aaa,
+        -3px -3px 7px #fff;
+}
+
+.portal-language-switch button:hover {
+    transform: translateY(-1px);
+}
+
+.employee-portal[dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+}
+
+.employee-portal[dir="ltr"] .portal-table th,
+.employee-portal[dir="ltr"] .portal-table td {
+    text-align: left;
+}
+
+.employee-portal[dir="ltr"] .portal-section-close {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.employee-portal[dir="ltr"] .portal-attendance-pagination {
+    direction: ltr;
+}
+
+.employee-portal[dir="ltr"] .portal-form-field input,
+.employee-portal[dir="ltr"] .portal-form-field select,
+.employee-portal[dir="ltr"] .portal-form-field textarea {
+    text-align: left;
+}
+
+@media (max-width: 650px) {
+    .portal-language-switch button {
+        min-width: 58px;
+        padding: 8px 10px;
+    }
+}
+</style>
 </style>
 <div class="employee-portal">
-{% if portal_error %}
-    <div class="portal-error">{{ portal_error }}</div>
-{% else %}
 
+
+{% if not portal_error %}
     <div class="portal-topbar">
         <div class="portal-brand">
             <div class="portal-brand-icon">♟</div>
             <div>بوابة الموظف<small>الخدمات الذاتية للموظفين</small></div>
         </div>
-        <div class="portal-date">مرحبًا بك في حسابك الوظيفي</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+
+    <div class="portal-date" data-i18n="welcome_account">
+        مرحبًا بك في حسابك الوظيفي
+    </div>
+
+    <div class="portal-language-switch" aria-label="Language">
+        <button type="button" data-language="ar">العربية</button>
+        <button type="button" data-language="en">English</button>
+    </div>
+
+</div>
     </div>
 
     <div class="portal-welcome">
@@ -925,7 +1086,13 @@
     <div class="portal-avatar">♟</div>
 {% endif %}
             <div>
-                <strong>{{ employee.first_name_ar }} {{ employee.last_name_ar }}</strong>
+                <strong
+    id="portal-employee-name"
+    data-name-ar="{{ employee.first_name_ar }} {{ employee.last_name_ar }}"
+    data-name-en="{{ employee.first_name_en }} {{ employee.last_name_en }}"
+>
+    {{ employee.first_name_ar }} {{ employee.last_name_ar }}
+</strong>
                 <span>الرقم الوظيفي: {{ employee.employee_number|default:"—" }}</span>
                 <span>{% if employee.active %}على رأس العمل{% else %}غير نشط{% endif %}</span>
             </div>
@@ -2223,6 +2390,189 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+/* =========================================
+   ترجمة صفحة البصمة داخل بوابة الموظف
+========================================= */
+
+window.translateAttendancePartial = (function () {
+
+    const translations = {
+
+        "الحضور والانصراف": "Attendance & Departure",
+        "أهلاً بك": "Welcome",
+        "زائر": "Visitor",
+        "شركة": "Company",
+        "شعار الشركة": "Company Logo",
+        "لوحة العمل": "Work Dashboard",
+        "تسجيل العملية": "Record Attendance",
+        "سيتم تسجيل الانصراف": "Departure will be recorded",
+        "سيتم تسجيل الحضور": "Attendance will be recorded",
+        "جاري تحديد موقعك...": "Locating you...",
+        "تحديد الموقع...": "Locating...",
+        "تحديد الموقع": "Get Location",
+        "تحديث": "Refresh",
+        "تسجيل الانصراف": "Check Out",
+        "تسجيل الحضور": "Check In",
+        "سيتم تسجيل موقعك مع كل عملية حضور أو انصراف":
+            "Your location will be recorded with every check-in or check-out",
+        "سجل عمليات اليوم": "Today's Attendance Records",
+        "اليوم": "Today",
+        "حضور وانصراف": "Check-in & Check-out",
+        "موقع مسجل": "Location Recorded",
+        "بدون موقع": "No Location",
+        "تسجيل حضور": "Check In",
+        "تم تسجيل الموقع مع هذه العملية": "Location recorded with this operation",
+        "دقة تقريبية:": "Approximate accuracy:",
+        "متر": "meters",
+        "لا توجد عمليات مسجلة اليوم": "No records today",
+        "الموظف غير مرتبط بحساب مستخدم.":
+            "The employee is not linked to a user account.",
+        "الإعدادات": "Settings",
+        "الطلبات": "Requests",
+        "السجل": "Records",
+        "الرئيسية": "Home",
+        "دقة الموقع:": "Location accuracy:",
+        "المتصفح لا يدعم تحديد الموقع.":
+            "Your browser does not support geolocation.",
+        "تم تحديد موقعك بنجاح.": "Your location was detected successfully.",
+        "تعذر تحديد موقعك.": "Unable to determine your location.",
+        "تم رفض صلاحية الموقع. اسمح للموقع من إعدادات المتصفح.":
+            "Location permission denied. Please allow location access in your browser settings.",
+        "تعذر الحصول على موقعك الحالي.":
+            "Unable to retrieve your current location.",
+        "انتهت مهلة تحديد الموقع. حاول مرة أخرى.":
+            "Location request timed out. Please try again.",
+        "يجب تحديد موقعك أولاً قبل تسجيل الحضور.":
+            "You must determine your location before checking in.",
+        "هل تريد تسجيل الحضور الآن؟":
+            "Do you want to check in now?",
+        "هل تريد تسجيل الانصراف الآن؟":
+            "Do you want to check out now?",
+        "جاري التسجيل...": "Recording...",
+        "مو": "EM"
+
+    };
+
+    let observer = null;
+
+    function translateNode(node) {
+
+        if (!node || node.nodeType !== Node.TEXT_NODE) {
+            return;
+        }
+
+        const original = node.nodeValue;
+        const trimmed = original.trim();
+
+        if (!trimmed || !translations[trimmed]) {
+            return;
+        }
+
+        node.nodeValue = original.replace(
+            trimmed,
+            translations[trimmed]
+        );
+    }
+
+    function translateElement(element) {
+
+        if (!element) return;
+
+        const walker = document.createTreeWalker(
+            element,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode(node) {
+                    const parent = node.parentElement;
+
+                    if (
+                        !parent ||
+                        parent.closest("script, style, textarea, input")
+                    ) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            }
+        );
+
+        let node;
+
+        while ((node = walker.nextNode())) {
+            translateNode(node);
+        }
+
+        element.querySelectorAll("[title], [alt]").forEach(function (el) {
+
+            ["title", "alt"].forEach(function (attribute) {
+
+                const value = el.getAttribute(attribute);
+
+                if (translations[value]) {
+                    el.setAttribute(attribute, translations[value]);
+                }
+
+            });
+
+        });
+    }
+
+    return function (root, lang) {
+
+        if (!root) return;
+
+        if (lang !== "en") {
+            return;
+        }
+
+        translateElement(root);
+
+        // مراقبة الرسائل التي تظهر لاحقاً من GPS
+        // أو عند تغيير حالة زر الحضور والانصراف
+
+        if (observer) {
+            observer.disconnect();
+        }
+
+        observer = new MutationObserver(function (mutations) {
+
+            mutations.forEach(function (mutation) {
+
+                if (mutation.type === "characterData") {
+
+                    translateNode(mutation.target);
+
+                }
+
+                mutation.addedNodes.forEach(function (node) {
+
+                    if (node.nodeType === Node.TEXT_NODE) {
+
+                        translateNode(node);
+
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+
+                        translateElement(node);
+
+                    }
+
+                });
+
+            });
+
+        });
+
+        observer.observe(root, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+
+    };
+
+})();
+
     let fingerprintAttendanceLoaded = false;
     let fingerprintAttendanceLoading = false;
 
@@ -2236,7 +2586,10 @@ document.addEventListener("DOMContentLoaded", function () {
         fingerprintAttendanceLoading = true;
         container.innerHTML = '<div class="portal-empty">جاري تحميل صفحة البصمة...</div>';
 
-        fetch("{% url 'hr:attendance_check_page' %}?embed=1", {
+        fetch(
+    "{% url 'hr:attendance_check_page' %}?embed=1&lang=" +
+    (window.employeePortalLanguage || "ar"),
+    {
             method: "GET",
             credentials: "same-origin",
             headers: {
@@ -2249,14 +2602,29 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             return response.text();
         })
-        .then(function (html) {
-            container.innerHTML = html;
-            fingerprintAttendanceLoaded = true;
 
-            if (typeof window.initializeAttendancePartial === "function") {
-                window.initializeAttendancePartial(container);
-            }
-        })
+.then(function (html) {
+
+    container.innerHTML = html;
+
+    fingerprintAttendanceLoaded = true;
+
+    // ترجمة صفحة البصمة حسب اللغة المختارة
+    const currentLanguage =
+        window.employeePortalLanguage ||
+        localStorage.getItem("employee_portal_language") ||
+        "ar";
+
+    if (typeof window.translateAttendancePartial === "function") {
+        window.translateAttendancePartial(container, currentLanguage);
+    }
+
+    // تشغيل وظائف GPS والحضور كما كانت
+    if (typeof window.initializeAttendancePartial === "function") {
+        window.initializeAttendancePartial(container);
+    }
+
+})
         .catch(function () {
             container.innerHTML =
                 '<div class="portal-empty">تعذر تحميل صفحة البصمة. يرجى تحديث الصفحة والمحاولة مجددًا.</div>';
@@ -2267,14 +2635,168 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     window.loadFingerprintAttendance = loadFingerprintAttendance;
+// ======================================
+// ترجمة صفحة البصمة داخل بوابة الموظف
+// ======================================
 
+const attendanceTranslations = {
+    "لوحة الحضور والانصراف": "Attendance Dashboard",
+    "حالة الموقع": "Location Status",
+    "تحديد الموقع": "Get Location",
+    "تحديث": "Refresh",
+    "الحضور والانصراف": "Attendance & Check-out",
+    "أهلاً بك": "Welcome",
+    "زائر": "Visitor",
+    "شركة": "Company",
+    "شعار الشركة": "Company Logo",
+    "لوحة العمل": "Work Dashboard",
+    "تسجيل العملية": "Record Attendance",
+    "سيتم تسجيل الانصراف": "Check-out will be recorded",
+    "سيتم تسجيل الحضور": "Check-in will be recorded",
+    "جاري تحديد موقعك...": "Detecting your location...",
+    "تحديد الموقع...": "Getting location...",
+    "تسجيل الانصراف": "Check Out",
+    "تسجيل الحضور": "Check In",
+    "الانصراف": "Check Out",
+    "الحضور": "Check In",
+    "سيتم تسجيل موقعك مع كل عملية حضور أو انصراف":
+        "Your location will be recorded with every check-in or check-out",
+    "سجل عمليات اليوم": "Today's Attendance Records",
+    "اليوم": "Today",
+    "حضور وانصراف": "Check-in & Check-out",
+    "موقع مسجل": "Location Recorded",
+    "بدون موقع": "No Location",
+    "تسجيل حضور": "Check In",
+    "تم تسجيل الموقع مع هذه العملية": "Location recorded with this operation",
+    "دقة تقريبية:": "Approximate accuracy:",
+    "متر": "meters",
+    "لا توجد عمليات مسجلة اليوم": "No attendance records today",
+    "الموظف غير مرتبط بحساب مستخدم.":
+        "The employee is not linked to a user account.",
+    "الإعدادات": "Settings",
+    "الطلبات": "Requests",
+    "السجل": "Records",
+    "الرئيسية": "Home",
+    "دقة الموقع:": "Location accuracy:",
+    "المتصفح لا يدعم تحديد الموقع.":
+        "Your browser does not support geolocation.",
+    "تحديد الموقع يتطلب HTTPS أو localhost.":
+        "Location access requires HTTPS or localhost.",
+    "تم تحديد موقعك بنجاح.":
+        "Your location was detected successfully.",
+    "تعذر تحديد موقعك.": "Unable to detect your location.",
+    "صلاحية الموقع مرفوضة. اسمح للمتصفح باستخدام موقعك.":
+        "Location permission denied. Please allow location access in your browser settings.",
+    "تعذر الحصول على موقعك. تحقق من إعدادات الموقع.":
+        "Unable to get your location. Check your location settings.",
+    "انتهت مهلة تحديد الموقع. حاول مرة أخرى.":
+        "Location detection timed out. Please try again.",
+    "حدد موقعك أولًا قبل تسجيل الحضور أو الانصراف.":
+        "Please detect your location before checking in or out.",
+    "جاري التسجيل...": "Recording...",
+    "تعذر تسجيل العملية. حاول مرة أخرى.":
+        "Unable to record attendance. Please try again.",
+    "حدث خطأ أثناء التسجيل.": "An error occurred while recording.",
+    "إعادة تحديد الموقع": "Retry Location",
+    "تعذر تحديد الموقع": "Unable to detect location",
+    "تحقق من الاتصال": "Check your connection"
+};
+
+
+// ترجمة النصوص داخل صفحة البصمة
+// ترجمة النصوص داخل صفحة البصمة
+function translateAttendancePartial(root, lang) {
+
+    if (!root) return;
+
+    lang = lang === "en" ? "en" : "ar";
+
+    function translateValue(value) {
+        const trimmed = value.trim();
+
+        if (!trimmed) return trimmed;
+
+        if (!root.__attendanceOriginals) {
+            root.__attendanceOriginals = new WeakMap();
+        }
+
+        return trimmed;
+    }
+
+    const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT,
+        null
+    );
+
+    let node;
+
+    while ((node = walker.nextNode())) {
+
+        const currentText = node.nodeValue;
+
+        if (!node.__attendanceArabicOriginal) {
+            node.__attendanceArabicOriginal = currentText;
+        }
+
+        const original = node.__attendanceArabicOriginal;
+        const trimmed = original.trim();
+
+        if (!trimmed) continue;
+
+        let translated = trimmed;
+
+        if (lang === "en") {
+            translated = attendanceTranslations[trimmed] || trimmed;
+        }
+
+        node.nodeValue = original.replace(trimmed, translated);
+    }
+
+    root.querySelectorAll("[title], [alt]").forEach(function (element) {
+
+        ["title", "alt"].forEach(function (attribute) {
+
+            if (!element.hasAttribute(attribute)) return;
+
+            const key = "attendanceOriginal" + attribute;
+
+            if (!element.dataset[key]) {
+                element.dataset[key] = element.getAttribute(attribute);
+            }
+
+            const original = element.dataset[key];
+
+            element.setAttribute(
+                attribute,
+                lang === "en"
+                    ? (attendanceTranslations[original] || original)
+                    : original
+            );
+        });
+    });
+
+    root.dir = lang === "ar" ? "rtl" : "ltr";
+    root.style.direction = lang === "ar" ? "rtl" : "ltr";
+}
+
+// ترجمة أي رسالة تظهر أثناء عمل البصمة
+window.attendanceText = function (value) {
+
+    const lang = window.employeePortalLanguage || "ar";
+
+    return lang === "en"
+        ? (attendanceTranslations[value] || value)
+        : value;
+};
+
+window.translateAttendancePartial = translateAttendancePartial;
     function initializeAttendancePartial(root) {
         const form = root.querySelector("#attendance-form");
         const button = root.querySelector("#attendance-btn");
 
         if (!form || !button || form.dataset.initialized === "1") return;
         form.dataset.initialized = "1";
-
         const lat = root.querySelector("#form-latitude");
         const lon = root.querySelector("#form-longitude");
         const accuracy = root.querySelector("#form-accuracy");
@@ -2289,31 +2811,67 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let locationReady = false;
 
-        function gpsStatus(type, message, meters) {
-            if (status) status.className = "gps-status mb-3 " + type;
-            if (statusText) statusText.textContent = message;
+function gpsStatus(type, message, meters) {
 
-            if (accuracyText) {
-                accuracyText.textContent = meters != null
-                    ? "دقة الموقع: " + Math.round(meters) + " متر"
-                    : "";
-            }
+    const lang =
+        window.employeePortalLanguage ||
+        localStorage.getItem("employee_portal_language") ||
+        "ar";
 
-            if (statusIcon) {
-                statusIcon.className = type === "success"
-                    ? "fas fa-location-dot me-2 ms-2"
-                    : type === "danger"
-                        ? "fas fa-location-xmark me-2 ms-2"
-                        : "fas fa-location-crosshairs me-2 ms-2";
-            }
-        }
+    const gpsMessages = {
+        "جاري تحديد موقعك...": "Detecting your location...",
+        "تم تحديد موقعك بنجاح.": "Your location was detected successfully.",
+        "تعذر تحديد موقعك.": "Unable to detect your location.",
+        "المتصفح لا يدعم تحديد الموقع.": "Your browser does not support geolocation.",
+        "تحديد الموقع يتطلب HTTPS أو localhost.": "Location access requires HTTPS or localhost.",
+        "صلاحية الموقع مرفوضة. اسمح للمتصفح باستخدام موقعك.": "Location permission denied. Please allow location access.",
+        "تعذر الحصول على موقعك. تحقق من إعدادات الموقع.": "Unable to get your location. Check your location settings.",
+        "انتهت مهلة تحديد الموقع. حاول مرة أخرى.": "Location detection timed out. Please try again.",
+        "حدد موقعك أولًا قبل تسجيل الحضور أو الانصراف.": "Please detect your location before checking in or out."
+    };
 
+    if (lang === "en") {
+        message = gpsMessages[message] || message;
+    }
+
+    if (status) {
+        status.className = "gps-status mb-3 " + type;
+    }
+
+    if (statusText) {
+        statusText.textContent = message;
+    }
+
+    if (accuracyText) {
+        accuracyText.textContent = meters != null
+            ? (lang === "en"
+                ? "Location accuracy: " + Math.round(meters) + " meters"
+                : "دقة الموقع: " + Math.round(meters) + " متر")
+            : "";
+    }
+
+    if (statusIcon) {
+        statusIcon.className = type === "success"
+            ? "fas fa-location-dot me-2 ms-2"
+            : type === "danger"
+                ? "fas fa-location-xmark me-2 ms-2"
+                : "fas fa-location-crosshairs me-2 ms-2";
+    }
+}
         function getLocation() {
             locationReady = false;
             button.disabled = true;
 
-            if (buttonText) buttonText.textContent = "جاري تحديد الموقع...";
+if (buttonText) {
+    const lang =
+        window.employeePortalLanguage ||
+        localStorage.getItem("employee_portal_language") ||
+        "ar";
 
+    buttonText.textContent = lang === "en"
+        ? "Detecting your location..."
+        : "جاري تحديد موقعك...";
+}
             if (!navigator.geolocation) {
                 gpsStatus("danger", "المتصفح لا يدعم تحديد الموقع.");
                 if (buttonText) buttonText.textContent = "تعذر تحديد الموقع";
@@ -2337,15 +2895,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     gpsStatus("success", "تم تحديد موقعك بنجاح.", position.coords.accuracy);
 
-                    const action = root.querySelector("#attendance-action");
-                    if (buttonText) {
-                        buttonText.textContent =
-                            action && action.value === "check_out"
-                                ? " الانصراف"
-                                : " الحضور";
-                    }
+const action = root.querySelector("#attendance-action");
 
-                    if (buttonIcon) buttonIcon.className = "fas fa-fingerprint mb-2";
+const currentLanguage =
+    window.employeePortalLanguage ||
+    localStorage.getItem("employee_portal_language") ||
+    "ar";
+
+if (buttonText) {
+    if (currentLanguage === "en") {
+        buttonText.textContent =
+            action && action.value === "check_out"
+                ? "Check Out"
+                : "Check In";
+    } else {
+        buttonText.textContent =
+            action && action.value === "check_out"
+                ? "تسجيل الانصراف"
+                : "تسجيل الحضور";
+    }
+}                    if (buttonIcon) buttonIcon.className = "fas fa-fingerprint mb-2";
                     button.disabled = false;
                 },
                 function (error) {
@@ -2389,7 +2958,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             button.disabled = true;
-            if (buttonText) buttonText.textContent = "جاري التسجيل...";
+            if (buttonText) {
+    buttonText.textContent = window.attendanceText("جاري التسجيل...");
+}
 
             try {
                 const response = await fetch(form.getAttribute("action"), {
@@ -2403,9 +2974,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     throw new Error("تعذر تسجيل العملية. حاول مرة أخرى.");
                 }
 
-                const html = await response.text();
-                root.innerHTML = html;
-                initializeAttendancePartial(root);
+const html = await response.text();
+root.innerHTML = html;
+
+// الاحتفاظ باللغة المختارة
+const currentLanguage =
+    window.employeePortalLanguage ||
+    localStorage.getItem("employee_portal_language") ||
+    "ar";
+
+// تطبيق الترجمة أولًا
+if (typeof window.translateAttendancePartial === "function") {
+    window.translateAttendancePartial(root, currentLanguage);
+}
+
+// تهيئة صفحة البصمة مرة واحدة
+initializeAttendancePartial(root);
             } catch (error) {
                 gpsStatus("danger", error.message || "حدث خطأ أثناء التسجيل.");
                 button.disabled = !locationReady;
@@ -2679,7 +3263,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    const evaluationUrl = "{% url 'hr:evaluation_record_start' %}?portal=1";
 
 
 
@@ -2696,6 +3279,15 @@ function openEvaluationModal() {
 frame.onerror = function () {
     console.error("تعذر تحميل صفحة التقييم داخل النافذة:", frame.src);
 };
+
+const selectedLanguage =
+    window.employeePortalLanguage ||
+    localStorage.getItem("employee_portal_language") ||
+    "ar";
+
+const evaluationUrl =
+    "{% url 'hr:evaluation_record_start' %}?portal=1&lang=" +
+    encodeURIComponent(selectedLanguage);
 
 frame.src = evaluationUrl;
 }
@@ -2726,6 +3318,476 @@ function closeEvaluationModal() {
         }
     });
 });
+</script>
+<script>
+function copyEmployeePortalLink() {
+    const input = document.getElementById("employeePortalShareUrl");
+    const message = document.getElementById("employeePortalCopyMessage");
+
+    if (!input || !message) return;
+
+    const copyFallback = () => {
+        input.focus();
+        input.select();
+        input.setSelectionRange(0, input.value.length);
+
+        try {
+            const copied = document.execCommand("copy");
+            if (copied) {
+                message.style.display = "block";
+            } else {
+                alert("تعذر النسخ تلقائيًا. حدد الرابط وانسخه يدويًا.");
+            }
+        } catch (error) {
+            alert("تعذر النسخ تلقائيًا. حدد الرابط وانسخه يدويًا.");
+        }
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(input.value)
+            .then(() => {
+                message.style.display = "block";
+            })
+            .catch(copyFallback);
+    } else {
+        copyFallback();
+    }
+}
+</script>
+<script>
+(function () {
+    "use strict";
+
+    const LANGUAGE_KEY = "employee_portal_language";
+
+const translations = {
+    welcome_account: {
+        ar: "مرحبًا بك في حسابك الوظيفي",
+        en: "Welcome to Your Employee Portal"
+    },
+
+    "مرحبًا بك في حسابك الوظيفي": "Welcome to Your Employee Portal",
+    "بوابة الموظف": "Employee Portal",
+    "الخدمات الذاتية للموظفين": "Employee Self Services",
+    "مرحبًا بك في بوابة الموظف": "Welcome to the Employee Portal",
+    "يمكنك الاطلاع على بياناتك الوظيفية وسجلات الحضور والإجازات والرواتب، ومتابعة طلباتك من مكان واحد.": "You can view your employment details, attendance records, leaves, salaries, and track your requests in one place.",
+
+    "الرقم الوظيفي:": "Employee Number:",
+    "على رأس العمل": "Active",
+    "غير نشط": "Inactive",
+
+    "ملفي الوظيفي": "My Employment Profile",
+    "البيانات الشخصية": "Personal Information",
+    "بياناتك الشخصية والقسم والفرع والمسمى الوظيفي.": "Your personal information, department, branch, and job title.",
+    "عرض التفاصيل ←": "View Details ←",
+
+    "تسجيل الدوام": "Attendance Registration",
+    "بصمة الموظف": "Employee Fingerprint",
+    "تسجيل الحضور والانصراف وفتح صفحة البصمة المعتمدة في الموارد البشرية.": "Register check-in and check-out using the approved HR attendance page.",
+    "فتح صفحة البصمة ←": "Open Fingerprint Page ←",
+
+    "سجل الدوام": "Attendance Records",
+    "الحضور والانصراف": "Attendance",
+    "مراجعة سجلات الحضور والتأخير وساعات العمل.": "Review attendance records, lateness, and working hours.",
+
+    "رصيد الطلبات": "Leave Balance",
+    "الإجازات": "Leaves",
+    "الاطلاع على طلبات الإجازات وحالاتها المسجلة.": "View your leave requests and their statuses.",
+
+    "المستحقات المالية": "Financial Entitlements",
+    "الرواتب": "Salaries",
+    "مراجعة سجلات الرواتب المعتمدة والمصروفة.": "Review approved and paid salary records.",
+
+    "الخدمات الذاتية": "Self Services",
+    "إضافة طلب": "Submit a Request",
+    "تقديم طلب سلفة أو تذكرة أو ترقية أو نقل أو تغيير وردية.": "Submit an advance, ticket, promotion, transfer, or shift-change request.",
+    "إضافة طلب جديد ←": "Add New Request ←",
+
+    "المتابعة": "Follow-up",
+    "طلباتي": "My Requests",
+"طلباتي وحالة الطلبات": "My Requests and Status",
+"متابعة الطلبات المقدمة من حسابك": "Track requests submitted from your account",
+"لا توجد طلبات حتى الآن. ستظهر طلباتك هنا بعد إرسالها.": "There are no requests yet. Your requests will appear here after submission.",
+    "متابعة حالة الطلبات والاطلاع على نتائجها بعد ربط النظام.": "Track your requests and view their results.",
+
+    "التطوير الوظيفي": "Career Development",
+    "إضافة تقييم": "Add Evaluation",
+    "الوصول إلى نموذج التقييم وفق صلاحيات الموظف.": "Access the evaluation form according to your permissions.",
+
+    "السجل الوظيفي": "Employment Record",
+    "تقييماتي": "My Evaluations",
+    "الاطلاع على التقييمات المسجلة ونتائجها بعد ربط السجلات.": "View your recorded evaluations and results.",
+
+    "البيانات الشخصية والوظيفية": "Personal and Employment Information",
+    "معلومات ملفك الوظيفي المسجلة في النظام — للعرض فقط": "Your employment information registered in the system — view only",
+    "البيانات الأساسية": "Basic Information",
+    "الاسم الأول بالعربية": "First Name (Arabic)",
+    "اسم العائلة بالعربية": "Last Name (Arabic)",
+    "الاسم الأول بالإنجليزية": "First Name (English)",
+    "اسم العائلة بالإنجليزية": "Last Name (English)",
+    "البريد الإلكتروني": "Email",
+    "رقم الجوال": "Mobile Number",
+    "الجنس": "Gender",
+    "الحالة الوظيفية": "Employment Status",
+
+    "البيانات الوظيفية": "Employment Information",
+    "القسم": "Department",
+    "الفرع": "Branch",
+    "المسمى الوظيفي": "Job Title",
+    "نوع الموظف": "Employee Type",
+    "المشرف المباشر": "Direct Supervisor",
+    "تاريخ التعيين": "Hire Date",
+    "مدة فترة التجربة بالأيام": "Probation Period (Days)",
+
+    "الراتب والبدلات": "Salary and Allowances",
+    "الراتب الأساسي": "Basic Salary",
+"سجل الرواتب": "Salary Records",
+"الرواتب ضمن المسيرات المعتمدة أو المصروفة": "Salaries included in approved or paid payrolls",
+"البدلات": "Allowances",
+"الخصومات": "Deductions",
+"صافي الراتب": "Net Salary",
+    "بدل السكن": "Housing Allowance",
+    "بدل النقل": "Transportation Allowance",
+    "بدل الملابس": "Clothing Allowance",
+    "بدلات أخرى": "Other Allowances",
+
+    "أرصدة الإجازات": "Leave Balances",
+    "استحقاق الإجازة السنوية": "Annual Leave Entitlement",
+    "الرصيد السنوي الحالي": "Current Annual Balance",
+    "الإجازات التعويضية": "Compensatory Leave",
+
+    "المستندات والملفات": "Documents and Files",
+    "صورة الموظف": "Employee Photo",
+    "لا توجد صورة مسجلة": "No photo registered",
+    "ملف الهوية الوطنية": "National ID File",
+    "عرض ملف الهوية الوطنية": "View National ID File",
+    "ملف جواز السفر": "Passport File",
+    "عرض ملف جواز السفر": "View Passport File",
+    "ملف العقد": "Contract File",
+    "عرض ملف العقد": "View Contract File",
+    "ملفات أخرى": "Other Files",
+    "عرض الملفات الأخرى": "View Other Files",
+    "لا يوجد ملف": "No file available",
+    "لا توجد ملفات أخرى": "No other files",
+
+    "إضافة تقييم وظيفي": "Add Job Evaluation",
+    "التقييمات الوظيفية": "Job Evaluations",
+    "إنشاء تقييم وظيفي باستخدام نموذج الموارد البشرية الموجود في النظام.": "Create a job evaluation using the existing HR form.",
+    "＋ إضافة تقييم": "＋ Add Evaluation",
+
+    "تقديم طلب إجازة": "Submit Leave Request",
+"طلبات الإجازات": "Leave Requests",
+"تفاصيل طلبات الإجازات وحالاتها": "Leave requests details and their statuses",
+"+ طلب إجازة جديد": "+ New Leave Request",
+"لا توجد طلبات إجازات لعرضها.": "There are no leave requests to display.",
+    "نوع الإجازة *": "Leave Type *",
+    "اختر نوع الإجازة": "Select Leave Type",
+    "إجازة سنوية": "Annual Leave",
+    "إجازة مرضية": "Sick Leave",
+    "إجازة تعويضية": "Compensatory Leave",
+    "إجازة أخرى": "Other Leave",
+    "تاريخ البداية *": "Start Date *",
+    "تاريخ النهاية *": "End Date *",
+    "سبب الإجازة": "Leave Reason",
+    "إرسال طلب الإجازة": "Submit Leave Request",
+    "إلغاء": "Cancel",
+
+    "إضافة طلب جديد": "Add New Request",
+    "نوع الطلب *": "Request Type *",
+    "اختر نوع الطلب": "Select Request Type",
+    "سلفة مالية": "Financial Advance",
+    "تذكرة سفر": "Travel Ticket",
+    "ترقية": "Promotion",
+    "نقل إلى قسم أو فرع آخر": "Transfer to Another Department or Branch",
+    "تغيير وردية": "Shift Change",
+    "طلب آخر": "Other Request",
+    "تاريخ الطلب *": "Request Date *",
+    "المبلغ المطلوب *": "Requested Amount *",
+    "عدد الأقساط المقترح": "Suggested Number of Installments",
+    "الوجهة *": "Destination *",
+    "مدينة أو دولة الوصول": "Arrival City or Country",
+    "تاريخ السفر *": "Travel Date *",
+    "نوع التذكرة": "Ticket Type",
+    "اختر النوع": "Select Type",
+    "ذهاب": "One Way",
+    "ذهاب وعودة": "Round Trip",
+    "المسمى الحالي": "Current Job Title",
+    "المسمى المطلوب *": "Requested Job Title *",
+    "القسم الحالي": "Current Department",
+    "القسم المطلوب": "Requested Department",
+    "الفرع الحالي": "Current Branch",
+    "الفرع المطلوب": "Requested Branch",
+    "الوردية المطلوبة *": "Requested Shift *",
+    "اسم الوردية أو وقتها": "Shift Name or Time",
+    "تاريخ بدء الوردية المطلوبة": "Requested Shift Start Date",
+    "عنوان الطلب *": "Request Title *",
+    "السبب والتفاصيل *": "Reason and Details *",
+    "اكتب سبب الطلب والتفاصيل التي تساعد الإدارة على مراجعته": "Enter the reason and details to help management review your request",
+    "المرفق (اختياري)": "Attachment (Optional)",
+    "الملفات المسموح بها: PDF وWord والصور. سيتم تفعيل رفع المرفقات عند ربط الحفظ بالخادم.": "Allowed files: PDF, Word, and images.",
+    "إرسال الطلب": "Submit Request",
+    "جارٍ إرسال الطلب...": "Sending request...",
+    "تعذر حفظ الطلب. يرجى المحاولة مرة أخرى.": "Unable to save the request. Please try again.",
+    "تم إرسال الطلب بنجاح.": "Request submitted successfully.",
+    "حدث خطأ أثناء إرسال الطلب.": "An error occurred while submitting the request.",
+
+    "إغلاق التفاصيل": "Close Details",
+    "إغلاق تفاصيل هذا القسم": "Close this section",
+    "عرض تفاصيل الحضور": "View Attendance Details",
+    "إخفاء تفاصيل الحضور": "Hide Attendance Details",
+    "صفحات سجل الحضور": "Attendance Record Pages",
+    "عدد السجلات:": "Total Records:",
+    "سجل الحضور والانصراف": "Attendance Records",
+    "سجلات الحضور المسجلة باسمك، اضغط على العين لعرض التفاصيل": "Your attendance records. Click the eye icon to view details",
+
+    "التاريخ": "Date",
+    "الحالة": "Status",
+    "دقائق التأخير": "Late Minutes",
+    "دقائق الخروج المبكر": "Early Departure Minutes",
+    "دقائق العمل": "Work Minutes",
+    "التفاصيل": "Details",
+
+    "دوام مفتوح": "Open Shift",
+    "مكتمل": "Completed",
+    "حاضر": "Present",
+    "متأخر": "Late",
+    "غائب": "Absent",
+    "انصراف مبكر": "Early Departure",
+
+    "تاريخ الحضور": "Attendance Date",
+    "الوردية": "Shift",
+    "أول حضور": "First Check-in",
+    "آخر انصراف": "Last Check-out",
+    "لم يسجل بعد": "Not recorded yet",
+
+    "إجمالي دقائق التأخير المسجلة": "Total Recorded Late Minutes",
+    "دقائق الخروج المبكر المسجلة": "Recorded Early Departure Minutes",
+    "دقائق العمل المسجلة": "Recorded Work Minutes",
+    "دقيقة": "Minute",
+
+    "مدة جلسة الحضور المفتوحة حتى الآن": "Current Open Attendance Session Duration",
+    "موقع العمل المعتمد للسجل": "Approved Work Location",
+    "تفاصيل عمليات البصمة": "Fingerprint Operations Details",
+
+    "تسجيل حضور": "Check-in",
+    "تسجيل انصراف": "Check-out",
+    "الوقت:": "Time:",
+    "موقع العملية:": "Operation Location:",
+    "غير محدد": "Not specified",
+    "التحقق من الموقع: تم التحقق": "Location Verification: Verified",
+    "التحقق من الموقع: غير مؤكد": "Location Verification: Unconfirmed",
+    "المسافة من موقع العمل:": "Distance from Workplace:",
+    "متر": "meters",
+    "ملاحظة الموقع:": "Location Note:",
+
+    "لا توجد عمليات بصمة مرتبطة بهذا السجل.": "No fingerprint operations are linked to this record.",
+    "لا توجد سجلات حضور لعرضها.": "There are no attendance records to display.",
+    "📒 سجلات التقييم": "📒 Evaluation Records",
+    "سجلات التقييم والدرجات والملاحظات الخاصة بك": "Your evaluation records, scores, and comments",
+
+    "التقييم": "Evaluation",
+    "المعيار": "Criteria",
+    "الدرجة": "Score",
+    "المقيّم": "Evaluator",
+    "الدور": "Role",
+    "الملاحظات": "Comments",
+    "المرفقات": "Attachments",
+
+    "زميل": "Colleague",
+    "مدير": "Manager",
+    "عرض المرفق": "View Attachment",
+
+    "لا توجد سجلات تقييم مسجلة لك حتى الآن.": "No evaluation records have been registered for you yet.",
+
+"جاري تجهيز صفحة البصمة...": "Preparing fingerprint page...",
+
+    "جاري تجهيز صفحة البصمة...": "Preparing fingerprint page...",
+    "جاري تحميل صفحة البصمة...": "Loading fingerprint page...",
+    "تعذر تحميل صفحة البصمة. يرجى تحديث الصفحة والمحاولة مجددًا.": "Unable to load the fingerprint page. Please refresh and try again.",
+    "دقة الموقع:": "Location accuracy:",
+    "المتصفح لا يدعم تحديد الموقع.": "Your browser does not support geolocation.",
+    "تحديد الموقع يتطلب HTTPS أو localhost.": "Location access requires HTTPS or localhost.",
+    "جاري تحديد موقعك...": "Detecting your location...",
+    "تم تحديد موقعك بنجاح.": "Your location was detected successfully.",
+    "تعذر تحديد موقعك.": "Unable to detect your location.",
+    "صلاحية الموقع مرفوضة. اسمح للمتصفح باستخدام موقعك.": "Location permission denied. Allow your browser to access your location.",
+    "تعذر الحصول على موقعك. تحقق من إعدادات الموقع.": "Unable to get your location. Check your location settings.",
+    "انتهت مهلة تحديد الموقع. حاول مرة أخرى.": "Location detection timed out. Please try again.",
+    "إعادة تحديد الموقع": "Retry location detection",
+    "تعذر تحديد الموقع": "Unable to detect location",
+    "تحقق من الاتصال": "Check your connection",
+    "الانصراف": "Check Out",
+    "الحضور": "Check In",
+    "حدد موقعك أولًا قبل تسجيل الحضور أو الانصراف.": "Please detect your location before checking in or out.",
+    "جاري التسجيل...": "Submitting...",
+    "تعذر تسجيل العملية. حاول مرة أخرى.": "Unable to submit the attendance record. Please try again."
+};
+function getLanguage() {
+    return localStorage.getItem("employee_portal_language") ||
+           localStorage.getItem(LANGUAGE_KEY) ||
+           window.employeePortalLanguage ||
+           "ar";
+}
+    function translateText(root, lang) {
+        const walker = document.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT,
+            null
+        );
+
+        const nodes = [];
+        while (walker.nextNode()) {
+            nodes.push(walker.currentNode);
+        }
+
+nodes.forEach(function (node) {
+
+    // ترك ترجمة صفحة البصمة للدالة المخصصة لها
+    if (
+        node.parentElement &&
+        node.parentElement.closest("#fingerprint-attendance-content")
+    ) {
+        return;
+    }
+
+    const original = node.nodeValue;
+            const trimmed = original.trim();
+
+            if (!trimmed) return;
+
+            if (!node.__portalArabicText) {
+                node.__portalArabicText = trimmed;
+            }
+
+            const ar = node.__portalArabicText;
+            const en = translations[ar];
+
+            if (lang === "en" && en) {
+                node.nodeValue = original.replace(trimmed, en);
+            } else if (lang === "ar") {
+                node.nodeValue = original.replace(trimmed, ar);
+            }
+        });
+
+
+root.querySelectorAll("[placeholder], [title], [aria-label]").forEach(function (el) {
+    ["placeholder", "title", "aria-label"].forEach(function (attr) {
+        if (!el.hasAttribute(attr)) return;
+
+        const dataKey = {
+            "placeholder": "portalOriginalPlaceholder",
+            "title": "portalOriginalTitle",
+            "aria-label": "portalOriginalAriaLabel"
+        }[attr];
+
+        if (!el.dataset[dataKey]) {
+            el.dataset[dataKey] = el.getAttribute(attr);
+        }
+
+        const original = el.dataset[dataKey];
+
+        if (lang === "en" && translations[original]) {
+            el.setAttribute(attr, translations[original]);
+        } else if (lang === "ar") {
+            el.setAttribute(attr, original);
+        }
+    });
+});
+
+    }
+
+    function applyLanguage(lang) {
+        const portal = document.querySelector(".employee-portal");
+        if (!portal) return;
+
+        lang = lang === "en" ? "en" : "ar";
+
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        document.body.dir = lang === "ar" ? "rtl" : "ltr";
+
+        portal.dir = lang === "ar" ? "rtl" : "ltr";
+        portal.style.direction = lang === "ar" ? "rtl" : "ltr";
+
+        const name = document.getElementById("portal-employee-name");
+
+        if (name) {
+            const selectedName = lang === "en"
+                ? name.dataset.nameEn
+                : name.dataset.nameAr;
+
+            name.textContent = selectedName && selectedName.trim()
+                ? selectedName
+                : (lang === "en" ? name.dataset.nameAr : name.dataset.nameEn);
+        }
+
+        translateText(portal, lang);
+
+        document.querySelectorAll(".portal-language-switch button").forEach(function (button) {
+            button.classList.toggle(
+                "active",
+                button.dataset.language === lang
+            );
+        });
+
+        localStorage.setItem(LANGUAGE_KEY, lang);
+
+// مشاركة اللغة مع صفحة البصمة والصفحات الفرعية
+localStorage.setItem("employee_portal_language", lang);
+
+        window.employeePortalLanguage = lang;
+
+// تحديث ترجمة صفحة البصمة إذا كانت مفتوحة
+const attendanceContainer = document.getElementById(
+    "fingerprint-attendance-content"
+);
+
+if (
+    attendanceContainer &&
+    typeof window.translateAttendancePartial === "function"
+) {
+    window.translateAttendancePartial(attendanceContainer, lang);
+}
+
+        document.querySelectorAll("iframe").forEach(function (frame) {
+    try {
+        frame.contentWindow.postMessage({
+            type: "employee-portal-language",
+            language: lang
+        }, window.location.origin);
+    } catch (error) {
+        console.warn("Language message could not be sent.");
+    }
+});
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".portal-language-switch button").forEach(function (button) {
+            button.addEventListener("click", function () {
+                applyLanguage(button.dataset.language);
+            });
+        });
+
+        applyLanguage(getLanguage());
+
+        const portal = document.querySelector(".employee-portal");
+
+        if (portal) {
+            const observer = new MutationObserver(function () {
+                translateText(portal, getLanguage());
+            });
+
+            observer.observe(portal, {
+                childList: true,
+                subtree: true
+            });
+        }
+    });
+
+    window.applyEmployeePortalLanguage = applyLanguage;
+})();
+
 </script>
 {% endif %}
 

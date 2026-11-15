@@ -1343,6 +1343,7 @@ def add_employee_schedule_ajax(request):
     return JsonResponse({"success": False, "error": "طلب غير صالح"})
 @login_required
 @hr_permission_required("attendance_edit")
+
 def edit_shift(request, shift_id):
     company = _company_required(request)
     if not company:
@@ -1352,20 +1353,25 @@ def edit_shift(request, shift_id):
     shift = get_object_or_404(Shift, company=company, id=shift_id)
 
     if request.method == "POST":
-        # تحديث البيانات من النموذج (Form)
+        # تحديث البيانات مع الاحتفاظ برقم ترتيب الشفت الأصلي
         shift.shift_name = request.POST.get("shift_name")
-        shift.shift_order = request.POST.get("shift_order") or 0
         shift.start_time = request.POST.get("start_time")
         shift.end_time = request.POST.get("end_time")
         shift.break_start = request.POST.get("break_start") or None
         shift.break_end = request.POST.get("break_end") or None
         shift.notes = request.POST.get("notes", "")
-        
-        shift.save() # حفظ التعديلات
-        messages.success(request, "✅ تم تحديث الشفت بنجاح.")
-        return redirect("hr:shifts") # العودة للقائمة
 
-    return render(request, "hr/add_shift.html", {"shift": shift, "edit_mode": True})
+        # حفظ التعديلات دون تغيير shift_order
+        shift.save()
+
+        messages.success(request, "✅ تم تحديث الشفت بنجاح.")
+        return redirect("hr:shifts")
+
+    return render(
+        request,
+        "hr/add_shift.html",
+        {"shift": shift, "edit_mode": True}
+    )
 
 # ==========================
 # إدارة الإجازات
@@ -1548,6 +1554,7 @@ def departments_list(request):
 
 @login_required
 @hr_permission_required("departments_add")
+
 def add_department(request):
     company = _company_required(request)
     if not company:
@@ -1555,22 +1562,45 @@ def add_department(request):
 
     next_url = request.GET.get("next") or request.POST.get("next")
 
+    is_ajax = (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    )
+
     if request.method == "POST":
         form = DepartmentForm(request.POST)
+
         if form.is_valid():
             dept = form.save(commit=False)
-            if hasattr(dept, "company_id"):
-                dept.company = company
+            dept.company = company
             dept.save()
+
+            if is_ajax:
+                return JsonResponse({
+                    "success": True,
+                    "id": dept.id,
+                    "name": dept.name,
+                    "message": "تمت إضافة القسم بنجاح"
+                })
 
             if next_url:
                 return redirect(next_url)
 
             return redirect("hr:departments")
+
+        if is_ajax:
+            return JsonResponse({
+                "success": False,
+                "message": "تعذر إضافة القسم. يرجى مراجعة البيانات."
+            }, status=400)
+
     else:
         form = DepartmentForm()
 
-    return render(request, "hr/add_department.html", {"form": form, "next": next_url})
+    return render(
+        request,
+        "hr/add_department.html",
+        {"form": form, "next": next_url}
+    )
 
 
 

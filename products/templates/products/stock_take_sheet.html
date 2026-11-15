@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}{% trans "Stock Take Sheet" %}{% endblock %}
 
 {% block head %}
@@ -432,15 +432,15 @@
 
                             <!-- المنتج -->
 
-                            <td class="fw-bold">
-                                {{ row.product.name }}
-                            </td>
-
+<td class="fw-bold">
+    {{ row.product|product_display_name }}
+</td>
 
                             <!-- التصنيف -->
 
                             <td>
-                                {{ row.category }}
+                                {{ row.category|category_display_name }}
+
                             </td>
 
 
@@ -477,13 +477,12 @@
 
                             <td>
 
-                                <input
-                                    type="text"
-                                    name="comment_{{ row.product.id }}"
-                                    class="form-control comment-cell"
-                                    value="{{ row.comment|default:'' }}"
-                                    placeholder="{% trans 'اكتب ملاحظة' %}">
-
+<input
+    type="text"
+    name="comment_{{ row.product.id }}"
+    class="form-control comment-cell"
+    value="{{ row.comment|default:'' }}"
+    placeholder="{% trans 'Write a note' %}">
                             </td>
 
                         </tr>

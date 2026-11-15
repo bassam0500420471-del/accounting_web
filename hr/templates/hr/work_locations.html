@@ -1,12 +1,10 @@
+
 {% extends "layout/base.html" %}
 {% load static %}
 
-
 {% block title %}
-موقع العمل
+    {% if CURRENT_LANGUAGE == "ar" %}موقع العمل{% else %}Work Location{% endif %}
 {% endblock %}
-
-
 
 {% block extra_css %}
 
@@ -15,1409 +13,730 @@
 <link rel="stylesheet"
 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-
 <style>
 
 /* =========================================================
    Work Location
-   نفس تنسيق Evaluation Records
    ========================================================= */
 
 .work-location-page {
-
     background: #eeeeee;
-
     min-height: calc(100vh - 80px);
-
     padding: 25px;
-
-    border-radius: 20px;
-
-    direction: rtl;
-
 }
 
+.work-location-page[dir="rtl"] {
+    direction: rtl;
+}
 
-/* =========================================================
-   الكرت الرئيسي
-   ========================================================= */
+.work-location-page[dir="ltr"] {
+    direction: ltr;
+}
 
 .work-location-card {
-
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #dddddd
-    );
-
+    background: linear-gradient(145deg, #ffffff, #dddddd);
     border-radius: 22px;
-
     padding: 25px;
-
-    box-shadow:
-
-        8px 8px 20px #c5c5c5,
-
-        -8px -8px 20px #ffffff;
-
+    box-shadow: 8px 8px 20px #c5c5c5,
+                -8px -8px 20px #ffffff;
 }
-
-
-/* =========================================================
-   رأس الصفحة
-   ========================================================= */
 
 .work-location-header {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     gap: 15px;
-
     margin-bottom: 25px;
-
     flex-wrap: wrap;
-
 }
-
 
 .work-location-title {
-
     margin: 0;
-
     font-size: 25px;
-
     font-weight: 800;
-
     color: #444;
-
 }
-
 
 .work-location-title i {
-
     color: #555;
-
-    margin-left: 7px;
-
+    margin-inline-end: 7px;
 }
-
 
 .work-location-subtitle {
-
     margin-top: 7px;
-
     color: #777;
-
     font-size: 14px;
-
 }
-
-
-/* =========================================================
-   أيقونة الرأس
-   ========================================================= */
 
 .work-location-header-icon {
-
     width: 58px;
-
     height: 58px;
-
     border-radius: 16px;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: #fff;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     font-size: 25px;
-
-    box-shadow:
-
-        5px 5px 12px rgba(0,0,0,.20),
-
-        inset 0 1px 0 rgba(255,255,255,.15);
-
+    box-shadow: 5px 5px 12px rgba(0,0,0,.20),
+                inset 0 1px 0 rgba(255,255,255,.15);
 }
-
-
-/* =========================================================
-   breadcrumb
-   ========================================================= */
 
 .work-location-breadcrumb {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
     margin-bottom: 12px;
-
     font-size: 13px;
-
     font-weight: 700;
-
 }
-
 
 .work-location-breadcrumb a {
-
     color: #555;
-
     text-decoration: none;
-
 }
-
 
 .work-location-breadcrumb a:hover {
-
     color: #222;
-
 }
-
 
 .work-location-breadcrumb i {
-
     color: #888;
-
 }
-
-
-/* =========================================================
-   البطاقات
-   ========================================================= */
 
 .location-section-card {
-
     background: #ffffff;
-
     border-radius: 18px;
-
     padding: 20px;
-
     margin-bottom: 20px;
-
-    box-shadow:
-
-        0 7px 18px rgba(0,0,0,.08),
-
-        inset 0 1px 0 rgba(255,255,255,.8);
-
+    box-shadow: 0 7px 18px rgba(0,0,0,.08),
+                inset 0 1px 0 rgba(255,255,255,.8);
 }
-
-
-/* =========================================================
-   عنوان البطاقة
-   ========================================================= */
 
 .location-section-title {
-
     margin: 0 0 20px;
-
     padding-bottom: 14px;
-
     border-bottom: 1px solid #eeeeee;
-
     font-size: 18px;
-
     font-weight: 800;
-
     color: #444;
-
 }
-
 
 .location-section-title i {
-
     color: #666;
-
-    margin-left: 7px;
-
+    margin-inline-end: 7px;
 }
-
-
-/* =========================================================
-   الحقول
-   ========================================================= */
 
 .location-form-group {
-
     margin-bottom: 5px;
-
 }
-
 
 .location-form-group label {
-
     display: block;
-
     margin-bottom: 8px;
-
     color: #555;
-
     font-size: 13px;
-
     font-weight: 800;
-
 }
-
 
 .location-input-icon {
-
     position: relative;
-
 }
-
 
 .location-input-icon > i {
-
     position: absolute;
-
-    right: 14px;
-
+    inset-inline-start: 14px;
     top: 50%;
-
     transform: translateY(-50%);
-
     color: #777;
-
     z-index: 2;
-
 }
-
 
 .location-input-icon .form-control {
-
-    padding-right: 42px;
-
+    padding-inline-start: 42px;
     min-height: 45px;
-
     border: 1px solid #d5d5d5;
-
     border-radius: 11px;
-
     background: #f8f8f8;
-
     color: #444;
-
     font-size: 13px;
-
     transition: .25s;
-
 }
-
 
 .location-input-icon .form-control:focus {
-
     border-color: #777;
-
-    box-shadow:
-
-        0 0 0 3px rgba(0,0,0,.06);
-
+    box-shadow: 0 0 0 3px rgba(0,0,0,.06);
     background: #fff;
-
 }
-
-
-/* =========================================================
-   النصوص الصغيرة
-   ========================================================= */
 
 .location-help {
-
     display: block;
-
     margin-top: 7px;
-
     color: #888;
-
     font-size: 11px;
-
 }
-
-
-/* =========================================================
-   أزرار الموقع
-   ========================================================= */
 
 .location-secondary-btn {
-
     border-radius: 11px;
-
     padding: 9px 15px;
-
     font-size: 12px;
-
     font-weight: 800;
-
     transition: .25s;
-
 }
-
 
 .location-secondary-btn:hover {
-
     transform: translateY(-2px);
-
 }
-
-
-/* =========================================================
-   معاينة موقع العمل
-   ========================================================= */
 
 .location-preview {
-
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #dddddd
-    );
-
+    background: linear-gradient(145deg, #ffffff, #dddddd);
     border-radius: 16px;
-
     padding: 25px;
-
     text-align: center;
-
-    box-shadow:
-
-        inset 2px 2px 6px rgba(0,0,0,.08),
-
-        inset -2px -2px 6px rgba(255,255,255,.8);
-
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,.08),
+                inset -2px -2px 6px rgba(255,255,255,.8);
 }
-
 
 .location-preview-icon {
-
     width: 70px;
-
     height: 70px;
-
     margin: 0 auto 15px;
-
     border-radius: 18px;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: #fff;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     font-size: 30px;
-
-    box-shadow:
-
-        5px 5px 12px rgba(0,0,0,.20);
-
+    box-shadow: 5px 5px 12px rgba(0,0,0,.20);
 }
-
 
 .location-preview h5 {
-
     font-weight: 800;
-
     color: #444;
-
     margin-bottom: 20px;
-
 }
-
 
 .location-preview-address {
-
-    text-align: right;
-
+    text-align: start;
 }
-
 
 .location-preview-address p {
-
     background: rgba(255,255,255,.65);
-
     border-radius: 10px;
-
     padding: 9px 12px;
-
     margin-bottom: 8px;
-
     color: #555;
-
     font-size: 12px;
-
 }
-
 
 .location-preview-address p i {
-
     color: #666;
-
-    margin-left: 7px;
-
+    margin-inline-end: 7px;
 }
-
-
-/* =========================================================
-   زر الخريطة
-   ========================================================= */
 
 .location-map-btn {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 7px;
-
     width: 100%;
-
     padding: 11px 15px;
-
     border-radius: 11px;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: #fff;
-
     border: none;
-
     font-size: 12px;
-
     font-weight: 800;
-
     transition: .25s;
-
 }
-
 
 .location-map-btn:hover {
-
     color: #fff;
-
     transform: translateY(-2px);
-
 }
-
-
-/* =========================================================
-   معلومات إضافية
-   ========================================================= */
 
 .location-setting-box {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     gap: 15px;
-
     padding: 15px;
-
     border-radius: 14px;
-
-    background: linear-gradient(
-        145deg,
-        #f8f8f8,
-        #e1e1e1
-    );
-
-    box-shadow:
-
-        inset 2px 2px 5px rgba(0,0,0,.08),
-
-        inset -2px -2px 5px rgba(255,255,255,.8);
-
+    background: linear-gradient(145deg, #f8f8f8, #e1e1e1);
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,.08),
+                inset -2px -2px 5px rgba(255,255,255,.8);
 }
-
 
 .location-setting-box h6 {
-
     margin: 0 0 5px;
-
     font-weight: 800;
-
     color: #444;
-
 }
-
 
 .location-setting-box small {
-
     color: #777;
-
 }
-
-
-/* =========================================================
-   الموظفون
-   ========================================================= */
 
 .location-employees-header {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     gap: 15px;
-
     margin-bottom: 20px;
-
 }
-
 
 .location-employees-title {
-
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
 }
-
 
 .location-employees-icon {
-
     width: 48px;
-
     height: 48px;
-
     border-radius: 13px;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: white;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     font-size: 20px;
-
 }
-
 
 .location-employees-title h5 {
-
     margin: 0;
-
     font-size: 16px;
-
     font-weight: 800;
-
     color: #444;
-
 }
-
 
 .location-employees-title p {
-
     margin: 5px 0 0;
-
     color: #888;
-
     font-size: 12px;
-
 }
-
 
 .location-employees-count {
-
-    background: linear-gradient(
-        145deg,
-        #eeeeee,
-        #d5d5d5
-    );
-
+    background: linear-gradient(145deg, #eeeeee, #d5d5d5);
     padding: 8px 14px;
-
     border-radius: 20px;
-
     color: #555;
-
     font-size: 12px;
-
     font-weight: 800;
-
 }
-
-
-/* =========================================================
-   البحث
-   ========================================================= */
 
 .location-search {
-
     position: relative;
-
     margin-bottom: 18px;
-
 }
-
 
 .location-search > i {
-
     position: absolute;
-
-    right: 14px;
-
+    inset-inline-start: 14px;
     top: 50%;
-
     transform: translateY(-50%);
-
     color: #888;
-
 }
-
 
 .location-search input {
-
-    padding-right: 42px;
-
+    padding-inline-start: 42px;
     min-height: 45px;
-
     border-radius: 11px;
-
     background: #f8f8f8;
-
     border: 1px solid #ddd;
-
 }
-
-
-/* =========================================================
-   قائمة الموظفين
-   ========================================================= */
 
 .location-employees-grid {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(auto-fill, minmax(250px, 1fr));
-
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 12px;
-
 }
-
 
 .location-employee-option {
-
     position: relative;
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
     padding: 12px;
-
     border-radius: 13px;
-
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #eeeeee
-    );
-
+    background: linear-gradient(145deg, #ffffff, #eeeeee);
     border: 1px solid #ddd;
-
     cursor: pointer;
-
     transition: .25s;
-
 }
-
 
 .location-employee-option:hover {
-
     transform: translateY(-2px);
-
-    box-shadow:
-
-        4px 4px 10px rgba(0,0,0,.10);
-
+    box-shadow: 4px 4px 10px rgba(0,0,0,.10);
 }
-
 
 .location-employee-option input {
-
     display: none;
-
 }
-
 
 .location-employee-option:has(input:checked) {
-
     border-color: #666;
-
     background: #eeeeee;
-
 }
-
 
 .location-employee-check {
-
     width: 24px;
-
     height: 24px;
-
     border-radius: 7px;
-
     background: #ddd;
-
     color: transparent;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     flex-shrink: 0;
-
 }
 
-
-.location-employee-option input:checked
-~ .location-employee-check {
-
+.location-employee-option input:checked ~ .location-employee-check {
     background: #555;
-
     color: #fff;
-
 }
-
 
 .location-employee-avatar {
-
     width: 40px;
-
     height: 40px;
-
     border-radius: 50%;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: #fff;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     flex-shrink: 0;
-
 }
-
 
 .location-employee-info {
-
     display: flex;
-
     flex-direction: column;
-
     gap: 3px;
-
 }
-
 
 .location-employee-info strong {
-
     color: #444;
-
     font-size: 13px;
-
 }
-
 
 .location-employee-info small {
-
     color: #888;
-
     font-size: 10px;
-
 }
-
-
-/* =========================================================
-   حالة عدم وجود موظفين
-   ========================================================= */
 
 .location-empty-employees {
-
     padding: 40px;
-
     text-align: center;
-
     color: #999;
-
     font-weight: 700;
-
 }
-
-
-/* =========================================================
-   شريط الحفظ
-   ========================================================= */
 
 .location-save-bar {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
-
     margin-top: 20px;
-
     padding: 18px;
-
     border-radius: 16px;
-
     background: #ffffff;
-
-    box-shadow:
-
-        0 7px 18px rgba(0,0,0,.08);
-
+    box-shadow: 0 7px 18px rgba(0,0,0,.08);
 }
-
 
 .location-save-btn {
-
     border-radius: 11px;
-
     padding: 10px 20px;
-
     font-size: 13px;
-
     font-weight: 800;
-
-    background: linear-gradient(
-        145deg,
-        #777,
-        #444
-    );
-
+    background: linear-gradient(145deg, #777, #444);
     color: #fff;
-
     border: none;
-
 }
-
 
 .location-back-btn {
-
     border-radius: 11px;
-
     padding: 10px 20px;
-
     font-size: 13px;
-
     font-weight: 800;
-
-    background: linear-gradient(
-        145deg,
-        #eeeeee,
-        #d5d5d5
-    );
-
+    background: linear-gradient(145deg, #eeeeee, #d5d5d5);
     color: #444;
-
     text-decoration: none;
-
 }
-
 
 .location-save-btn:hover,
 .location-back-btn:hover {
-
     transform: translateY(-2px);
-
 }
 
-
-/* =========================================================
-   Responsive
-   ========================================================= */
-
 @media (max-width: 992px) {
-
     .work-location-page {
-
         padding: 15px;
-
     }
 
     .work-location-card {
-
         padding: 20px;
-
         border-radius: 18px;
-
     }
-
 }
 
-
 @media (max-width: 768px) {
-
     .work-location-header {
-
         display: block;
-
     }
-
 
     .work-location-header-icon {
-
         margin-top: 15px;
-
     }
-
 
     .location-employees-header {
-
         display: block;
-
     }
-
 
     .location-employees-count {
-
         display: inline-block;
-
         margin-top: 12px;
-
     }
-
 
     .location-employees-grid {
-
         grid-template-columns: 1fr;
-
     }
-
 
     .location-save-bar {
-
         flex-direction: column;
-
     }
-
 
     .location-save-btn,
     .location-back-btn {
-
         width: 100%;
-
         text-align: center;
-
     }
-
 }
 
 </style>
 
 {% endblock %}
 
-
-
 {% block content %}
 
-<div class="container-fluid work-location-page">
-
+<div class="container-fluid work-location-page"
+     dir="{% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
     <div class="work-location-card">
 
-
-        <!-- =================================================
-             رأس الصفحة
-        ================================================== -->
-
+        <!-- رأس الصفحة -->
         <div class="work-location-header">
-
 
             <div>
 
                 <div class="work-location-breadcrumb">
 
                     <a href="{% url 'hr:work_locations' %}">
-                        مواقع العمل
+                        {% if CURRENT_LANGUAGE == "ar" %}مواقع العمل{% else %}Work Locations{% endif %}
                     </a>
 
                     <i class="bi bi-chevron-left"></i>
 
                     <span>
-                        إضافة موقع عمل
+                        {% if CURRENT_LANGUAGE == "ar" %}إضافة موقع عمل{% else %}Add Work Location{% endif %}
                     </span>
 
                 </div>
 
-
                 <h3 class="work-location-title">
-
                     <i class="bi bi-geo-alt-fill"></i>
-
-                    موقع العمل
-
+                    {% if CURRENT_LANGUAGE == "ar" %}موقع العمل{% else %}Work Location{% endif %}
                 </h3>
 
-
                 <div class="work-location-subtitle">
-
-                    أدخل بيانات موقع العمل الذي سيتم استخدامه داخل نظام الموارد البشرية.
-
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        أدخل بيانات موقع العمل الذي سيتم استخدامه داخل نظام الموارد البشرية.
+                    {% else %}
+                        Enter the work location details to be used in the HR system.
+                    {% endif %}
                 </div>
 
             </div>
 
-
             <div class="work-location-header-icon">
-
                 <i class="bi bi-building"></i>
-
             </div>
 
-
         </div>
-
-
 
         <form method="post">
 
             {% csrf_token %}
 
-
             <div class="row g-4">
 
-
-                <!-- =================================================
-                     بيانات موقع العمل
-                ================================================== -->
-
+                <!-- بيانات موقع العمل -->
                 <div class="col-lg-8">
-
 
                     <div class="location-section-card">
 
-
                         <div class="location-section-title">
-
                             <i class="bi bi-pin-map-fill"></i>
-
-                            بيانات موقع العمل
-
+                            {% if CURRENT_LANGUAGE == "ar" %}بيانات موقع العمل{% else %}Work Location Details{% endif %}
                         </div>
-
 
                         <div class="row g-3">
 
-
-                            <!-- اسم الموقع -->
-
                             <div class="col-12">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        اسم موقع العمل
+                                        {% if CURRENT_LANGUAGE == "ar" %}اسم موقع العمل{% else %}Work Location Name{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-building"></i>
-
-
                                         <input
                                             type="text"
                                             name="name"
                                             value="{{ location.name|default:'' }}"
-                                            placeholder="مثال: المقر الرئيسي"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}مثال: المقر الرئيسي{% else %}Example: Head Office{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- الدولة -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        الدولة
+                                        {% if CURRENT_LANGUAGE == "ar" %}الدولة{% else %}Country{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-globe2"></i>
-
-
                                         <input
                                             type="text"
                                             name="country"
                                             value="{{ location.country|default:'' }}"
-                                            placeholder="المملكة العربية السعودية"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}المملكة العربية السعودية{% else %}Saudi Arabia{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- المدينة -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        المدينة
+                                        {% if CURRENT_LANGUAGE == "ar" %}المدينة{% else %}City{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-buildings"></i>
-
-
                                         <input
                                             type="text"
                                             name="city"
                                             value="{{ location.city|default:'' }}"
-                                            placeholder="مثال: جدة"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}مثال: جدة{% else %}Example: Jeddah{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- الحي -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        الحي
+                                        {% if CURRENT_LANGUAGE == "ar" %}الحي{% else %}District{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-signpost"></i>
-
-
                                         <input
                                             type="text"
                                             name="district"
                                             value="{{ location.district|default:'' }}"
-                                            placeholder="اسم الحي"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}اسم الحي{% else %}District Name{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- الشارع -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        الشارع
+                                        {% if CURRENT_LANGUAGE == "ar" %}الشارع{% else %}Street{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-map"></i>
-
-
                                         <input
                                             type="text"
                                             name="street"
                                             value="{{ location.street|default:'' }}"
-                                            placeholder="اسم الشارع"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}اسم الشارع{% else %}Street Name{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- رقم المبنى -->
-
                             <div class="col-md-4">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        رقم المبنى
+                                        {% if CURRENT_LANGUAGE == "ar" %}رقم المبنى{% else %}Building Number{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-123"></i>
-
-
                                         <input
                                             type="text"
                                             name="building_no"
                                             value="{{ location.building_no|default:'' }}"
-                                            placeholder="رقم المبنى"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}رقم المبنى{% else %}Building Number{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- رقم الوحدة -->
-
                             <div class="col-md-4">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        رقم الوحدة
+                                        {% if CURRENT_LANGUAGE == "ar" %}رقم الوحدة{% else %}Unit Number{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-door-open"></i>
-
-
                                         <input
                                             type="text"
                                             name="unit_no"
                                             value="{{ location.unit_no|default:'' }}"
-                                            placeholder="اختياري"
+                                            placeholder="{% if CURRENT_LANGUAGE == 'ar' %}اختياري{% else %}Optional{% endif %}"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- الرمز البريدي -->
-
                             <div class="col-md-4">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        الرمز البريدي
+                                        {% if CURRENT_LANGUAGE == "ar" %}الرمز البريدي{% else %}Postal Code{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-mailbox"></i>
-
-
                                         <input
                                             type="text"
                                             name="postal_code"
                                             value="{{ location.postal_code|default:'' }}"
                                             placeholder="12345"
                                             class="form-control">
-
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- نصف قطر السماح -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        نصف قطر السماح (بالمتر)
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            نصف قطر السماح (بالمتر)
+                                        {% else %}
+                                            Allowed Radius (Meters)
+                                        {% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-bullseye"></i>
-
-
                                         <input
                                             type="number"
                                             name="allowed_radius"
@@ -1427,93 +746,63 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
                                             step="1"
                                             class="form-control"
                                             placeholder="100">
-
                                     </div>
 
-
                                     <small class="location-help">
-
-                                        يسمح للموظفين بتسجيل الحضور إذا كانوا داخل هذا النطاق من موقع العمل.
-
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            يسمح للموظفين بتسجيل الحضور إذا كانوا داخل هذا النطاق من موقع العمل.
+                                        {% else %}
+                                            Employees can check in if they are within this distance of the work location.
+                                        {% endif %}
                                     </small>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- خط العرض -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        خط العرض (Latitude)
+                                        {% if CURRENT_LANGUAGE == "ar" %}خط العرض (Latitude){% else %}Latitude{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-crosshair"></i>
-
-
                                         <input
                                             type="text"
                                             name="latitude"
                                             id="latitude"
                                             value="{{ location.latitude|default:'' }}"
                                             class="form-control"
-                                            placeholder="21.543333">
-
+                                            placeholder="21.543333"
+                                            dir="ltr">
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- خط الطول -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        خط الطول (Longitude)
+                                        {% if CURRENT_LANGUAGE == "ar" %}خط الطول (Longitude){% else %}Longitude{% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-crosshair2"></i>
-
-
                                         <input
                                             type="text"
                                             name="longitude"
                                             id="longitude"
                                             value="{{ location.longitude|default:'' }}"
                                             class="form-control"
-                                            placeholder="39.172779">
-
+                                            placeholder="39.172779"
+                                            dir="ltr">
                                     </div>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- تحديد الموقع -->
-
                             <div class="col-md-6">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        تحديد الموقع
+                                        {% if CURRENT_LANGUAGE == "ar" %}تحديد الموقع{% else %}Location Detection{% endif %}
                                     </label>
-
 
                                     <button
                                         type="button"
@@ -1522,100 +811,82 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 
                                         <i class="bi bi-geo-alt-fill"></i>
 
-                                        تحديد موقعي الحالي
-
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            تحديد موقعي الحالي
+                                        {% else %}
+                                            Detect My Current Location
+                                        {% endif %}
                                     </button>
 
-
-                                    <small
-                                        id="location-status"
-                                        class="location-help">
-
-                                        يمكنك استخدام موقع جهازك لتحديد إحداثيات مقر العمل.
-
+                                    <small id="location-status" class="location-help">
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            يمكنك استخدام موقع جهازك لتحديد إحداثيات مقر العمل.
+                                        {% else %}
+                                            Use your device location to determine the work location coordinates.
+                                        {% endif %}
                                     </small>
-
                                 </div>
-
                             </div>
 
-
-                            <!-- رابط الخريطة -->
-
                             <div class="col-12">
-
                                 <div class="location-form-group">
-
                                     <label>
-                                        رابط موقع العمل في Google Maps
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            رابط موقع العمل في Google Maps
+                                        {% else %}
+                                            Work Location Google Maps URL
+                                        {% endif %}
                                     </label>
 
-
                                     <div class="location-input-icon">
-
                                         <i class="bi bi-geo-alt"></i>
-
-
                                         <input
                                             type="url"
                                             name="google_map_url"
                                             value="{{ location.google_map_url|default:'' }}"
                                             placeholder="https://maps.google.com/..."
-                                            class="form-control">
-
+                                            class="form-control"
+                                            dir="ltr">
                                     </div>
 
-
                                     <small class="location-help">
-
-                                        اختياري لإظهار موقع مقر العمل.
-
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            اختياري لإظهار موقع مقر العمل.
+                                        {% else %}
+                                            Optional. Add a link to display the work location on the map.
+                                        {% endif %}
                                     </small>
-
                                 </div>
-
                             </div>
 
-
                         </div>
-
                     </div>
 
-
-
-                    <!-- =================================================
-                         معلومات موقع العمل
-                    ================================================== -->
-
+                    <!-- معلومات موقع العمل -->
                     <div class="location-section-card">
 
-
                         <div class="location-section-title">
-
                             <i class="bi bi-info-circle-fill"></i>
-
-                            معلومات موقع العمل
-
+                            {% if CURRENT_LANGUAGE == "ar" %}معلومات موقع العمل{% else %}Work Location Settings{% endif %}
                         </div>
-
 
                         <div class="location-setting-box">
 
                             <div>
-
                                 <h6>
-                                    الحالة
+                                    {% if CURRENT_LANGUAGE == "ar" %}الحالة{% else %}Status{% endif %}
                                 </h6>
 
                                 <small>
-                                    تحديد إذا كان موقع العمل فعالاً ويمكن استخدامه للموظفين.
+                                    {% if CURRENT_LANGUAGE == "ar" %}
+                                        تحديد إذا كان موقع العمل فعالاً ويمكن استخدامه للموظفين.
+                                    {% else %}
+                                        Specify whether this work location is active and available for employees.
+                                    {% endif %}
                                 </small>
-
                             </div>
 
-
                             <div class="form-check form-switch m-0">
-
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
@@ -1625,94 +896,71 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
                                         checked
                                     {% endif %}
                                 >
-
                             </div>
 
                         </div>
-
-
                     </div>
 
-
-
-                    <!-- =================================================
-                         الموظفون
-                    ================================================== -->
-
+                    <!-- الموظفون -->
                     <div class="location-section-card">
 
-
                         <div class="location-employees-header">
-
 
                             <div class="location-employees-title">
 
                                 <div class="location-employees-icon">
-
                                     <i class="bi bi-people-fill"></i>
-
                                 </div>
 
-
                                 <div>
-
                                     <h5>
-                                        الموظفون التابعون لهذا الموقع
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            الموظفون التابعون لهذا الموقع
+                                        {% else %}
+                                            Employees Assigned to This Location
+                                        {% endif %}
                                     </h5>
 
                                     <p>
-                                        حدد الموظفين الذين يمكنهم تسجيل الحضور والانصراف من هذا الموقع.
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            حدد الموظفين الذين يمكنهم تسجيل الحضور والانصراف من هذا الموقع.
+                                        {% else %}
+                                            Select employees who can check in and out from this location.
+                                        {% endif %}
                                     </p>
-
                                 </div>
 
                             </div>
 
-
                             <div class="location-employees-count">
-
                                 <span id="selectedEmployeesCount">0</span>
 
-                                موظف
-
+                                {% if CURRENT_LANGUAGE == "ar" %}موظف{% else %}Employees{% endif %}
                             </div>
-
 
                         </div>
 
-
                         <!-- البحث -->
-
                         <div class="location-search">
 
                             <i class="bi bi-search"></i>
-
 
                             <input
                                 type="text"
                                 id="employeeSearch"
                                 class="form-control"
-                                placeholder="ابحث باسم الموظف أو رقم الموظف...">
-
+                                placeholder="{% if CURRENT_LANGUAGE == 'ar' %}ابحث باسم الموظف أو رقم الموظف...{% else %}Search by employee name or number...{% endif %}">
                         </div>
 
-
                         <!-- قائمة الموظفين -->
-
-                        <div
-                            class="location-employees-grid"
-                            id="employeesList"
-                        >
-
+                        <div class="location-employees-grid" id="employeesList">
 
                             {% for employee in employees %}
-
 
                                 <label
                                     class="location-employee-option"
                                     data-name="{{ employee.first_name_ar }} {{ employee.last_name_ar }} {{ employee.employee_number }}"
                                 >
-
 
                                     <input
                                         type="checkbox"
@@ -1723,233 +971,189 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
                                         {% endif %}
                                     >
 
-
                                     <span class="location-employee-check">
-
                                         <i class="bi bi-check-lg"></i>
-
                                     </span>
-
 
                                     <span class="location-employee-avatar">
-
                                         <i class="bi bi-person-fill"></i>
-
                                     </span>
-
 
                                     <span class="location-employee-info">
 
                                         <strong>
-
                                             {{ employee.first_name_ar }}
                                             {{ employee.last_name_ar }}
-
                                         </strong>
 
-
                                         {% if employee.employee_number %}
-
                                             <small>
-
-                                                رقم الموظف:
+                                                {% if CURRENT_LANGUAGE == "ar" %}
+                                                    رقم الموظف:
+                                                {% else %}
+                                                    Employee Number:
+                                                {% endif %}
                                                 {{ employee.employee_number }}
-
                                             </small>
-
                                         {% endif %}
 
                                     </span>
 
-
                                 </label>
-
 
                             {% empty %}
 
-
                                 <div class="location-empty-employees">
-
                                     <i class="bi bi-people"></i>
-
                                     <span>
-                                        لا يوجد موظفون نشطون في الشركة.
+                                        {% if CURRENT_LANGUAGE == "ar" %}
+                                            لا يوجد موظفون نشطون في الشركة.
+                                        {% else %}
+                                            There are no active employees in the company.
+                                        {% endif %}
                                     </span>
-
                                 </div>
-
 
                             {% endfor %}
 
-
                         </div>
-
-
                     </div>
-
 
                 </div>
 
-
-
-                <!-- =================================================
-                     المعاينة
-                ================================================== -->
-
+                <!-- المعاينة -->
                 <div class="col-lg-4">
-
 
                     <div class="location-section-card">
 
-
                         <div class="location-section-title">
-
                             <i class="bi bi-building-check"></i>
-
-                            معاينة موقع العمل
-
+                            {% if CURRENT_LANGUAGE == "ar" %}معاينة موقع العمل{% else %}Work Location Preview{% endif %}
                         </div>
 
+<div class="location-preview">
 
-                        <div class="location-preview">
+    <div class="location-preview-icon">
+        <i class="bi bi-building"></i>
+    </div>
 
+    <h5>
+        {% if location.name %}
+            {{ location.name }}
+        {% elif CURRENT_LANGUAGE == "ar" %}
+            اسم موقع العمل
+        {% else %}
+            Work Location Name
+        {% endif %}
+    </h5>
 
-                            <div class="location-preview-icon">
+<div class="location-preview-address">
 
-                                <i class="bi bi-building"></i>
+    <p>
+        <i class="bi bi-globe2"></i>
+        {% if location.country %}
+            {{ location.country }}
+        {% elif CURRENT_LANGUAGE == "ar" %}
+            الدولة
+        {% else %}
+            Country
+        {% endif %}
+    </p>
 
-                            </div>
+    <p>
+        <i class="bi bi-buildings"></i>
+        {% if location.city %}
+            {{ location.city }}
+        {% elif CURRENT_LANGUAGE == "ar" %}
+            المدينة
+        {% else %}
+            City
+        {% endif %}
+    </p>
 
+    <p>
+        <i class="bi bi-signpost"></i>
+        {% if location.district %}
+            {{ location.district }}
+        {% elif CURRENT_LANGUAGE == "ar" %}
+            الحي
+        {% else %}
+            District
+        {% endif %}
+    </p>
 
-                            <h5>
+    <p>
+        <i class="bi bi-map"></i>
+        {% if location.street %}
+            {{ location.street }}
+        {% elif CURRENT_LANGUAGE == "ar" %}
+            الشارع
+        {% else %}
+            Street
+        {% endif %}
+    </p>
 
-                                {{ location.name|default:"اسم موقع العمل" }}
+    <p>
+        <i class="bi bi-mailbox"></i>
+        {% if location.postal_code %}
+            {{ location.postal_code }}
+        {% elif CURRENT_LANGUAGE == "ar" %}
+            الرمز البريدي
+        {% else %}
+            Postal Code
+        {% endif %}
+    </p>
 
-                            </h5>
-
-
-                            <div class="location-preview-address">
-
-
-                                <p>
-
-                                    <i class="bi bi-globe2"></i>
-
-                                    {{ location.country|default:"الدولة" }}
-
-                                </p>
-
-
-                                <p>
-
-                                    <i class="bi bi-buildings"></i>
-
-                                    {{ location.city|default:"المدينة" }}
-
-                                </p>
-
-
-                                <p>
-
-                                    <i class="bi bi-signpost"></i>
-
-                                    {{ location.district|default:"الحي" }}
-
-                                </p>
-
-
-                                <p>
-
-                                    <i class="bi bi-map"></i>
-
-                                    {{ location.street|default:"الشارع" }}
-
-                                </p>
-
-
-                                <p>
-
-                                    <i class="bi bi-mailbox"></i>
-
-                                    {{ location.postal_code|default:"الرمز البريدي" }}
-
-                                </p>
-
-
-                            </div>
-
+</div>
 
                             <button
                                 type="button"
                                 class="location-map-btn"
-                                onclick="openGoogleMap()"
-                            >
+                                onclick="openGoogleMap()">
 
                                 <i class="bi bi-geo-alt-fill"></i>
 
-                                عرض موقع العمل على الخريطة
-
+                                {% if CURRENT_LANGUAGE == "ar" %}
+                                    عرض موقع العمل على الخريطة
+                                {% else %}
+                                    View Work Location on Map
+                                {% endif %}
                             </button>
 
-
                         </div>
-
-
                     </div>
-
 
                 </div>
 
-
             </div>
 
-
-
-            <!-- =================================================
-                 شريط الحفظ
-            ================================================== -->
-
+            <!-- شريط الحفظ -->
             <div class="location-save-bar">
 
-
-                <button
-                    type="submit"
-                    class="location-save-btn"
-                >
-
+                <button type="submit" class="location-save-btn">
                     <i class="bi bi-check-lg"></i>
-
-                    حفظ
-
+                    {% if CURRENT_LANGUAGE == "ar" %}حفظ{% else %}Save{% endif %}
                 </button>
 
-
-                <a
-                    href="{% url 'hr:work_locations' %}"
-                    class="location-back-btn"
-                >
-
+                <a href="{% url 'hr:work_locations' %}" class="location-back-btn">
                     <i class="bi bi-arrow-right"></i>
-
-                    رجوع
-
+                    {% if CURRENT_LANGUAGE == "ar" %}رجوع{% else %}Back{% endif %}
                 </a>
 
-
             </div>
-
 
         </form>
 
-
     </div>
-
-
 </div>
 
-
-
 <script>
+
+const WORK_LOCATION_LANGUAGE =
+    "{{ CURRENT_LANGUAGE|default:'ar'|escapejs }}";
+
+const IS_ARABIC =
+    WORK_LOCATION_LANGUAGE === "ar";
 
 function openGoogleMap() {
 
@@ -1958,221 +1162,168 @@ function openGoogleMap() {
             '[name="google_map_url"]'
         ).value.trim();
 
-
     if (!url) {
 
         alert(
-            "لم يتم إضافة رابط خرائط Google لموقع العمل"
+            IS_ARABIC
+                ? "لم يتم إضافة رابط خرائط Google لموقع العمل"
+                : "No Google Maps link has been added for this work location."
         );
 
         return;
-
     }
 
-
-    window.open(
-        url,
-        "_blank"
-    );
+    window.open(url, "_blank");
 
 }
 
 </script>
 
-
-
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
+    const locationButton =
+        document.getElementById("get-location-btn");
 
-        const locationButton =
-            document.getElementById(
-                "get-location-btn"
-            );
+    if (!locationButton) {
+        return;
+    }
 
+    locationButton.addEventListener("click", function () {
 
-        if (!locationButton) {
+        const status =
+            document.getElementById("location-status");
+
+        if (!navigator.geolocation) {
+
+            status.textContent =
+                IS_ARABIC
+                    ? "المتصفح لا يدعم تحديد الموقع."
+                    : "Your browser does not support geolocation.";
 
             return;
-
         }
 
+        status.textContent =
+            IS_ARABIC
+                ? "جاري تحديد الموقع..."
+                : "Detecting location...";
 
-        locationButton.addEventListener(
-            "click",
-            function () {
+        navigator.geolocation.getCurrentPosition(
 
+            function (position) {
 
-                const status =
-                    document.getElementById(
-                        "location-status"
-                    );
+                const latitude =
+                    document.getElementById("latitude");
 
+                const longitude =
+                    document.getElementById("longitude");
 
-                if (!navigator.geolocation) {
-
-                    status.textContent =
-                        "المتصفح لا يدعم تحديد الموقع.";
-
-                    return;
-
+                if (latitude) {
+                    latitude.value =
+                        position.coords.latitude.toFixed(7);
                 }
 
+                if (longitude) {
+                    longitude.value =
+                        position.coords.longitude.toFixed(7);
+                }
 
                 status.textContent =
-                    "جاري تحديد الموقع...";
+                    IS_ARABIC
+                        ? "تم تحديد الموقع بنجاح."
+                        : "Location detected successfully.";
 
+            },
 
-                navigator.geolocation.getCurrentPosition(
+            function (error) {
 
+                status.textContent =
+                    IS_ARABIC
+                        ? "تعذر تحديد الموقع. تأكد من السماح للمتصفح باستخدام الموقع."
+                        : "Unable to detect your location. Please allow your browser to access your location.";
 
-                    function (position) {
+            },
 
-
-                        const latitude =
-                            document.getElementById(
-                                "latitude"
-                            );
-
-
-                        const longitude =
-                            document.getElementById(
-                                "longitude"
-                            );
-
-
-                        if (latitude) {
-
-                            latitude.value =
-                                position.coords.latitude
-                                    .toFixed(7);
-
-                        }
-
-
-                        if (longitude) {
-
-                            longitude.value =
-                                position.coords.longitude
-                                    .toFixed(7);
-
-                        }
-
-
-                        status.textContent =
-                            "تم تحديد الموقع بنجاح.";
-
-                    },
-
-
-                    function (error) {
-
-                        status.textContent =
-                            "تعذر تحديد الموقع. تأكد من السماح للمتصفح باستخدام الموقع.";
-
-                    },
-
-
-                    {
-
-                        enableHighAccuracy: true,
-
-                        timeout: 10000,
-
-                        maximumAge: 0
-
-                    }
-
-                );
-
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             }
 
         );
 
-    }
+    });
 
-);
+});
 
 </script>
-
-
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
+    const searchInput =
+        document.getElementById("employeeSearch");
 
-        const searchInput =
-            document.getElementById(
-                "employeeSearch"
-            );
+    const employees =
+        document.querySelectorAll(".location-employee-option");
 
+    const countElement =
+        document.getElementById("selectedEmployeesCount");
 
-        const employees =
+    function updateSelectedCount() {
+
+        const checkedEmployees =
             document.querySelectorAll(
-                ".location-employee-option"
+                '.location-employee-option input[type="checkbox"]:checked'
             );
 
-
-        if (!searchInput) {
-
-            return;
-
+        if (countElement) {
+            countElement.textContent = checkedEmployees.length;
         }
-
-
-        searchInput.addEventListener(
-            "input",
-            function () {
-
-
-                const search =
-                    this.value
-                        .trim()
-                        .toLowerCase();
-
-
-                employees.forEach(
-                    function (employee) {
-
-
-                        const name =
-                            (
-                                employee.dataset.name
-                                || ""
-                            ).toLowerCase();
-
-
-                        if (
-                            name.includes(search)
-                        ) {
-
-                            employee.style.display =
-                                "flex";
-
-                        } else {
-
-                            employee.style.display =
-                                "none";
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-
     }
 
-);
+    employees.forEach(function (employee) {
+
+        const checkbox =
+            employee.querySelector('input[type="checkbox"]');
+
+        if (checkbox) {
+            checkbox.addEventListener("change", updateSelectedCount);
+        }
+
+    });
+
+    updateSelectedCount();
+
+    if (!searchInput) {
+        return;
+    }
+
+    searchInput.addEventListener("input", function () {
+
+        const search =
+            this.value.trim().toLowerCase();
+
+        employees.forEach(function (employee) {
+
+            const name =
+                (employee.dataset.name || "").toLowerCase();
+
+            if (name.includes(search)) {
+                employee.style.display = "flex";
+            } else {
+                employee.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
 
 </script>
-
 
 {% endblock %}

@@ -1,3 +1,6 @@
+
+{% load i18n %}
+{% load product_translation %}
 <li>
 
     <div class="tree-item">
@@ -7,7 +10,7 @@
             <span
                 class="toggle"
                 onclick="toggleNode(this)"
-                title="فتح / إغلاق"
+                title="{% trans 'Open / Close' %}"
             >
                 ▶
             </span>
@@ -44,16 +47,31 @@
 
         <span class="node-info">
 
-            <span class="node-name">
+<span class="node-name">
 
-                {{ node.name }}
+    {{ node.name|category_display_name }}
 
-            </span>
-
+</span>
 
             <small class="node-type">
 
-                {{ node.get_type_display }}
+                {% if node.type == "BRANCH" %}
+                    {% trans "Branch" %}
+                {% elif node.type == "PROJECT" %}
+                    {% trans "Project" %}
+                {% elif node.type == "EMPLOYEE" %}
+                    {% trans "Employee" %}
+                {% elif node.type == "SUPPLIER" %}
+                    {% trans "Supplier" %}
+                {% elif node.type == "CUSTOMER" %}
+                    {% trans "Customer" %}
+                {% elif node.type == "CONTRACTOR" %}
+                    {% trans "Contractor" %}
+                {% elif node.type == "DEPARTMENT" %}
+                    {% trans "Department" %}
+                {% elif node.type == "OTHER" %}
+                    {% trans "Other" %}
+                {% endif %}
 
             </small>
 
@@ -68,7 +86,7 @@
 
             <span class="node-status active">
 
-                نشط
+                {% trans "Active" %}
 
             </span>
 
@@ -76,7 +94,7 @@
 
             <span class="node-status closed">
 
-                مغلق
+                {% trans "Closed" %}
 
             </span>
 
@@ -87,33 +105,34 @@
              الإجراءات
         ================================================= -->
 
-<span class="node-actions">
+        <span class="node-actions">
 
-    <a
-        href="{% url 'cost_center_detail' node.id %}"
-        class="node-action"
-        title="عرض"
-    >
-        <i class="bi bi-eye"></i>
-    </a>
+            <a
+                href="{% url 'cost_center_detail' node.id %}"
+                class="node-action"
+                title="{% trans 'View' %}"
+            >
+                <i class="bi bi-eye"></i>
+            </a>
 
-    <a
-        href="{% url 'cost_center_edit' node.id %}"
-        class="node-action"
-        title="تعديل"
-    >
-        <i class="bi bi-pencil"></i>
-    </a>
+            <a
+                href="{% url 'cost_center_edit' node.id %}"
+                class="node-action"
+                title="{% trans 'Edit' %}"
+            >
+                <i class="bi bi-pencil"></i>
+            </a>
 
-    <a
-        href="{% url 'cost_center_add_child' node.id %}"
-        class="node-action"
-        title="إضافة مركز فرعي"
-    >
-        <i class="bi bi-plus-lg"></i>
-    </a>
+            <a
+                href="{% url 'cost_center_add_child' node.id %}"
+                class="node-action"
+                title="{% trans 'Add Sub Cost Center' %}"
+            >
+                <i class="bi bi-plus-lg"></i>
+            </a>
 
-</span>
+        </span>
+
     </div>
 
 

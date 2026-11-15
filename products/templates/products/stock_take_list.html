@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Stock Take Management" %}
 {% endblock %}
@@ -263,7 +263,7 @@
 
                             <td class="user-name">
 
-                                {{ take.created_by.username }}
+                                {{ take.created_by.username|category_display_name }}
 
                             </td>
 

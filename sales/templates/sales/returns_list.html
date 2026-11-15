@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Invoice Returns" %}
 {% endblock %}
@@ -216,26 +216,25 @@
 
                     <!-- العميل -->
 
-                    <td class="customer-name">
+<td class="customer-name">
 
-                        <i class="fa-solid fa-user"></i>
+    <i class="fa-solid fa-user"></i>
 
-                        {% if r.customer %}
+    {% if r.customer %}
 
-                            {{ r.customer.name }}
+        {{ r.customer.name|category_display_name }}
 
-                        {% elif r.pos_invoice.customer %}
+    {% elif r.pos_invoice.customer %}
 
-                            {{ r.pos_invoice.customer.name }}
+        {{ r.pos_invoice.customer.name|category_display_name }}
 
-                        {% else %}
+    {% else %}
 
-                            {% trans "Cash" %}
+        {% trans "Cash" %}
 
-                        {% endif %}
+    {% endif %}
 
-                    </td>
-
+</td>
 
                     <!-- التاريخ -->
 

@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Receipt Vouchers" %}
 {% endblock %}
@@ -37,15 +37,14 @@
             </div>
 
 
-            <a href="#"
-               class="add-btn">
+<a href="{% url 'payments:receipt_create' %}"
+   class="add-btn">
 
-                <i class="fa-solid fa-plus"></i>
+    <i class="fa-solid fa-plus"></i>
 
-                {% trans "إضافة" %}
+    {% trans "إضافة" %}
 
-            </a>
-
+</a>
         </div>
 
 
@@ -251,38 +250,31 @@
                         </td>
 
 
-                        <!-- ============================= -->
-                        <!-- الطرف -->
-                        <!-- ============================= -->
+<!-- ============================= -->
+<!-- الطرف -->
+<!-- ============================= -->
 
-                        <td class="party-name">
+<td class="party-name">
 
-                            <i class="fa-solid fa-user"></i>
+    <i class="fa-solid fa-user"></i>
 
-                            {% if r.customer %}
+    {% if r.customer %}
+        {{ r.customer|category_display_name }}
 
-                                {{ r.customer }}
+    {% elif r.supplier %}
+        {{ r.supplier|category_display_name }}
 
-                            {% elif r.supplier %}
+    {% elif r.cost_center %}
+        {{ r.cost_center|category_display_name }}
 
-                                {{ r.supplier }}
+    {% elif r.other_account %}
+        {{ r.other_account|category_display_name }}
 
-                            {% elif r.cost_center %}
+    {% else %}
+        -
+    {% endif %}
 
-                                {{ r.cost_center }}
-
-                            {% elif r.other_account %}
-
-                                {{ r.other_account }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
+</td>
 
                         <!-- ============================= -->
                         <!-- التاريخ -->

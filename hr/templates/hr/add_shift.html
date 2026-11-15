@@ -1,275 +1,160 @@
-```html
-{% extends "layout/base.html" %}
-{% load i18n %}
 
+{% extends "layout/base.html" %}
 
 {% block title %}
-{% if edit_mode %}
-{% trans "تعديل شفت" %}
+{% if CURRENT_LANGUAGE == "ar" %}
+    {% if edit_mode %}تعديل شفت{% else %}إضافة شفت جديد{% endif %}
 {% else %}
-{% trans "إضافة شفت جديد" %}
+    {% if edit_mode %}Edit Shift{% else %}Add New Shift{% endif %}
 {% endif %}
 {% endblock %}
 
-
-
 {% block content %}
-
 
 <style>
 
-
-.hr-page-card{
-
-    background:#ffffff;
-
-    border-radius:25px;
-
-    padding:30px;
-
-    box-shadow:
-    0 15px 35px rgba(0,0,0,.18);
-
+.hr-page-card {
+    background: #ffffff;
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,.18);
 }
 
-
-
-/* Header */
-
-.hr-page-header{
-
-    margin-bottom:30px;
-
-    text-align:right;
-
+.hr-page-header {
+    margin-bottom: 30px;
+    text-align: {% if CURRENT_LANGUAGE == "ar" %}right{% else %}left{% endif %};
 }
 
-
-.hr-page-header h3{
-
-    margin:0;
-
-    font-size:28px;
-
-    font-weight:700;
-
-    color:#343a40;
-
+.hr-page-header h3 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #343a40;
 }
 
-
-.hr-page-header p{
-
-    color:#6c757d;
-
-    margin-top:8px;
-
+.hr-page-header p {
+    color: #6c757d;
+    margin-top: 8px;
 }
 
-
-
-/* Form */
-
-.hr-form label{
-
-    font-weight:600;
-
-    color:#343a40;
-
-    margin-bottom:8px;
-
+.hr-form label {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 8px;
 }
-
-
 
 .hr-form input,
-.hr-form textarea{
-
-    width:100%;
-
-    padding:12px 15px;
-
-    border-radius:14px;
-
-    border:1px solid #ddd;
-
-    background:#f8f9fa;
-
-    transition:.3s;
-
+.hr-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 14px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    transition: .3s;
 }
-
-
 
 .hr-form input:focus,
-.hr-form textarea:focus{
-
-    background:white;
-
-    border-color:#666;
-
-    box-shadow:0 0 8px rgba(0,0,0,.15);
-
-    outline:none;
-
+.hr-form textarea:focus {
+    background: white;
+    border-color: #666;
+    box-shadow: 0 0 8px rgba(0,0,0,.15);
+    outline: none;
 }
 
-
-
-.hr-form textarea{
-
-    resize:none;
-
+.hr-form textarea {
+    resize: none;
 }
 
-
-
-/* Buttons */
-
-.hr-action{
-
-    background:#5c5c5c;
-
-    color:white;
-
-    border:none;
-
-    padding:10px 25px;
-
-    border-radius:12px;
-
-    text-decoration:none;
-
-    display:inline-block;
-
-    box-shadow:3px 3px 8px #ccc;
-
-    transition:.3s;
-
+.hr-action {
+    background: #5c5c5c;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 3px 3px 8px #ccc;
+    transition: .3s;
 }
 
-
-
-.hr-action:hover{
-
-    background:#333;
-
-    color:white;
-
+.hr-action:hover {
+    background: #333;
+    color: white;
 }
 
-
-
-.hr-cancel{
-
-    background:#eee;
-
-    color:#444;
-
-    padding:10px 25px;
-
-    border-radius:12px;
-
-    text-decoration:none;
-
+.hr-cancel {
+    background: #eee;
+    color: #444;
+    padding: 10px 25px;
+    border-radius: 12px;
+    text-decoration: none;
 }
 
-
-
-.hr-cancel:hover{
-
-    background:#ddd;
-
-    color:#222;
-
+.hr-cancel:hover {
+    background: #ddd;
+    color: #222;
 }
-
-
 
 </style>
 
-
-
-
-
 <div class="container-fluid mt-4">
-
-
 
 <div class="hr-page-card">
 
-
-
-
-
 <div class="hr-page-header">
 
-
 <h3>
-
 
 {% if edit_mode %}
 
 <i class="fa-solid fa-pen-to-square"></i>
 
-{% trans "تعديل شفت" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    تعديل شفت
+{% else %}
+    Edit Shift
+{% endif %}
 
 {% else %}
 
-
 <i class="fa-solid fa-clock"></i>
 
-{% trans "إضافة شفت جديد" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    إضافة شفت جديد
+{% else %}
+    Add New Shift
+{% endif %}
 
 {% endif %}
 
-
 </h3>
 
-
-
 <p>
-
-Manage employee working shifts
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    إدارة مناوبات العمل الخاصة بالموظفين
+{% else %}
+    Manage employee working shifts
+{% endif %}
 </p>
-
-
 
 </div>
 
-
-
-
-
-
-
 <form method="post" class="hr-form">
-
 
 {% csrf_token %}
 
-
-
 <div class="row">
 
-
-
-
-
 <!-- اسم الشفت -->
-
 <div class="col-md-6 mb-3">
 
-
 <label>
-
-{% trans "اسم المناوبة" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    اسم المناوبة
+{% else %}
+    Shift Name
+{% endif %}
 </label>
-
 
 <input type="text"
 name="shift_name"
@@ -277,55 +162,36 @@ class="form-control"
 value="{{ shift.shift_name|default:'' }}"
 required>
 
-
 </div>
 
-
-
-
-
-
-
 <!-- ترتيب الشفت -->
-
 <div class="col-md-6 mb-3">
 
-
 <label>
-
-{% trans "ترتيب المناوبة" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    ترتيب المناوبة
+{% else %}
+    Shift Order
+{% endif %}
 </label>
-
 
 <input type="number"
 name="shift_order"
 class="form-control"
-placeholder="تلقائي">
-
-
+placeholder="{% if CURRENT_LANGUAGE == 'ar' %}تلقائي{% else %}Automatic{% endif %}">
 
 </div>
 
-
-
-
-
-
-
-
 <!-- وقت البداية -->
-
-
 <div class="col-md-6 mb-3">
 
-
 <label>
-
-{% trans "وقت البداية" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    وقت البداية
+{% else %}
+    Start Time
+{% endif %}
 </label>
-
 
 <input type="time"
 name="start_time"
@@ -333,27 +199,18 @@ class="form-control"
 value="{{ shift.start_time|time:'H:i' }}"
 required>
 
-
 </div>
 
-
-
-
-
-
-
 <!-- وقت النهاية -->
-
-
 <div class="col-md-6 mb-3">
 
-
 <label>
-
-{% trans "وقت النهاية" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    وقت النهاية
+{% else %}
+    End Time
+{% endif %}
 </label>
-
 
 <input type="time"
 name="end_time"
@@ -361,156 +218,97 @@ class="form-control"
 value="{{ shift.end_time|time:'H:i' }}"
 required>
 
-
 </div>
 
-
-
-
-
-
-
-
 <!-- بداية الاستراحة -->
-
-
 <div class="col-md-6 mb-3">
 
-
 <label>
-
-{% trans "بداية الاستراحة" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    بداية الاستراحة
+{% else %}
+    Break Start
+{% endif %}
 </label>
-
 
 <input type="time"
 name="break_start"
 class="form-control"
 value="{{ shift.break_start|time:'H:i' }}">
 
-
-
 </div>
 
-
-
-
-
-
-
 <!-- نهاية الاستراحة -->
-
-
 <div class="col-md-6 mb-3">
 
-
 <label>
-
-{% trans "نهاية الاستراحة" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    نهاية الاستراحة
+{% else %}
+    Break End
+{% endif %}
 </label>
-
 
 <input type="time"
 name="break_end"
 class="form-control"
 value="{{ shift.break_end|time:'H:i' }}">
 
-
-
 </div>
 
-
-
-
-
-
-
-
 <!-- ملاحظات -->
-
-
 <div class="col-12 mb-3">
 
-
 <label>
-
-{% trans "ملاحظات" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    ملاحظات
+{% else %}
+    Notes
+{% endif %}
 </label>
-
 
 <textarea name="notes"
 class="form-control"
 rows="3">{{ shift.notes|default:'' }}</textarea>
 
-
-
 </div>
 
-
-
-
-
 </div>
-
-
-
-
-
 
 <hr>
 
-
-
-
 <div class="mt-4">
 
-
-<button type="submit"
-class="hr-action">
-
+<button type="submit" class="hr-action">
 
 <i class="fa-solid fa-floppy-disk"></i>
 
-{% trans "حفظ الشفت" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    حفظ الشفت
+{% else %}
+    Save Shift
+{% endif %}
 
 </button>
 
-
-
-
-
-<a href="{% url 'hr:shifts' %}"
-class="hr-cancel">
-
+<a href="{% url 'hr:shifts' %}" class="hr-cancel">
 
 <i class="fa-solid fa-xmark"></i>
 
-{% trans "إلغاء" %}
-
+{% if CURRENT_LANGUAGE == "ar" %}
+    إلغاء
+{% else %}
+    Cancel
+{% endif %}
 
 </a>
 
-
-
 </div>
-
-
-
-
 
 </form>
 
-
-
 </div>
 
-
 </div>
-
 
 {% endblock %}
-```

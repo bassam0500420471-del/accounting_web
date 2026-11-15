@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load supplier_translation %}
 {% block title %}{% trans "Evaluation Reports" %}{% endblock %}
 
 {% block content %}
@@ -30,7 +30,13 @@
                         <option value="">{% trans "All Employees" %}</option>
                         {% for emp in employees %}
                             <option value="{{ emp.id }}" {% if request.GET.employee == emp.id|stringformat:"s" %}selected{% endif %}>
-                                {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+                                {% get_current_language as CURRENT_LANGUAGE %}
+{% if CURRENT_LANGUAGE == "en" %}
+    {{ emp.first_name_en|default:emp.first_name_ar }}
+    {{ emp.last_name_en|default:emp.last_name_ar }}
+{% else %}
+    {{ emp.first_name_ar }} {{ emp.last_name_ar }}
+{% endif %}
                             </option>
                         {% endfor %}
                     </select>
@@ -85,11 +91,16 @@
                         {% for row in monthly_summaries %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td class="text-start">
-                                    {{ row.employee.first_name_ar }} {{ row.employee.last_name_ar }}
-                                </td>
+<td class="text-start">
+    {% if CURRENT_LANGUAGE == "en" %}
+        {{ row.employee.first_name_en|default:row.employee.first_name_ar }}
+        {{ row.employee.last_name_en|default:row.employee.last_name_ar }}
+    {% else %}
+        {{ row.employee.first_name_ar }} {{ row.employee.last_name_ar }}
+    {% endif %}
+</td>
                                 <td>
-                                    {{ row.employee.department.name|default:"—" }}
+                                    {{ row.employee.department.name|default:"—"|supplier_name }}
                                 </td>
                                 <td>{{ row.month_label }}</td>
                                 <td>{{ row.evaluations_count }}</td>
@@ -145,16 +156,21 @@
                                 <td>{{ forloop.counter }}</td>
 
                                 <td class="text-start">
-                                    {{ row.employee.first_name_ar }} {{ row.employee.last_name_ar }}
+                                    {% if CURRENT_LANGUAGE == "en" %}
+    {{ row.employee.first_name_en|default:row.employee.first_name_ar }}
+    {{ row.employee.last_name_en|default:row.employee.last_name_ar }}
+{% else %}
+    {{ row.employee.first_name_ar }} {{ row.employee.last_name_ar }}
+{% endif %}
                                 </td>
 
                                 <td>
-                                    {{ row.employee.department.name|default:"—" }}
+                                    {{ row.employee.department.name|default:"—"|supplier_name }}
                                 </td>
 
-                                <td>{{ row.evaluation.name }}</td>
+                                <td>{{ row.evaluation.name|supplier_name }}</td>
 
-                                <td>{{ row.evaluation_type_name }}</td>
+                                <td>{{ row.evaluation_type_name|supplier_name }}</td>
 
                                 <td>
                                     {{ row.evaluation.start_date }}<br>

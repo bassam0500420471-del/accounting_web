@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
 {% trans "Customer List" %}
 {% endblock %}
@@ -209,7 +209,7 @@
 
                             <i class="fa-solid fa-user"></i>
 
-                            {{ c.name }}
+                            {{ c.name|category_display_name }}
 
                         </td>
 

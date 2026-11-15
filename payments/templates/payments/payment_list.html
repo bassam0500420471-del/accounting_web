@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load i18n product_translation %}
 {% block title %}
     {% trans "Payment Vouchers" %}
 {% endblock %}
@@ -37,15 +37,14 @@
             </div>
 
 
-            <a href="#"
-               class="add-btn">
+<a href="{% url 'payments:payment_create' %}"
+   class="add-btn">
 
-                <i class="fa-solid fa-plus"></i>
+    <i class="fa-solid fa-plus"></i>
 
-                {% trans "إضافة " %}
+    {% trans "Add" %}
 
-            </a>
-
+</a>
         </div>
 
 
@@ -259,28 +258,27 @@
 
                             <i class="fa-solid fa-user"></i>
 
-                            {% if v.supplier %}
+{% if v.supplier %}
 
-                                {{ v.supplier }}
+    {{ v.supplier|category_display_name }}
 
-                            {% elif v.customer %}
+{% elif v.customer %}
 
-                                {{ v.customer }}
+    {{ v.customer|category_display_name }}
 
-                            {% elif v.cost_center %}
+{% elif v.cost_center %}
 
-                                {{ v.cost_center }}
+    {{ v.cost_center|category_display_name }}
 
-                            {% elif v.other_account %}
+{% elif v.other_account %}
 
-                                {{ v.other_account }}
+    {{ v.other_account|category_display_name }}
 
-                            {% else %}
+{% else %}
 
-                                -
+    -
 
-                            {% endif %}
-
+{% endif %}
                         </td>
 
 

@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum, Max
 from django.db.models.functions import Coalesce
@@ -24,42 +25,50 @@ def get_request_company(request):
     return None
 
 
+
 def generate_next_child_code(parent, company):
-
-    siblings = Account.objects.filter(
-        company=company,
-        parent=parent
-    ).exclude(code__isnull=True).exclude(code="")
-
-    numbers = []
-
-    for acc in siblings:
-        code = str(acc.code).strip()
-
-        if code.isdigit():
-            numbers.append(int(code))
 
     parent_code = str(parent.code).strip()
 
-    # إذا يوجد حسابات فرعية سابقة
-    if numbers:
-        return str(max(numbers) + 1)
+    # جلب جميع الأكواد المستخدمة في الشركة
+    existing_codes = set(
+        Account.objects.filter(
+            company=company
+        ).exclude(
+            code__isnull=True
+        ).exclude(
+            code=""
+        ).values_list(
+            "code",
+            flat=True
+        )
+    )
 
-    # أول حساب فرعي
+    existing_codes = {
+        str(code).strip()
+        for code in existing_codes
+    }
+
+    # تحديد بداية الكود الجديد
     if parent_code.isdigit():
+
         base = int(parent_code) * 100
-        code = base + 1
+        candidate = base + 1
 
-        # تأكد أنه غير موجود
-        while Account.objects.filter(
-            company=company,
-            code=str(code)
-        ).exists():
-            code += 1
+        # البحث عن أول كود غير مستخدم
+        while str(candidate) in existing_codes:
+            candidate += 1
 
-        return str(code)
+        return str(candidate)
 
-    return f"{parent_code}1"
+    # في حالة كان كود الحساب الأب غير رقمي
+    candidate = f"{parent_code}1"
+
+    while candidate in existing_codes:
+        candidate += "1"
+
+    return candidate
+
 
 # ======================================
 # 📘 عرض القيود اليومية
@@ -381,11 +390,20 @@ def add_child_account(request, pk):
 
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
-        account_type = request.POST.get("account_type", "").strip() or parent.account_type
+        name_en = request.POST.get("name_en", "").strip()
+
+        account_type = (
+            request.POST.get("account_type", "").strip()
+            or parent.account_type
+        )
+
         code = generate_next_child_code(parent, company)
 
-        if not name:
-            messages.error(request, "❌ يجب إدخال اسم الحساب")
+        if not name or not name_en:
+            messages.error(
+                request,
+                "❌ يجب إدخال اسم الحساب بالعربية والإنجليزية"
+            )
             return render(
                 request,
                 "accounting/add_child_account.html",
@@ -411,11 +429,16 @@ def add_child_account(request, pk):
             parent=parent,
             code=code,
             name=name,
+            name_en=name_en,
             account_type=account_type,
             is_active=True
         )
 
-        messages.success(request, f"✅ تم إنشاء الحساب الفرعي بنجاح بالكود {code}")
+        messages.success(
+            request,
+            f"✅ تم إنشاء الحساب الفرعي بنجاح بالكود {code}"
+        )
+
         return redirect("accounting:account_view", pk=parent.pk)
 
     return render(
@@ -426,6 +449,7 @@ def add_child_account(request, pk):
             "suggested_code": suggested_code
         }
     )
+
 
 # ======================================
 # ✏️ تعديل حساب
@@ -441,13 +465,11 @@ def account_edit(request, pk):
         )
         return redirect("accounting:chart_tree")
 
-
     account = get_object_or_404(
         Account,
         pk=pk,
         company=company
     )
-
 
     if request.method == "POST":
 
@@ -464,12 +486,10 @@ def account_edit(request, pk):
                 pk=account.pk
             )
 
-
         account.name = name
         account.name_en = name_en
 
         account.save()
-
 
         messages.success(
             request,
@@ -480,7 +500,6 @@ def account_edit(request, pk):
             "accounting:chart_tree"
         )
 
-
     return render(
         request,
         "accounting/accounts/edit.html",
@@ -488,7 +507,6 @@ def account_edit(request, pk):
             "account": account
         }
     )
-
 
 
 # ======================================
@@ -505,15 +523,11 @@ def account_delete(request, pk):
         )
         return redirect("accounting:chart_tree")
 
-
     account = get_object_or_404(
         Account,
         pk=pk,
         company=company
     )
-
-
-
 
     # منع حذف الحسابات التي لها أبناء
     if account.children.exists():
@@ -527,7 +541,6 @@ def account_delete(request, pk):
             "accounting:chart_tree"
         )
 
-
     # منع حذف الحسابات المرتبطة بقيود
     if account.journal_lines.exists():
 
@@ -540,15 +553,12 @@ def account_delete(request, pk):
             "accounting:chart_tree"
         )
 
-
     account.delete()
-
 
     messages.success(
         request,
         "✅ تم حذف الحساب بنجاح"
     )
-
 
     return redirect(
         "accounting:chart_tree"

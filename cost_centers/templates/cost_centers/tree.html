@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
+{% load i18n %}
 {% block content %}
-
 <style>
 
 /* =========================================================
@@ -750,14 +750,13 @@ body {
 
                 <div>
 
-                    <h3>
-                        شجرة مراكز التكلفة
-                    </h3>
+<h3>
+    {% trans "Cost Center Tree" %}
+</h3>
 
-                    <p>
-                        إدارة مراكز التكلفة الرئيسية والفرعية
-                    </p>
-
+<p>
+    {% trans "Manage main and sub cost centers" %}
+</p>
                 </div>
 
             </div>
@@ -768,10 +767,9 @@ body {
                 class="add-cost-btn"
             >
 
-                <i class="bi bi-plus-lg"></i>
+<i class="bi bi-plus-lg"></i>
 
-                إضافة مركز تكلفة
-
+{% trans "Add Cost Center" %}
             </a>
 
         </div>
@@ -786,10 +784,9 @@ body {
 
             <div class="tree-section-title">
 
-                <i class="bi bi-diagram-3"></i>
+<i class="bi bi-diagram-3"></i>
 
-                هيكل مراكز التكلفة
-
+{% trans "Cost Center Structure" %}
             </div>
 
 
@@ -816,7 +813,8 @@ body {
                     <i class="bi bi-folder-x"></i>
 
                     <span>
-                        لا توجد مراكز تكلفة بعد
+                        {% trans "No cost centers yet" %}
+
                     </span>
 
                 </div>

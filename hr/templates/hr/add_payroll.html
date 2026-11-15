@@ -1,588 +1,287 @@
+
 {% extends "layout/base.html" %}
 {% load static %}
-{% load i18n %}
 
 {% block title %}
-{% trans "الرواتب" %}
+{% if CURRENT_LANGUAGE == "ar" %}الرواتب{% else %}Payroll{% endif %}
 {% endblock %}
-
 
 {% block content %}
 
 <style>
 
-/* =========================================================
-   الصفحة العامة
-   ========================================================= */
-
 body {
     background: #eeeeee !important;
 }
 
-
-/* =========================================================
-   الكرت الرئيسي
-   ========================================================= */
-
 .payroll-card {
-
     background: #ffffff;
-
     border-radius: 25px;
-
     padding: 30px;
-
-    box-shadow:
-        0 15px 40px rgba(0, 0, 0, .15);
-
+    box-shadow: 0 15px 40px rgba(0,0,0,.15);
 }
-
-
-/* =========================================================
-   رأس الصفحة
-   ========================================================= */
 
 .payroll-header {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    text-align: right;
-
+    text-align: {% if CURRENT_LANGUAGE == "ar" %}right{% else %}left{% endif %};
     margin-bottom: 30px;
-
 }
-
 
 .payroll-header h2 {
-
     margin: 0;
-
     font-size: 28px;
-
     font-weight: 800;
-
     color: #444;
-
 }
-
 
 .payroll-header h2 i {
-
     color: #666;
-
-    margin-left: 8px;
-
+    margin-inline-end: 8px;
 }
-
 
 .payroll-header p {
-
     color: #777;
-
     margin: 7px 0 0;
-
     font-size: 14px;
-
 }
-
-
-/* =========================================================
-   التاريخ
-   ========================================================= */
 
 .payroll-date-box {
-
-    background: linear-gradient(
-        120deg,
-        #eeeeee,
-        #fafafa
-    );
-
+    background: linear-gradient(120deg,#eeeeee,#fafafa);
     padding: 20px;
-
     border-radius: 18px;
-
     margin-bottom: 25px;
-
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.8),
-        0 5px 15px rgba(0,0,0,.05);
-
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8),
+                0 5px 15px rgba(0,0,0,.05);
 }
-
 
 .payroll-date-box label {
-
     display: block;
-
     font-weight: 700;
-
     color: #555;
-
     margin-bottom: 7px;
-
 }
-
 
 .payroll-date-box input {
-
     width: 100%;
-
     border-radius: 12px;
-
     padding: 10px 12px;
-
     background: #ffffff;
-
     border: 1px solid #ccc;
-
     color: #444;
-
-    box-shadow:
-        inset 0 1px 3px rgba(0,0,0,.04);
-
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.04);
 }
-
 
 .payroll-date-box input:focus {
-
     border-color: #777;
-
-    box-shadow:
-        0 0 0 .15rem rgba(85,85,85,.12);
-
+    box-shadow: 0 0 0 .15rem rgba(85,85,85,.12);
     outline: none;
-
 }
-
-
-/* =========================================================
-   صندوق الجدول
-   ========================================================= */
 
 .payroll-table {
-
     overflow-x: auto;
-
     overflow-y: visible;
-
     border-radius: 18px;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,.08);
-
+    box-shadow: 0 5px 18px rgba(0,0,0,.08);
 }
-
-
-/* =========================================================
-   الجدول
-   ========================================================= */
 
 .payroll-table table {
-
     width: 100%;
-
     min-width: 1800px;
-
     margin: 0;
-
     table-layout: auto;
-
     border-collapse: separate;
-
     border-spacing: 0;
-
     background: #fff;
-
 }
-
-
-/* =========================================================
-   رأس الجدول
-   تدرج واحد متصل بالكامل
-   ========================================================= */
 
 .payroll-table thead {
-
-    background:
-        linear-gradient(
-            90deg,
-            #444 0%,
-            #666 50%,
-            #888 100%
-        ) !important;
-
+    background: linear-gradient(90deg,#444 0%,#666 50%,#888 100%) !important;
     color: #fff !important;
-
 }
-
-
-/* مهم:
-   إزالة أي خلفية مستقلة من كل عنوان */
 
 .payroll-table thead tr {
-
     background: transparent !important;
-
 }
-
 
 .payroll-table thead th {
-
     background: transparent !important;
-
     color: #fff !important;
-
     border: 0 !important;
-
     padding: 16px 12px;
-
     text-align: center;
-
     vertical-align: middle;
-
     font-size: 14px;
-
     font-weight: 700;
-
     white-space: nowrap;
-
 }
-
-
-/* الحواف العليا */
 
 .payroll-table thead th:first-child {
-
-    border-top-right-radius: 18px;
-
+    border-top-left-radius: 18px;
 }
-
 
 .payroll-table thead th:last-child {
-
-    border-top-left-radius: 18px;
-
+    border-top-right-radius: 18px;
 }
-
-
-/* =========================================================
-   جسم الجدول
-   ========================================================= */
 
 .payroll-table tbody td {
-
     padding: 13px 10px;
-
     text-align: center;
-
     vertical-align: middle;
-
     border-bottom: 1px solid #eee;
-
     color: #444 !important;
-
     background: #fff;
-
 }
-
-
-/* حركة الصف */
 
 .payroll-table tbody tr {
-
     transition: .25s;
-
 }
-
 
 .payroll-table tbody tr:hover td {
-
     background: #f3f3f3;
-
 }
-
-
-/* =========================================================
-   اسم الموظف
-   ========================================================= */
 
 .employee-name {
-
     font-weight: 800;
-
     color: #444;
-
     white-space: nowrap;
-
 }
-
-
-/* =========================================================
-   حقول الرواتب
-   ========================================================= */
 
 .payroll-table input {
-
     width: 100%;
-
     min-width: 120px;
-
     padding: 9px 10px;
-
     text-align: center;
-
     border-radius: 10px;
-
     border: 1px solid #d0d0d0;
-
     background: #f8f8f8;
-
     color: #444;
-
-    box-shadow:
-        inset 0 1px 3px rgba(0,0,0,.05);
-
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
     transition: .25s;
-
 }
-
 
 .payroll-table input:focus {
-
     background: #fff;
-
     border-color: #777;
-
-    box-shadow:
-        0 0 0 .15rem rgba(85,85,85,.12);
-
+    box-shadow: 0 0 0 .15rem rgba(85,85,85,.12);
     outline: none;
-
 }
-
-
-/* =========================================================
-   صافي راتب الموظف
-   ========================================================= */
 
 .employee-total {
-
-    background:
-        linear-gradient(
-            145deg,
-            #444,
-            #666
-        );
-
+    background: linear-gradient(145deg,#444,#666);
     color: #fff;
-
     border-radius: 10px;
-
     padding: 10px;
-
     min-width: 120px;
-
     font-weight: 800;
-
-    box-shadow:
-        inset 0 1px 2px rgba(255,255,255,.15),
-        0 5px 12px rgba(0,0,0,.15);
-
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.15),
+                0 5px 12px rgba(0,0,0,.15);
 }
-
-
-/* =========================================================
-   صف الإجماليات
-   ========================================================= */
 
 .payroll-table tfoot tr {
-
-    background:
-        linear-gradient(
-            90deg,
-            #444 0%,
-            #666 50%,
-            #888 100%
-        ) !important;
-
+    background: linear-gradient(90deg,#444 0%,#666 50%,#888 100%) !important;
 }
-
 
 .payroll-table tfoot th,
 .payroll-table tfoot td {
-
     background: transparent !important;
-
     color: #fff !important;
-
     border: 0 !important;
-
     padding: 14px 10px;
-
     text-align: center;
-
     font-size: 15px;
-
     font-weight: 700;
-
 }
-
-
-/* =========================================================
-   زر الحفظ
-   ========================================================= */
 
 .payroll-save-box {
-
     margin-top: 25px;
-
-    text-align: right;
-
+    text-align: {% if CURRENT_LANGUAGE == "ar" %}right{% else %}left{% endif %};
 }
-
 
 .btn-save {
-
-    background:
-        linear-gradient(
-            145deg,
-            #444,
-            #666
-        );
-
+    background: linear-gradient(145deg,#444,#666);
     color: #fff;
-
     border: none;
-
     padding: 12px 30px;
-
     border-radius: 12px;
-
     font-weight: 700;
-
-    box-shadow:
-        3px 3px 8px rgba(0,0,0,.18),
-        inset 0 1px 0 rgba(255,255,255,.12);
-
+    box-shadow: 3px 3px 8px rgba(0,0,0,.18),
+                inset 0 1px 0 rgba(255,255,255,.12);
     transition: .25s;
-
 }
-
 
 .btn-save:hover {
-
-    background:
-        linear-gradient(
-            145deg,
-            #333,
-            #555
-        );
-
+    background: linear-gradient(145deg,#333,#555);
     color: #fff;
-
     transform: translateY(-1px);
-
 }
-
-
-/* =========================================================
-   تجاوب الشاشة
-   ========================================================= */
 
 @media (max-width: 992px) {
-
     .payroll-card {
-
         padding: 20px;
-
         border-radius: 20px;
-
     }
-
 
     .payroll-header h2 {
-
         font-size: 24px;
-
     }
-
 }
 
-
 @media (max-width: 768px) {
-
     .payroll-header {
-
         display: block;
-
     }
-
 
     .payroll-header p {
-
         margin-top: 8px;
-
     }
-
 
     .payroll-date-box {
-
         padding: 15px;
-
     }
-
 
     .payroll-table table {
-
         min-width: 1700px;
-
     }
-
 }
 
 </style>
 
-
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4"
+     dir="{% if CURRENT_LANGUAGE == 'ar' %}rtl{% else %}ltr{% endif %}">
 
     <div class="payroll-card">
 
-
-        <!-- =================================================
-             رأس الصفحة
-             ================================================= -->
+        <!-- رأس الصفحة -->
 
         <div class="payroll-header">
 
             <div>
 
                 <h2>
-
                     <i class="fa-solid fa-money-check-dollar"></i>
 
-                    {% trans "الرواتب" %}
-
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        الرواتب
+                    {% else %}
+                        Payroll
+                    {% endif %}
                 </h2>
 
                 <p>
-
-                    {% trans "إنشاء مسير الرواتب لجميع الموظفين" %}
-
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        إنشاء مسير الرواتب لجميع الموظفين
+                    {% else %}
+                        Create Payroll Run for All Employees
+                    {% endif %}
                 </p>
 
             </div>
 
         </div>
 
-
-        <!-- =================================================
-             تاريخ مسير الرواتب
-             ================================================= -->
+        <!-- تاريخ مسير الرواتب -->
 
         <div class="payroll-date-box">
 
@@ -592,7 +291,11 @@ body {
 
                     <label class="form-label">
 
-                        {% trans "تاريخ مسير الرواتب" %}
+                        {% if CURRENT_LANGUAGE == "ar" %}
+                            تاريخ مسير الرواتب
+                        {% else %}
+                            Payroll Date
+                        {% endif %}
 
                     </label>
 
@@ -609,106 +312,61 @@ body {
 
         </div>
 
+        <!-- النموذج -->
 
-        <!-- =================================================
-             النموذج
-             ================================================= -->
-
-        <form
-            method="post"
-            id="payrollForm"
-        >
+        <form method="post" id="payrollForm">
 
             {% csrf_token %}
 
-
-            <!-- =================================================
-                 جدول الرواتب
-                 ================================================= -->
-
             <div class="table-responsive payroll-table">
 
-                <table
-                    class="table table-bordered align-middle text-center"
-                >
+                <table class="table table-bordered align-middle text-center">
 
                     <thead>
 
                         <tr>
 
-                            <th style="width:70px">
-
-                                #
-
-                            </th>
-
+                            <th style="width:70px">#</th>
 
                             <th style="min-width:230px">
-
-                                {% trans "الموظف" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}الموظف{% else %}Employee{% endif %}
                             </th>
-
 
                             <th>
-
-                                {% trans "الراتب الأساسي" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}الراتب الأساسي{% else %}Basic Salary{% endif %}
                             </th>
-
 
                             <th>
-
-                                {% trans "بدل الساعات الإضافية" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}بدل الساعات الإضافية{% else %}Overtime Allowance{% endif %}
                             </th>
-
 
                             <th>
-
-                                {% trans "البدلات" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}البدلات{% else %}Allowances{% endif %}
                             </th>
-
 
                             <th>
-
-                                {% trans "خصم السلفة" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}خصم السلفة{% else %}Advance Deduction{% endif %}
                             </th>
-
 
                             <th>
-
-                                {% trans "خصم الغياب" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}خصم الغياب{% else %}Absence Deduction{% endif %}
                             </th>
-
 
                             <th>
-
-                                {% trans "خصومات أخرى" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}خصومات أخرى{% else %}Other Deductions{% endif %}
                             </th>
-
 
                             <th style="min-width:260px">
-
-                                {% trans "الملاحظات" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}الملاحظات{% else %}Notes{% endif %}
                             </th>
 
-
                             <th>
-
-                                {% trans "صافي الراتب" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}صافي الراتب{% else %}Net Salary{% endif %}
                             </th>
 
                         </tr>
 
                     </thead>
-
 
                     <tbody>
 
@@ -716,52 +374,36 @@ body {
 
                         <tr>
 
-
-                            <td>
-
-                                {{ forloop.counter }}
-
-                            </td>
-
+                            <td>{{ forloop.counter }}</td>
 
                             <td class="employee-name">
-
-                                <strong>
-
-                                    {{ employee }}
-
-                                </strong>
-
+                                <strong>{{ employee }}</strong>
                             </td>
 
-
-<td>
-
-    <input
-        type="number"
-        step="0.01"
-        min="0"
-        class="salary-input form-control"
-        name="emp_{{ employee.id }}_base_salary"
-        value="{{ employee.base_salary|default_if_none:'0' }}"
-        
-    >
-
-</td>
-
-<td>
-    <input
-        type="number"
-        step="0.01"
-        min="0"
-        class="salary-input form-control"
-        name="emp_{{ employee.id }}_overtime"
-        value="0"
-        placeholder="0.00"
-    >
-</td>
                             <td>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    class="salary-input form-control"
+                                    name="emp_{{ employee.id }}_base_salary"
+                                    value="{{ employee.base_salary|default_if_none:'0' }}"
+                                >
+                            </td>
 
+                            <td>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    class="salary-input form-control"
+                                    name="emp_{{ employee.id }}_overtime"
+                                    value="0"
+                                    placeholder="0.00"
+                                >
+                            </td>
+
+                            <td>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -769,12 +411,9 @@ body {
                                     class="salary-input form-control"
                                     name="emp_{{ employee.id }}_allowances"
                                 >
-
                             </td>
 
-
                             <td>
-
                                 <input
                                     type="number"
                                     step="0.01"
@@ -782,12 +421,9 @@ body {
                                     class="salary-input form-control"
                                     name="emp_{{ employee.id }}_advance_deduction"
                                 >
-
                             </td>
 
-
                             <td>
-
                                 <input
                                     type="number"
                                     step="0.01"
@@ -795,12 +431,9 @@ body {
                                     class="salary-input form-control"
                                     name="emp_{{ employee.id }}_absence_deduction"
                                 >
-
                             </td>
 
-
                             <td>
-
                                 <input
                                     type="number"
                                     step="0.01"
@@ -808,32 +441,21 @@ body {
                                     class="salary-input form-control"
                                     name="emp_{{ employee.id }}_other_deductions"
                                 >
-
                             </td>
 
-
                             <td>
-
                                 <input
                                     type="text"
                                     class="form-control"
                                     name="emp_{{ employee.id }}_notes"
                                 >
-
                             </td>
 
-
                             <td>
-
-                                <div
-                                    class="employee-total"
-                                    data-id="{{ employee.id }}"
-                                >
-
+                                <div class="employee-total"
+                                     data-id="{{ employee.id }}">
                                     0.00
-
                                 </div>
-
                             </td>
 
                         </tr>
@@ -842,76 +464,29 @@ body {
 
                     </tbody>
 
-
-                    <!-- =================================================
-                         الإجماليات
-                         ================================================= -->
-
                     <tfoot>
 
                         <tr>
 
                             <th colspan="2">
-
-                                {% trans "الإجماليات" %}
-
+                                {% if CURRENT_LANGUAGE == "ar" %}الإجماليات{% else %}Totals{% endif %}
                             </th>
 
+                            <th id="sum_base">0.00</th>
 
-                            <th id="sum_base">
+                            <th id="sum_overtime">0.00</th>
 
-                                0.00
+                            <th id="sum_allowances">0.00</th>
 
-                            </th>
+                            <th id="sum_advance">0.00</th>
 
+                            <th id="sum_absence">0.00</th>
 
-                            <th id="sum_overtime">
+                            <th id="sum_other">0.00</th>
 
-                                0.00
+                            <th>-</th>
 
-                            </th>
-
-
-                            <th id="sum_allowances">
-
-                                0.00
-
-                            </th>
-
-
-                            <th id="sum_advance">
-
-                                0.00
-
-                            </th>
-
-
-                            <th id="sum_absence">
-
-                                0.00
-
-                            </th>
-
-
-                            <th id="sum_other">
-
-                                0.00
-
-                            </th>
-
-
-                            <th>
-
-                                -
-
-                            </th>
-
-
-                            <th id="grand_total">
-
-                                0.00
-
-                            </th>
+                            <th id="grand_total">0.00</th>
 
                         </tr>
 
@@ -921,26 +496,23 @@ body {
 
             </div>
 
-
-            <!-- =================================================
-                 زر الحفظ
-                 ================================================= -->
+            <!-- زر الحفظ -->
 
             <div class="payroll-save-box">
 
-                <button
-                    type="submit"
-                    class="btn-save"
-                >
+                <button type="submit" class="btn-save">
 
                     <i class="fa-solid fa-floppy-disk"></i>
 
-                    {% trans "حفظ مسير الرواتب" %}
+                    {% if CURRENT_LANGUAGE == "ar" %}
+                        حفظ مسير الرواتب
+                    {% else %}
+                        Save Payroll Run
+                    {% endif %}
 
                 </button>
 
             </div>
-
 
         </form>
 
@@ -948,53 +520,32 @@ body {
 
 </div>
 
-
 <script>
-
-/* =========================================================
-   تحويل القيمة إلى رقم
-   ========================================================= */
 
 function number(v) {
 
     let n = parseFloat(v);
 
     if (isNaN(n)) {
-
         return 0;
-
     }
 
     return n;
-
 }
-
-
-/* =========================================================
-   حساب الرواتب
-   ========================================================= */
 
 function calc() {
 
     let sumBase = 0;
-
     let sumOt = 0;
-
     let sumAllow = 0;
-
     let sumAdvance = 0;
-
     let sumAbsence = 0;
-
     let sumOther = 0;
-
     let grand = 0;
-
 
     document
         .querySelectorAll(".payroll-table tbody tr")
         .forEach(function(row) {
-
 
             let baseInput =
                 row.querySelector("[name$='base_salary']");
@@ -1014,124 +565,65 @@ function calc() {
             let otherInput =
                 row.querySelector("[name$='other_deductions']");
 
+            let base = number(baseInput ? baseInput.value : 0);
+            let ot = number(overtimeInput ? overtimeInput.value : 0);
+            let allow = number(allowancesInput ? allowancesInput.value : 0);
+            let adv = number(advanceInput ? advanceInput.value : 0);
+            let abs = number(absenceInput ? absenceInput.value : 0);
+            let other = number(otherInput ? otherInput.value : 0);
 
-            let base =
-                number(baseInput ? baseInput.value : 0);
-
-
-            let ot =
-                number(overtimeInput ? overtimeInput.value : 0);
-
-
-            let allow =
-                number(allowancesInput ? allowancesInput.value : 0);
-
-
-            let adv =
-                number(advanceInput ? advanceInput.value : 0);
-
-
-            let abs =
-                number(absenceInput ? absenceInput.value : 0);
-
-
-            let other =
-                number(otherInput ? otherInput.value : 0);
-
-
-            /* صافي الراتب */
-
-            let total =
-                base
-                + ot
-                + allow
-                - adv
-                - abs
-                - other;
-
+            let total = base + ot + allow - adv - abs - other;
 
             let totalElement =
                 row.querySelector(".employee-total");
 
-
             if (totalElement) {
-
-                totalElement.innerHTML =
-                    total.toFixed(2);
-
+                totalElement.innerHTML = total.toFixed(2);
             }
 
-
-            /* الإجماليات */
-
             sumBase += base;
-
             sumOt += ot;
-
             sumAllow += allow;
-
             sumAdvance += adv;
-
             sumAbsence += abs;
-
             sumOther += other;
-
             grand += total;
 
         });
 
-
     document.getElementById("sum_base").innerHTML =
         sumBase.toFixed(2);
-
 
     document.getElementById("sum_overtime").innerHTML =
         sumOt.toFixed(2);
 
-
     document.getElementById("sum_allowances").innerHTML =
         sumAllow.toFixed(2);
-
 
     document.getElementById("sum_advance").innerHTML =
         sumAdvance.toFixed(2);
 
-
     document.getElementById("sum_absence").innerHTML =
         sumAbsence.toFixed(2);
 
-
     document.getElementById("sum_other").innerHTML =
         sumOther.toFixed(2);
-
 
     document.getElementById("grand_total").innerHTML =
         grand.toFixed(2);
 
 }
 
-
-/* =========================================================
-   تحديث الحساب عند الكتابة
-   ========================================================= */
-
 document
     .querySelectorAll(".salary-input")
     .forEach(function(input) {
 
-        input.addEventListener(
-            "input",
-            calc
-        );
+        input.addEventListener("input", calc);
 
     });
-
-
-/* الحساب الأولي */
 
 calc();
 
 </script>
-
 
 {% endblock %}

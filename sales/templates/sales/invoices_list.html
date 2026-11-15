@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Invoice List" %}
 {% endblock %}
@@ -215,16 +215,15 @@
 
                             <i class="fa-solid fa-user"></i>
 
-                            {% if invoice.object.customer %}
+{% if invoice.object.customer %}
 
-                                {{ invoice.object.customer.name }}
+    {{ invoice.object.customer.name|category_display_name }}
 
-                            {% else %}
+{% else %}
 
-                                {% trans "Cash" %}
+    {% trans "Cash" %}
 
-                            {% endif %}
-
+{% endif %}
                         </td>
 
 
@@ -254,20 +253,47 @@
 
                         <td>
 
-                            <span class="status-badge">
+<span class="status-badge">
 
-                                {% if invoice.type == "pos" %}
+    {% if CURRENT_LANGUAGE == "en" %}
 
-                                    {{ invoice.object.payment_status }}
+        {% if invoice.type == "pos" %}
 
-                                {% else %}
+            {% if invoice.object.payment_status == "مسددة بالكامل" %}
+                Fully Paid
+            {% elif invoice.object.payment_status == "مسددة جزئياً" %}
+                Partially Paid
+            {% elif invoice.object.payment_status == "غير مسددة" %}
+                Unpaid
+            {% else %}
+                {{ invoice.object.payment_status }}
+            {% endif %}
 
-                                    {{ invoice.object.get_payment_status_display }}
+        {% else %}
 
-                                {% endif %}
+            {% if invoice.object.payment_status == "paid" %}
+                Fully Paid
+            {% elif invoice.object.payment_status == "partial" %}
+                Partially Paid
+            {% elif invoice.object.payment_status == "unpaid" %}
+                Unpaid
+            {% else %}
+                {{ invoice.object.get_payment_status_display }}
+            {% endif %}
 
-                            </span>
+        {% endif %}
 
+    {% else %}
+
+        {% if invoice.type == "pos" %}
+            {{ invoice.object.payment_status }}
+        {% else %}
+            {{ invoice.object.get_payment_status_display }}
+        {% endif %}
+
+    {% endif %}
+
+</span>
                         </td>
 
 

@@ -1,8 +1,8 @@
 {% extends "ecommerce/base_store.html" %}
-{% load static %}
+{% load static i18n store_translation %}
 
 {% block title %}
-{{ store.name }}
+{{ store.name|store_display_name }}
 {% endblock %}
 
 {% block content %}
@@ -19,43 +19,31 @@
 
             <div class="hero-content">
 
-                <span class="hero-badge">
-                    🔥 عروض حصرية
-                </span>
+<span class="hero-badge">
+    🔥 {% trans "Exclusive Offers" %}
+</span>
 
-                <h1>
+<h1>
+    {% trans "Welcome to" %}
+    <br>
+    {{ store.name|store_display_name }}
+</h1>
 
-                    مرحباً بكم في
+<p>
+    {{ store.description }}
+</p>
 
-                    <br>
+<div class="hero-buttons">
 
-                    {{ store.name }}
+    <a href="#featured">
+        {% trans "Shop Now" %}
+    </a>
 
-                </h1>
+    <a href="#categories" class="hero-outline">
+        {% trans "Browse Categories" %}
+    </a>
 
-                <p>
-
-                    {{ store.description }}
-
-                </p>
-
-                <div class="hero-buttons">
-
-                    <a href="#featured">
-
-                        تسوق الآن
-
-                    </a>
-
-                    <a href="#categories"
-                       class="hero-outline">
-
-                        تصفح الأقسام
-
-                    </a>
-
-                </div>
-
+</div>
             </div>
 
             <div class="hero-image">
@@ -96,7 +84,8 @@
     <div class="section-title">
 
         <h2>
-            🔥 العروض
+            🔥 {% trans "Offers" %}
+
         </h2>
 
         <button
@@ -104,7 +93,7 @@
             class="view-all toggle-products"
             data-target="offerProducts"
         >
-            عرض الكل
+{% trans "View All" %}
         </button>
 
     </div>
@@ -124,7 +113,7 @@
             {% empty %}
 
                 <p>
-                    لا توجد عروض حالياً.
+                    {% trans "No offers available at the moment." %}
                 </p>
 
             {% endfor %}
@@ -151,15 +140,14 @@
 
     <h2>
 
-        🔥 منتجات مميزة
+        🔥 {% trans "Featured Products" %}
 
     </h2>
 
 <button class="view-all toggle-products"
         data-target="featuredProducts">
 
-    عرض الكل
-
+{% trans "View All" %}
 </button>
 
 </div>
@@ -184,7 +172,7 @@
 
                     <p>
 
-                        لا توجد منتجات.
+                        {% trans "No products available." %}
 
                     </p>
 
@@ -216,15 +204,14 @@
 
     <h2>
 
-        🆕 وصل حديثًا
+        🆕 {% trans "Just Arrived" %}
 
     </h2>
 
 <button class="view-all toggle-products"
         data-target="latestProducts">
 
-    عرض الكل
-
+{% trans "View All" %}
 </button>
 
 </div>
@@ -247,7 +234,9 @@
 
 {% empty %}
 
-    <p>لا توجد منتجات.</p>
+    <p>
+    {% trans "No products available." %}
+</p>
 
 {% endfor %}
             </div>
@@ -281,13 +270,14 @@
 
             </h2>
 <p style="color:red">
-عدد المنتجات: {{ category.products|length }}
+    {% blocktrans with count=category.products|length %}
+        Products count: {{ count }}
+    {% endblocktrans %}
 </p>
 <button class="view-all toggle-products"
         data-target="category-{{ category.id }}">
 
-    عرض الكل
-
+{% trans "View All" %}
 </button>
 
         </div>
@@ -309,8 +299,7 @@
 
 {% empty %}
     <p>
-        لا توجد منتجات.
-    </p>
+{% trans "No products available." %}    </p>
 
 {% endfor %}
 

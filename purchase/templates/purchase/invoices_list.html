@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load supplier_translation %}
 {% block title %}
 {% trans "Purchase Invoices List" %}
 {% endblock %}
@@ -186,16 +186,15 @@
                     </td>
 
 
-                    <!-- المورد -->
+<!-- المورد -->
 
-                    <td class="supplier-name">
+<td class="supplier-name">
 
-                        <i class="fa-solid fa-truck-field"></i>
+    <i class="fa-solid fa-truck-field"></i>
 
-                        {{ invoice.supplier.commercial_name }}
+    {{ invoice.supplier.commercial_name|supplier_name }}
 
-                    </td>
-
+</td>
 
                     <!-- التاريخ -->
 

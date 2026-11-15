@@ -1,17 +1,20 @@
+
+{% load i18n store_translation %}
+
 <div style="background:#000; color:#fff; padding:15px; text-align:center; position:relative; z-index:99999;">
 
-    <strong>📢 إعلانات المتجر</strong>
+    <strong>📢 {% trans "Store Announcements" %}</strong>
 
     {% for announcement in store.announcements.all %}
 
         <span style="margin-right:30px; margin-left:30px;">
-            {{ announcement.text }}
+            {{ announcement.text|store_translate }}
         </span>
 
     {% empty %}
 
         <span style="margin-right:30px; margin-left:30px;">
-            لا توجد إعلانات
+            {% trans "No announcements" %}
         </span>
 
     {% endfor %}

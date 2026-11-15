@@ -1,3 +1,4 @@
+{% load i18n %}
 <nav class="store-navbar">
 
     <div class="container">
@@ -8,44 +9,39 @@
                  روابط المتجر
             ================================================== -->
 
-            <ul class="navbar-links">
+<ul class="navbar-links">
 
-                <li>
-                    <a href="{% url 'ecommerce:home' store.slug %}">
-                        الرئيسية
-                    </a>
-                </li>
+    <li>
+        <a href="{% url 'ecommerce:home' store.slug %}">
+            {% trans "Home" %}
+        </a>
+    </li>
 
+    <li>
+        <a href="#offers">
+            {% trans "Offers" %}
+        </a>
+    </li>
 
-                <li>
-                    <a href="#offers">
-                        العروض
-                    </a>
-                </li>
+    <li>
+        <a href="#featured">
+            {% trans "Best Sellers" %}
+        </a>
+    </li>
 
+    <li>
+        <a href="#categories">
+            {% trans "Categories" %}
+        </a>
+    </li>
 
-                <li>
-                    <a href="#featured">
-                        الأكثر مبيعاً
-                    </a>
-                </li>
+    <li>
+        <a href="#contact">
+            {% trans "Contact Us" %}
+        </a>
+    </li>
 
-
-                <li>
-                    <a href="#categories">
-                        الأصناف
-                    </a>
-                </li>
-
-
-                <li>
-                    <a href="#contact">
-                        تواصل معنا
-                    </a>
-                </li>
-
-            </ul>
-
+</ul>
         </div>
 
     </div>

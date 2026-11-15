@@ -1,7 +1,7 @@
 {% extends "layout/base.html" %}
 {% load static %}
 {% load i18n %}
-
+{% load product_translation %}
 {% block title %}
     {% trans "Product Management" %}
 {% endblock %}
@@ -52,9 +52,9 @@
         <button type="button"
                 class="add-btn export-toggle"
                 aria-expanded="false">
-            <i class="fa-solid fa-file-export"></i>
-            تصدير
-            <i class="fa-solid fa-chevron-down"></i>
+<i class="fa-solid fa-file-export"></i>
+{% trans "تصدير" %}
+<i class="fa-solid fa-chevron-down"></i>
         </button>
 
         <div class="export-menu">
@@ -262,17 +262,16 @@
 
                         <td class="product-name">
 
-                            <div
-                                class="product-name-text"
-                                title="{{ p.name }}"
-                            >
+<div
+    class="product-name-text"
+    title="{{ p|product_display_name }}"
+>
 
-                                <i class="fa-solid fa-box"></i>
+    <i class="fa-solid fa-box"></i>
 
-                                {{ p.name }}
+    {{ p|product_display_name }}
 
-                            </div>
-
+</div>
                         </td>
 
 

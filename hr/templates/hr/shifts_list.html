@@ -1,6 +1,6 @@
 {% extends "layout/base.html" %}
 {% load i18n %}
-
+{% load supplier_translation %}
 {% block title %}
 {% trans "Shift Management" %}
 {% endblock %}
@@ -98,7 +98,7 @@
 
                             <i class="fa-solid fa-business-time"></i>
 
-                            {{ shift.shift_name }}
+                            {{ shift.shift_name|supplier_name }}
 
                         </td>
 

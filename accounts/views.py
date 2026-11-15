@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
@@ -32,7 +33,6 @@ def landing_page(request):
         return response
 
 
-
 def login_page(request):
 
     from django.conf import settings
@@ -41,7 +41,6 @@ def login_page(request):
     print(f"==============================")
     print(f"DATABASE ENGINE IN USE: {settings.DATABASES['default']['ENGINE']}")
     print(f"==============================")
-
 
     # =====================================================
     # حفظ الصفحة التي جاء منها المستخدم
@@ -52,7 +51,6 @@ def login_page(request):
         or request.GET.get("next")
         or request.session.get("login_next")
     )
-
 
     if next_url:
 
@@ -67,7 +65,6 @@ def login_page(request):
         else:
 
             next_url = None
-
 
     if request.method == "POST":
 
@@ -87,7 +84,6 @@ def login_page(request):
             password=password
         )
 
-
         if user is not None:
 
             login(
@@ -95,9 +91,37 @@ def login_page(request):
                 user
             )
 
+            # =================================================
+            # التحقق هل الحساب مرتبط بموظف نشط
+            # =================================================
+
+            from hr.models import Employee
+
+            employee_exists = Employee.objects.filter(
+                user=user,
+                use_user_account=True,
+                active=True,
+                company__isnull=False,
+            ).exists()
 
             # =================================================
-            # الرجوع للمكان الذي جاء منه المستخدم
+            # الموظف يذهب مباشرة إلى بوابة الموظف
+            # =================================================
+
+            if employee_exists:
+
+                # التخلص من أي رابط next محفوظ سابقًا
+                request.session.pop(
+                    "login_next",
+                    None
+                )
+
+                return redirect(
+                    "hr:employee_portal"
+                )
+
+            # =================================================
+            # بقية المستخدمين: الاحتفاظ بالتوجيه السابق
             # =================================================
 
             redirect_url = request.session.pop(
@@ -105,24 +129,20 @@ def login_page(request):
                 None
             )
 
-
             if redirect_url:
 
                 return redirect(
                     redirect_url
                 )
 
-
             return redirect(
                 "/dashboard/"
             )
-
 
         messages.error(
             request,
             "اسم المستخدم أو كلمة المرور غير صحيحة."
         )
-
 
     return render(
         request,
@@ -130,13 +150,46 @@ def login_page(request):
     )
 
 
-
 def logout_page(request):
+
+    # =====================================================
+    # تحديد هل المستخدم موظف قبل تسجيل الخروج
+    # =====================================================
+
+    is_employee = False
+
+    if request.user.is_authenticated:
+
+        from hr.models import Employee
+
+        is_employee = Employee.objects.filter(
+            user=request.user,
+            use_user_account=True,
+            active=True,
+            company__isnull=False,
+        ).exists()
+
+    # =====================================================
+    # تسجيل الخروج
+    # =====================================================
 
     logout(request)
 
-    return redirect("/")
+    # =====================================================
+    # الموظف يعود إلى صفحة دخول الموظفين
+    # =====================================================
 
+    if is_employee:
+
+        return redirect(
+            "hr:employee_login"
+        )
+
+    # =====================================================
+    # بقية المستخدمين يحتفظون بالسلوك السابق
+    # =====================================================
+
+    return redirect("/")
 
 
 def register_company(request):
@@ -148,35 +201,29 @@ def register_company(request):
             request.FILES
         )
 
-
         if form.is_valid():
 
             with transaction.atomic():
 
                 company, user = form.save()
 
-
             login(
                 request,
                 user
             )
-
 
             messages.success(
                 request,
                 "تم إنشاء الشركة بنجاح"
             )
 
-
             return redirect(
                 "/dashboard/"
             )
 
-
     else:
 
         form = RegisterCompanyForm()
-
 
     return render(
         request,
@@ -187,7 +234,6 @@ def register_company(request):
     )
 
 
-
 def password_reset_page(request):
 
     if request.method == "POST":
@@ -196,7 +242,6 @@ def password_reset_page(request):
             "username",
             ""
         ).strip()
-
 
         if not username:
 
@@ -210,13 +255,11 @@ def password_reset_page(request):
                 "accounts/password_reset.html"
             )
 
-
         try:
 
             user = User.objects.get(
                 username=username
             )
-
 
         except User.DoesNotExist:
 
@@ -233,7 +276,6 @@ def password_reset_page(request):
                 }
             )
 
-
         if not user.email:
 
             messages.error(
@@ -248,7 +290,6 @@ def password_reset_page(request):
                     "username": username
                 }
             )
-
 
         form = PasswordResetForm(
             {
