@@ -4407,10 +4407,9 @@ def hr_reports(request):
 
     if from_date and to_date:
         evaluations = evaluations.filter(
-            target__evaluation__start_date__gte=from_date,
-            target__evaluation__end_date__lte=to_date
+            target__evaluation__start_date__lte=to_date,
+            target__evaluation__end_date__gte=from_date
         )
-
     grouped_details = {}
 
     for score in evaluations:
